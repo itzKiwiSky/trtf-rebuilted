@@ -1,0 +1,4 @@
+*.lang linguist-language=JSON
+*.lua linguist-language=Lua
+*.md linguist-language=Markdown
+*.py linguist-language=Python
