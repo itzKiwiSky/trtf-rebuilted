@@ -6,6 +6,10 @@ function love.initialize(args)
     Presence = require 'src.Components.Modules.API.Presence'
     LanguageController = require 'src.Components.Modules.System.LanguageManager'
     local connectGJ = require 'src.Components.Modules.API.InitializeGJ'
+    fsutil = require 'src.Components.Modules.Utils.FSUtils'
+    audioController = require('src.Components.Modules.System.AudioController')
+    audioController:init()
+    
 
     fontcache.init()
 
@@ -20,6 +24,9 @@ function love.initialize(args)
                     username = "",
                     usertoken = ""
                 },
+                preserveAssets = false,
+                preloadSounds = true,
+                streamAudio = false,
             }
         }
     }
@@ -31,7 +38,6 @@ function love.initialize(args)
 
     registers = {
         user = {
-            roundStarted = false,
             paused = false,
         },
         system = {
@@ -39,6 +45,42 @@ function love.initialize(args)
             gameTime = 0,
         }
     }
+
+
+    -- audio engine --
+    if gameslot.save.game.user.settings.preloadSounds then
+        local effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
+        local glowEffect = moonshine(moonshine.effects.glow)
+        local textFont = fontcache.getFont("ocrx", 30)
+        local preloadBanner = love.graphics.newImage("assets/images/game/banner.png")
+
+        local files = fsutil.scanFolder("assets/sounds")
+
+        for f = 1, #files, 1 do
+            local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
+            --self.sources[filename] = love.audio.newSource(files[f], self.mode)
+            love.graphics.clear()
+                effect(function()
+                    love.graphics.draw(preloadBanner, 0, 0, 0, love.graphics.getWidth() / preloadBanner:getWidth() ,love.graphics.getHeight() / preloadBanner:getHeight())
+                end)
+                glowEffect(function()
+                    love.graphics.printf(string.format("Preloading Sounds: %s | %s", #files, f), textFont, 0, love.graphics.getHeight() - (textFont:getHeight() + 5), love.graphics.getWidth(), "right")
+                end)
+            love.graphics.present()
+
+            audioController:addSource(filename, love.audio.newSource(files[f], audioController.mode))
+        end
+
+        -- clear mess --
+        textFont:release()
+        preloadBanner:release()
+        effect = nil
+        glowEffect = nil
+        files = {}
+
+        collectgarbage("collect")
+    end
+
 
     local gitStuff = require 'src.Components.Initialization.GitStuff'
     connectGJ()
@@ -56,12 +98,13 @@ function love.initialize(args)
     for s = 1, #states, 1 do
         require("src.States." .. states[s]:gsub(".lua", ""))
     end
+
     if DEBUG_APP then
         love.filesystem.createDirectory("screenshots")
     end
 
     gamestate.registerEvents()
-    gamestate.switch(NightShiftState)
+    gamestate.switch(MenuState)
 end
 
 function love.update(elapsed)
