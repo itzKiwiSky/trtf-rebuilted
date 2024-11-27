@@ -1,15 +1,51 @@
 love.filesystem.load("src/Components/Initialization/Run.lua")()
 love.filesystem.load("src/Components/Initialization/ErrorHandler.lua")()
 
+local function preloadAudio()
+    local effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
+    local glowEffect = moonshine(moonshine.effects.glow)
+    local textFont = fontcache.getFont("ocrx", 30)
+    local preloadBanner = love.graphics.newImage("assets/images/game/banner.png")
+
+    local files = fsutil.scanFolder("assets/sounds")
+
+    for f = 1, #files, 1 do
+        local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
+        local mode = gameslot.save.game.user.settings.streamAudio and "stream" or "static"
+        love.graphics.clear()
+            effect(function()
+                love.graphics.draw(preloadBanner, 0, 0, 0, love.graphics.getWidth() / preloadBanner:getWidth() ,love.graphics.getHeight() / preloadBanner:getHeight())
+            end)
+            glowEffect(function()
+                love.graphics.printf(string.format("Preloading Sounds: %s / %s", f, #files), textFont, 0, love.graphics.getHeight() - (textFont:getHeight() + 5), love.graphics.getWidth() - 128, "right")
+            end)
+        love.graphics.present()
+        AudioSources[filename] = love.audio.newSource(files[f], mode)
+        if DEBUG_APP then
+            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file preloaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", filename))
+        end
+    end
+
+    -- clear mess --
+    textFont:release()
+    preloadBanner:release()
+    effect = nil
+    glowEffect = nil
+    files = {}
+
+    collectgarbage("collect")
+end
+
 function love.initialize(args)
     fontcache = require 'src.Components.Modules.System.FontCache'
     Presence = require 'src.Components.Modules.API.Presence'
     LanguageController = require 'src.Components.Modules.System.LanguageManager'
     local connectGJ = require 'src.Components.Modules.API.InitializeGJ'
     fsutil = require 'src.Components.Modules.Utils.FSUtils'
-    audioController = require('src.Components.Modules.System.AudioController')
-    audioController:init()
+    --audioController = require('src.Components.Modules.System.AudioController')
+    --audioController:init()
     
+    AudioSources = {}
 
     fontcache.init()
 
@@ -27,6 +63,10 @@ function love.initialize(args)
                 preserveAssets = false,
                 preloadSounds = true,
                 streamAudio = false,
+            },
+            progress = {
+                initialCutscene = false,
+                night = 0
             }
         }
     }
@@ -47,39 +87,8 @@ function love.initialize(args)
     }
 
 
-    -- audio engine --
-    if gameslot.save.game.user.settings.preloadSounds then
-        local effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
-        local glowEffect = moonshine(moonshine.effects.glow)
-        local textFont = fontcache.getFont("ocrx", 30)
-        local preloadBanner = love.graphics.newImage("assets/images/game/banner.png")
-
-        local files = fsutil.scanFolder("assets/sounds")
-
-        for f = 1, #files, 1 do
-            local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
-            --self.sources[filename] = love.audio.newSource(files[f], self.mode)
-            love.graphics.clear()
-                effect(function()
-                    love.graphics.draw(preloadBanner, 0, 0, 0, love.graphics.getWidth() / preloadBanner:getWidth() ,love.graphics.getHeight() / preloadBanner:getHeight())
-                end)
-                glowEffect(function()
-                    love.graphics.printf(string.format("Preloading Sounds: %s | %s", #files, f), textFont, 0, love.graphics.getHeight() - (textFont:getHeight() + 5), love.graphics.getWidth(), "right")
-                end)
-            love.graphics.present()
-
-            audioController:addSource(filename, love.audio.newSource(files[f], audioController.mode))
-        end
-
-        -- clear mess --
-        textFont:release()
-        preloadBanner:release()
-        effect = nil
-        glowEffect = nil
-        files = {}
-
-        collectgarbage("collect")
-    end
+    -- audio preloading --
+    preloadAudio()
 
 
     local gitStuff = require 'src.Components.Initialization.GitStuff'

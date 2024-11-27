@@ -6,11 +6,20 @@ function AudioController:init()
     self.mode = "static"
 end
 
-function AudioController:addSource(id, source)
-    self.sources[id] = source
+function AudioController:addSource(sourceID, source)
+    if not self.sources[sourceID] then
+        self.sources[sourceID] = source
+    end
 end
 
-function AudioController:playInChannel(filename, channelID)
+function AudioController:playInChannel(sourceID, channelID, loop)
+    if not self.channels[channelID] then
+        self.channels[channelID] = self.sources[sourceID]
+        self.channels[channelID]:play()
+    end
+end
+
+function AudioController:setChannelVolume(vol)
     
 end
 
