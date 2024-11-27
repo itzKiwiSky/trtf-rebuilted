@@ -13,7 +13,7 @@ end
 
 function MenuState:init()
     fnt_textWarn = fontcache.getFont("ocrx", 35)
-    fnt_menu = fontcache.getFont("tnr", 30)
+    fnt_menu = fontcache.getFont("tnr", 40)
 
     shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
     shd_chromafx = love.graphics.newShader("assets/shaders/chromatic.glsl")
@@ -61,8 +61,78 @@ function MenuState:enter()
         fade = 0.9
     }
 
+    textItems = {
+        tween = {
+            x = -640,
+            y = 360,
+            alpha = 0,
+            itemsVisible = false,
+            target = 32
+        },
+        elements = {
+            {
+                text = languageService["menu_button_new_game"],
+                hitbox = {},
+                locked = false,
+                hovered = false,
+                offset = 0,
+                action = function()
+                    
+                end,
+            },
+            {
+                text = languageService["menu_button_continue"],
+                hitbox = {},
+                locked = gameslot.save.game.user.progress.night < 1,
+                hovered = false,
+                offset = 0,
+                action = function()
+                    
+                end,
+            },
+            {
+                text = languageService["menu_button_extras"],
+                hitbox = {},
+                locked = not gameslot.save.game.user.progress.extras,
+                hovered = false,
+                offset = 0,
+                action = function()
+                    
+                end,
+            },
+            {
+                text = languageService["menu_button_extra_shift"],
+                hitbox = {},
+                locked = gameslot.save.game.user.progress.night < 7,
+                hovered = false,
+                offset = 0,
+                action = function()
+                    
+                end,
+            },
+            {
+                text = languageService["menu_button_exit"],
+                hitbox = {},
+                locked = false,
+                hovered = false,
+                offset = 0,
+                action = function()
+                    
+                end,
+            },
+        },
+    }
+
     warnFadeInTween = flux.to(warnItems, 3.2, { fade = 0, textAlpha = 0, vignetteOpactiy = 0.6, y = love.graphics.getWidth() + 200, vignetteRadius = 0.8})
     warnFadeInTween:ease("backin")
+    warnFadeInTween:oncomplete(function()
+        menuItemsTween = flux.to(textItems.tween, 2.3, { alpha = 1, x = 64 })
+        menuItemsTween:ease("sineout")
+        menuItemsTween:oncomplete(function()
+            textItems.tween.itemsVisible = true
+        end)
+    end)
+
 
     menuAnimatronic = {
         x = 0,
@@ -73,14 +143,6 @@ function MenuState:enter()
     logoMenu = {
         x = 208,
         update = false,
-        timer = 0,
-    }
-
-    textItems = {
-        {
-            text = "",
-            hitbox = {}
-        }
     }
 
     tmr_randFrame = timer.new()
@@ -111,6 +173,16 @@ function MenuState:enter()
             menuAnimatronic.frame = 1
         end
     end)
+
+    -- create button hitboxes --
+    for t = 1, #textItems.elements, 1 do
+        textItems.elements[t].hitbox = {
+            x = 60,
+            y = (textItems.tween.y + (fnt_menu:getHeight() + 16) * t) - 4,
+            w = fnt_menu:getWidth(textItems.elements[t].text) + 8,
+            h = fnt_menu:getHeight() + 8
+        }
+    end
 end
 
 function MenuState:draw()
@@ -129,9 +201,20 @@ function MenuState:draw()
     shd_glowEffect(function()
         love.graphics.setShader(shd_chromafx)
             love.graphics.setBlendMode("add")
-                love.graphics.printf(languageService["warn_text"], fnt_textWarn,0, warnItems.y, love.graphics.getWidth(), "center")
+                love.graphics.setColor(1, 1, 1, warnItems.textAlpha)
+                    love.graphics.printf(languageService["warn_text"], fnt_textWarn,0, warnItems.y, love.graphics.getWidth(), "center")
+                love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setBlendMode("alpha")
         love.graphics.setShader()
+
+        for _, t in ipairs(textItems.elements) do
+            love.graphics.setColor(1, 1, 1, textItems.tween.alpha)
+                if t.locked then
+                    love.graphics.setColor(0.3, 0.3, 0.3, textItems.tween.alpha)
+                end
+                love.graphics.print(t.text, fnt_menu, textItems.tween.x + t.offset, textItems.tween.y + (fnt_menu:getHeight() + 16) * _)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
     end)
 end
 
@@ -144,11 +227,35 @@ function MenuState:update(elapsed)
     -- animatronic menu anim --
     tmr_randFrame:update(elapsed)
     tmr_randPos:update(elapsed)
+
+    -- button check --
+    if textItems.tween.itemsVisible then
+        for _, t in ipairs(textItems.elements) do
+            if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, t.hitbox) and not t.locked then
+                t.hovered = true
+                t.offset = math.lerp(t.offset, 32, 0.05)
+            else
+                t.offset = math.lerp(t.offset, 0, 0.05)
+            end
+
+            t.hovered = false
+        end
+    end
 end
 
 function MenuState:mousepressed(x, y, button)
     if not skippedWarn then
         skippedWarn = true
+    end
+
+    if button == 1 then
+        if textItems.tween.itemsVisible then
+            for _, t in ipairs(textItems.elements) do
+                if t.hovered then
+                    t.action()
+                end
+            end
+        end
     end
 end
 

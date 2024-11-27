@@ -66,6 +66,7 @@ function love.initialize(args)
             },
             progress = {
                 initialCutscene = false,
+                extras = false,
                 night = 0
             }
         }
@@ -113,7 +114,7 @@ function love.initialize(args)
     end
 
     gamestate.registerEvents()
-    gamestate.switch(SplashState)
+    gamestate.switch(MenuState)
 end
 
 function love.update(elapsed)

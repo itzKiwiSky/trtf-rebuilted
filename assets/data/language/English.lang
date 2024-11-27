@@ -4,6 +4,10 @@
         "warn_text" : "This game contains loud sounds, flashing\nlights, mild swearing, and many jumpscares!\n\n\nPD: This game is not an official remake of\nTRTF 1 and TRTF Rebuilt.\n\n\nPress any key to continue."
     },
     "menu" : {
-        "menu_button_new_game" : "New Game"
+        "menu_button_new_game" : "New Game",
+        "menu_button_continue" : "Continue",
+        "menu_button_extras" : "Extras",
+        "menu_button_extra_shift" : "8th Night",
+        "menu_button_exit" : "Exit"
     }
 }
