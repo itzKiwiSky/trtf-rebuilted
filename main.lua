@@ -113,7 +113,7 @@ function love.initialize(args)
     end
 
     gamestate.registerEvents()
-    gamestate.switch(MenuState)
+    gamestate.switch(SplashState)
 end
 
 function love.update(elapsed)

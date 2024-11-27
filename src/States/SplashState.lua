@@ -15,7 +15,19 @@ function SplashState:draw()
 end
 
 function SplashState:update(elapsed)
-
+    if not introVideo:isPlaying() then
+        if not gameslot.save.game.user.progress.initialCutscene then
+            VideoSceneState.path = "assets/videos/lockjaw_cinematic.ogv"
+            VideoSceneState.onSceneComplete = function()
+                gameslot.save.game.user.progress.initialCutscene = true
+                gameslot:saveSlot()
+            end
+            VideoSceneState.targetState = MenuState
+            gamestate.switch(VideoSceneState)
+        else
+            gamestate.switch(MenuState)
+        end
+    end
 end
 
 function SplashState:leave()

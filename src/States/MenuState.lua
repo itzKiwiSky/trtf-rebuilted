@@ -1,8 +1,17 @@
 MenuState = {}
 
-function MenuState:init()
-    local chars = {"bonnie", "chica", "foxy", "freddy", "kitty_fazcat", "lockjaw", "sugar"}
+local function loadAnimatronic(id)
+    local chars = {"bonnie", "chica", "foxy", "freddy", "sugar", "kitty_fazcat", "lockjaw"}
+    local anfiles = {}
+    local char = chars[id]
+    local charFolder = love.filesystem.getDirectoryItems("assets/images/game/menu/animatronics/" .. char)
+    for c = 1, #charFolder, 1 do
+        table.insert(anfiles, love.graphics.newImage("assets/images/game/menu/animatronics/" .. char .. "/" .. charFolder[c]))
+    end
+    return anfiles
+end
 
+function MenuState:init()
     fnt_textWarn = fontcache.getFont("ocrx", 35)
     fnt_menu = fontcache.getFont("tnr", 30)
 
@@ -20,17 +29,23 @@ function MenuState:init()
     end
 
     animatronicsAnim = {}
-    local char = chars[math.random(1, #chars)]
-    local charFolder = love.filesystem.getDirectoryItems("assets/images/game/menu/animatronics/" .. char)
-    for c = 1, #charFolder, 1 do
-        table.insert(animatronicsAnim, love.graphics.newImage("assets/images/game/menu/animatronics/" .. char .. "/" .. charFolder[c]))
-    end
-
-    --print(debug.formattable(menuBackgrounds))
-    --print(debug.formattable(animatronicsAnim))
 end
 
 function MenuState:enter()
+    --loadAnimatronic()
+    for a = #animatronicsAnim, 1, -1 do
+        if animatronicsAnim[a] then
+            animatronicsAnim[a]:release()
+        end
+    end
+
+    if gameslot.save.game.user.progress.night < 1 then
+        animatronicsAnim = loadAnimatronic(1)
+    else
+        animatronicsAnim = loadAnimatronic(gameslot.save.game.user.progress.night)
+    end
+
+
     AudioSources["menu_theme_again"]:play()
     AudioSources["menu_theme_again"]:setLooping(true)
 
@@ -43,7 +58,7 @@ function MenuState:enter()
         vignetteRadius = 0.1,
         vignetteOpactiy = 1,
         y = 128,
-        fade = 0.7
+        fade = 0.9
     }
 
     warnFadeInTween = flux.to(warnItems, 3.2, { fade = 0, textAlpha = 0, vignetteOpactiy = 0.6, y = love.graphics.getWidth() + 200, vignetteRadius = 0.8})
@@ -59,6 +74,13 @@ function MenuState:enter()
         x = 208,
         update = false,
         timer = 0,
+    }
+
+    textItems = {
+        {
+            text = "",
+            hitbox = {}
+        }
     }
 
     tmr_randFrame = timer.new()
