@@ -17,7 +17,8 @@ local function preloadAudio()
                 love.graphics.draw(preloadBanner, 0, 0, 0, love.graphics.getWidth() / preloadBanner:getWidth() ,love.graphics.getHeight() / preloadBanner:getHeight())
             end)
             glowEffect(function()
-                love.graphics.printf(string.format("Preloading Sounds: %s / %s", f, #files), textFont, 0, love.graphics.getHeight() - (textFont:getHeight() + 5), love.graphics.getWidth() - 128, "right")
+                love.graphics.rectangle("fill", 0, love.graphics.getHeight() - 28, math.floor(love.graphics.getWidth() * (((f / #files) * 100) / 100)), 28)
+                love.graphics.printf(string.format("Preloading Sounds: %s%%", ((f / #files) * 100)), textFont, 0, love.graphics.getHeight() - (textFont:getHeight() + 48), love.graphics.getWidth(), "center")
             end)
         love.graphics.present()
         AudioSources[filename] = love.audio.newSource(files[f], mode)
@@ -114,7 +115,7 @@ function love.initialize(args)
     end
 
     gamestate.registerEvents()
-    gamestate.switch(SplashState)
+    gamestate.switch(MenuState)
 end
 
 function love.update(elapsed)

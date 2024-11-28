@@ -19,6 +19,7 @@ function MenuState:init()
     shd_chromafx = love.graphics.newShader("assets/shaders/chromatic.glsl")
     shd_chromafx:send("distortion", 0)
     shd_glowEffect = moonshine(moonshine.effects.glow)
+    shd_glowEffect.glow.strength = 5
 
     spr_logo = love.graphics.newImage("assets/images/game/menu/logo.png")
 
@@ -29,6 +30,20 @@ function MenuState:init()
     end
 
     animatronicsAnim = {}
+
+    staticfx = {
+        config = {
+            timer = 0,
+            frameid = 1,
+            speed = 0.05
+        },
+        frames = {}
+    }
+    local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static")
+    for s = 1, #statics, 1 do
+        table.insert(staticfx.frames, love.graphics.newImage("assets/images/game/effects/static/" .. statics[s]))
+    end
+    
 end
 
 function MenuState:enter()
@@ -45,9 +60,29 @@ function MenuState:enter()
         animatronicsAnim = loadAnimatronic(gameslot.save.game.user.progress.night)
     end
 
+    gearSettings = {
+        x = love.graphics.getWidth() + 128,
+        y = 120,
+        offsetX = 40,
+        offsetY = 40,
+        hitbox = {},
+        hovered = false,
+        angle = 0,
+        alpha = 0,
+        size = 96,
+        ico = love.graphics.newImage("assets/images/game/menu/settings_ico.png"),
+        glow = love.graphics.newImage("assets/images/game/menu/settings_ico_glow.png")
+    }
 
-    AudioSources["menu_theme_again"]:play()
-    AudioSources["menu_theme_again"]:setLooping(true)
+    gearSettings.hitbox = {
+        x = gearSettings.x - gearSettings.offsetX,
+        y = gearSettings.y - gearSettings.offsetY,
+        w = 78, 
+        h = 78 
+    }
+
+    AudioSources["amb_rainleak"]:play()
+    AudioSources["amb_rainleak"]:setLooping(true)
 
     bgID = math.random(1, #menuBackgrounds)
 
@@ -58,7 +93,8 @@ function MenuState:enter()
         vignetteRadius = 0.1,
         vignetteOpactiy = 1,
         y = 128,
-        fade = 0.9
+        fade = 0.9,
+        songVol = 0,
     }
 
     textItems = {
@@ -123,7 +159,7 @@ function MenuState:enter()
         },
     }
 
-    warnFadeInTween = flux.to(warnItems, 3.2, { fade = 0, textAlpha = 0, vignetteOpactiy = 0.6, y = love.graphics.getWidth() + 200, vignetteRadius = 0.8})
+    warnFadeInTween = flux.to(warnItems, 3.2, { songVol = 1, fade = 0, textAlpha = 0, vignetteOpactiy = 0.6, y = love.graphics.getWidth() + 200, vignetteRadius = 0.8})
     warnFadeInTween:ease("backin")
     warnFadeInTween:oncomplete(function()
         menuItemsTween = flux.to(textItems.tween, 2.3, { alpha = 1, x = 64 })
@@ -131,8 +167,14 @@ function MenuState:enter()
         menuItemsTween:oncomplete(function()
             textItems.tween.itemsVisible = true
         end)
-    end)
 
+        settingsIconTween = flux.to(gearSettings, 1.5, { x = love.graphics.getWidth() - 128 })
+        menuItemsTween:ease("backout")
+
+        AudioSources["menu_theme_again"]:play()
+        AudioSources["menu_theme_again"]:setLooping(true)
+        AudioSources["amb_rainleak"]:setVolume(0.3)
+    end)
 
     menuAnimatronic = {
         x = 0,
@@ -186,27 +228,57 @@ function MenuState:enter()
 end
 
 function MenuState:draw()
+    -- shader for menu background and animatronic display --
     shd_effect(function()
         love.graphics.draw(menuBackgrounds[bgID], 0, 0)
         love.graphics.draw(animatronicsAnim[menuAnimatronic.frame], menuAnimatronic.x, 0)
     end)
+    -- logo effect --
     love.graphics.setShader(shd_chromafx)
         love.graphics.setBlendMode("add")
             love.graphics.draw(spr_logo, logoMenu.x, 230, 0, 1, 1, spr_logo:getWidth() / 2, spr_logo:getHeight() / 2)
         love.graphics.setBlendMode("alpha")
     love.graphics.setShader()
+
+    -- static overlay --
+    love.graphics.setBlendMode("add")
+        love.graphics.setColor(1, 1, 1, 0.2)
+            love.graphics.draw(staticfx.frames[staticfx.config.frameid], 0, 0)
+        love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setBlendMode("alpha")
+
+    -- settings icon --
+    love.graphics.setColor(1, 1, 1, gearSettings.alpha)
+        love.graphics.draw(
+            gearSettings.glow, gearSettings.x, gearSettings.y, math.rad(gearSettings.angle), 
+            gearSettings.size / gearSettings.glow:getWidth(), gearSettings.size / gearSettings.glow:getHeight(), 
+            gearSettings.glow:getWidth() / 2, gearSettings.glow:getHeight() / 2
+        )
+    love.graphics.setColor(1, 1, 1, 1)
+
+    love.graphics.draw(
+        gearSettings.ico, gearSettings.x, gearSettings.y, math.rad(gearSettings.angle), 
+        gearSettings.size / gearSettings.ico:getWidth(), gearSettings.size / gearSettings.ico:getHeight(), 
+        gearSettings.ico:getWidth() / 2, gearSettings.ico:getHeight() / 2
+    )
+
+    --love.graphics.rectangle("line", gearSettings.hitbox.x, gearSettings.hitbox.y, gearSettings.hitbox.w, gearSettings.hitbox.h)
+
+    -- fade rectangle --
     love.graphics.setColor(0, 0, 0, warnItems.fade)
         love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
     love.graphics.setColor(1, 1, 1, 1)
-    shd_glowEffect(function()
-        love.graphics.setShader(shd_chromafx)
-            love.graphics.setBlendMode("add")
-                love.graphics.setColor(1, 1, 1, warnItems.textAlpha)
-                    love.graphics.printf(languageService["warn_text"], fnt_textWarn,0, warnItems.y, love.graphics.getWidth(), "center")
-                love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.setBlendMode("alpha")
-        love.graphics.setShader()
 
+    -- text effects --
+    shd_glowEffect(function()
+        -- warning --
+        love.graphics.setBlendMode("add")
+            love.graphics.setColor(1, 1, 1, warnItems.textAlpha)
+                love.graphics.printf(languageService["warn_text"], fnt_textWarn,0, warnItems.y, love.graphics.getWidth(), "center")
+            love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setBlendMode("alpha")
+        
+        -- menu items --
         for _, t in ipairs(textItems.elements) do
             love.graphics.setColor(1, 1, 1, textItems.tween.alpha)
                 if t.locked then
@@ -220,6 +292,20 @@ end
 
 function MenuState:update(elapsed)
     shd_effect.vignette.radius = warnItems.vignetteRadius
+
+    if AudioSources["menu_theme_again"]:isPlaying() then
+        AudioSources["menu_theme_again"]:setVolume(warnItems.songVol)
+    end
+
+    -- static animation --
+    staticfx.config.timer = staticfx.config.timer + elapsed
+    if staticfx.config.timer >= staticfx.config.speed then
+        staticfx.config.timer = 0
+        staticfx.config.frameid = staticfx.config.frameid + 1
+        if staticfx.config.frameid >= #staticfx.frames then
+            staticfx.config.frameid = 1
+        end
+    end
 
     if skippedWarn then
         flux.update(elapsed)
@@ -240,6 +326,20 @@ function MenuState:update(elapsed)
 
             t.hovered = false
         end
+    end
+
+    gearSettings.hovered = collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, gearSettings.hitbox)
+    gearSettings.hitbox.x = gearSettings.x - gearSettings.offsetX
+    if gearSettings.hovered and textItems.tween.itemsVisible then
+        gearSettings.alpha = math.lerp(gearSettings.alpha, 1, 0.05)
+        gearSettings.angle = gearSettings.angle + 150 * elapsed
+
+        if gearSettings.angle >= 360 then
+            gearSettings.angle = 0
+        end
+    else
+        gearSettings.alpha = math.lerp(gearSettings.alpha, 0, 0.05)
+        gearSettings.angle = math.lerp(gearSettings.angle, 0, 0.05)
     end
 end
 
