@@ -39,12 +39,9 @@ end
 
 function love.initialize(args)
     fontcache = require 'src.Components.Modules.System.FontCache'
-    Presence = require 'src.Components.Modules.API.Presence'
     LanguageController = require 'src.Components.Modules.System.LanguageManager'
     local connectGJ = require 'src.Components.Modules.API.InitializeGJ'
     fsutil = require 'src.Components.Modules.Utils.FSUtils'
-    --audioController = require('src.Components.Modules.System.AudioController')
-    --audioController:init()
     
     AudioSources = {}
 
@@ -62,8 +59,10 @@ function love.initialize(args)
                     usertoken = ""
                 },
                 preserveAssets = false,
-                preloadSounds = true,
-                streamAudio = false,
+                fullscreen = false,
+                vsync = false,
+                antialiasing = true,
+                windowEffects = true,
             },
             progress = {
                 initialCutscene = false,
@@ -73,8 +72,6 @@ function love.initialize(args)
         }
     }
     gameslot:initialize()
-
-    love.graphics.setDefaultFilter("nearest", "nearest")
 
     languageService = LanguageController(gameslot.save.game.user.settings.language)
 
@@ -88,6 +85,16 @@ function love.initialize(args)
         }
     }
 
+    -- do some shit with config --
+    --love.window.setFullscreen(gameslot.save.game.user.settings.fullscreen, "exclusive")
+    love.window.setVSync(gameslot.save.game.user.settings.vsync and 1 or 0)
+
+    if gameslot.save.game.user.settings.antialiasing then
+        love.graphics.setDefaultFilter("linear", "linear")
+    else
+        love.graphics.setDefaultFilter("nearest", "nearest")
+    end
+    
     -- audio preloading --
     preloadAudio()
 
@@ -112,18 +119,19 @@ function love.initialize(args)
         love.filesystem.createDirectory("screenshots")
     end
 
+    tmr_gamejoltHeartbeat = timer.new()
+    tmr_gamejoltHeartbeat:every(20, function()
+        gamejolt.pingSession(true)
+        io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client heartbeated a session (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
+    end)
+
     gamestate.registerEvents()
     gamestate.switch(MenuState)
 end
 
 function love.update(elapsed)
     if gamejolt.isLoggedIn then
-        registers.system.gameTime = registers.system.gameTime + elapsed
-        if math.floor(registers.system.gameTime) >= 20 then
-            gamejolt.pingSession(true)
-            registers.system.gameTime = 0
-            io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client heartbeated a session (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
-        end
+        tmr_gamejoltHeartbeat:update(elapsed)
     end
 end
 

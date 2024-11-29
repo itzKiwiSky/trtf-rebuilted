@@ -14,12 +14,17 @@ end
 function MenuState:init()
     fnt_textWarn = fontcache.getFont("ocrx", 35)
     fnt_menu = fontcache.getFont("tnr", 40)
+    fnt_settingsTitle = fontcache.getFont("tnr", 45)
+    fnt_settingsDesc = fontcache.getFont("tnr", 25)
 
     shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
+    shd_blur = moonshine(moonshine.effects.boxblur)
     shd_chromafx = love.graphics.newShader("assets/shaders/chromatic.glsl")
     shd_chromafx:send("distortion", 0)
     shd_glowEffect = moonshine(moonshine.effects.glow)
     shd_glowEffect.glow.strength = 5
+
+    shd_blur.boxblur.radius = {0, 0}
 
     spr_logo = love.graphics.newImage("assets/images/game/menu/logo.png")
 
@@ -48,6 +53,10 @@ function MenuState:init()
 end
 
 function MenuState:enter()
+    settingsSubstate = require 'src.SubStates.SettingsSubState'
+
+    settingsSubstate:load()
+
     --loadAnimatronic()
     for a = #animatronicsAnim, 1, -1 do
         if animatronicsAnim[a] then
@@ -71,8 +80,8 @@ function MenuState:enter()
         angle = 0,
         alpha = 0,
         size = 96,
-        ico = love.graphics.newImage("assets/images/game/menu/settings_ico.png"),
-        glow = love.graphics.newImage("assets/images/game/menu/settings_ico_glow.png")
+        ico = love.graphics.newImage("assets/images/game/menu/UI/settings_ico.png"),
+        glow = love.graphics.newImage("assets/images/game/menu/UI/settings_ico_glow.png")
     }
 
     gearSettings.hitbox = {
@@ -173,7 +182,7 @@ function MenuState:enter()
                 hovered = false,
                 offset = 0,
                 action = function()
-                    
+                    love.event.quit()
                 end,
             },
         },
@@ -248,24 +257,51 @@ function MenuState:enter()
 end
 
 function MenuState:draw()
-    -- shader for menu background and animatronic display --
-    shd_effect(function()
-        love.graphics.draw(menuBackgrounds[bgID], 0, 0)
-        love.graphics.draw(animatronicsAnim[menuAnimatronic.frame], menuAnimatronic.x, 0)
-    end)
-    -- logo effect --
-    love.graphics.setShader(shd_chromafx)
-        love.graphics.setBlendMode("add")
-            love.graphics.draw(spr_logo, logoMenu.x, 230, 0, 1, 1, spr_logo:getWidth() / 2, spr_logo:getHeight() / 2)
-        love.graphics.setBlendMode("alpha")
-    love.graphics.setShader()
+    shd_blur(function()
+        -- shader for menu background and animatronic display --
+        shd_effect(function()
+            love.graphics.draw(menuBackgrounds[bgID], 0, 0)
+            love.graphics.draw(animatronicsAnim[menuAnimatronic.frame], menuAnimatronic.x, 0)
+        end)
+        -- logo effect --
+        love.graphics.setShader(shd_chromafx)
+            love.graphics.setBlendMode("add")
+                love.graphics.draw(spr_logo, logoMenu.x, 230, 0, 1, 1, spr_logo:getWidth() / 2, spr_logo:getHeight() / 2)
+            love.graphics.setBlendMode("alpha")
+        love.graphics.setShader()
 
-    -- static overlay --
-    love.graphics.setBlendMode("add")
-        love.graphics.setColor(1, 1, 1, 0.2)
-            love.graphics.draw(staticfx.frames[staticfx.config.frameid], 0, 0)
+        -- static overlay --
+        love.graphics.setBlendMode("add")
+            love.graphics.setColor(1, 1, 1, 0.2)
+                love.graphics.draw(staticfx.frames[staticfx.config.frameid], 0, 0)
+            love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setBlendMode("alpha")
+
+        -- fade rectangle --
+        love.graphics.setColor(0, 0, 0, warnItems.fade)
+            love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
         love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.setBlendMode("alpha")
+
+        -- text effects --
+        shd_glowEffect(function()
+            -- warning --
+            love.graphics.setBlendMode("add")
+                love.graphics.setColor(1, 1, 1, warnItems.textAlpha)
+                    love.graphics.printf(languageService["warn_text"], fnt_textWarn,0, warnItems.y, love.graphics.getWidth(), "center")
+                love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.setBlendMode("alpha")
+            
+            -- menu items --
+            for _, t in ipairs(textItems.elements) do
+                love.graphics.setColor(1, 1, 1, textItems.tween.alpha)
+                    if t.locked then
+                        love.graphics.setColor(0.3, 0.3, 0.3, textItems.tween.alpha)
+                    end
+                    love.graphics.print(t.text, fnt_menu, textItems.tween.x + t.offset, textItems.tween.y + (fnt_menu:getHeight() + 16) * _)
+                love.graphics.setColor(1, 1, 1, 1)
+            end
+        end)
+    end)
 
     -- settings icon --
     love.graphics.setColor(1, 1, 1, gearSettings.alpha)
@@ -282,40 +318,14 @@ function MenuState:draw()
         gearSettings.ico:getWidth() / 2, gearSettings.ico:getHeight() / 2
     )
 
-    --love.graphics.rectangle("line", gearSettings.hitbox.x, gearSettings.hitbox.y, gearSettings.hitbox.w, gearSettings.hitbox.h)
-
-    -- fade rectangle --
-    love.graphics.setColor(0, 0, 0, warnItems.fade)
-        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-    love.graphics.setColor(1, 1, 1, 1)
-
-    -- text effects --
-    shd_glowEffect(function()
-        -- warning --
-        love.graphics.setBlendMode("add")
-            love.graphics.setColor(1, 1, 1, warnItems.textAlpha)
-                love.graphics.printf(languageService["warn_text"], fnt_textWarn,0, warnItems.y, love.graphics.getWidth(), "center")
-            love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.setBlendMode("alpha")
-        
-        -- menu items --
-        for _, t in ipairs(textItems.elements) do
-            love.graphics.setColor(1, 1, 1, textItems.tween.alpha)
-                if t.locked then
-                    love.graphics.setColor(0.3, 0.3, 0.3, textItems.tween.alpha)
-                end
-                love.graphics.print(t.text, fnt_menu, textItems.tween.x + t.offset, textItems.tween.y + (fnt_menu:getHeight() + 16) * _)
-            love.graphics.setColor(1, 1, 1, 1)
-        end
-    end)
+    settingsSubstate:draw()
 
     -- journal --
     love.graphics.setColor(1, 1, 1, journalConfig.alpha)
         love.graphics.draw(journal, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, math.rad(journalConfig.angle), journalConfig.zoom, journalConfig.zoom, journal:getWidth() / 2, journal:getHeight() / 2)
     love.graphics.setColor(1, 1, 1, 1)
 
-
-        -- trans fade rectangle --
+    -- trans fade rectangle --
     love.graphics.setColor(0, 0, 0, journalConfig.transfade)
         love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
     love.graphics.setColor(1, 1, 1, 1)
@@ -326,6 +336,7 @@ function MenuState:update(elapsed)
 
     if AudioSources["menu_theme_again"]:isPlaying() then
         AudioSources["menu_theme_again"]:setVolume(warnItems.songVol)
+        AudioSources["amb_rainleak"]:setVolume(warnItems.songVol)
     end
 
     -- static animation --
@@ -345,8 +356,10 @@ function MenuState:update(elapsed)
     tmr_randFrame:update(elapsed)
     tmr_randPos:update(elapsed)
 
+    settingsSubstate:update(elapsed)
+
     -- button check --
-    if textItems.tween.itemsVisible and not journalConfig.active then
+    if textItems.tween.itemsVisible and not journalConfig.active and not settingsSubstate.active then
         for _, t in ipairs(textItems.elements) do
             t.hovered = collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, t.hitbox) and not t.locked
             if t.hovered then
@@ -372,7 +385,6 @@ function MenuState:update(elapsed)
     end
 
     if journalConfig.active then
-        --journalConfig.alpha = math.lerp(journalConfig.alpha, 1, 0.01)
         warnItems.songVol = journalConfig.volSong
         if journalConfig.alpha <= 1 then
             journalConfig.alpha = journalConfig.alpha + 1 * elapsed
@@ -388,7 +400,15 @@ function MenuState:mousepressed(x, y, button)
         skippedWarn = true
     end
 
-    if textItems.tween.itemsVisible and not journalConfig.active then
+    settingsSubstate:mousepressed(x, y, button)
+
+    if gearSettings.hovered then
+        if button == 1 then
+            settingsSubstate.active = not settingsSubstate.active
+        end
+    end
+
+    if textItems.tween.itemsVisible and not journalConfig.active and not settingsSubstate.active then
         if button == 1 then
             for _, t in ipairs(textItems.elements) do
                 if t.hovered then
@@ -403,6 +423,10 @@ function MenuState:keypressed(k)
     if not skippedWarn then
         skippedWarn = true
     end
+end
+
+function MenuState:wheelmoved(x, y)
+    settingsSubstate:wheelmoved(x, y)
 end
 
 return MenuState

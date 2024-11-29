@@ -1,6 +1,6 @@
 return function()
     jit = require 'jit'
-    https = require 'https'
+    http = require 'socket.http'
     utf8 = require 'utf8'
     bit = require 'bit'
     moonshine = require 'libraries.moonshine'
@@ -10,6 +10,7 @@ return function()
     collision = require 'libraries.collision'
     deep = require 'libraries.deep'
     --discordrpc = require 'libraries.discordRPC'
+    pxlove = require 'libraries.pxlove'
     gamestate = require 'libraries.gamestate'
     gamejolt = require 'libraries.gamejolt'
     flux = require 'libraries.flux'

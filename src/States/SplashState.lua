@@ -8,6 +8,7 @@ function SplashState:enter()
     if introVideo then
         introVideo:play()
     end
+    love.mouse.setVisible(false)
 end
 
 function SplashState:draw()
@@ -27,13 +28,15 @@ function SplashState:update(elapsed)
             gamestate.switch(VideoSceneState)
         else
             gamestate.switch(MenuState)
-        end]]--
+        end
+        ]]--
         gamestate.switch(MenuState)
+        love.mouse.setVisible(true)
     end
 end
 
 function SplashState:leave()
-    
+    introVideo:release()
 end
 
 return SplashState

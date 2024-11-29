@@ -10,7 +10,7 @@ function love.conf(w)
     w.window.resizable      =       false
     w.window.fullscreen     =       false
     w.window.depth          =       16
-    --w.window.vsync          =       0
+    w.window.vsync          =       0
 
     --% Debug %--
     w.console               =       not love.filesystem.isFused()

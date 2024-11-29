@@ -1,6 +1,6 @@
 return {
-    name = "Project Aurora",
-    developer = "KiwiStationStudios",
+    name = "The Return To Freddy's Rebuilt - Again",
+    developer = "BrightSmile Team & KiwiStation",
     output = "./export",
     version = "0.0.1",
     love = "11.5",
@@ -17,8 +17,7 @@ return {
         "gjassets"
     },
     icon = "icon.png",
-    
-    identifier = "com.kiwistationstudios.projectaurora", 
+    identifier = "com.brightsmileteam.trtfrebuiltagain", 
     libs = { 
         --[[
         windows = {
