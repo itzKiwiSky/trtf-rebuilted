@@ -14,7 +14,7 @@ end
 function MenuState:init()
     fnt_textWarn = fontcache.getFont("ocrx", 35)
     fnt_menu = fontcache.getFont("tnr", 40)
-    fnt_settingsTitle = fontcache.getFont("tnr", 45)
+    fnt_settingsTitle = fontcache.getFont("tnr", 55)
     fnt_settingsDesc = fontcache.getFont("tnr", 25)
 
     shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
