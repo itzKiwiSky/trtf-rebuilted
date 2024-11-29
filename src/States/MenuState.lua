@@ -44,6 +44,7 @@ function MenuState:init()
         table.insert(staticfx.frames, love.graphics.newImage("assets/images/game/effects/static/" .. statics[s]))
     end
     
+    journal = love.graphics.newImage("assets/images/game/menu/news/en.png")
 end
 
 function MenuState:enter()
@@ -97,13 +98,32 @@ function MenuState:enter()
         songVol = 0,
     }
 
+    journalConfig = {
+        alpha = 0,
+        zoom = 1,
+        angle = 0,
+        active = false,
+        timer = timer.new(),
+        transfade = 0,
+        volSong = 1
+    }
+
+    journalConfig.timer:after(5, function()
+        fadeTween = flux.to(journalConfig, 2, { transfade = 1, volSong = 0 })
+        fadeTween:ease("linear")
+        fadeTween:oncomplete(function()
+            AudioSources["menu_theme_again"]:stop()
+            gamestate.switch(NightState)
+        end)
+    end)
+
     textItems = {
         tween = {
             x = -640,
             y = 360,
             alpha = 0,
             itemsVisible = false,
-            target = 32
+            target = 32,
         },
         elements = {
             {
@@ -113,7 +133,7 @@ function MenuState:enter()
                 hovered = false,
                 offset = 0,
                 action = function()
-                    
+                    journalConfig.active = true
                 end,
             },
             {
@@ -288,6 +308,17 @@ function MenuState:draw()
             love.graphics.setColor(1, 1, 1, 1)
         end
     end)
+
+    -- journal --
+    love.graphics.setColor(1, 1, 1, journalConfig.alpha)
+        love.graphics.draw(journal, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, math.rad(journalConfig.angle), journalConfig.zoom, journalConfig.zoom, journal:getWidth() / 2, journal:getHeight() / 2)
+    love.graphics.setColor(1, 1, 1, 1)
+
+
+        -- trans fade rectangle --
+    love.graphics.setColor(0, 0, 0, journalConfig.transfade)
+        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+    love.graphics.setColor(1, 1, 1, 1)
 end
 
 function MenuState:update(elapsed)
@@ -315,16 +346,14 @@ function MenuState:update(elapsed)
     tmr_randPos:update(elapsed)
 
     -- button check --
-    if textItems.tween.itemsVisible then
+    if textItems.tween.itemsVisible and not journalConfig.active then
         for _, t in ipairs(textItems.elements) do
-            if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, t.hitbox) and not t.locked then
-                t.hovered = true
+            t.hovered = collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, t.hitbox) and not t.locked
+            if t.hovered then
                 t.offset = math.lerp(t.offset, 32, 0.05)
             else
                 t.offset = math.lerp(t.offset, 0, 0.05)
             end
-
-            t.hovered = false
         end
     end
 
@@ -341,6 +370,17 @@ function MenuState:update(elapsed)
         gearSettings.alpha = math.lerp(gearSettings.alpha, 0, 0.05)
         gearSettings.angle = math.lerp(gearSettings.angle, 0, 0.05)
     end
+
+    if journalConfig.active then
+        --journalConfig.alpha = math.lerp(journalConfig.alpha, 1, 0.01)
+        warnItems.songVol = journalConfig.volSong
+        if journalConfig.alpha <= 1 then
+            journalConfig.alpha = journalConfig.alpha + 1 * elapsed
+        end
+        journalConfig.zoom = journalConfig.zoom + 0.02 * elapsed
+
+        journalConfig.timer:update(elapsed)
+    end
 end
 
 function MenuState:mousepressed(x, y, button)
@@ -348,8 +388,8 @@ function MenuState:mousepressed(x, y, button)
         skippedWarn = true
     end
 
-    if button == 1 then
-        if textItems.tween.itemsVisible then
+    if textItems.tween.itemsVisible and not journalConfig.active then
+        if button == 1 then
             for _, t in ipairs(textItems.elements) do
                 if t.hovered then
                     t.action()

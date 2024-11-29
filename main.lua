@@ -32,7 +32,7 @@ local function preloadAudio()
     preloadBanner:release()
     effect = nil
     glowEffect = nil
-    files = {}
+    files = nil
 
     collectgarbage("collect")
 end
@@ -88,10 +88,8 @@ function love.initialize(args)
         }
     }
 
-
     -- audio preloading --
     preloadAudio()
-
 
     local gitStuff = require 'src.Components.Initialization.GitStuff'
     connectGJ()
