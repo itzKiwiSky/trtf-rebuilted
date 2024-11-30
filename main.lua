@@ -35,6 +35,7 @@ local function preloadAudio()
     files = nil
 
     collectgarbage("collect")
+    love.graphics.clear(love.graphics.getBackgroundColor())
 end
 
 function love.initialize(args)
@@ -126,7 +127,7 @@ function love.initialize(args)
     end)
 
     gamestate.registerEvents()
-    gamestate.switch(MenuState)
+    gamestate.switch(NightState)
 end
 
 function love.update(elapsed)
@@ -139,6 +140,9 @@ function love.keypressed(k)
     if DEBUG_APP then
         if k == "f11" then
             love.graphics.captureScreenshot("screenshots/screen_" .. os.date("%Y-%m-%d %H-%M-%S") .. ".png")
+        end
+        if k == "f9" then
+            registers.system.showDebugHitbox = not registers.system.showDebugHitbox
         end
     end
 end
