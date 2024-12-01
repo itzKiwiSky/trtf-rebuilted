@@ -7,7 +7,7 @@ function ButtonUI.new(image, x, y)
     self.x = x
     self.y = y
     self.w = image:getWidth()
-    self.h = image:getHeight()
+    self.h = image:getHeight() + 64
     self.isHover = false
     return self
 end

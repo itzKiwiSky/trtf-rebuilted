@@ -49,6 +49,7 @@ function NightState:init()
     tabletController = require 'src.Components.Modules.Game.TabletController'
     buttonsUI = require 'src.Components.Modules.Game.Utils.ButtonUI'
     tabletCameraSubState = require 'src.SubStates.TabletCameraSubState'
+    maskController = require 'src.Components.Modules.Game.MaskController'
 
     -- office --
     NightState.assets.office = {
@@ -146,6 +147,7 @@ function NightState:init()
 end
 
 function NightState:enter()
+    -- sound config --
     if not AudioSources["amb_rainleak"]:isPlaying() then
         AudioSources["amb_rainleak"]:play()
         AudioSources["amb_rainleak"]:setLooping(true)
@@ -155,6 +157,15 @@ function NightState:enter()
         AudioSources["amb_office_lair"]:setLooping(true)
         AudioSources["amb_office_lair"]:setVolume(0.48)
     end
+
+    AudioSources["amb_cam"]:setVolume(0.50)
+    AudioSources["amb_cam"]:setLooping(true)
+
+    AudioSources["tab_up"]:setVolume(0.70)
+    AudioSources["tab_close"]:setVolume(0.70)
+
+    AudioSources["door_open"]:setVolume(0.36)
+    AudioSources["door_close"]:setVolume(0.36)
 
     roomSize = {
         windowWidth = love.graphics.getWidth(),
@@ -173,6 +184,9 @@ function NightState:enter()
     tabletController:init(NightState.assets.tablet, 34)
     tabletController.visible = false
 
+    maskController:init(NightState.assets.maskAnim, 34)
+    maskController.visible = false
+
     maskBtn = buttonsUI.new(NightState.assets.maskButton, 96, (love.graphics.getHeight() - NightState.assets.maskButton:getHeight()) - 24)
     camBtn = buttonsUI.new(NightState.assets.camButton, (love.graphics.getWidth() - NightState.assets.camButton:getWidth()) - 96, (love.graphics.getHeight() - NightState.assets.camButton:getHeight()) - 24)
 
@@ -185,9 +199,12 @@ function NightState:enter()
     doorR = doorController.new(NightState.assets.doorsAnim.right, 55, false)
 
     officeState = {
+        fadealpha = 1,
         tabletFirstBoot = false,
+        phoneCall = false,
         power = 100,
         tabletUp = false,
+        maskUp = false,
         doors = {
             left = false,
             right = false,
@@ -208,6 +225,12 @@ function NightState:enter()
             }
         }
     }
+
+
+    tmr_nightStartPhone = timer.new()
+    tmr_nightStartPhone:after(3, function()
+        
+    end)
 end
 
 function NightState:draw()
@@ -230,6 +253,9 @@ function NightState:draw()
     -- tablet --
     tabletController:draw()
 
+    -- mask --
+    maskController:draw()
+
     -- camera render substate --
     if tabletController.tabUp then
         tabletCameraSubState:draw()
@@ -239,7 +265,13 @@ function NightState:draw()
     if not officeState.tabletUp then
         maskBtn:draw()
     end
-    camBtn:draw()
+    if  not officeState.maskUp then
+        camBtn:draw()
+    end
+
+    love.graphics.setColor(0, 0, 0, officeState.fadealpha)
+        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+    love.graphics.setColor(1, 1, 1, 1)
 
     if registers.system.showDebugHitbox then
         gameCam:attach()
@@ -254,19 +286,40 @@ function NightState:draw()
             end
         gameCam:detach()
         love.graphics.setColor(0.3, 1, 1, 0.4)
-            love.graphics.rectangle("fill", camBtn.x, camBtn.x, camBtn.w, camBtn.h)
+            love.graphics.rectangle("fill", camBtn.x, camBtn.y, camBtn.w, camBtn.h)
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setColor(1, 0.2, 0.6, 0.4)
+            love.graphics.rectangle("fill", maskBtn.x, maskBtn.y, maskBtn.w, maskBtn.h)
         love.graphics.setColor(1, 1, 1, 1)
     end
+
 end
 
 function NightState:update(elapsed)
     local mx, my = gameCam:mousePosition()
 
+    if officeState.fadealpha > 0 then
+        officeState.fadealpha = officeState.fadealpha - 0.6 * elapsed
+    end
+
     -- hud buttons --
+
+    -- camera --
     if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, camBtn) then
         if not camBtn.isHover then
             camBtn.isHover = true
             if not tabletController.animationRunning then
+                if AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:isPlaying() then
+                    AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:seek(0)
+                end
+                AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:play()
+
+                if officeState.tabletUp then
+                    AudioSources["amb_cam"]:play()
+                else
+                    AudioSources["amb_cam"]:pause()
+                end
+
                 officeState.tabletUp = not officeState.tabletUp
                 tabletController:setState(officeState.tabletUp)
             end
@@ -275,12 +328,40 @@ function NightState:update(elapsed)
         camBtn.isHover = false
     end
 
+    -- mask --
+    if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, maskBtn) then
+        if not maskBtn.isHover then
+            maskBtn.isHover = true
+            if not tabletController.animationRunning then
+                if AudioSources["mask_off"]:isPlaying() then
+                    AudioSources["mask_off"]:seek(0)
+                end
+                AudioSources["mask_breath"]:setLooping(true)
+                AudioSources["mask_off"]:play()
+
+                if not officeState.maskUp then
+                    AudioSources["mask_breath"]:play()
+                else
+                    AudioSources["mask_breath"]:stop()
+                end
+
+                officeState.maskUp = not officeState.maskUp
+                maskController:setState(officeState.maskUp)
+            end
+        end
+    else
+        maskBtn.isHover = false
+    end
+
     -- door animation controllers --
     doorL:update(elapsed)
     doorR:update(elapsed)
 
     -- tablet animation controller --
     tabletController:update(elapsed)
+
+    -- mask animation --
+    maskController:update(elapsed)
 
     -- camera update substate --
     if tabletController.tabUp then
@@ -318,6 +399,10 @@ function NightState:mousepressed(x, y, button)
             if k == "left" then
                 if collision.pointRect({x = mx, y = my}, h) then
                     if not doorL.animationRunning then
+                        if AudioSources[officeState.doors.left and "door_open" or "door_close"]:isPlaying() then
+                            AudioSources[officeState.doors.left and "door_open" or "door_close"]:seek(0)
+                        end
+                        AudioSources[officeState.doors.left and "door_open" or "door_close"]:play()
                         officeState.doors.left = not officeState.doors.left
                         doorL:setState(officeState.doors.left)
                     end
@@ -326,6 +411,10 @@ function NightState:mousepressed(x, y, button)
             if k == "right" then
                 if collision.pointRect({x = mx, y = my}, h) then
                     if not doorR.animationRunning then
+                        if AudioSources[officeState.doors.right and "door_open" or "door_close"]:isPlaying() then
+                            AudioSources[officeState.doors.right and "door_open" or "door_close"]:seek(0)
+                        end
+                        AudioSources[officeState.doors.right and "door_open" or "door_close"]:play()
                         officeState.doors.right = not officeState.doors.right
                         doorR:setState(officeState.doors.right)
                     end

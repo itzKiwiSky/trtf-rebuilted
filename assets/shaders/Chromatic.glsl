@@ -1,7 +1,8 @@
 extern number distortion;
 extern number aberration;
 
-vec4 effect(vec4 color, Image tx, vec2 tc, vec2 pc) {
+vec4 effect(vec4 color, Image tx, vec2 tc, vec2 pc)
+{
     // curvature
     vec2 cc = tc - 0.5;
     float dist = dot(cc, cc)*distortion;

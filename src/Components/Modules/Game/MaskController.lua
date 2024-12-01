@@ -1,8 +1,12 @@
-local TabletController = {}
+local MaskController = {}
 
-function TabletController:init(frames, speed)
+function MaskController:init(frames, speed)
+    self.x = -16
+    self.y = -64
+    self.rx = 0
+    self.ry = 0
     self.frames = frames
-    self.tabUp = false
+    self.maskUp = false
     self.animationRunning = false
     self.acc = 0
     self.speedAnim = speed or 25
@@ -11,32 +15,39 @@ function TabletController:init(frames, speed)
     self.reverseAnim = false
 end
 
+local function _circularPath(this, radius, speed, time)
+    local angle = speed * time
+
+    local x = radius * math.cos(angle)
+    local y = radius * math.sin(angle)
+    
+    this.rx = this.rx + x
+    this.ry = this.ry + y
+end
+
 local function _playAnimation(this, reverse)
     this.acc = 0
     this.visible = true
     this.reverseAnim = reverse
 
     this.frame = reverse and #this.frames or 1
-    if reverse then
-        this.tabUp = false
-    end
 
     this.animationRunning = true
 end
 
-function TabletController:setState(closed)
+function MaskController:setState(closed)
     if not self.animationRunning then
         _playAnimation(self, not closed)
     end
 end
 
-function TabletController:draw()
+function MaskController:draw()
     if self.visible then
-        love.graphics.draw(self.frames[self.frame], 0, 0)
+        love.graphics.draw(self.frames[self.frame], self.x + self.rx, self.y + self.ry)
     end
 end
 
-function TabletController:update(elapsed)
+function MaskController:update(elapsed)
     if self.animationRunning then
         self.acc = self.acc + elapsed
         if self.acc >= (1 / self.speedAnim) then
@@ -50,19 +61,21 @@ function TabletController:update(elapsed)
         if self.reverseAnim then
             if self.frame < 1 then
                 self.frame = 1
-                --self.tabUp = false
                 self.animationRunning = false
                 self.visible = false
             end
         else
             if self.frame > #self.frames then
                 self.frame = #self.frames
-                self.tabUp = true
+                self.maskUp = true
                 self.animationRunning = false
-                self.visible = false
             end
         end
     end
+
+    if self.maskUp and not self.animationRunning then
+        _circularPath(self, 0.2, 6, love.timer.getTime())
+    end
 end
 
-return TabletController
+return MaskController

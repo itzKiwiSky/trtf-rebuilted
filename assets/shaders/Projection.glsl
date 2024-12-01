@@ -1,5 +1,6 @@
 // Vertex Shader
-vec4 position(mat4 transform_projection, vec4 vertex_position) {
+vec4 position(mat4 transform_projection, vec4 vertex_position)
+{
     return transform_projection * vertex_position;
 }
 
@@ -12,15 +13,18 @@ extern float fovVar;
 extern float latitudeVar;
 extern float longitudeVar;
 
-vec2 con1(float long_lat, float deg){
+vec2 con1(float long_lat, float deg)
+{
     return vec2(long_lat / deg);
 }
 
-float con2(float num){
+float con2(float num)
+{
     return (num / 2.0) - 0.5;
 }
 
-vec2 project(vec2 uv, vec2 m, vec2 fov) {
+vec2 project(vec2 uv, vec2 m, vec2 fov)
+{
     vec2 m2 = (m * 2.0 - 1.0) * vec2(PI, PI_2);
     vec2 cuv = (uv * 2.0 - 1.0) * fov * vec2(PI, PI_2); 
     float x = cuv.x;
@@ -36,7 +40,8 @@ vec2 project(vec2 uv, vec2 m, vec2 fov) {
     return vec2(lon, lat) * vec2(PI2, PI);
 }
 
-vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
+{
     vec2 q = texture_coords;
     vec2 fov = vec2(fovVar, fovVar); 
     vec2 m = vec2(0.5, 0.5);
