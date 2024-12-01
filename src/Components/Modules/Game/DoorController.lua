@@ -41,7 +41,7 @@ end
 function DoorController:update(elapsed)
     if self.animationRunning then
         self.acc = self.acc + elapsed
-        if self.acc >= self.speedAnim then
+        if self.acc >= (1 / self.speedAnim) then
             if self.reverseAnim then
                 self.frame = self.frame - 1
             else
@@ -52,11 +52,13 @@ function DoorController:update(elapsed)
         if self.reverseAnim then
             if self.frame < 1 then
                 self.frame = 1
+                self.closed = true
                 self.animationRunning = false
             end
         else
             if self.frame > #self.frames then
                 self.frame = #self.frames
+                self.closed = false
                 self.animationRunning = false
             end
         end

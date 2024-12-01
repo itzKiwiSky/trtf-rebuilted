@@ -337,6 +337,10 @@ function MenuState:update(elapsed)
     if AudioSources["menu_theme_again"]:isPlaying() then
         AudioSources["menu_theme_again"]:setVolume(warnItems.songVol)
         AudioSources["amb_rainleak"]:setVolume(warnItems.songVol)
+        if AudioSources["menu_theme_again"]:getVolume() <= 0 and journalConfig.active then
+            AudioSources["menu_theme_again"]:stop()
+            AudioSources["amb_rainleak"]:stop()
+        end
     end
 
     -- static animation --

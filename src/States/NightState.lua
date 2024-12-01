@@ -1,5 +1,6 @@
 NightState = {}
 
+NightState.isCustomNight = false
 NightState.animatronicsAI = {
     freddy = 0,
     bonnie = 0,
@@ -42,14 +43,21 @@ end
 
 function NightState:init()
     loadingScreen()
-    doorController = require 'src.Components.Modules.Game.DoorController'
 
+    -- scripts --
+    doorController = require 'src.Components.Modules.Game.DoorController'
+    tabletController = require 'src.Components.Modules.Game.TabletController'
+    buttonsUI = require 'src.Components.Modules.Game.Utils.ButtonUI'
+    tabletCameraSubState = require 'src.SubStates.TabletCameraSubState'
+
+    -- office --
     NightState.assets.office = {
         ["idle"] = love.graphics.newImage("assets/images/game/night/office/idle.png"),
         ["off"] = love.graphics.newImage("assets/images/game/night/office/off.png")
     }
     loadingScreen()
 
+    -- door buttons --
     NightState.assets.doorButtons = {
         left = {
             ["on"] = love.graphics.newImage("assets/images/game/night/doors/bl_on.png"),
@@ -62,12 +70,14 @@ function NightState:init()
     }
     loadingScreen()
 
+    -- doors --
     NightState.assets.doorsAnim = {
         left = {},
         right = {},
     }
     loadingScreen()
 
+    
     local dl = love.filesystem.getDirectoryItems("assets/images/game/night/doors/door_left")
     for a = 1, #dl, 1 do
         table.insert(NightState.assets.doorsAnim.left, love.graphics.newImage("assets/images/game/night/doors/door_left/" .. dl[a]))
@@ -79,10 +89,53 @@ function NightState:init()
         table.insert(NightState.assets.doorsAnim.right, love.graphics.newImage("assets/images/game/night/doors/door_right/" .. dr[a]))
     end
     loadingScreen()
-    dl, dr = {}, {}
+    dl, dr = nil, nil
 
-    grd_progressBar = love.graphics.newGradient("vertical", {49, 10, 92, 255}, {19, 0, 37, 255})
+    -- tablet --
+    NightState.assets["maskAnim"] = {}
+    local mask = love.filesystem.getDirectoryItems("assets/images/game/night/mask")
+    for m = 1, #mask, 1 do
+        table.insert(NightState.assets["maskAnim"], love.graphics.newImage("assets/images/game/night/mask/" .. mask[m]))
+    end
+    loadingScreen()
+    mask = nil
 
+    -- mask --
+    NightState.assets["tablet"] = {}
+    local tab = love.filesystem.getDirectoryItems("assets/images/game/night/tablet")
+    for t = 1, #tab, 1 do
+        table.insert(NightState.assets["tablet"], love.graphics.newImage("assets/images/game/night/tablet/" .. tab[t]))
+    end
+    loadingScreen()
+    tab = nil
+
+    -- cam ui stuff --
+    NightState.assets["camBtnUI"] = {}
+    NightState.assets["camBtnUI"].image, NightState.assets["camBtnUI"].quads = love.graphics.getQuads("assets/images/game/night/cameraUI/btnIcon")
+    NightState.assets["camMap"] = love.graphics.newImage("assets/images/game/night/cameraUI/cam_map.png")
+    NightState.assets["camSystemLogo"] = love.graphics.newImage("assets/images/game/night/cameraUI/system_logo.png")
+    NightState.assets["camBtnText"] = {}
+    NightState.assets["camBtnText"].image, NightState.assets["camBtnText"].quads = love.graphics.getQuads("assets/images/game/night/cameraUI/camText")
+    loadingScreen()
+
+    -- game ui stuff --
+    NightState.assets["maskButton"] = love.graphics.newImage("assets/images/game/night/gameUI/mask_hover.png")
+    NightState.assets["camButton"] = love.graphics.newImage("assets/images/game/night/gameUI/cam_hover.png")
+    loadingScreen()
+
+    NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {49, 10, 92, 255}, {19, 0, 37, 255})
+
+    -- phone shit --
+    local phone = love.filesystem.getDirectoryItems("assets/images/game/night/phone/anim")
+    NightState.assets["phoneModel"] = {}
+    for p = 1, #phone, 1 do
+        table.insert(NightState.assets["phoneModel"], love.graphics.newImage("assets/images/game/night/phone/anim/" .. phone[p]))
+    end
+    phone = nil
+    loadingScreen()
+
+
+    loadingScreen(true)
     shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
     shd_perspective:send("latitudeVar", 22.5)
     shd_perspective:send("longitudeVar", 45)
@@ -93,6 +146,16 @@ function NightState:init()
 end
 
 function NightState:enter()
+    if not AudioSources["amb_rainleak"]:isPlaying() then
+        AudioSources["amb_rainleak"]:play()
+        AudioSources["amb_rainleak"]:setLooping(true)
+        AudioSources["amb_rainleak"]:setVolume(0.38)
+
+        AudioSources["amb_office_lair"]:play()
+        AudioSources["amb_office_lair"]:setLooping(true)
+        AudioSources["amb_office_lair"]:setVolume(0.48)
+    end
+
     roomSize = {
         windowWidth = love.graphics.getWidth(),
         windowHeight = love.graphics.getHeight(),
@@ -101,20 +164,30 @@ function NightState:enter()
         compensation = 400,
     }
 
+    tabletCameraSubState:load()
+
     gameCam = camera.new(0, nil)
-    gameCam.factorX = 2.5
+    gameCam.factorX = 2.46
     gameCam.factorY = 25
+
+    tabletController:init(NightState.assets.tablet, 34)
+    tabletController.visible = false
+
+    maskBtn = buttonsUI.new(NightState.assets.maskButton, 96, (love.graphics.getHeight() - NightState.assets.maskButton:getHeight()) - 24)
+    camBtn = buttonsUI.new(NightState.assets.camButton, (love.graphics.getWidth() - NightState.assets.camButton:getWidth()) - 96, (love.graphics.getHeight() - NightState.assets.camButton:getHeight()) - 24)
 
     X_LEFT_FRAME = gameCam.x
     X_RIGHT_FRAME = gameCam.x + roomSize.width
     Y_TOP_FRAME = gameCam.y
     Y_BOTTOM_FRAME = gameCam.y + roomSize.height
 
-    doorL = doorController.new(NightState.assets.doorsAnim.left, 1 / 55, false)
-    doorR = doorController.new(NightState.assets.doorsAnim.right, 1 / 55, false)
+    doorL = doorController.new(NightState.assets.doorsAnim.left, 55, false)
+    doorR = doorController.new(NightState.assets.doorsAnim.right, 55, false)
 
     officeState = {
+        tabletFirstBoot = false,
         power = 100,
+        tabletUp = false,
         doors = {
             left = false,
             right = false,
@@ -140,44 +213,84 @@ end
 function NightState:draw()
     local mx, my = gameCam:mousePosition()
     gameCam:attach()
+        -- canvas to render the game content and apply the shader --
         cnv_mainCanvas:renderTo(function()
             love.graphics.clear(love.graphics.getBackgroundColor())
-            --love.graphics.push()
-                --love.graphics.translate(0, -(roomSize.windowHeight / 2))
                 doorL:draw()
                 doorR:draw()
                 love.graphics.draw(NightState.assets.office[officeState.power > 0 and "idle" or "off"], 0, 0)
                 love.graphics.draw(NightState.assets.doorButtons.left[officeState.doors.left and "on" or "off"], 0, 0)
                 love.graphics.draw(NightState.assets.doorButtons.right[officeState.doors.right and "on" or "off"], 0, 0)
-            --love.graphics.pop()
         end)
     gameCam:detach()
     love.graphics.setShader(shd_perspective)
         love.graphics.draw(cnv_mainCanvas, 0, 0)
     love.graphics.setShader()
 
-    gameCam:attach()
-    
-    love.graphics.setColor(0.7, 0, 1, 0.4)
-        love.graphics.rectangle("fill", mx, my, 32, 32)
-    love.graphics.setColor(1, 1, 1, 1)
+    -- tablet --
+    tabletController:draw()
 
-    for k, h in pairs(officeState.doors.hitboxes) do
-        love.graphics.setColor(0, 1, 0.5, 0.4)
-            love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
+    -- camera render substate --
+    if tabletController.tabUp then
+        tabletCameraSubState:draw()
+    end
+
+    -- ui stuff --
+    if not officeState.tabletUp then
+        maskBtn:draw()
+    end
+    camBtn:draw()
+
+    if registers.system.showDebugHitbox then
+        gameCam:attach()
+            love.graphics.setColor(0.7, 0, 1, 0.4)
+                love.graphics.rectangle("fill", mx, my, 32, 32)
+            love.graphics.setColor(1, 1, 1, 1)
+        
+            for k, h in pairs(officeState.doors.hitboxes) do
+                love.graphics.setColor(0, 1, 0.5, 0.4)
+                    love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
+                love.graphics.setColor(1, 1, 1, 1)
+            end
+        gameCam:detach()
+        love.graphics.setColor(0.3, 1, 1, 0.4)
+            love.graphics.rectangle("fill", camBtn.x, camBtn.x, camBtn.w, camBtn.h)
         love.graphics.setColor(1, 1, 1, 1)
     end
-    gameCam:detach()
 end
 
 function NightState:update(elapsed)
     local mx, my = gameCam:mousePosition()
 
+    -- hud buttons --
+    if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, camBtn) then
+        if not camBtn.isHover then
+            camBtn.isHover = true
+            if not tabletController.animationRunning then
+                officeState.tabletUp = not officeState.tabletUp
+                tabletController:setState(officeState.tabletUp)
+            end
+        end
+    else
+        camBtn.isHover = false
+    end
+
+    -- door animation controllers --
     doorL:update(elapsed)
     doorR:update(elapsed)
 
+    -- tablet animation controller --
+    tabletController:update(elapsed)
+
+    -- camera update substate --
+    if tabletController.tabUp then
+        tabletCameraSubState:update(elapsed)
+    end
+
     -- cam scroll --
-    gameCam.x = (roomSize.width / 2 + (mx - roomSize.width / 2) / gameCam.factorX)
+    if not tabletController.tabUp then
+        gameCam.x = (roomSize.width / 2 + (mx - roomSize.width / 2) / gameCam.factorX)
+    end
 
     -- camera bounds --
     if gameCam.x < X_LEFT_FRAME then
@@ -199,6 +312,7 @@ end
 
 function NightState:mousepressed(x, y, button)
     local mx, my = gameCam:mousePosition()
+    -- door buttons --
     if button == 1 then
         for k, h in pairs(officeState.doors.hitboxes) do
             if k == "left" then
@@ -211,7 +325,7 @@ function NightState:mousepressed(x, y, button)
             end
             if k == "right" then
                 if collision.pointRect({x = mx, y = my}, h) then
-                    if not doorL.animationRunning then
+                    if not doorR.animationRunning then
                         officeState.doors.right = not officeState.doors.right
                         doorR:setState(officeState.doors.right)
                     end

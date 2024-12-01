@@ -9,8 +9,6 @@ return function()
     camera = require 'libraries.camera'
     collision = require 'libraries.collision'
     deep = require 'libraries.deep'
-    --discordrpc = require 'libraries.discordRPC'
-    pxlove = require 'libraries.pxlove'
     gamestate = require 'libraries.gamestate'
     gamejolt = require 'libraries.gamejolt'
     flux = require 'libraries.flux'
