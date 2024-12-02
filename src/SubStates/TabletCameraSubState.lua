@@ -14,51 +14,79 @@ function TabletCameraSubState:load()
 
     interferenceFX = love.graphics.newShader("assets/shaders/Interference.glsl")
     interferenceFX:send("intensity", 0.012)
-    interferenceFX:send("speed", 80.0)
+    interferenceFX:send("speed", 100.0)
+    interferenceIntensity = 0.012
 
     fxCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
-    fxGlowCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
+    loadingCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
 
     self.camerasID = {
-        "almacen",
         "arcade",
+        "storage",
         "dining_area",
-        "left_hall",
-        "parts_and_service",
         "pirate_cove",
-        "prize_corner",
-        "right_hall",
+        "parts_and_service",
         "showstage",
-        "vent_kitty",
+        "kitchen",  -- disabled cam --
+        "prize_corner",
+        "left_hall",
+        "right_hall",
         "vent_sugar",
+        "vent_kitty",
     }
 
-    local btnqx, btnqy, btnqw, btnqh = NightState.assets.camBtnUI.quads[1]:getViewport()
+    self.camButtonID = 1
+    self.camID = self.camerasID[self.camButtonID]
 
     self.buttons = {
-        {
-            btn = buttonCamera(90, 90, btnqw, btnqh),
-            target = self.camerasID[1],
-        },
-        {
-            btn = buttonCamera(190, 90, btnqw, btnqh),
-            target = self.camerasID[7],
-        },
+        {btn = buttonCamera(950, 431, 72, 40)},
+        {btn = buttonCamera(1165, 432, 72, 40)},
+        {btn = buttonCamera(1064, 323, 72, 40)},
+        {btn = buttonCamera(906, 339, 72, 40)},
+        {btn = buttonCamera(898, 267, 72, 40)},
+        {btn = buttonCamera(1064, 256, 72, 40)},
+        {btn = buttonCamera(1018, 195, 72, 40)},
+        {btn = buttonCamera(1168, 362, 72, 40)},
+        {btn = buttonCamera(999, 490, 72, 40)},
+        {btn = buttonCamera(1127, 490, 72, 40)},
+        {btn = buttonCamera(1004, 636, 72, 40)},
+        {btn = buttonCamera(1116, 636, 72, 40)},
     }
 
-    for bt = 1, #self.buttons, 1 do
-        local b = self.buttons[bt]
-        b.selected = false
-    end
-
-    self.camID = "showstage"
+    editBTN = {}   
 end
 
 function TabletCameraSubState:draw()
     fxCanvas:renderTo(function()
-        love.graphics.setShader(interferenceFX)
+        if NightState.assets.cameras[self.camID] then
+            love.graphics.setShader(interferenceFX)
             love.graphics.draw(NightState.assets.cameras[self.camID][1], 0, 0)
-        love.graphics.setShader()
+            love.graphics.setShader()
+        else
+            love.graphics.setColor(0, 0, 0, 1)
+                love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+            love.graphics.setColor(1, 1, 1, 1)
+
+            love.graphics.draw(NightState.assets.camSystemError, love.graphics.getWidth() / 2, 200, 0, 0.8, 0.8, NightState.assets.camSystemError:getWidth() / 2, NightState.assets.camSystemError:getHeight() / 2)
+            love.graphics.printf("Failed to fetch camera footage...", fnt_camError, 0, 550, love.graphics.getWidth(), "center")
+        end
+    end)
+
+    loadingCanvas:renderTo(function()
+        --tabletBootProgress =
+        love.graphics.setColor(0, 0, 0, 1)
+            love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+        love.graphics.setColor(1, 1, 1, 1)
+
+        love.graphics.draw(NightState.assets.camSystemLogo, love.graphics.getWidth() / 2, love.graphics.getHeight() - 490, 0, 0.7, 0.7, NightState.assets.camSystemLogo:getWidth() / 2, NightState.assets.camSystemLogo:getHeight() / 2)
+
+        if officeState.tabletBootProgress < 100 then
+            love.graphics.rectangle("line", love.graphics.getWidth() / 2 - 128, 500, 256, 32)
+            love.graphics.draw(NightState.assets.grd_progressBar, (love.graphics.getWidth() / 2 - 128) + 3, 503, 0, math.floor(250 * (officeState.tabletBootProgress / 100)), 26)
+        end
+
+        love.graphics.printf("Initializing...", fnt_vhs, 0, 550, love.graphics.getWidth(), "center")
+        love.graphics.printf("v1.4.34 | Fazbear Ent. 1999 - 2005", fnt_vhs, 0, love.graphics.getHeight() - 32, love.graphics.getWidth(), "center")
     end)
 
     fxTV(function()
@@ -77,22 +105,91 @@ function TabletCameraSubState:draw()
                 love.graphics.circle("fill", 96, 96, 32)
             love.graphics.setColor(1, 1, 1, 1)
         end
+
+        love.graphics.setColor(0.5, 0.5, 0.5, 1)
+        love.graphics.printf(self.camerasID[self.camButtonID], fnt_camName, 2, 34, love.graphics.getWidth(), "center")
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.printf(self.camerasID[self.camButtonID], fnt_camName, 0, 32, love.graphics.getWidth(), "center")
+        love.graphics.print(night.text, fnt_camfnt, 64, 46)
+
+        if officeState.tabletFirstBoot then
+            love.graphics.setColor(1, 1, 1, officeState.tabletBootProgressAlpha)
+                love.graphics.draw(loadingCanvas, 0, 0)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
     end)
 
-    love.graphics.draw(NightState.assets.camMap, love.graphics.getWidth() - 370, 200, 0, 1.5, 1.5)
+    if officeState.tabletBootProgress >= 100 and officeState.tabletBootProgressAlpha <= 0.8 then
+        love.graphics.draw(NightState.assets.camMap, love.graphics.getWidth() - 370, 200, 0, 1.5, 1.5)
+        for _, b in ipairs(self.buttons) do
+            if _ == self.camButtonID  then
+                if love.timer.getTime() % 1 > 0.5 then
+                    love.graphics.setColor(0, 0, 1, 1)
+                else
+                    love.graphics.setColor(1, 1, 0, 1)
+                end
+            else
+                love.graphics.setColor(0.5, 0.5, 0.5, 1)
+            end
+            love.graphics.rectangle("fill", b.btn.x + 8, b.btn.y + 8, b.btn.w - 8, b.btn.h - 8)
+            love.graphics.setColor(0.75, 0.75, 0.75, 1)
 
-    for _, b in ipairs(self.buttons) do
-        if b.selected then
-            love.graphics.draw(NightState.assets.camBtnUI.image, NightState.assets.camBtnUI.quads[love.timer.getTime() % 1 > 0.5 and 2 or 3], b.btn.x, b.btn.y)
-        else
-            love.graphics.draw(NightState.assets.camBtnUI.image, NightState.assets.camBtnUI.quads[1], b.btn.x, b.btn.y)
+            love.graphics.rectangle("fill", b.btn.x, b.btn.y, b.btn.w - 8, b.btn.h - 8)
+            love.graphics.setColor(1, 1, 1, 1)
+
+            love.graphics.printf(string.upper("cam_" .. _), fnt_camfnt, b.btn.x, b.btn.y, b.btn.w - 8, "center")
         end
-        love.graphics.draw(NightState.assets.camBtnText.image, NightState.assets.camBtnText.quads[_], b.btn.x, b.btn.y)
+    end
+
+    if DEBUG_APP then
+        if registers.system.camEdit then
+            for _, b in ipairs(editBTN) do
+                if _ == self.camButtonID then
+                    if love.timer.getTime() % 1 > 0.5 then
+                        love.graphics.setColor(0, 0, 1, 1)
+                    else
+                        love.graphics.setColor(1, 1, 0, 1)
+                    end
+                else
+                    love.graphics.setColor(0.5, 0.5, 0.5, 1)
+                end
+                love.graphics.rectangle("fill", b.btn.x + 8, b.btn.y + 8, b.btn.w - 8, b.btn.h - 8)
+                love.graphics.setColor(0.75, 0.75, 0.75, 1)
+        
+                love.graphics.rectangle("fill", b.btn.x, b.btn.y, b.btn.w - 8, b.btn.h - 8)
+                love.graphics.setColor(1, 1, 1, 1)
+        
+                love.graphics.rectangle("line", b.btn.x, b.btn.y, b.btn.w, b.btn.h)
+            end
+        
+            love.graphics.setColor(0.5, 0.5, 0.5, 1)
+            love.graphics.rectangle("fill", love.mouse.getX() + 8, love.mouse.getY() + 8, 72 - 8, 40 - 8)
+            love.graphics.setColor(0.75, 0.75, 0.75, 1)
+        
+            love.graphics.rectangle("fill", love.mouse.getX(), love.mouse.getY(), 72 - 8, 40 - 8)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
     end
 end
 
 function TabletCameraSubState:update(elapsed)
-    interferenceFX:send("time", love.timer.getTime()) -- Enviar tempo para animar
+    interferenceFX:send("time", love.timer.getTime())
+    interferenceFX:send("intensity", interferenceIntensity)
+
+    interferenceIntensity = math.lerp(interferenceIntensity, 0.012, 0.3)
+
+    self.camID = self.camerasID[self.camButtonID]
+
+    if officeState.tabletFirstBoot then
+        officeState.tabletBootProgress = officeState.tabletBootProgress + 100 * elapsed
+        if officeState.tabletBootProgress >= 100 then
+            officeState.tabletBootProgressAlpha = officeState.tabletBootProgressAlpha - 0.6 * elapsed
+        end
+
+        if officeState.tabletBootProgress >= 100 and officeState.tabletBootProgressAlpha <= 0 then
+            officeState.tabletFirstBoot = false
+        end
+    end 
 
     -- static animation --
     staticfx.timer = staticfx.timer + elapsed
@@ -106,15 +203,25 @@ function TabletCameraSubState:update(elapsed)
 end
 
 function TabletCameraSubState:mousepressed(x, y, button)
-    for _, b in ipairs(self.buttons) do
-        for _, bt in pairs(self.buttons) do
-            bt.selected = false
-        end
-        if button == 1 then
+    if button == 1 then
+        for _, b in ipairs(self.buttons) do
             if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, b.btn) then
-                b.selected = true
-                self.camID = b.target
+                self.camButtonID = _
+                interferenceIntensity = 4
+                if AudioSources["cam_interference"]:isPlaying() then
+                    AudioSources["cam_interference"]:seek(0) 
+                end
+                AudioSources["cam_interference"]:play()
             end
+        end
+    end
+
+    if registers.system.camEdit then
+        if button == 1 then
+            table.insert(editBTN, {btn = buttonCamera(love.mouse.getX(), love.mouse.getY(), 72, 40)})
+        end
+        if button == 2 then
+            lume.clear(editBTN)
         end
     end
 end

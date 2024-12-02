@@ -83,6 +83,7 @@ function love.initialize(args)
         system = {
             showDebugHitbox = false,
             gameTime = 0,
+            camEdit = false,
         }
     }
 
@@ -143,6 +144,18 @@ function love.keypressed(k)
         end
         if k == "f9" then
             registers.system.showDebugHitbox = not registers.system.showDebugHitbox
+        end
+        if k == "f7" then
+            registers.system.camEdit = not registers.system.camEdit
+        end
+        if registers.system.camEdit then
+            if editBTN then
+                if k == "f4" then
+                    for _, p in ipairs(editBTN) do
+                        print(string.format("{btn = buttonCamera(%s, %s, 72, 40)}", p.btn.x, p.btn.y))
+                    end
+                end
+            end
         end
     end
 end

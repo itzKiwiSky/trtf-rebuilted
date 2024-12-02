@@ -9,6 +9,26 @@ NightState.animatronicsAI = {
     sugar = 0,
     kitty = 0,
 }
+local function _formatAdjustedTimeAMPM(realSeconds, scaleFactor, startHour, startMinute, startPeriod)
+    local adjustedSeconds = realSeconds * scaleFactor
+
+    local startSeconds = (startHour % 12) * 3600 + startMinute * 60
+    if startPeriod == "PM" then
+        startSeconds = startSeconds + 12 * 3600
+    end
+
+    local totalSeconds = startSeconds + adjustedSeconds
+
+    local hours = math.floor(totalSeconds / 3600) % 24
+    local minutes = math.floor((totalSeconds % 3600) / 60)
+    local seconds = math.floor(totalSeconds % 60)
+    
+    local period = hours >= 12 and "PM" or "AM"
+    hours = hours % 12
+    if hours == 0 then hours = 12 end
+
+    return hours, minutes, seconds, period
+end
 
 NightState.assets = {}
 
@@ -25,7 +45,10 @@ function NightState:init()
     tabletCameraSubState = require 'src.SubStates.TabletCameraSubState'
     maskController = require 'src.Components.Modules.Game.MaskController'
 
-    fnt_vhs = fontcache.getFont("easvhs", 25)
+    fnt_vhs = fontcache.getFont("vcr", 25)
+    fnt_camfnt = fontcache.getFont("vcr", 18)
+    fnt_camError = fontcache.getFont("vcr", 30)
+    fnt_camName = fontcache.getFont("vcr", 42)
 
     -- office --
     NightState.assets.office = {
@@ -87,12 +110,9 @@ function NightState:init()
     tab = nil
 
     -- cam ui stuff --
-    NightState.assets["camBtnUI"] = {}
-    NightState.assets["camBtnUI"].image, NightState.assets["camBtnUI"].quads = love.graphics.getQuads("assets/images/game/night/cameraUI/btnIcon")
     NightState.assets["camMap"] = love.graphics.newImage("assets/images/game/night/cameraUI/cam_map.png")
     NightState.assets["camSystemLogo"] = love.graphics.newImage("assets/images/game/night/cameraUI/system_logo.png")
-    NightState.assets["camBtnText"] = {}
-    NightState.assets["camBtnText"].image, NightState.assets["camBtnText"].quads = love.graphics.getQuads("assets/images/game/night/cameraUI/camText")
+    NightState.assets["camSystemError"] = love.graphics.newImage("assets/images/game/night/cameraUI/camera_error.png")
     loadingScreen()
 
     -- cameras itself --
@@ -130,7 +150,7 @@ function NightState:init()
     statics = {}
     loadingScreen()
 
-    NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {49, 10, 92, 255}, {19, 0, 37, 255})
+    NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {31, 225, 34, 255}, {20, 100, 28, 255})
 
     -- phone shit --
     local phone = love.filesystem.getDirectoryItems("assets/images/game/night/phone/anim")
@@ -164,6 +184,8 @@ function NightState:enter()
         AudioSources["amb_office_lair"]:setVolume(0.48)
     end
 
+    AudioSources["cam_interference"]:setVolume(0.60)
+
     AudioSources["amb_cam"]:setVolume(0.50)
     AudioSources["amb_cam"]:setLooping(true)
 
@@ -178,6 +200,19 @@ function NightState:enter()
         timer = 0,
         frameid = 1,
         speed = 0.05
+    }
+
+    night = {
+        time = 0,   -- accumulator --
+        speed = 0.4,
+        h = 0,
+        m = 0,
+        s = 0,
+        startingHour = 12,
+        startingMinute = 0,
+        startingPeriod = "AM",
+        period = "am",
+        text = "",
     }
 
     -- room --
@@ -214,7 +249,9 @@ function NightState:enter()
 
     officeState = {
         fadealpha = 1,
-        tabletFirstBoot = false,
+        tabletFirstBoot = true,
+        tabletBootProgress = 0,
+        tabletBootProgressAlpha = 1,
         phoneCall = false,
         power = 100,
         tabletUp = false,
@@ -280,7 +317,13 @@ function NightState:draw()
         maskBtn:draw()
     end
     if  not officeState.maskUp then
+        if tabletController.tabUp then
+            love.graphics.setColor(1, 1, 1, 0.4)
+        else
+            love.graphics.setColor(1, 1, 1, 1)
+        end
         camBtn:draw()
+        love.graphics.setColor(1, 1, 1, 1)
     end
 
     love.graphics.setColor(0, 0, 0, officeState.fadealpha)
@@ -317,25 +360,26 @@ function NightState:update(elapsed)
     end
 
     -- hud buttons --
-
     -- camera --
     if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, camBtn) then
-        if not camBtn.isHover then
-            camBtn.isHover = true
-            if not tabletController.animationRunning then
-                if AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:isPlaying() then
-                    AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:seek(0)
+        if not officeState.maskUp then
+            if not camBtn.isHover then
+                camBtn.isHover = true
+                if not tabletController.animationRunning then
+                    if AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:isPlaying() then
+                        AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:seek(0)
+                    end
+                    AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:play()
+    
+                    if not officeState.tabletUp then
+                        AudioSources["amb_cam"]:play()
+                    else
+                        AudioSources["amb_cam"]:pause()
+                    end
+    
+                    officeState.tabletUp = not officeState.tabletUp
+                    tabletController:setState(officeState.tabletUp)
                 end
-                AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:play()
-
-                if officeState.tabletUp then
-                    AudioSources["amb_cam"]:play()
-                else
-                    AudioSources["amb_cam"]:pause()
-                end
-
-                officeState.tabletUp = not officeState.tabletUp
-                tabletController:setState(officeState.tabletUp)
             end
         end
     else
@@ -344,28 +388,36 @@ function NightState:update(elapsed)
 
     -- mask --
     if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, maskBtn) then
-        if not maskBtn.isHover then
-            maskBtn.isHover = true
-            if not maskBtn.animationRunning then
-                if AudioSources["mask_off"]:isPlaying() then
-                    AudioSources["mask_off"]:seek(0)
+        if not officeState.tabletUp then
+            if not maskBtn.isHover then
+                maskBtn.isHover = true
+                if not maskBtn.animationRunning then
+                    if AudioSources["mask_off"]:isPlaying() then
+                        AudioSources["mask_off"]:seek(0)
+                    end
+                    AudioSources["mask_breath"]:setLooping(true)
+                    AudioSources["mask_off"]:play()
+    
+                    if not officeState.maskUp then
+                        AudioSources["mask_breath"]:play()
+                    else
+                        AudioSources["mask_breath"]:stop()
+                    end
+    
+                    officeState.maskUp = not officeState.maskUp
+                    maskController:setState(officeState.maskUp)
                 end
-                AudioSources["mask_breath"]:setLooping(true)
-                AudioSources["mask_off"]:play()
-
-                if not officeState.maskUp then
-                    AudioSources["mask_breath"]:play()
-                else
-                    AudioSources["mask_breath"]:stop()
-                end
-
-                officeState.maskUp = not officeState.maskUp
-                maskController:setState(officeState.maskUp)
             end
         end
     else
         maskBtn.isHover = false
     end
+
+    -- night progression --
+    -- for now I will enable this for testing but it will disable until the call is complete or refused --
+    night.time = night.time + elapsed
+    night.h, night.m, night.s, night.period = _formatAdjustedTimeAMPM(night.time, 1.333, night.startingHour, night.startingMinute, night.startingPeriod)
+    night.text = string.format("11/12/2005 - %02d:%02d:%02d%s", night.h, night.m, night.s, night.period:lower())
 
     -- door animation controllers --
     doorL:update(elapsed)
@@ -416,7 +468,7 @@ function NightState:mousepressed(x, y, button)
     -- door buttons --officeState.maskUp
     if button == 1 then
         for k, h in pairs(officeState.doors.hitboxes) do
-            if not officeState.maskUp then
+            if not officeState.maskUp and not officeState.tabletUp then
                 if k == "left" then
                     if collision.pointRect({x = mx, y = my}, h) then
                         if not doorL.animationRunning then
