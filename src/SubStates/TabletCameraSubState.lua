@@ -35,6 +35,21 @@ function TabletCameraSubState:load()
         "vent_kitty",
     }
 
+    self.camerasName = {
+        "arcade",
+        "storage",
+        "dining_area",
+        "pirate_cove",
+        "parts_and_service",
+        "showstage",
+        "kitchen",  -- disabled cam --
+        "prize_corner",
+        "left_hall",
+        "right_hall",
+        "left_vent",
+        "right_vent",
+    }
+
     self.camButtonID = 1
     self.camID = self.camerasID[self.camButtonID]
 
@@ -58,18 +73,19 @@ end
 
 function TabletCameraSubState:draw()
     fxCanvas:renderTo(function()
-        if NightState.assets.cameras[self.camID] then
-            love.graphics.setShader(interferenceFX)
-            love.graphics.draw(NightState.assets.cameras[self.camID][1], 0, 0)
-            love.graphics.setShader()
-        else
-            love.graphics.setColor(0, 0, 0, 1)
-                love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-            love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setShader(interferenceFX)
+            if NightState.assets.cameras[self.camID] then
+                love.graphics.draw(NightState.assets.cameras[self.camID][1], 0, 0)
+                love.graphics.setShader()
+            else
+                love.graphics.setColor(0, 0, 0, 1)
+                    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+                love.graphics.setColor(1, 1, 1, 1)
 
-            love.graphics.draw(NightState.assets.camSystemError, love.graphics.getWidth() / 2, 200, 0, 0.8, 0.8, NightState.assets.camSystemError:getWidth() / 2, NightState.assets.camSystemError:getHeight() / 2)
-            love.graphics.printf("Failed to fetch camera footage...", fnt_camError, 0, 550, love.graphics.getWidth(), "center")
-        end
+                love.graphics.draw(NightState.assets.camSystemError, love.graphics.getWidth() / 2, 200, 0, 0.8, 0.8, NightState.assets.camSystemError:getWidth() / 2, NightState.assets.camSystemError:getHeight() / 2)
+                love.graphics.printf("Failed to fetch camera footage...", fnt_camError, 0, 550, love.graphics.getWidth(), "center")
+            end
+        love.graphics.setShader()
     end)
 
     loadingCanvas:renderTo(function()
@@ -107,10 +123,10 @@ function TabletCameraSubState:draw()
         end
 
         love.graphics.setColor(0.5, 0.5, 0.5, 1)
-        love.graphics.printf(self.camerasID[self.camButtonID], fnt_camName, 2, 34, love.graphics.getWidth(), "center")
+        love.graphics.printf(self.camerasName[self.camButtonID], fnt_camName, 2, 34, love.graphics.getWidth(), "center")
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(self.camerasID[self.camButtonID], fnt_camName, 0, 32, love.graphics.getWidth(), "center")
-        love.graphics.print(night.text, fnt_camfnt, 64, 46)
+        love.graphics.printf(self.camerasName[self.camButtonID], fnt_camName, 0, 32, love.graphics.getWidth(), "center")
+        love.graphics.print(night.text, fnt_timerfnt, 64, 37)
 
         if officeState.tabletFirstBoot then
             love.graphics.setColor(1, 1, 1, officeState.tabletBootProgressAlpha)

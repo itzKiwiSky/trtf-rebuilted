@@ -44,6 +44,8 @@ function love.initialize(args)
     local connectGJ = require 'src.Components.Modules.API.InitializeGJ'
     fsutil = require 'src.Components.Modules.Utils.FSUtils'
     
+    --superColor = spectra.new()
+
     AudioSources = {}
 
     fontcache.init()

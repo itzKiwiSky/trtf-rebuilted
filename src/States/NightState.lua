@@ -1,5 +1,6 @@
 NightState = {}
 
+NightState.nightID = 1
 NightState.isCustomNight = false
 NightState.animatronicsAI = {
     freddy = 0,
@@ -9,6 +10,7 @@ NightState.animatronicsAI = {
     sugar = 0,
     kitty = 0,
 }
+
 local function _formatAdjustedTimeAMPM(realSeconds, scaleFactor, startHour, startMinute, startPeriod)
     local adjustedSeconds = realSeconds * scaleFactor
 
@@ -46,15 +48,29 @@ function NightState:init()
     maskController = require 'src.Components.Modules.Game.MaskController'
 
     fnt_vhs = fontcache.getFont("vcr", 25)
-    fnt_camfnt = fontcache.getFont("vcr", 18)
+    fnt_camfnt = fontcache.getFont("vcr", 16)
+    fnt_timerfnt = fontcache.getFont("vcr", 22)
     fnt_camError = fontcache.getFont("vcr", 30)
     fnt_camName = fontcache.getFont("vcr", 42)
+    fnt_boldtnr = fontcache.getFont("tnr_bold", 20)
 
     -- office --
     NightState.assets.office = {
         ["idle"] = love.graphics.newImage("assets/images/game/night/office/idle.png"),
         ["off"] = love.graphics.newImage("assets/images/game/night/office/off.png")
     }
+    loadingScreen()
+    -- front office --
+    NightState.assets["front_office"] = {
+        ["idle"] = love.graphics.newImage("assets/images/game/night/front_office/Empty.png"),
+        ["foxy1"] = love.graphics.newImage("assets/images/game/night/front_office/Foxy.png"),
+        ["foxy2"] = love.graphics.newImage("assets/images/game/night/front_office/Foxy2.png"),
+        ["foxy3"] = love.graphics.newImage("assets/images/game/night/front_office/Foxy3.png"),
+        ["foxy4"] = love.graphics.newImage("assets/images/game/night/front_office/Foxy4.png"),
+    }
+    loadingScreen()
+    NightState.assets["front_office_bonnie"] = love.graphics.newImage("assets/images/game/night/front_office/Bonnie.png")
+    NightState.assets["front_office_chica"] = love.graphics.newImage("assets/images/game/night/front_office/Chica.png")
     loadingScreen()
 
     -- door buttons --
@@ -151,6 +167,7 @@ function NightState:init()
     loadingScreen()
 
     NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {31, 225, 34, 255}, {20, 100, 28, 255})
+    NightState.assets.grd_toxicmeter = love.graphics.newGradient("vertical", {255, 255, 255, 255}, {0, 0, 0, 255})
 
     -- phone shit --
     local phone = love.filesystem.getDirectoryItems("assets/images/game/night/phone/anim")
@@ -235,6 +252,8 @@ function NightState:enter()
 
     maskController:init(NightState.assets.maskAnim, 34)
     maskController.visible = false
+    maskController.timeout = 0.2
+    maskController.acc = 0
 
     maskBtn = buttonsUI.new(NightState.assets.maskButton, 96, (love.graphics.getHeight() - NightState.assets.maskButton:getHeight()) - 24)
     camBtn = buttonsUI.new(NightState.assets.camButton, (love.graphics.getWidth() - NightState.assets.camButton:getWidth()) - 96, (love.graphics.getHeight() - NightState.assets.camButton:getHeight()) - 24)
@@ -256,6 +275,14 @@ function NightState:enter()
         power = 100,
         tabletUp = false,
         maskUp = false,
+        flashlight = {
+            state = false,
+            flickAcc = 0,
+            flickInterval = 0,
+            flickDuration = 0.1,
+            isFlicking = false,
+        },
+        toxicmeter = 0,
         doors = {
             left = false,
             right = false,
@@ -272,6 +299,12 @@ function NightState:enter()
                     y = 450,
                     w = 120,
                     h = 130,
+                },
+                center = {
+                    x = roomSize.width / 2 - 256,
+                    y = 220,
+                    w = 512,
+                    h = 360,
                 },
             }
         }
@@ -292,6 +325,11 @@ function NightState:draw()
             love.graphics.clear(love.graphics.getBackgroundColor())
                 doorL:draw()
                 doorR:draw()
+                if officeState.flashlight.state then
+                    if not officeState.flashlight.isFlicking then
+                        love.graphics.draw(NightState.assets.front_office.idle, 0, 0)
+                    end
+                end
                 love.graphics.draw(NightState.assets.office[officeState.power > 0 and "idle" or "off"], 0, 0)
                 love.graphics.draw(NightState.assets.doorButtons.left[officeState.doors.left and "on" or "off"], 0, 0)
                 love.graphics.draw(NightState.assets.doorButtons.right[officeState.doors.right and "on" or "off"], 0, 0)
@@ -306,6 +344,17 @@ function NightState:draw()
 
     -- mask --
     maskController:draw()
+
+    -- toxicmeter --
+    if officeState.maskUp then
+        love.graphics.rectangle("line", 16, 48, 256, 32)
+
+        love.graphics.print("Toxic", fnt_boldtnr, 16, 24)
+
+        love.graphics.setColor(236 / 255, 56 / 255, 41 / 255, 1)
+            love.graphics.draw(NightState.assets.grd_toxicmeter, 16 + 3, 48 + 3, 0, math.floor(250 * (officeState.toxicmeter / 100)), 26)
+        love.graphics.setColor(1, 1, 1, 1)
+    end
 
     -- camera render substate --
     if tabletController.tabUp then
@@ -387,37 +436,97 @@ function NightState:update(elapsed)
     end
 
     -- mask --
-    if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, maskBtn) then
-        if not officeState.tabletUp then
-            if not maskBtn.isHover then
-                maskBtn.isHover = true
-                if not maskBtn.animationRunning then
-                    if AudioSources["mask_off"]:isPlaying() then
-                        AudioSources["mask_off"]:seek(0)
+    if maskController.acc >= maskController.timeout then
+        if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, maskBtn) then
+            if not officeState.tabletUp then
+                if not maskBtn.isHover then
+                    maskBtn.isHover = true
+                    maskController.acc = 0
+                    if not maskBtn.animationRunning then
+                        if AudioSources["mask_off"]:isPlaying() then
+                            AudioSources["mask_off"]:seek(0)
+                        end
+                        AudioSources["mask_breath"]:setLooping(true)
+                        AudioSources["mask_off"]:play()
+        
+                        if not officeState.maskUp then
+                            AudioSources["mask_breath"]:play()
+                        else
+                            AudioSources["mask_breath"]:stop()
+                        end
+        
+                        officeState.maskUp = not officeState.maskUp
+                        maskController:setState(officeState.maskUp)
                     end
-                    AudioSources["mask_breath"]:setLooping(true)
-                    AudioSources["mask_off"]:play()
-    
-                    if not officeState.maskUp then
-                        AudioSources["mask_breath"]:play()
-                    else
-                        AudioSources["mask_breath"]:stop()
-                    end
-    
-                    officeState.maskUp = not officeState.maskUp
-                    maskController:setState(officeState.maskUp)
                 end
             end
+        else
+            maskBtn.isHover = false
         end
     else
-        maskBtn.isHover = false
+        maskController.acc = maskController.acc + elapsed
+    end
+
+    if officeState.maskUp then
+        officeState.toxicmeter = officeState.toxicmeter + 25 * elapsed
+
+        if officeState.toxicmeter >= 100 then
+            officeState.toxicmeter = 100
+        end
+    else
+        officeState.toxicmeter = math.lerp(officeState.toxicmeter, 0, 0.07)
     end
 
     -- night progression --
     -- for now I will enable this for testing but it will disable until the call is complete or refused --
+    local day = 0
+    switch(NightState.nightID, {
+        [1] = function()
+            day = 7
+        end,
+        [2] = function()
+            day = 8
+        end,
+        [3] = function()
+            day = 9
+        end,
+        [4] = function()
+            day = 10
+        end,
+        [5] = function()
+            day = 11
+        end,
+        [6] = function()
+            day = 12
+        end,
+        ["default"] = function()
+            day = 13
+        end
+    })
     night.time = night.time + elapsed
     night.h, night.m, night.s, night.period = _formatAdjustedTimeAMPM(night.time, 1.333, night.startingHour, night.startingMinute, night.startingPeriod)
-    night.text = string.format("11/12/2005 - %02d:%02d:%02d%s", night.h, night.m, night.s, night.period:lower())
+    night.text = string.format("%02d/11/2005 - %02d:%02d:%02d%s", day, night.h, night.m, night.s, night.period:lower())
+
+    -- office front flashlight --
+    officeState.flashlight.state = false
+    -- keyboard --
+    officeState.flashlight.state = love.keyboard.isDown("lctrl") and not officeState.maskUp and not officeState.tabletUp
+    -- mouse --
+    if love.mouse.isDown(1) then
+        for k, h in pairs(officeState.doors.hitboxes) do
+            if not officeState.maskUp and not officeState.tabletUp then
+                if k == "center" then
+                    if collision.pointRect({x = mx, y = my}, h) then
+                        officeState.flashlight.state = true
+                    end
+                end
+            end
+        end
+    end
+    -- loigic --
+    if officeState.flashlight.state then
+        officeState.flashlight.isFlicking = not (love.timer.getTime() % math.random(2, 5) > 0.6)
+    end
 
     -- door animation controllers --
     doorL:update(elapsed)
