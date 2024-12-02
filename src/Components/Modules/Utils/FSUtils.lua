@@ -1,6 +1,7 @@
 local fsutils = {}
 
-function fsutils.scanFolder(folder)
+function fsutils.scanFolder(folder, includeFolder)
+    includeFolder = includeFolder or false
     local files = {}
     local function _scan(path)
         local items = love.filesystem.getDirectoryItems(path)
@@ -10,6 +11,7 @@ function fsutils.scanFolder(folder)
             if love.filesystem.getInfo(iPath).type == "file" then
                 table.insert(files, iPath)
             elseif love.filesystem.getInfo(iPath).type == "directory" then
+                if includeFolder then table.insert(files, iPath) end
                 _scan(iPath)
             end 
         end

@@ -13,35 +13,9 @@ NightState.animatronicsAI = {
 NightState.assets = {}
 
 -- I had to change the name of the local variables bc the compiler is bitching about it :( --
-local function loadingScreen(clean)
-    clean = clean or false
-    local ctrEffect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
-    local glowTextEffect = moonshine(moonshine.effects.glow)
-    local textLoadingFont = fontcache.getFont("ocrx", 34)
-    local preloadBannerAgain = love.graphics.newImage("assets/images/game/banner.png")
-    local clockIcon = love.graphics.newImage("assets/images/game/clockico.png")
-
-    love.graphics.clear(love.graphics.getBackgroundColor())
-        ctrEffect(function()
-            love.graphics.draw(preloadBannerAgain, 0, 0, 0, love.graphics.getWidth() / preloadBannerAgain:getWidth(), love.graphics.getHeight() / preloadBannerAgain:getHeight())
-        end)
-        love.graphics.draw(clockIcon, love.graphics.getWidth() - 69, love.graphics.getHeight() - 69, 0, 64 / clockIcon:getWidth(), 64 / clockIcon:getHeight())
-        glowTextEffect(function()
-            love.graphics.printf("Loading...", textLoadingFont, 0, love.graphics.getHeight() - (textLoadingFont:getHeight() + 16), love.graphics.getWidth(), "center")
-        end)
-    love.graphics.present()
-
-    if clean then
-        ctrEffect = nil
-        glowTextEffect = nil
-        textLoadingFont:release()
-        preloadBannerAgain:release()
-        clockIcon:release()
-        collectgarbage("collect")
-    end
-end
 
 function NightState:init()
+    local loadingScreen = require 'src.Components.Modules.Game.Utils.LoadingPresent'
     loadingScreen()
 
     -- scripts --
@@ -50,6 +24,8 @@ function NightState:init()
     buttonsUI = require 'src.Components.Modules.Game.Utils.ButtonUI'
     tabletCameraSubState = require 'src.SubStates.TabletCameraSubState'
     maskController = require 'src.Components.Modules.Game.MaskController'
+
+    fnt_vhs = fontcache.getFont("easvhs", 25)
 
     -- office --
     NightState.assets.office = {
@@ -119,9 +95,39 @@ function NightState:init()
     NightState.assets["camBtnText"].image, NightState.assets["camBtnText"].quads = love.graphics.getQuads("assets/images/game/night/cameraUI/camText")
     loadingScreen()
 
+    -- cameras itself --
+    NightState.assets["cameras"] = {}
+    local cams = fsutil.scanFolder("assets/images/game/night/cameras", true)
+    --print(debug.formattable(cameras))
+    for _, c in ipairs(cams) do
+        local isFolder = love.filesystem.getInfo(c).type == "directory"
+        local folderName = c:match("[^/]+$")
+        if isFolder then
+
+            NightState.assets["cameras"][folderName] = {}
+            local fls = love.filesystem.getDirectoryItems(c)
+            for f = 1, #fls, 1 do
+                table.insert(NightState.assets["cameras"][folderName], love.graphics.newImage(c .. "/" .. fls[f]))
+            end
+            fls = nil
+        end
+    end
+
+    --print(debug.formattable(NightState.assets["cameras"]))
+
+    loadingScreen()
+
     -- game ui stuff --
     NightState.assets["maskButton"] = love.graphics.newImage("assets/images/game/night/gameUI/mask_hover.png")
     NightState.assets["camButton"] = love.graphics.newImage("assets/images/game/night/gameUI/cam_hover.png")
+    loadingScreen()
+
+    NightState.assets["staticfx"] = {}
+    local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static3")
+    for s = 1, #statics, 1 do
+        table.insert(NightState.assets["staticfx"], love.graphics.newImage("assets/images/game/effects/static3/" .. statics[s]))
+    end
+    statics = {}
     loadingScreen()
 
     NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {49, 10, 92, 255}, {19, 0, 37, 255})
@@ -167,6 +173,14 @@ function NightState:enter()
     AudioSources["door_open"]:setVolume(0.36)
     AudioSources["door_close"]:setVolume(0.36)
 
+    -- static shit --
+    staticfx = {
+        timer = 0,
+        frameid = 1,
+        speed = 0.05
+    }
+
+    -- room --
     roomSize = {
         windowWidth = love.graphics.getWidth(),
         windowHeight = love.graphics.getHeight(),
@@ -332,7 +346,7 @@ function NightState:update(elapsed)
     if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, maskBtn) then
         if not maskBtn.isHover then
             maskBtn.isHover = true
-            if not tabletController.animationRunning then
+            if not maskBtn.animationRunning then
                 if AudioSources["mask_off"]:isPlaying() then
                     AudioSources["mask_off"]:seek(0)
                 end
@@ -393,30 +407,38 @@ end
 
 function NightState:mousepressed(x, y, button)
     local mx, my = gameCam:mousePosition()
-    -- door buttons --
+
+    -- camera substate --
+    if tabletController.tabUp then
+        tabletCameraSubState:mousepressed(x, y, button)
+    end
+
+    -- door buttons --officeState.maskUp
     if button == 1 then
         for k, h in pairs(officeState.doors.hitboxes) do
-            if k == "left" then
-                if collision.pointRect({x = mx, y = my}, h) then
-                    if not doorL.animationRunning then
-                        if AudioSources[officeState.doors.left and "door_open" or "door_close"]:isPlaying() then
-                            AudioSources[officeState.doors.left and "door_open" or "door_close"]:seek(0)
+            if not officeState.maskUp then
+                if k == "left" then
+                    if collision.pointRect({x = mx, y = my}, h) then
+                        if not doorL.animationRunning then
+                            if AudioSources[officeState.doors.left and "door_open" or "door_close"]:isPlaying() then
+                                AudioSources[officeState.doors.left and "door_open" or "door_close"]:seek(0)
+                            end
+                            AudioSources[officeState.doors.left and "door_open" or "door_close"]:play()
+                            officeState.doors.left = not officeState.doors.left
+                            doorL:setState(officeState.doors.left)
                         end
-                        AudioSources[officeState.doors.left and "door_open" or "door_close"]:play()
-                        officeState.doors.left = not officeState.doors.left
-                        doorL:setState(officeState.doors.left)
                     end
                 end
-            end
-            if k == "right" then
-                if collision.pointRect({x = mx, y = my}, h) then
-                    if not doorR.animationRunning then
-                        if AudioSources[officeState.doors.right and "door_open" or "door_close"]:isPlaying() then
-                            AudioSources[officeState.doors.right and "door_open" or "door_close"]:seek(0)
+                if k == "right" then
+                    if collision.pointRect({x = mx, y = my}, h) then
+                        if not doorR.animationRunning then
+                            if AudioSources[officeState.doors.right and "door_open" or "door_close"]:isPlaying() then
+                                AudioSources[officeState.doors.right and "door_open" or "door_close"]:seek(0)
+                            end
+                            AudioSources[officeState.doors.right and "door_open" or "door_close"]:play()
+                            officeState.doors.right = not officeState.doors.right
+                            doorR:setState(officeState.doors.right)
                         end
-                        AudioSources[officeState.doors.right and "door_open" or "door_close"]:play()
-                        officeState.doors.right = not officeState.doors.right
-                        doorR:setState(officeState.doors.right)
                     end
                 end
             end
