@@ -9,7 +9,19 @@ NightState.animatronicsAI = {
     foxy = 0,
     sugar = 0,
     kitty = 0,
+    puppet = 0,
 }
+
+NightState.modifiers = {
+    radarMode = true,      -- can be use to debug or just for cheat (I know why u will use it your mf)
+}
+
+local function convertTime(sc, offset)
+    local tSeconds = sc + (offset or 0)
+    local minutes = math.floor(tSeconds / 60)
+    local leftSecs = tSeconds % 60
+    return minutes, leftSecs
+end
 
 local function _formatAdjustedTimeAMPM(realSeconds, scaleFactor, startHour, startMinute, startPeriod)
     local adjustedSeconds = realSeconds * scaleFactor
@@ -35,7 +47,6 @@ end
 NightState.assets = {}
 
 -- I had to change the name of the local variables bc the compiler is bitching about it :( --
-
 function NightState:init()
     local loadingScreen = require 'src.Components.Modules.Game.Utils.LoadingPresent'
     loadingScreen()
@@ -46,6 +57,7 @@ function NightState:init()
     buttonsUI = require 'src.Components.Modules.Game.Utils.ButtonUI'
     tabletCameraSubState = require 'src.SubStates.TabletCameraSubState'
     maskController = require 'src.Components.Modules.Game.MaskController'
+    phoneSubState = require 'src.SubStates.PhoneSubstate'
 
     fnt_vhs = fontcache.getFont("vcr", 25)
     fnt_camfnt = fontcache.getFont("vcr", 16)
@@ -73,6 +85,14 @@ function NightState:init()
     NightState.assets["front_office_chica"] = love.graphics.newImage("assets/images/game/night/front_office/Chica.png")
     loadingScreen()
 
+    -- fan --
+    NightState.assets["fanAnim"] = {}
+    local numberOneFan = love.filesystem.getDirectoryItems("assets/images/game/night/fan")
+    for f = 1, #numberOneFan, 1 do
+        table.insert(NightState.assets["fanAnim"], love.graphics.newImage("assets/images/game/night/fan/" .. numberOneFan[f]))
+    end
+    loadingScreen()
+
     -- door buttons --
     NightState.assets.doorButtons = {
         left = {
@@ -93,7 +113,6 @@ function NightState:init()
     }
     loadingScreen()
 
-    
     local dl = love.filesystem.getDirectoryItems("assets/images/game/night/doors/door_left")
     for a = 1, #dl, 1 do
         table.insert(NightState.assets.doorsAnim.left, love.graphics.newImage("assets/images/game/night/doors/door_left/" .. dl[a]))
@@ -212,11 +231,20 @@ function NightState:enter()
     AudioSources["door_open"]:setVolume(0.36)
     AudioSources["door_close"]:setVolume(0.36)
 
+    -- config for AI --
+    local aicgf = require 'src.Components.Modules.Game.Utils.AIConfig'
+
     -- static shit --
     staticfx = {
         timer = 0,
         frameid = 1,
         speed = 0.05
+    }
+
+    fanShit = {
+        acc = 0,
+        fid = 1,
+        speed = 1 / 35
     }
 
     night = {
@@ -230,6 +258,13 @@ function NightState:enter()
         startingPeriod = "AM",
         period = "am",
         text = "",
+    }
+
+    -- night text --
+    nightTextDisplay = {
+        text = string.format("Night %s", NightState.nightID),
+        fade = 0,
+        acc = 0
     }
 
     -- room --
@@ -271,15 +306,16 @@ function NightState:enter()
         tabletFirstBoot = true,
         tabletBootProgress = 0,
         tabletBootProgressAlpha = 1,
-        phoneCall = false,
+        phoneCall = true,
         power = 100,
         tabletUp = false,
         maskUp = false,
         flashlight = {
             state = false,
-            flickAcc = 0,
-            flickInterval = 0,
-            flickDuration = 0.1,
+            isFlicking = false,
+        },
+        lightCam = {
+            state = false,
             isFlicking = false,
         },
         toxicmeter = 0,
@@ -312,7 +348,7 @@ function NightState:enter()
 
 
     tmr_nightStartPhone = timer.new()
-    tmr_nightStartPhone:after(3, function()
+    tmr_nightStartPhone:after(2.5, function()
         
     end)
 end
@@ -325,12 +361,14 @@ function NightState:draw()
             love.graphics.clear(love.graphics.getBackgroundColor())
                 doorL:draw()
                 doorR:draw()
+                -- flicking front XD --
                 if officeState.flashlight.state then
                     if not officeState.flashlight.isFlicking then
                         love.graphics.draw(NightState.assets.front_office.idle, 0, 0)
                     end
                 end
                 love.graphics.draw(NightState.assets.office[officeState.power > 0 and "idle" or "off"], 0, 0)
+                love.graphics.draw(NightState.assets.fanAnim[fanShit.fid], 0, 0)
                 love.graphics.draw(NightState.assets.doorButtons.left[officeState.doors.left and "on" or "off"], 0, 0)
                 love.graphics.draw(NightState.assets.doorButtons.right[officeState.doors.right and "on" or "off"], 0, 0)
         end)
@@ -363,13 +401,19 @@ function NightState:draw()
 
     -- ui stuff --
     if not officeState.tabletUp then
-        maskBtn:draw()
-    end
-    if  not officeState.maskUp then
-        if tabletController.tabUp then
-            love.graphics.setColor(1, 1, 1, 0.4)
+        if officeState.maskUp then
+            love.graphics.setColor(1, 1, 1, 0.3)
         else
-            love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.setColor(1, 1, 1, 0.6)
+        end
+        maskBtn:draw()
+        love.graphics.setColor(1, 1, 1, 1)
+    end
+    if not officeState.maskUp then
+        if tabletController.tabUp then
+            love.graphics.setColor(1, 1, 1, 0.3)
+        else
+            love.graphics.setColor(1, 1, 1, 0.6)
         end
         camBtn:draw()
         love.graphics.setColor(1, 1, 1, 1)
@@ -379,33 +423,35 @@ function NightState:draw()
         love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
     love.graphics.setColor(1, 1, 1, 1)
 
-    if registers.system.showDebugHitbox then
-        gameCam:attach()
-            love.graphics.setColor(0.7, 0, 1, 0.4)
-                love.graphics.rectangle("fill", mx, my, 32, 32)
-            love.graphics.setColor(1, 1, 1, 1)
-        
-            for k, h in pairs(officeState.doors.hitboxes) do
-                love.graphics.setColor(0, 1, 0.5, 0.4)
-                    love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
+    -- debug shit --
+    if DEBUG_APP then
+        if registers.system.showDebugHitbox then
+            gameCam:attach()
+                love.graphics.setColor(0.7, 0, 1, 0.4)
+                    love.graphics.rectangle("fill", mx, my, 32, 32)
                 love.graphics.setColor(1, 1, 1, 1)
-            end
-        gameCam:detach()
-        love.graphics.setColor(0.3, 1, 1, 0.4)
-            love.graphics.rectangle("fill", camBtn.x, camBtn.y, camBtn.w, camBtn.h)
-        love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.setColor(1, 0.2, 0.6, 0.4)
-            love.graphics.rectangle("fill", maskBtn.x, maskBtn.y, maskBtn.w, maskBtn.h)
-        love.graphics.setColor(1, 1, 1, 1)
+            
+                for k, h in pairs(officeState.doors.hitboxes) do
+                    love.graphics.setColor(0, 1, 0.5, 0.4)
+                        love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
+                    love.graphics.setColor(1, 1, 1, 1)
+                end
+            gameCam:detach()
+            love.graphics.setColor(0.3, 1, 1, 0.4)
+                love.graphics.rectangle("fill", camBtn.x, camBtn.y, camBtn.w, camBtn.h)
+            love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.setColor(1, 0.2, 0.6, 0.4)
+                love.graphics.rectangle("fill", maskBtn.x, maskBtn.y, maskBtn.w, maskBtn.h)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
     end
-
 end
 
 function NightState:update(elapsed)
     local mx, my = gameCam:mousePosition()
 
     if officeState.fadealpha > 0 then
-        officeState.fadealpha = officeState.fadealpha - 0.6 * elapsed
+        officeState.fadealpha = officeState.fadealpha - 0.4 * elapsed
     end
 
     -- hud buttons --
@@ -477,6 +523,16 @@ function NightState:update(elapsed)
         officeState.toxicmeter = math.lerp(officeState.toxicmeter, 0, 0.07)
     end
 
+    -- fan animation --
+    fanShit.acc = fanShit.acc + elapsed
+    if fanShit.acc >= fanShit.speed then
+        fanShit.acc = 0
+        fanShit.fid = fanShit.fid + 1
+        if fanShit.fid >= #NightState.assets.fanAnim then
+            fanShit.fid = 1
+        end
+    end
+
     -- night progression --
     -- for now I will enable this for testing but it will disable until the call is complete or refused --
     local day = 0
@@ -504,7 +560,7 @@ function NightState:update(elapsed)
         end
     })
     night.time = night.time + elapsed
-    night.h, night.m, night.s, night.period = _formatAdjustedTimeAMPM(night.time, 1.333, night.startingHour, night.startingMinute, night.startingPeriod)
+    night.h, night.m, night.s, night.period = _formatAdjustedTimeAMPM(night.time, 1.2, night.startingHour, night.startingMinute, night.startingPeriod)
     night.text = string.format("%02d/11/2005 - %02d:%02d:%02d%s", day, night.h, night.m, night.s, night.period:lower())
 
     -- office front flashlight --
@@ -523,6 +579,7 @@ function NightState:update(elapsed)
             end
         end
     end
+
     -- loigic --
     if officeState.flashlight.state then
         officeState.flashlight.isFlicking = not (love.timer.getTime() % math.random(2, 5) > 0.6)

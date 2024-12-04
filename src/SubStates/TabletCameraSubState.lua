@@ -1,7 +1,20 @@
 TabletCameraSubState = {}
 
+function TabletCameraSubState.doInterference(seconds, intensity, speed, px)
+    interferenceData.timer = seconds
+    interferenceIntensity = intensity
+    interferenceSpeed = speed
+    pixelationInterference = px
+end
+
 function TabletCameraSubState:load()
+    marker = require 'src.Components.Modules.Game.Utils.Marker'
     buttonCamera = require 'src.Components.Modules.Game.Utils.ButtonCamera'
+
+    interferenceData = {
+        acc = 0,
+        timer = 0.3
+    }
 
     fxTV = moonshine(moonshine.effects.crt)
     .chain(moonshine.effects.vignette)
@@ -16,9 +29,26 @@ function TabletCameraSubState:load()
     interferenceFX:send("intensity", 0.012)
     interferenceFX:send("speed", 100.0)
     interferenceIntensity = 0.012
+    interferenceSpeed = 100.0
+    pixelationInterference = 1.5
 
     fxCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
     loadingCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
+
+    self.camerasName = {
+        "arcade",
+        "storage",
+        "dining_area",
+        "pirate_cove",
+        "parts_and_service",
+        "showstage",
+        "kitchen",
+        "prize_corner",
+        "left_hall",
+        "right_hall",
+        "left_vent",
+        "right_vent",
+    }
 
     self.camerasID = {
         "arcade",
@@ -35,22 +65,7 @@ function TabletCameraSubState:load()
         "vent_kitty",
     }
 
-    self.camerasName = {
-        "arcade",
-        "storage",
-        "dining_area",
-        "pirate_cove",
-        "parts_and_service",
-        "showstage",
-        "kitchen",  -- disabled cam --
-        "prize_corner",
-        "left_hall",
-        "right_hall",
-        "left_vent",
-        "right_vent",
-    }
-
-    self.camButtonID = 1
+    self.camButtonID = 6
     self.camID = self.camerasID[self.camButtonID]
 
     self.buttons = {
@@ -68,15 +83,38 @@ function TabletCameraSubState:load()
         {btn = buttonCamera(1116, 636, 72, 40)},
     }
 
-    editBTN = {}   
+    self.cameraMeta = require 'src.Components.Modules.Game.CameraConfig'
+
+    editBTN = {}
+
+    self.clickArea = {
+        x = 128,
+        y = 128,
+        w = 780,
+        h = 512,
+    }
+
+    self.camMarker = marker.new(128, 128, 780, 512, 32)
 end
 
 function TabletCameraSubState:draw()
     fxCanvas:renderTo(function()
-        love.graphics.setShader(interferenceFX)
+        love.graphics.clear(0, 0, 0, 0)
             if NightState.assets.cameras[self.camID] then
-                love.graphics.draw(NightState.assets.cameras[self.camID][1], 0, 0)
+                love.graphics.setShader(interferenceFX)
+                    if officeState.lightCam.state then
+                        if not officeState.lightCam.isFlicking then
+                            --print(self.camID)
+                            love.graphics.draw(NightState.assets.cameras[self.camID][self.cameraMeta[self.camID].frame], 0, 0)
+                        end
+                    end
                 love.graphics.setShader()
+                
+                love.graphics.setLineWidth(5)
+                    love.graphics.setColor(1, 1, 1, 0.7)
+                        self.camMarker:draw()
+                    love.graphics.setColor(1, 1, 1, 1)
+                love.graphics.setLineWidth(1)
             else
                 love.graphics.setColor(0, 0, 0, 1)
                     love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
@@ -85,11 +123,9 @@ function TabletCameraSubState:draw()
                 love.graphics.draw(NightState.assets.camSystemError, love.graphics.getWidth() / 2, 200, 0, 0.8, 0.8, NightState.assets.camSystemError:getWidth() / 2, NightState.assets.camSystemError:getHeight() / 2)
                 love.graphics.printf("Failed to fetch camera footage...", fnt_camError, 0, 550, love.graphics.getWidth(), "center")
             end
-        love.graphics.setShader()
     end)
 
     loadingCanvas:renderTo(function()
-        --tabletBootProgress =
         love.graphics.setColor(0, 0, 0, 1)
             love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
         love.graphics.setColor(1, 1, 1, 1)
@@ -156,7 +192,15 @@ function TabletCameraSubState:draw()
             love.graphics.printf(string.upper("cam_" .. _), fnt_camfnt, b.btn.x, b.btn.y, b.btn.w - 8, "center")
         end
     end
+    if DEBUG_APP then
+        if registers.system.showDebugHitbox then
+            love.graphics.setColor(0.7, 0.2, 1, 0.4)
+                love.graphics.rectangle("fill", self.clickArea.x, self.clickArea.y, self.clickArea.w, self.clickArea.h)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
+    end
 
+    -- cam editor, I used only one time XD, maybe I will delete this shit --
     if DEBUG_APP then
         if registers.system.camEdit then
             for _, b in ipairs(editBTN) do
@@ -189,10 +233,15 @@ function TabletCameraSubState:draw()
 end
 
 function TabletCameraSubState:update(elapsed)
+    local mx, my = love.mouse.getPosition()
+
     interferenceFX:send("time", love.timer.getTime())
     interferenceFX:send("intensity", interferenceIntensity)
+    interferenceFX:send("speed", interferenceSpeed)
+    fxTV.pixelate.size = { pixelationInterference, pixelationInterference }
 
-    interferenceIntensity = math.lerp(interferenceIntensity, 0.012, 0.3)
+    interferenceIntensity = math.lerp(interferenceIntensity, 0.012, interferenceData.timer)
+    pixelationInterference = math.lerp(pixelationInterference, 1.5, interferenceData.timer)
 
     self.camID = self.camerasID[self.camButtonID]
 
@@ -206,6 +255,22 @@ function TabletCameraSubState:update(elapsed)
             officeState.tabletFirstBoot = false
         end
     end 
+
+    -- cam flashlight --
+    officeState.lightCam.state = false
+    -- keyboard --
+    officeState.lightCam.state = love.keyboard.isDown("lctrl") and officeState.tabletUp
+
+    if love.mouse.isDown(1) then
+        if officeState.tabletUp then
+            if collision.pointRect({x = mx, y = my}, self.clickArea) then
+                officeState.lightCam.state = true
+            end
+        end
+    end
+
+    -- yay --
+    officeState.lightCam.isFlicking = not (love.timer.getTime() % math.random(2, 5) > 0.6)
 
     -- static animation --
     staticfx.timer = staticfx.timer + elapsed
@@ -223,7 +288,7 @@ function TabletCameraSubState:mousepressed(x, y, button)
         for _, b in ipairs(self.buttons) do
             if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, b.btn) then
                 self.camButtonID = _
-                interferenceIntensity = 4
+                TabletCameraSubState.doInterference(0.3, 70, 100, 1.5)
                 if AudioSources["cam_interference"]:isPlaying() then
                     AudioSources["cam_interference"]:seek(0) 
                 end
