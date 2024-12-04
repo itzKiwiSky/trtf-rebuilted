@@ -43,8 +43,6 @@ function love.initialize(args)
     LanguageController = require 'src.Components.Modules.System.LanguageManager'
     local connectGJ = require 'src.Components.Modules.API.InitializeGJ'
     fsutil = require 'src.Components.Modules.Utils.FSUtils'
-    
-    --superColor = spectra.new()
 
     AudioSources = {}
 
