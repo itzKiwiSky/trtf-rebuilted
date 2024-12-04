@@ -1,16 +1,90 @@
 local BonnieAI = {
     x = 0,
     y = 0,
+    w = 32,
+    h = 32,
+    timer = 0,
+    move = 0,
+    patience = 0,
 }
 
-BonnieAI.currentState = 0
+BonnieAI.__name__ = "Bonnie" -- Nome da tabela
 
-function BonnieAI.init()
+BonnieAI.currentState = 1
+BonnieAI.metadataCameraID = 0
+BonnieAI.path = {
+    {1064, 256, 6},        -- showstage
+    {950, 431, 1},         -- arcade
+    {999, 490, 9},         -- left_hall
+    {1076, 544, nil},        -- front_office
+    {1079, 592, nil},        -- office
+}
 
+-- just for radar shit --
+function BonnieAI.draw()
+    if  NightState.modifiers.radarMode then
+        love.graphics.draw(NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads[2], BonnieAI.x, BonnieAI.y, 0, 2, 2, 16, 16)
+    end
 end
 
 function BonnieAI.update(elapsed)
+    if BonnieAI.currentState <= 4 then
+        BonnieAI.timer = BonnieAI.timer + elapsed
+        if BonnieAI.timer >= 7.3 then
+            BonnieAI.move = math.random(0, 20)
+            if BonnieAI.move <= NightState.animatronicsAI.bonnie and NightState.animatronicsAI.bonnie > 0 then
+                if officeState.tabletUp then
+                    if tabletCameraSubState.camerasID[BonnieAI.metadataCameraID] then
+                        if tabletCameraSubState.camerasID[BonnieAI.metadataCameraID] == tabletCameraSubState.camID then
+                            AudioSources["cam_animatronic_interference"]:seek(0)
+                            tabletCameraSubState.doInterference(0.1, 200, 200, 6)
+                            AudioSources["cam_animatronic_interference"]:play()
+                        end
+                    end
+                end
+                BonnieAI.currentState = BonnieAI.currentState + 1
+    
+                NightState.playWalk()
+                
+                if DEBUG_APP then
+                    print(string.format("[%s] Moved | MoveID: %s State: %s", BonnieAI.__name__, BonnieAI.move, BonnieAI.currentState))
+                end
+            else
+                if DEBUG_APP then
+                    print(string.format("[%s] Failed to move | MoveID: %s", BonnieAI.__name__, BonnieAI.move))
+                end
+            end
+            BonnieAI.timer = 0
+        end
+    else
+        print("to dkadjkadjakd")
+        if not AudioSources["stare"]:isPlaying() then
+            AudioSources["stare"]:play()
+        end
 
+        BonnieAI.timer = BonnieAI.timer + elapsed
+        if BonnieAI.timer >= 0.1 then
+            BonnieAI.timer = 0
+            BonnieAI.patience = BonnieAI.patience + 1
+            officeState.hasAnimatronicInOffice = true
+            print(BonnieAI.patience)
+        end
+
+        if officeState.hasAnimatronicInOffice then
+            if BonnieAI.patience >= 150 and not officeState.maskUp then
+                --ded
+                print("se fudekkk")
+            elseif BonnieAI.patience >= 150 and officeState.maskUp then
+                print("tchau")
+                BonnieAI.timer = 0
+                BonnieAI.currentState = 1
+                officeState.hasAnimatronicInOffice = false
+                AudioSources["stare"]:stop()
+            end
+        end
+    end
+
+    BonnieAI.x, BonnieAI.y, BonnieAI.metadataCameraID = BonnieAI.path[BonnieAI.currentState][1] + 3, BonnieAI.path[BonnieAI.currentState][2] + 3, BonnieAI.path[BonnieAI.currentState][3]
 end
 
 return BonnieAI

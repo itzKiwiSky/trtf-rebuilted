@@ -10,6 +10,7 @@ end
 function TabletCameraSubState:load()
     marker = require 'src.Components.Modules.Game.Utils.Marker'
     buttonCamera = require 'src.Components.Modules.Game.Utils.ButtonCamera'
+    cameraController = require 'src.Components.Modules.Game.CameraController'
 
     interferenceData = {
         acc = 0,
@@ -34,6 +35,24 @@ function TabletCameraSubState:load()
 
     fxCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
     loadingCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
+
+    self.areas = {
+        ["arcade"] = {x = 950, y = 431, w = 72, h = 40},
+        ["storage"] = {x = 1165, y = 432, w = 72, h = 40},
+        ["dining_area"] = {x = 1064, y = 323, w = 72, h = 40},
+        ["pirate_cove"] = {x = 906, y = 339, w = 72, h = 40},
+        ["parts_and_service"] = {x = 898, y = 267, w = 72, h = 40},
+        ["showstage"] = {x = 1064, y = 256, w = 72, h = 40},
+        ["kitchen"] = {x = 1018, y = 195, w = 72, h = 40},
+        ["prize_corner"] = {x = 1168, y = 362, w = 72, h = 40},
+        ["left_hall"] = {x = 999, y = 490, w = 72, h = 40}, 
+        ["right_hall"] = {x = 1127, y = 490, w = 72, h = 40},
+        ["left_vent"] = {x = 1004, y = 636, w = 72, h = 40},
+        ["right_vent"] = {x = 1116, y = 636, w = 72, h = 40},
+        ["front_office"] = {x = 1076, y = 544, w = 72, h = 40},
+        ["office"] = {x = 1079, y = 592, w = 72, h = 40},
+        ["freddy_hall"] = {x = 1154, y = 569, w = 72, h = 40},
+    }
 
     self.camerasName = {
         "arcade",
@@ -69,18 +88,18 @@ function TabletCameraSubState:load()
     self.camID = self.camerasID[self.camButtonID]
 
     self.buttons = {
-        {btn = buttonCamera(950, 431, 72, 40)},
-        {btn = buttonCamera(1165, 432, 72, 40)},
-        {btn = buttonCamera(1064, 323, 72, 40)},
-        {btn = buttonCamera(906, 339, 72, 40)},
-        {btn = buttonCamera(898, 267, 72, 40)},
-        {btn = buttonCamera(1064, 256, 72, 40)},
-        {btn = buttonCamera(1018, 195, 72, 40)},
-        {btn = buttonCamera(1168, 362, 72, 40)},
-        {btn = buttonCamera(999, 490, 72, 40)},
-        {btn = buttonCamera(1127, 490, 72, 40)},
-        {btn = buttonCamera(1004, 636, 72, 40)},
-        {btn = buttonCamera(1116, 636, 72, 40)},
+        {btn = buttonCamera(950, 431, 72, 40)},  
+        {btn = buttonCamera(1165, 432, 72, 40)}, 
+        {btn = buttonCamera(1064, 323, 72, 40)}, 
+        {btn = buttonCamera(906, 339, 72, 40)},  
+        {btn = buttonCamera(898, 267, 72, 40)},  
+        {btn = buttonCamera(1064, 256, 72, 40)}, 
+        {btn = buttonCamera(1018, 195, 72, 40)}, 
+        {btn = buttonCamera(1168, 362, 72, 40)}, 
+        {btn = buttonCamera(999, 490, 72, 40)},  
+        {btn = buttonCamera(1127, 490, 72, 40)}, 
+        {btn = buttonCamera(1004, 636, 72, 40)}, 
+        {btn = buttonCamera(1116, 636, 72, 40)}, 
     }
 
     self.cameraMeta = require 'src.Components.Modules.Game.CameraConfig'
@@ -104,7 +123,6 @@ function TabletCameraSubState:draw()
                 love.graphics.setShader(interferenceFX)
                     if officeState.lightCam.state then
                         if not officeState.lightCam.isFlicking then
-                            --print(self.camID)
                             love.graphics.draw(NightState.assets.cameras[self.camID][self.cameraMeta[self.camID].frame], 0, 0)
                         end
                     end
@@ -188,6 +206,10 @@ function TabletCameraSubState:draw()
 
             love.graphics.rectangle("fill", b.btn.x, b.btn.y, b.btn.w - 8, b.btn.h - 8)
             love.graphics.setColor(1, 1, 1, 1)
+
+            for k, v in pairs(NightState.AnimatronicControllers) do
+                v.draw()
+            end
 
             love.graphics.printf(string.upper("cam_" .. _), fnt_camfnt, b.btn.x, b.btn.y, b.btn.w - 8, "center")
         end
@@ -281,6 +303,9 @@ function TabletCameraSubState:update(elapsed)
             staticfx.frameid = 1
         end
     end
+
+    -- render camera --
+    cameraController(self)
 end
 
 function TabletCameraSubState:mousepressed(x, y, button)

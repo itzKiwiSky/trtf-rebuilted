@@ -1,20 +1,28 @@
 NightState = {}
 
-NightState.nightID = 1
+NightState.nightID = 100
 NightState.isCustomNight = false
 NightState.animatronicsAI = {
     freddy = 0,
-    bonnie = 0,
+    bonnie = 20,
     chica = 0,
     foxy = 0,
     sugar = 0,
     kitty = 0,
     puppet = 0,
 }
+NightState.AnimatronicControllers = {}
 
 NightState.modifiers = {
     radarMode = true,      -- can be use to debug or just for cheat (I know why u will use it your mf)
 }
+
+function NightState.playWalk()
+    local r = math.random(1, 3)
+    if not AudioSources["metalwalk" .. r]:isPlaying() then
+        AudioSources["metalwalk" .. r]:play()
+    end
+end
 
 local function convertTime(sc, offset)
     local tSeconds = sc + (offset or 0)
@@ -59,6 +67,14 @@ function NightState:init()
     maskController = require 'src.Components.Modules.Game.MaskController'
     phoneSubState = require 'src.SubStates.PhoneSubstate'
 
+    -- import AI --
+    local aif = love.filesystem.getDirectoryItems("src/Components/Modules/Game/Animatronics")
+    for a = 1, #aif, 1 do
+        local filename = aif[a]:gsub("%.[^.]+$", "")
+        NightState.AnimatronicControllers[filename:lower()] = require("src.Components.Modules.Game.Animatronics." .. filename)
+    end
+    aif = nil
+
     fnt_vhs = fontcache.getFont("vcr", 25)
     fnt_camfnt = fontcache.getFont("vcr", 16)
     fnt_timerfnt = fontcache.getFont("vcr", 22)
@@ -83,6 +99,9 @@ function NightState:init()
     loadingScreen()
     NightState.assets["front_office_bonnie"] = love.graphics.newImage("assets/images/game/night/front_office/Bonnie.png")
     NightState.assets["front_office_chica"] = love.graphics.newImage("assets/images/game/night/front_office/Chica.png")
+    loadingScreen()
+    NightState.assets["in_office_bonnie"] = love.graphics.newImage("assets/images/game/night/in_office/bonnie.png")
+    NightState.assets["in_office_chica"] = love.graphics.newImage("assets/images/game/night/in_office/chica.png")
     loadingScreen()
 
     -- fan --
@@ -168,8 +187,6 @@ function NightState:init()
         end
     end
 
-    --print(debug.formattable(NightState.assets["cameras"]))
-
     loadingScreen()
 
     -- game ui stuff --
@@ -197,6 +214,12 @@ function NightState:init()
     phone = nil
     loadingScreen()
 
+    -- radar --
+    NightState.assets["radar_icons"] = {}
+    NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads = love.graphics.getQuads("assets/images/game/night/cameraUI/radar_animatronics")
+    NightState.assets["radar_icons"].image:setFilter("nearest", "nearest")
+
+    loadingScreen()
 
     loadingScreen(true)
     shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
@@ -231,8 +254,16 @@ function NightState:enter()
     AudioSources["door_open"]:setVolume(0.36)
     AudioSources["door_close"]:setVolume(0.36)
 
+    AudioSources["cam_animatronic_interference"]:setVolume(0.7)
+
+    AudioSources["stare"]:setLooping(true)
+
     -- config for AI --
     local aicgf = require 'src.Components.Modules.Game.Utils.AIConfig'
+
+    if aicgf[NightState.nightID] then
+        NightState.animatronicsAI = aicgf[NightState.nightID]
+    end
 
     -- static shit --
     staticfx = {
@@ -302,6 +333,7 @@ function NightState:enter()
     doorR = doorController.new(NightState.assets.doorsAnim.right, 55, false)
 
     officeState = {
+        _t = 0,
         fadealpha = 1,
         tabletFirstBoot = true,
         tabletBootProgress = 0,
@@ -319,6 +351,8 @@ function NightState:enter()
             isFlicking = false,
         },
         toxicmeter = 0,
+        hasAnimatronicInOffice = false,
+        officeFlick = false,
         doors = {
             left = false,
             right = false,
@@ -365,10 +399,18 @@ function NightState:draw()
                 if officeState.flashlight.state then
                     if not officeState.flashlight.isFlicking then
                         love.graphics.draw(NightState.assets.front_office.idle, 0, 0)
+                        if collision.rectRect(NightState.AnimatronicControllers["bonnie"], tabletCameraSubState.areas["front_office"]) then
+                            love.graphics.draw(NightState.assets["front_office_bonnie"], 0, 0)
+                        end
                     end
                 end
                 love.graphics.draw(NightState.assets.office[officeState.power > 0 and "idle" or "off"], 0, 0)
                 love.graphics.draw(NightState.assets.fanAnim[fanShit.fid], 0, 0)
+
+                if collision.rectRect(NightState.AnimatronicControllers["bonnie"], tabletCameraSubState.areas["office"]) then
+                    love.graphics.draw(NightState.assets["in_office_bonnie"], 0, 0)
+                end
+
                 love.graphics.draw(NightState.assets.doorButtons.left[officeState.doors.left and "on" or "off"], 0, 0)
                 love.graphics.draw(NightState.assets.doorButtons.right[officeState.doors.right and "on" or "off"], 0, 0)
         end)
@@ -423,8 +465,15 @@ function NightState:draw()
         love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
     love.graphics.setColor(1, 1, 1, 1)
 
+    if officeState.hasAnimatronicInOffice and not officeState.officeFlick then
+        love.graphics.setColor(0, 0, 0, 1)
+            love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+        love.graphics.setColor(1, 1, 1, 1)
+    end
+
     -- debug shit --
     if DEBUG_APP then
+        love.graphics.print(string.format("mask : %s\n tablet : %s", officeState.maskUp, officeState.tabletUp), 90, 90)
         if registers.system.showDebugHitbox then
             gameCam:attach()
                 love.graphics.setColor(0.7, 0, 1, 0.4)
@@ -453,6 +502,11 @@ function NightState:update(elapsed)
     if officeState.fadealpha > 0 then
         officeState.fadealpha = officeState.fadealpha - 0.4 * elapsed
     end
+
+    for i = 1, 3, 1 do
+        AudioSources["metalwalk" .. i]:setVolume(officeState.tabletUp and 0.08 or 0.5)
+    end
+    AudioSources["vent_walk"]:setVolume(officeState.tabletUp and 0.3 or 0.67)
 
     -- hud buttons --
     -- camera --
@@ -521,6 +575,20 @@ function NightState:update(elapsed)
         end
     else
         officeState.toxicmeter = math.lerp(officeState.toxicmeter, 0, 0.07)
+    end
+
+    -- animatronic --
+    for k, v in pairs(NightState.AnimatronicControllers) do
+        v.update(elapsed)
+    end
+
+    -- animatronic in office --
+    if officeState.hasAnimatronicInOffice then
+        officeState._t = officeState._t + elapsed
+        if officeState._t >= 0.02 then
+            officeState.officeFlick = not officeState.officeFlick
+            officeState._t = 0
+        end
     end
 
     -- fan animation --
@@ -659,6 +727,21 @@ function NightState:mousepressed(x, y, button)
                         end
                     end
                 end
+            end
+        end
+    end
+end
+
+function NightState:keypressed(k)
+    if DEBUG_APP then
+        if k == "=" then
+            for k, v in pairs(NightState.AnimatronicControllers) do
+                v.currentState = v.currentState + 1
+            end
+        end
+        if k == "-" then
+            for k, v in pairs(NightState.AnimatronicControllers) do
+                v.currentState = v.currentState - 1
             end
         end
     end
