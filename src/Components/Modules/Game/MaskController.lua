@@ -31,7 +31,7 @@ local function _playAnimation(this, reverse)
     this.visible = true
     this.reverseAnim = reverse
 
-    this.frame = reverse and #this.frames or 1
+    this.frame = reverse and this.frames.frameCount or 1
 
     this.animationRunning = true
 end
@@ -66,8 +66,8 @@ function MaskController:update(elapsed)
                 self.visible = false
             end
         else
-            if self.frame > #self.frames then
-                self.frame = #self.frames
+            if self.frame > self.frames.frameCount then
+                self.frame = self.frames.frameCount
                 self.maskUp = true
                 self.animationRunning = false
             end

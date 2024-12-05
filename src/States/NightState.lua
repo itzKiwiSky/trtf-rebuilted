@@ -460,7 +460,7 @@ function NightState:update(elapsed)
     if fanShit.acc >= fanShit.speed then
         fanShit.acc = 0
         fanShit.fid = fanShit.fid + 1
-        if fanShit.fid >= 7then
+        if fanShit.fid >= NightState.assets["fanAnim"].frameCount then
             fanShit.fid = 1
         end
     end

@@ -57,8 +57,9 @@ function LoadingState:update(elapsed)
 
     if ready and pressToGO and screen_fade > 1 then
         NightState.assets = _tempAssets
-        
-        print(debug.formattable(NightState.assets))
+        lume.clear(_tempAssets)
+        collectgarbage("collect")
+
         gamestate.switch(NightState)
     end
 end

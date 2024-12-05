@@ -24,9 +24,11 @@ return function()
 
     -- fan --
     assets["fanAnim"] = {}
+    assets["fanAnim"].frameCount = 0
     local numberOneFan = love.filesystem.getDirectoryItems("assets/images/game/night/fan")
     for f = 1, #numberOneFan, 1 do
         loveloader.newImage(assets["fanAnim"], "fan_" .. f, "assets/images/game/night/fan/" .. numberOneFan[f])
+        assets["fanAnim"].frameCount = f
     end
     numberOneFan = nil
 
@@ -43,29 +45,38 @@ return function()
     assets.doorsAnim = { left = {}, right = {} }
 
     local dl = love.filesystem.getDirectoryItems("assets/images/game/night/doors/door_left")
+    assets.doorsAnim.left.frameCount = 0
     for a = 1, #dl, 1 do
         loveloader.newImage(assets.doorsAnim.left, "dl_" .. a, "assets/images/game/night/doors/door_left/" .. dl[a])
+        assets.doorsAnim.left.frameCount = a
     end
 
     local dr = love.filesystem.getDirectoryItems("assets/images/game/night/doors/door_right")
+    assets.doorsAnim.right.frameCount = 0
     for a = 1, #dl, 1 do
         loveloader.newImage(assets.doorsAnim.right, "dr_" .. a, "assets/images/game/night/doors/door_right/" .. dl[a])
+        assets.doorsAnim.right.frameCount = a
     end
 
     dl, dr = nil, nil
     -- tablet --
     assets["tablet"] = {}
+    assets["tablet"].frameCount = 0
     local tab = love.filesystem.getDirectoryItems("assets/images/game/night/tablet")
     for t = 1, #tab, 1 do
         loveloader.newImage(assets["tablet"], "tab_" .. t, "assets/images/game/night/tablet/" .. tab[t])
+        assets["tablet"].frameCount = t
     end
     tab = nil
 
     -- mask --
     assets["maskAnim"] = {}
+    assets["maskAnim"].frameCount = 0
     local mask = love.filesystem.getDirectoryItems("assets/images/game/night/mask")
     for m = 1, #mask, 1 do
         loveloader.newImage(assets["maskAnim"], "mask_" .. m, "assets/images/game/night/mask/" .. mask[m])
+        assets["maskAnim"].frameCount = m
+
     end
     mask = nil
 
@@ -95,17 +106,21 @@ return function()
     loveloader.newImage(assets, "camButton", "assets/images/game/night/gameUI/cam_hover.png")
 
     assets["staticfx"] = {}
+    assets["staticfx"].frameCount = 0
     local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static3")
     for s = 1, #statics, 1 do
         loveloader.newImage(assets["staticfx"], "static_" .. s, "assets/images/game/effects/static3/" .. statics[s])
+        assets["staticfx"].frameCount = s
     end
     statics = {}
 
     -- phone shit --
     local phone = love.filesystem.getDirectoryItems("assets/images/game/night/phone/anim")
     assets["phoneModel"] = {}
+    assets["phoneModel"].frameCount = 0
     for p = 1, #phone, 1 do
         loveloader.newImage(assets["phoneModel"], "ph" .. p, "assets/images/game/night/phone/anim/" .. phone[p])
+        assets["phoneModel"].frameCount = p
     end
     phone = nil
 

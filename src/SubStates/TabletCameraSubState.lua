@@ -123,7 +123,7 @@ function TabletCameraSubState:draw()
                 love.graphics.setShader(interferenceFX)
                     if officeState.lightCam.state then
                         if not officeState.lightCam.isFlicking then
-                            love.graphics.draw(NightState.assets.cameras["cs_" .. self.camID][self.cameraMeta[self.camID].frame], 0, 0)
+                            love.graphics.draw(NightState.assets.cameras[self.camID]["cs_" .. self.cameraMeta[self.camID].frame], 0, 0)
                         end
                     end
                 love.graphics.setShader()
@@ -299,7 +299,7 @@ function TabletCameraSubState:update(elapsed)
     if staticfx.timer >= staticfx.speed then
         staticfx.timer = 0
         staticfx.frameid = staticfx.frameid + 1
-        if staticfx.frameid >= #NightState.assets.staticfx then
+        if staticfx.frameid > NightState.assets.staticfx.frameCount then
             staticfx.frameid = 1
         end
     end
