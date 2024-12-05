@@ -1,13 +1,14 @@
 {
     "warn" : {
         "warn_title" : "[WARNING]",
-        "warn_text" : "This game contains loud sounds, flashing\nlights, mild swearing, and many jumpscares!\n\n\nPD: This game is not an official remake of\nTRTF 1 and TRTF Rebuilt.\n\n\nPress any key to continue."
+        "warn_text" : "This game contains loud sounds, flashing\nlights, mild swearing, and many jumpscares!\n\n\nPD: This game is not an official remake of\nTRTF 1 and TRTF Rebuilt.\n\n\nPress any key or click anywhere to continue"
     },
     "menu" : {
         "menu_button" : {
             "menu_button_new_game" : "New Game",
             "menu_button_continue" : "Continue",
             "menu_button_extras" : "Extras",
+            "menu_button_custom_night" : "Custom Night",
             "menu_button_extra_shift" : "8th Night",
             "menu_button_exit" : "Exit"
         },
@@ -39,6 +40,17 @@
         },
         "menu_gamejolt_login_text" : "Welcome back %s",
         "menu_deletion_in_progress" : "Data deletion in progress",
-        "menu_hold_to_delete_data" : "Hold [DELETE] to erase your data"
+        "menu_hold_to_delete_data" : "Hold [DELETE] to erase your data",
+        "loading" : {
+            "loading_text" : "Loading... %d%%",
+            "loading_ready" : "Press any key or click anywhere to continue"
+        }
+    },
+    "game" : {
+        "game_mask_toxic" : "Toxic",
+        "game_vent_state_closed" : "Vent status: Closed",
+        "game_vent_state_open" : "Vent status: Open",
+        "game_energy_usage" : "Enery usage",
+        "game_energy" : "Energy: %s"
     }
 }

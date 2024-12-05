@@ -1,6 +1,7 @@
 local TabletController = {}
 
-function TabletController:init(frames, speed)
+function TabletController:init(frames, speed, k)
+    self.key = k
     self.frames = frames
     self.tabUp = false
     self.animationRunning = false
@@ -32,7 +33,7 @@ end
 
 function TabletController:draw()
     if self.visible then
-        love.graphics.draw(self.frames[self.frame], 0, 0)
+        love.graphics.draw(self.frames[self.key .. self.frame], 0, 0)
     end
 end
 

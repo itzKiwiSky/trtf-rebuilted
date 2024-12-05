@@ -14,3 +14,137 @@
     {1079, 592}         -- office
     {1154, 569}         -- freddy_hall
     
+-- save if need again --
+    -- office --
+    NightState.assets.office = {
+        ["idle"] = love.graphics.newImage("assets/images/game/night/office/idle.png"),
+        ["off"] = love.graphics.newImage("assets/images/game/night/office/off.png")
+    }
+
+    -- front office --
+    NightState.assets["front_office"] = {
+        ["idle"] = love.graphics.newImage("assets/images/game/night/front_office/Empty.png"),
+        ["foxy1"] = love.graphics.newImage("assets/images/game/night/front_office/Foxy.png"),
+        ["foxy2"] = love.graphics.newImage("assets/images/game/night/front_office/Foxy2.png"),
+        ["foxy3"] = love.graphics.newImage("assets/images/game/night/front_office/Foxy3.png"),
+        ["foxy4"] = love.graphics.newImage("assets/images/game/night/front_office/Foxy4.png"),
+    }
+
+    NightState.assets["front_office_bonnie"] = love.graphics.newImage("assets/images/game/night/front_office/Bonnie.png")
+    NightState.assets["front_office_chica"] = love.graphics.newImage("assets/images/game/night/front_office/Chica.png")
+
+    NightState.assets["in_office_bonnie"] = love.graphics.newImage("assets/images/game/night/in_office/bonnie.png")
+    NightState.assets["in_office_chica"] = love.graphics.newImage("assets/images/game/night/in_office/chica.png")
+
+    -- fan --
+    NightState.assets["fanAnim"] = {}
+    local numberOneFan = love.filesystem.getDirectoryItems("assets/images/game/night/fan")
+    for f = 1, #numberOneFan, 1 do
+        table.insert(NightState.assets["fanAnim"], love.graphics.newImage("assets/images/game/night/fan/" .. numberOneFan[f]))
+    end
+
+    -- door buttons --
+    NightState.assets.doorButtons = {
+        left = {
+            ["on"] = love.graphics.newImage("assets/images/game/night/doors/bl_on.png"),
+            ["off"] = love.graphics.newImage("assets/images/game/night/doors/bl_off.png")
+        },
+        right = {
+            ["on"] = love.graphics.newImage("assets/images/game/night/doors/br_on.png"),
+            ["off"] = love.graphics.newImage("assets/images/game/night/doors/br_off.png")
+        }
+    }
+
+    -- doors --
+    NightState.assets.doorsAnim = {
+        left = {},
+        right = {},
+    }
+
+    local dl = love.filesystem.getDirectoryItems("assets/images/game/night/doors/door_left")
+    for a = 1, #dl, 1 do
+        table.insert(NightState.assets.doorsAnim.left, love.graphics.newImage("assets/images/game/night/doors/door_left/" .. dl[a]))
+    end
+
+    local dr = love.filesystem.getDirectoryItems("assets/images/game/night/doors/door_right")
+    for a = 1, #dl, 1 do
+        table.insert(NightState.assets.doorsAnim.right, love.graphics.newImage("assets/images/game/night/doors/door_right/" .. dr[a]))
+    end
+
+    dl, dr = nil, nil
+    -- tablet --
+    NightState.assets["maskAnim"] = {}
+    local mask = love.filesystem.getDirectoryItems("assets/images/game/night/mask")
+    for m = 1, #mask, 1 do
+        table.insert(NightState.assets["maskAnim"], love.graphics.newImage("assets/images/game/night/mask/" .. mask[m]))
+    end
+
+    mask = nil
+    -- mask --
+    NightState.assets["tablet"] = {}
+    local tab = love.filesystem.getDirectoryItems("assets/images/game/night/tablet")
+    for t = 1, #tab, 1 do
+        table.insert(NightState.assets["tablet"], love.graphics.newImage("assets/images/game/night/tablet/" .. tab[t]))
+    end
+
+    tab = nil
+    -- cam ui stuff --
+    NightState.assets["camMap"] = love.graphics.newImage("assets/images/game/night/cameraUI/cam_map.png")
+    NightState.assets["camSystemLogo"] = love.graphics.newImage("assets/images/game/night/cameraUI/system_logo.png")
+    NightState.assets["camSystemError"] = love.graphics.newImage("assets/images/game/night/cameraUI/camera_error.png")
+
+    -- cameras itself --
+    NightState.assets["cameras"] = {}
+    local cams = fsutil.scanFolder("assets/images/game/night/cameras", true)
+    for _, c in ipairs(cams) do
+        local isFolder = love.filesystem.getInfo(c).type == "directory"
+        local folderName = c:match("[^/]+$")
+        if isFolder then
+            NightState.assets["cameras"][folderName] = {}
+            local fls = love.filesystem.getDirectoryItems(c)
+            for f = 1, #fls, 1 do
+                table.insert(NightState.assets["cameras"][folderName], love.graphics.newImage(c .. "/" .. fls[f]))
+            end
+            fls = nil
+        end
+    end
+
+    -- game ui stuff --
+    NightState.assets["maskButton"] = love.graphics.newImage("assets/images/game/night/gameUI/mask_hover.png")
+    NightState.assets["camButton"] = love.graphics.newImage("assets/images/game/night/gameUI/cam_hover.png")
+
+    NightState.assets["staticfx"] = {}
+    local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static3")
+    for s = 1, #statics, 1 do
+        table.insert(NightState.assets["staticfx"], love.graphics.newImage("assets/images/game/effects/static3/" .. statics[s]))
+    end
+    statics = {}
+
+    -- phone shit --
+    local phone = love.filesystem.getDirectoryItems("assets/images/game/night/phone/anim")
+    NightState.assets["phoneModel"] = {}
+    for p = 1, #phone, 1 do
+        table.insert(NightState.assets["phoneModel"], love.graphics.newImage("assets/images/game/night/phone/anim/" .. phone[p]))
+    end
+    phone = nil
+
+    -- radar --
+    NightState.assets["radar_icons"] = {}
+    NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads = love.graphics.getQuads("assets/images/game/night/cameraUI/radar_animatronics")
+    NightState.assets["radar_icons"].image:setFilter("nearest", "nearest")
+
+    -- jumpscares --
+    NightState.assets["jumpscares"] = {}
+    local jmps = fsutil.scanFolder("assets/images/game/night/jumpscares", true)
+    for _, j in ipairs(jmps) do
+        local isFolder = love.filesystem.getInfo(j).type == "directory"
+        local folderName = j:match("[^/]+$")
+        if isFolder then
+            NightState.assets["jumpscares"][folderName] = {}
+            local fls = love.filesystem.getDirectoryItems(j)
+            for f = 1, #fls, 1 do
+                table.insert(NightState.assets["jumpscares"][folderName], love.graphics.newImage(j .. "/" .. fls[f]))
+            end
+            fls = nil
+        end
+    end

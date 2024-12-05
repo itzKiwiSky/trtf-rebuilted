@@ -128,7 +128,7 @@ function love.initialize(args)
     end)
 
     gamestate.registerEvents()
-    gamestate.switch(NightState)
+    gamestate.switch(LoadingState)
 end
 
 function love.update(elapsed)

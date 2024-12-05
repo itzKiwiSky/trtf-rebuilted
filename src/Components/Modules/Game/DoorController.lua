@@ -1,8 +1,9 @@
 local DoorController = {}
 DoorController.__index = DoorController
 
-function DoorController.new(frames, speed, state)
+function DoorController.new(frames, speed, state, k)
     local self = setmetatable({}, DoorController)
+    self.key = k
     self.frames = frames
     self.closed = state or false
     self.animationRunning = false
@@ -34,7 +35,7 @@ function DoorController:draw(x, y)
     x = x or 0
     y = y or 0
     if self.visible then
-        love.graphics.draw(self.frames[self.frame], x, y)
+        love.graphics.draw(self.frames[self.key .. self.frame], x, y)
     end
 end
 

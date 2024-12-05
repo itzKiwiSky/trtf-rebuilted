@@ -56,24 +56,13 @@ NightState.assets = {}
 
 -- I had to change the name of the local variables bc the compiler is bitching about it :( --
 function NightState:init()
-    local loadingScreen = require 'src.Components.Modules.Game.Utils.LoadingPresent'
-    loadingScreen()
+    -- radar --
+    NightState.assets["radar_icons"] = {}
+    NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads = love.graphics.getQuads("assets/images/game/night/cameraUI/radar_animatronics")
+    NightState.assets["radar_icons"].image:setFilter("nearest", "nearest")
 
-    -- scripts --
-    doorController = require 'src.Components.Modules.Game.DoorController'
-    tabletController = require 'src.Components.Modules.Game.TabletController'
-    buttonsUI = require 'src.Components.Modules.Game.Utils.ButtonUI'
-    tabletCameraSubState = require 'src.SubStates.TabletCameraSubState'
-    maskController = require 'src.Components.Modules.Game.MaskController'
-    phoneSubState = require 'src.SubStates.PhoneSubstate'
-
-    -- import AI --
-    local aif = love.filesystem.getDirectoryItems("src/Components/Modules/Game/Animatronics")
-    for a = 1, #aif, 1 do
-        local filename = aif[a]:gsub("%.[^.]+$", "")
-        NightState.AnimatronicControllers[filename:lower()] = require("src.Components.Modules.Game.Animatronics." .. filename)
-    end
-    aif = nil
+    NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {31, 225, 34, 255}, {20, 100, 28, 255})
+    NightState.assets.grd_toxicmeter = love.graphics.newGradient("vertical", {255, 255, 255, 255}, {0, 0, 0, 255})
 
     fnt_vhs = fontcache.getFont("vcr", 25)
     fnt_camfnt = fontcache.getFont("vcr", 16)
@@ -82,146 +71,6 @@ function NightState:init()
     fnt_camName = fontcache.getFont("vcr", 42)
     fnt_boldtnr = fontcache.getFont("tnr_bold", 20)
 
-    -- office --
-    NightState.assets.office = {
-        ["idle"] = love.graphics.newImage("assets/images/game/night/office/idle.png"),
-        ["off"] = love.graphics.newImage("assets/images/game/night/office/off.png")
-    }
-    loadingScreen()
-    -- front office --
-    NightState.assets["front_office"] = {
-        ["idle"] = love.graphics.newImage("assets/images/game/night/front_office/Empty.png"),
-        ["foxy1"] = love.graphics.newImage("assets/images/game/night/front_office/Foxy.png"),
-        ["foxy2"] = love.graphics.newImage("assets/images/game/night/front_office/Foxy2.png"),
-        ["foxy3"] = love.graphics.newImage("assets/images/game/night/front_office/Foxy3.png"),
-        ["foxy4"] = love.graphics.newImage("assets/images/game/night/front_office/Foxy4.png"),
-    }
-    loadingScreen()
-    NightState.assets["front_office_bonnie"] = love.graphics.newImage("assets/images/game/night/front_office/Bonnie.png")
-    NightState.assets["front_office_chica"] = love.graphics.newImage("assets/images/game/night/front_office/Chica.png")
-    loadingScreen()
-    NightState.assets["in_office_bonnie"] = love.graphics.newImage("assets/images/game/night/in_office/bonnie.png")
-    NightState.assets["in_office_chica"] = love.graphics.newImage("assets/images/game/night/in_office/chica.png")
-    loadingScreen()
-
-    -- fan --
-    NightState.assets["fanAnim"] = {}
-    local numberOneFan = love.filesystem.getDirectoryItems("assets/images/game/night/fan")
-    for f = 1, #numberOneFan, 1 do
-        table.insert(NightState.assets["fanAnim"], love.graphics.newImage("assets/images/game/night/fan/" .. numberOneFan[f]))
-    end
-    loadingScreen()
-
-    -- door buttons --
-    NightState.assets.doorButtons = {
-        left = {
-            ["on"] = love.graphics.newImage("assets/images/game/night/doors/bl_on.png"),
-            ["off"] = love.graphics.newImage("assets/images/game/night/doors/bl_off.png")
-        },
-        right = {
-            ["on"] = love.graphics.newImage("assets/images/game/night/doors/br_on.png"),
-            ["off"] = love.graphics.newImage("assets/images/game/night/doors/br_off.png")
-        }
-    }
-    loadingScreen()
-
-    -- doors --
-    NightState.assets.doorsAnim = {
-        left = {},
-        right = {},
-    }
-    loadingScreen()
-
-    local dl = love.filesystem.getDirectoryItems("assets/images/game/night/doors/door_left")
-    for a = 1, #dl, 1 do
-        table.insert(NightState.assets.doorsAnim.left, love.graphics.newImage("assets/images/game/night/doors/door_left/" .. dl[a]))
-    end
-    loadingScreen()
-
-    local dr = love.filesystem.getDirectoryItems("assets/images/game/night/doors/door_right")
-    for a = 1, #dl, 1 do
-        table.insert(NightState.assets.doorsAnim.right, love.graphics.newImage("assets/images/game/night/doors/door_right/" .. dr[a]))
-    end
-    loadingScreen()
-    dl, dr = nil, nil
-
-    -- tablet --
-    NightState.assets["maskAnim"] = {}
-    local mask = love.filesystem.getDirectoryItems("assets/images/game/night/mask")
-    for m = 1, #mask, 1 do
-        table.insert(NightState.assets["maskAnim"], love.graphics.newImage("assets/images/game/night/mask/" .. mask[m]))
-    end
-    loadingScreen()
-    mask = nil
-
-    -- mask --
-    NightState.assets["tablet"] = {}
-    local tab = love.filesystem.getDirectoryItems("assets/images/game/night/tablet")
-    for t = 1, #tab, 1 do
-        table.insert(NightState.assets["tablet"], love.graphics.newImage("assets/images/game/night/tablet/" .. tab[t]))
-    end
-    loadingScreen()
-    tab = nil
-
-    -- cam ui stuff --
-    NightState.assets["camMap"] = love.graphics.newImage("assets/images/game/night/cameraUI/cam_map.png")
-    NightState.assets["camSystemLogo"] = love.graphics.newImage("assets/images/game/night/cameraUI/system_logo.png")
-    NightState.assets["camSystemError"] = love.graphics.newImage("assets/images/game/night/cameraUI/camera_error.png")
-    loadingScreen()
-
-    -- cameras itself --
-    NightState.assets["cameras"] = {}
-    local cams = fsutil.scanFolder("assets/images/game/night/cameras", true)
-    --print(debug.formattable(cameras))
-    for _, c in ipairs(cams) do
-        local isFolder = love.filesystem.getInfo(c).type == "directory"
-        local folderName = c:match("[^/]+$")
-        if isFolder then
-
-            NightState.assets["cameras"][folderName] = {}
-            local fls = love.filesystem.getDirectoryItems(c)
-            for f = 1, #fls, 1 do
-                table.insert(NightState.assets["cameras"][folderName], love.graphics.newImage(c .. "/" .. fls[f]))
-            end
-            fls = nil
-        end
-    end
-
-    loadingScreen()
-
-    -- game ui stuff --
-    NightState.assets["maskButton"] = love.graphics.newImage("assets/images/game/night/gameUI/mask_hover.png")
-    NightState.assets["camButton"] = love.graphics.newImage("assets/images/game/night/gameUI/cam_hover.png")
-    loadingScreen()
-
-    NightState.assets["staticfx"] = {}
-    local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static3")
-    for s = 1, #statics, 1 do
-        table.insert(NightState.assets["staticfx"], love.graphics.newImage("assets/images/game/effects/static3/" .. statics[s]))
-    end
-    statics = {}
-    loadingScreen()
-
-    NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {31, 225, 34, 255}, {20, 100, 28, 255})
-    NightState.assets.grd_toxicmeter = love.graphics.newGradient("vertical", {255, 255, 255, 255}, {0, 0, 0, 255})
-
-    -- phone shit --
-    local phone = love.filesystem.getDirectoryItems("assets/images/game/night/phone/anim")
-    NightState.assets["phoneModel"] = {}
-    for p = 1, #phone, 1 do
-        table.insert(NightState.assets["phoneModel"], love.graphics.newImage("assets/images/game/night/phone/anim/" .. phone[p]))
-    end
-    phone = nil
-    loadingScreen()
-
-    -- radar --
-    NightState.assets["radar_icons"] = {}
-    NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads = love.graphics.getQuads("assets/images/game/night/cameraUI/radar_animatronics")
-    NightState.assets["radar_icons"].image:setFilter("nearest", "nearest")
-
-    loadingScreen()
-
-    loadingScreen(true)
     shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
     shd_perspective:send("latitudeVar", 22.5)
     shd_perspective:send("longitudeVar", 45)
@@ -232,6 +81,21 @@ function NightState:init()
 end
 
 function NightState:enter()
+    -- scripts --
+    doorController = require 'src.Components.Modules.Game.DoorController'
+    tabletController = require 'src.Components.Modules.Game.TabletController'
+    buttonsUI = require 'src.Components.Modules.Game.Utils.ButtonUI'
+    tabletCameraSubState = require 'src.SubStates.TabletCameraSubState'
+    maskController = require 'src.Components.Modules.Game.MaskController'
+    phoneSubState = require 'src.SubStates.PhoneSubstate'
+    -- import AI --
+    local aif = love.filesystem.getDirectoryItems("src/Components/Modules/Game/Animatronics")
+    for a = 1, #aif, 1 do
+        local filename = aif[a]:gsub("%.[^.]+$", "")
+        NightState.AnimatronicControllers[filename:lower()] = require("src.Components.Modules.Game.Animatronics." .. filename)
+    end
+    aif = nil
+
     -- sound config --
     if not AudioSources["amb_rainleak"]:isPlaying() then
         AudioSources["amb_rainleak"]:play()
@@ -313,10 +177,10 @@ function NightState:enter()
     gameCam.factorX = 2.46
     gameCam.factorY = 25
 
-    tabletController:init(NightState.assets.tablet, 34)
+    tabletController:init(NightState.assets.tablet, 34, "tab_")
     tabletController.visible = false
 
-    maskController:init(NightState.assets.maskAnim, 34)
+    maskController:init(NightState.assets.maskAnim, 34, "mask_")
     maskController.visible = false
     maskController.timeout = 0.2
     maskController.acc = 0
@@ -329,8 +193,8 @@ function NightState:enter()
     Y_TOP_FRAME = gameCam.y
     Y_BOTTOM_FRAME = gameCam.y + roomSize.height
 
-    doorL = doorController.new(NightState.assets.doorsAnim.left, 55, false)
-    doorR = doorController.new(NightState.assets.doorsAnim.right, 55, false)
+    doorL = doorController.new(NightState.assets.doorsAnim.left, 55, false, "dl_")
+    doorR = doorController.new(NightState.assets.doorsAnim.right, 55, false, "dr_")
 
     officeState = {
         _t = 0,
@@ -405,7 +269,7 @@ function NightState:draw()
                     end
                 end
                 love.graphics.draw(NightState.assets.office[officeState.power > 0 and "idle" or "off"], 0, 0)
-                love.graphics.draw(NightState.assets.fanAnim[fanShit.fid], 0, 0)
+                love.graphics.draw(NightState.assets.fanAnim["fan_" .. fanShit.fid], 0, 0)
 
                 if collision.rectRect(NightState.AnimatronicControllers["bonnie"], tabletCameraSubState.areas["office"]) then
                     love.graphics.draw(NightState.assets["in_office_bonnie"], 0, 0)
@@ -429,7 +293,7 @@ function NightState:draw()
     if officeState.maskUp then
         love.graphics.rectangle("line", 16, 48, 256, 32)
 
-        love.graphics.print("Toxic", fnt_boldtnr, 16, 24)
+        love.graphics.print(languageService["game_mask_toxic"], fnt_boldtnr, 16, 24)
 
         love.graphics.setColor(236 / 255, 56 / 255, 41 / 255, 1)
             love.graphics.draw(NightState.assets.grd_toxicmeter, 16 + 3, 48 + 3, 0, math.floor(250 * (officeState.toxicmeter / 100)), 26)
@@ -473,7 +337,7 @@ function NightState:draw()
 
     -- debug shit --
     if DEBUG_APP then
-        love.graphics.print(string.format("mask : %s\n tablet : %s", officeState.maskUp, officeState.tabletUp), 90, 90)
+        --love.graphics.print(string.format("mask : %s\n tablet : %s", officeState.maskUp, officeState.tabletUp), 90, 90)
         if registers.system.showDebugHitbox then
             gameCam:attach()
                 love.graphics.setColor(0.7, 0, 1, 0.4)
@@ -596,7 +460,7 @@ function NightState:update(elapsed)
     if fanShit.acc >= fanShit.speed then
         fanShit.acc = 0
         fanShit.fid = fanShit.fid + 1
-        if fanShit.fid >= #NightState.assets.fanAnim then
+        if fanShit.fid >= 7then
             fanShit.fid = 1
         end
     end

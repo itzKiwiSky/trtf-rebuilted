@@ -1,6 +1,7 @@
 local MaskController = {}
 
-function MaskController:init(frames, speed)
+function MaskController:init(frames, speed, k)
+    self.key = k
     self.x = -16
     self.y = -64
     self.rx = 0
@@ -43,7 +44,7 @@ end
 
 function MaskController:draw()
     if self.visible then
-        love.graphics.draw(self.frames[self.frame], self.x + self.rx, self.y + self.ry)
+        love.graphics.draw(self.frames[self.key .. self.frame], self.x + self.rx, self.y + self.ry)
     end
 end
 

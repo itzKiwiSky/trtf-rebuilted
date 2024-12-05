@@ -13,6 +13,7 @@ return function()
     gamejolt = require 'libraries.gamejolt'
     flux = require 'libraries.flux'
     json = require 'libraries.json'
+    loveloader = require 'libraries.loveloader'
     lume = require 'libraries.lume'
     neuron = require 'libraries.neuron'
     nativefs = require 'libraries.nativefs'
