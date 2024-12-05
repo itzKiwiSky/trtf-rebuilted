@@ -5,10 +5,8 @@ return function()
     bit = require 'bit'
     moonshine = require 'libraries.moonshine'
     slab = require 'libraries.slab'
-    class = require 'libraries.classic'
     camera = require 'libraries.camera'
     collision = require 'libraries.collision'
-    deep = require 'libraries.deep'
     gamestate = require 'libraries.gamestate'
     gamejolt = require 'libraries.gamejolt'
     flux = require 'libraries.flux'
@@ -16,6 +14,5 @@ return function()
     loveloader = require 'libraries.loveloader'
     lume = require 'libraries.lume'
     neuron = require 'libraries.neuron'
-    nativefs = require 'libraries.nativefs'
     timer = require 'libraries.timer'
 end
