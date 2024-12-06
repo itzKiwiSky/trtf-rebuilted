@@ -36,8 +36,8 @@ After the big incident of Fredbear's Family Diner, in 2005, Vincent, decided to 
 
 #### Other credits
 
-[INaS](https://github.com/FloatingBanana/Insane-Nights-at-Snowball-s) - Some code snippets<br>
-[Freesound.org](https://freesound.org/) - Cool free SFX
+[**INaS**](https://github.com/FloatingBanana/Insane-Nights-at-Snowball-s) - Some code snippets<br>
+[**Freesound.org**](https://freesound.org/) - Cool free SFX
 
 ---
 
