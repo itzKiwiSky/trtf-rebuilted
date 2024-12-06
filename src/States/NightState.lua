@@ -65,6 +65,8 @@ function NightState:init()
     NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {31, 225, 34, 255}, {20, 100, 28, 255})
     NightState.assets.grd_toxicmeter = love.graphics.newGradient("vertical", {255, 255, 255, 255}, {0, 0, 0, 255})
 
+    blurFX = moonshine(moonshine.effects.boxblur)
+
     fnt_vhs = fontcache.getFont("vcr", 25)
     fnt_camfnt = fontcache.getFont("vcr", 16)
     fnt_timerfnt = fontcache.getFont("vcr", 22)
@@ -78,6 +80,7 @@ function NightState:init()
     shd_perspective:send("fovVar", 0.2630)
 
     cnv_mainCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
+    cnv_phone = love.graphics.newCanvas(love.graphics.getDimensions())
     love.graphics.clear(love.graphics.getBackgroundColor())
 end
 
@@ -254,12 +257,16 @@ function NightState:enter()
     print(tostring(gameslot.save.game.user.settings.subtitles))
 
     tmr_nightStartPhone = timer.new()
-    tmr_nightStartPhone:after(2.5, function()
+
+    tmr_nightStartPhone:script(function(sleep)
         if NightState.nightID >= 1 and NightState.nightID <= 5 then
-            AudioSources["call_night" .. NightState.nightID]:play()
-            phoneController:setState(true)
-            subtitlesController.clear()
-            subtitlesController.queue(languageRaw.subtitles["call_night" .. NightState.nightID])
+            sleep(3)
+                phoneController:setState(true)
+                AudioSources["phone_pickup"]:play()
+            sleep(0.2)
+                NightState.assets.calls["call_night" .. NightState.nightID]:play()
+                subtitlesController.clear()
+                subtitlesController.queue(languageRaw.subtitles["call_night" .. NightState.nightID])
         end
     end)
 end
@@ -314,10 +321,23 @@ function NightState:draw()
     end
 
     -- phone shit --
-    if phoneController.visible then
-        love.graphics.draw(NightState.assets["phone_bg"], 1010, 375, 0, 200 / NightState.assets["phone_bg"]:getWidth(), 236 / NightState.assets["phone_bg"]:getHeight())
-        love.graphics.draw(NightState.assets["phone_refuse"], 1070, 445, 0, 0.2, 0.2)
-    end
+    cnv_phone:renderTo(function()
+        if phoneController.visible and phoneController.frame == 1 then
+            local btn = NightState.assets["phone_refuse"]
+            love.graphics.draw(NightState.assets["phone_bg"], 1010, 375, 0, 200 / NightState.assets["phone_bg"]:getWidth(), 236 / NightState.assets["phone_bg"]:getHeight())
+            love.graphics.draw(btn, 1070, 445, 0, 24 / btn:getWidth(), 24 / btn:getHeight())
+        end
+    end)
+    love.graphics.draw(cnv_phone, 0, 0)
+    
+    love.graphics.setColor(1, 1, 1, 0.4)
+        love.graphics.setBlendMode("add")
+            blurFX(function()
+                love.graphics.draw(cnv_phone, 0, 0)
+            end)
+        love.graphics.setBlendMode("alpha")
+    love.graphics.setColor(1, 1, 1, 1)
+    
     phoneController:draw()
 
     -- camera render substate --
@@ -587,7 +607,7 @@ function NightState:update(elapsed)
 
     -- phone begin --
     if NightState.nightID >= 1 and NightState.nightID <= 5 then
-        if not AudioSources["call_night" .. NightState.nightID]:isPlaying() then
+        if not NightState.assets.calls["call_night" .. NightState.nightID]:isPlaying() then
             tmr_nightStartPhone:update(elapsed)
         end
     end

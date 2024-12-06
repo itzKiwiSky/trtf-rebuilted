@@ -51,13 +51,11 @@ function PhoneController:update(elapsed)
         if self.reverseAnim then
             if self.frame < 1 then
                 self.frame = 1
-                --self.tabUp = false
                 self.animationRunning = false
             end
         else
             if self.frame > self.frames.frameCount then
                 self.frame = self.frames.frameCount
-                self.phoneUp = true
                 self.animationRunning = false
             end
         end

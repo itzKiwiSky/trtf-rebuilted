@@ -1,14 +1,13 @@
-local function _hasKeys(tbl, keys)
-    for _, key in ipairs(keys) do
-        if tbl[key] == nil then
-            return false
-        end
-    end
-    return true
-end
-
 return function()
     local assets = {}
+
+    -- calls --
+    assets.calls = {}
+    local callsF = fsutil.scanFolder(languageRaw["__ENGINE__"].voicelinePath)
+    for c = 1, #callsF, 1 do
+        local filename = (((callsF[c]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
+        loveloader.newSource(assets.calls, filename, callsF[c], "stream")
+    end
 
     -- office --
     assets.office = {}

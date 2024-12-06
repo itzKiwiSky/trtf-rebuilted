@@ -7,7 +7,7 @@ local function preloadAudio()
     local textFont = fontcache.getFont("ocrx", 30)
     local preloadBanner = love.graphics.newImage("assets/images/game/banner.png")
 
-    local files = fsutil.scanFolder("assets/sounds")
+    local files = fsutil.scanFolder("assets/sounds", false, {"assets/sounds/night/calls"})
 
     for f = 1, #files, 1 do
         local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
@@ -51,9 +51,9 @@ function love.initialize(args)
     fnt_subtitle = fontcache.getFont("tnr", 24)
     bg_subtitles = love.graphics.newGradient("horizontal", 
         {0, 0, 0, 0}, 
-        {255, 255, 255, 255}, 
-        {255, 255, 255, 255}, 
         {255, 255, 255, 255},
+        {255, 255, 255, 255}, 
+        {255, 255, 255, 255}, 
         {0, 0, 0, 0}
     )
 

@@ -21,12 +21,6 @@ function DebugState:enter()
     shd_perspective:send("longitudeVar", tuneConfig.longitudeVar)
     shd_perspective:send("fovVar", tuneConfig.fovVar)
 
-    flareShader = love.graphics.newShader("assets/shaders/LensFlare.glsl")
-    flareShader:send("resolution", {love.graphics.getWidth(), love.graphics.getHeight()})
-    flareShader:send("light_pos", {128, 128}) -- Posição inicial da luz (em pixels)
-    flareShader:send("radius", 200)          -- Raio de influência
-    flareShader:send("intensity", 1.0)       -- Intensidade base
-
     slab.Initialize({"NoDocks"})
 
     -- room --
@@ -50,6 +44,9 @@ function DebugState:enter()
     cnv_mainCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
     cnv_distcanvas = love.graphics.newCanvas(love.graphics.getDimensions())
     love.graphics.clear(love.graphics.getBackgroundColor())
+
+    subtitlesController.clear()
+    subtitlesController.queue(languageRaw.subtitles["call_night" .. NightState.nightID])
 end
 
 function DebugState:draw()
@@ -60,15 +57,11 @@ function DebugState:draw()
         end)
     gameCam:detach()
 
-    cnv_distcanvas:renderTo(function()
-        love.graphics.setShader(shd_perspective)
-            love.graphics.draw(cnv_mainCanvas, 0, 0)
-        love.graphics.setShader()
-    end)
 
-    love.graphics.setShader(flareShader)
-        love.graphics.draw(cnv_distcanvas, 0, 0)
+    love.graphics.setShader(shd_perspective)
+        love.graphics.draw(cnv_mainCanvas, 0, 0)
     love.graphics.setShader()
+
 
     slab.Draw()
 end
@@ -76,9 +69,6 @@ end
 function DebugState:update(elapsed)
     slab.Update(elapsed)
     dbginterface()
-
-    local light_pos = {love.mouse.getX(), love.mouse.getY()}
-    flareShader:send("light_pos", light_pos)
     
     shd_perspective:send("latitudeVar", tuneConfig.latitudeVar)
     shd_perspective:send("longitudeVar", tuneConfig.longitudeVar)

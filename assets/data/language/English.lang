@@ -1,4 +1,7 @@
 {
+    "__ENGINE__" : {
+        "voicelinePath" : "assets/sounds/night/calls/EN"
+    },
     "warn" : {
         "warn_title" : "[WARNING]",
         "warn_text" : "This game contains loud sounds, flashing\nlights, mild swearing, and many jumpscares!\n\n\nPD: This game is not an official remake of\nTRTF 1 and TRTF Rebuilt.\n\n\nPress any key or click anywhere to continue"
@@ -68,12 +71,12 @@
             ["0:00:0", ""],
             ["0:00:2", "*Phone ringing noises...*"],
             ["0:06:2", "Hello? Hello?"],
-            ["0:09:6", "Hey, if you're listening to this\nknow that you've chosen a very poor career path."],
+            ["0:09:6", "Hey, if you're listening to this, know that you've chosen a very poor career path."],
             ["0:18:2", "Mike Smith, right? I hope so, at least."],
-            ["0:24:2", "You know, I really wasn't expecting a guy\nlike you to volunteer for this work."],
+            ["0:24:2", "You know, I really wasn't expecting a guy, like you to volunteer for this work."],
             ["0:30:4", "Look, let's start with the basics."],
             ["0:33:5", "First of all, I have to read to you the terms and conditions."],
-            ["0:39:7", "It's mandatory\nso I have to, unfortunately."],
+            ["0:39:7", "It's mandatory so... I have to, unfortunately."],
             ["4:55:0", ""],
             ["4:57:0"]
         ]
