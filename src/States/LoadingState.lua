@@ -17,18 +17,23 @@ end
 function LoadingState:enter()
     local assetThread = require 'src.Components.Modules.Game.Utils.AssetsLoadThread'
 
-    randBG = math.random(1, #ldBackgrounds)
-
-    collectgarbage("collect")
-
     ready = false
     pressToGO = false
     screen_fade = 0
 
     _tempAssets = assetThread()
-    loveloader.start(function()
+
+    if table.compare(NightState.assets, _tempAssets) then
         ready = true
-    end)
+    else
+        randBG = math.random(1, #ldBackgrounds)
+
+        collectgarbage("collect")
+    
+        loveloader.start(function()
+            ready = true
+        end)
+    end
 end
 
 function LoadingState:draw()
@@ -57,9 +62,6 @@ function LoadingState:update(elapsed)
 
     if ready and pressToGO and screen_fade > 1 then
         NightState.assets = _tempAssets
-        lume.clear(_tempAssets)
-        collectgarbage("collect")
-
         gamestate.switch(NightState)
     end
 end
@@ -81,10 +83,7 @@ function LoadingState:leave()
         ctrEffect = nil
         glowTextEffect = nil
         textLoadingFont:release()
-        preloadBannerAgain:release()
-        clockIcon.base:release()
-        clockIcon.min:release()
-        clockIcon.hour:release()
+        clockIcon:release()
         for b = 1, #ldBackgrounds, 1 do
             ldBackgrounds[b]:release()
         end

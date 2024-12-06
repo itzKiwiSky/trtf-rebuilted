@@ -8,24 +8,38 @@ like so
 ]]--
 
 function DebugState:enter()
-    tex = love.graphics.newImage("assets/images/game/debugrender.png")
+    dbginterface = require 'src.Components.Modules.Game.Interface.DebugInterface'
+    tex = love.graphics.newImage("assets/images/game/noname.png")
 
     shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
-    shd_perspective:send("latitudeVar", 22.5)
-    shd_perspective:send("longitudeVar", 45)
-    shd_perspective:send("fovVar", 0.263000)
+    tuneConfig = {
+        latitudeVar = 22.5,
+        longitudeVar = 40,
+        fovVar = 0.263000
+    }
+    shd_perspective:send("latitudeVar", tuneConfig.latitudeVar)
+    shd_perspective:send("longitudeVar", tuneConfig.longitudeVar)
+    shd_perspective:send("fovVar", tuneConfig.fovVar)
+
+    flareShader = love.graphics.newShader("assets/shaders/LensFlare.glsl")
+    flareShader:send("resolution", {love.graphics.getWidth(), love.graphics.getHeight()})
+    flareShader:send("light_pos", {128, 128}) -- Posição inicial da luz (em pixels)
+    flareShader:send("radius", 200)          -- Raio de influência
+    flareShader:send("intensity", 1.0)       -- Intensidade base
+
+    slab.Initialize({"NoDocks"})
 
     -- room --
     roomSize = {
         windowWidth = love.graphics.getWidth(),
         windowHeight = love.graphics.getHeight(),
         width = 1600,
-        height = 918,
+        height = 800,
         compensation = 400,
     }
 
     gameCam = camera.new(0, nil)
-    gameCam.factorX = 2.46
+    gameCam.factorX = 4.85
     gameCam.factorY = 25
 
     X_LEFT_FRAME = gameCam.x
@@ -34,6 +48,7 @@ function DebugState:enter()
     Y_BOTTOM_FRAME = gameCam.y + roomSize.height
 
     cnv_mainCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
+    cnv_distcanvas = love.graphics.newCanvas(love.graphics.getDimensions())
     love.graphics.clear(love.graphics.getBackgroundColor())
 end
 
@@ -45,15 +60,35 @@ function DebugState:draw()
         end)
     gameCam:detach()
 
-    love.graphics.setShader(shd_perspective)
-        love.graphics.draw(cnv_mainCanvas, 0, 0)
+    cnv_distcanvas:renderTo(function()
+        love.graphics.setShader(shd_perspective)
+            love.graphics.draw(cnv_mainCanvas, 0, 0)
+        love.graphics.setShader()
+    end)
+
+    love.graphics.setShader(flareShader)
+        love.graphics.draw(cnv_distcanvas, 0, 0)
     love.graphics.setShader()
+
+    slab.Draw()
 end
 
 function DebugState:update(elapsed)
+    slab.Update(elapsed)
+    dbginterface()
+
+    local light_pos = {love.mouse.getX(), love.mouse.getY()}
+    flareShader:send("light_pos", light_pos)
+    
+    shd_perspective:send("latitudeVar", tuneConfig.latitudeVar)
+    shd_perspective:send("longitudeVar", tuneConfig.longitudeVar)
+    shd_perspective:send("fovVar", tuneConfig.fovVar)
+
     local mx, my = gameCam:mousePosition()
 
-    gameCam.x = (roomSize.width / 2 + (mx - roomSize.width / 2) / gameCam.factorX)
+    if slab.IsVoidHovered() then
+        gameCam.x = (roomSize.width / 2 + (mx - roomSize.width / 2) / gameCam.factorX)
+    end
 
     -- camera bounds --
     if gameCam.x < X_LEFT_FRAME then
@@ -71,6 +106,7 @@ function DebugState:update(elapsed)
     if gameCam.y > Y_BOTTOM_FRAME then
         gameCam.y = Y_BOTTOM_FRAME
     end
+
 end
 
 function DebugState:keypressed(k)

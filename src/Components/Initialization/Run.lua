@@ -1,6 +1,7 @@
 require("src.Components.Initialization.Imports")()
 require("src.Components.Initialization.AddonLoad")()
 DEBUG_APP = not love.filesystem.isFused()
+subtitlesController = require 'src.Components.Modules.Game.Utils.Subtitles'
 function love.run()
 
     love.math.setRandomSeed(os.time())
@@ -35,18 +36,22 @@ function love.run()
 
         if love.update then 
             love.update(elapsed)
+            subtitlesController:update(elapsed)
         end
 
         if love.graphics and love.graphics.isActive() then
             love.graphics.origin()
             love.graphics.clear(love.graphics.getBackgroundColor())
 
-            
             if love.draw then
                 love.draw()
             end
 
-            love.graphics.print("FPS : " .. love.timer.getFPS(), 5, 5)
+            subtitlesController:draw()
+
+            if gameslot.save.game.user.settings.displayFPS then
+                love.graphics.print("FPS : " .. love.timer.getFPS(), 5, 5)
+            end
             love.graphics.present()
         end
 

@@ -1,3 +1,12 @@
+local function _hasKeys(tbl, keys)
+    for _, key in ipairs(keys) do
+        if tbl[key] == nil then
+            return false
+        end
+    end
+    return true
+end
+
 return function()
     local assets = {}
 
@@ -94,8 +103,10 @@ return function()
         if isFolder then
             assets["cameras"][folderName] = {}
             local fls = love.filesystem.getDirectoryItems(c)
+            assets["cameras"][folderName].frameCount = 0
             for f = 1, #fls, 1 do
                 loveloader.newImage(assets["cameras"][folderName], "cs_" .. f, c .. "/" .. fls[f])
+                assets["cameras"][folderName].frameCount = fls
             end
             fls = nil
         end
@@ -123,6 +134,9 @@ return function()
         assets["phoneModel"].frameCount = p
     end
     phone = nil
+    loveloader.newImage(assets, "phone_bg", "assets/images/game/night/phone/UI/bg.png")
+    loveloader.newImage(assets, "phone_refuse", "assets/images/game/night/phone/UI/phone_refuse_button.png")
+
 
     -- jumpscares --
     assets["jumpscares"] = {}
@@ -133,8 +147,10 @@ return function()
         if isFolder then
             assets["jumpscares"][folderName] = {}
             local fls = love.filesystem.getDirectoryItems(j)
+            assets["jumpscares"][folderName].frameCount = 0
             for f = 1, #fls, 1 do
                 loveloader.newImage(assets["jumpscares"][folderName], "jmp_" .. f, j .. "/" .. fls[f])
+                assets["jumpscares"][folderName].frameCount = fls
             end
             fls = nil
         end

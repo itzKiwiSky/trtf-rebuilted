@@ -14,5 +14,6 @@ return function()
     loveloader = require 'libraries.loveloader'
     lume = require 'libraries.lume'
     neuron = require 'libraries.neuron'
+    nativefs = require 'libraries.nativefs'
     timer = require 'libraries.timer'
 end

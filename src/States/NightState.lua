@@ -1,6 +1,7 @@
 NightState = {}
 
-NightState.nightID = 100
+NightState.KilledBy = ""
+NightState.nightID = 1
 NightState.isCustomNight = false
 NightState.animatronicsAI = {
     freddy = 0,
@@ -74,20 +75,22 @@ function NightState:init()
     shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
     shd_perspective:send("latitudeVar", 22.5)
     shd_perspective:send("longitudeVar", 45)
-    shd_perspective:send("fovVar", 0.263000)
+    shd_perspective:send("fovVar", 0.2630)
 
     cnv_mainCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
     love.graphics.clear(love.graphics.getBackgroundColor())
 end
 
 function NightState:enter()
+    love.mouse.setVisible(true)
     -- scripts --
     doorController = require 'src.Components.Modules.Game.DoorController'
     tabletController = require 'src.Components.Modules.Game.TabletController'
     buttonsUI = require 'src.Components.Modules.Game.Utils.ButtonUI'
     tabletCameraSubState = require 'src.SubStates.TabletCameraSubState'
     maskController = require 'src.Components.Modules.Game.MaskController'
-    phoneSubState = require 'src.SubStates.PhoneSubstate'
+    phoneController = require 'src.Components.Modules.Game.PhoneController'
+
     -- import AI --
     local aif = love.filesystem.getDirectoryItems("src/Components/Modules/Game/Animatronics")
     for a = 1, #aif, 1 do
@@ -102,9 +105,9 @@ function NightState:enter()
         AudioSources["amb_rainleak"]:setLooping(true)
         AudioSources["amb_rainleak"]:setVolume(0.38)
 
-        AudioSources["amb_office_lair"]:play()
-        AudioSources["amb_office_lair"]:setLooping(true)
-        AudioSources["amb_office_lair"]:setVolume(0.48)
+        AudioSources["amb_night"]:play()
+        AudioSources["amb_night"]:setLooping(true)
+        AudioSources["amb_night"]:setVolume(0.48)
     end
 
     AudioSources["cam_interference"]:setVolume(0.60)
@@ -177,6 +180,9 @@ function NightState:enter()
     gameCam.factorX = 2.46
     gameCam.factorY = 25
 
+    phoneController:init(NightState.assets.phoneModel, 30, "ph")
+    phoneController.visible = false
+
     tabletController:init(NightState.assets.tablet, 34, "tab_")
     tabletController.visible = false
 
@@ -198,6 +204,8 @@ function NightState:enter()
 
     officeState = {
         _t = 0,
+        jumpscareRunning = false,
+        dead = false,
         fadealpha = 1,
         tabletFirstBoot = true,
         tabletBootProgress = 0,
@@ -220,7 +228,6 @@ function NightState:enter()
         doors = {
             left = false,
             right = false,
-
             hitboxes = {
                 right = {
                     x = -32,
@@ -244,10 +251,16 @@ function NightState:enter()
         }
     }
 
+    print(tostring(gameslot.save.game.user.settings.subtitles))
 
     tmr_nightStartPhone = timer.new()
     tmr_nightStartPhone:after(2.5, function()
-        
+        if NightState.nightID >= 1 and NightState.nightID <= 5 then
+            AudioSources["call_night" .. NightState.nightID]:play()
+            phoneController:setState(true)
+            subtitlesController.clear()
+            subtitlesController.queue(languageRaw.subtitles["call_night" .. NightState.nightID])
+        end
     end)
 end
 
@@ -300,6 +313,13 @@ function NightState:draw()
         love.graphics.setColor(1, 1, 1, 1)
     end
 
+    -- phone shit --
+    if phoneController.visible then
+        love.graphics.draw(NightState.assets["phone_bg"], 1010, 375, 0, 200 / NightState.assets["phone_bg"]:getWidth(), 236 / NightState.assets["phone_bg"]:getHeight())
+        love.graphics.draw(NightState.assets["phone_refuse"], 1070, 445, 0, 0.2, 0.2)
+    end
+    phoneController:draw()
+
     -- camera render substate --
     if tabletController.tabUp then
         tabletCameraSubState:draw()
@@ -335,6 +355,8 @@ function NightState:draw()
         love.graphics.setColor(1, 1, 1, 1)
     end
 
+    -- jumpscare --
+
     -- debug shit --
     if DEBUG_APP then
         --love.graphics.print(string.format("mask : %s\n tablet : %s", officeState.maskUp, officeState.tabletUp), 90, 90)
@@ -366,6 +388,9 @@ function NightState:update(elapsed)
     if officeState.fadealpha > 0 then
         officeState.fadealpha = officeState.fadealpha - 0.4 * elapsed
     end
+
+        -- phone shit --
+    phoneController:update(elapsed)
 
     for i = 1, 3, 1 do
         AudioSources["metalwalk" .. i]:setVolume(officeState.tabletUp and 0.08 or 0.5)
@@ -432,7 +457,7 @@ function NightState:update(elapsed)
     end
 
     if officeState.maskUp then
-        officeState.toxicmeter = officeState.toxicmeter + 25 * elapsed
+        officeState.toxicmeter = officeState.toxicmeter + 13 * elapsed
 
         if officeState.toxicmeter >= 100 then
             officeState.toxicmeter = 100
@@ -442,8 +467,10 @@ function NightState:update(elapsed)
     end
 
     -- animatronic --
-    for k, v in pairs(NightState.AnimatronicControllers) do
-        v.update(elapsed)
+    if not officeState.phoneCall then
+        for k, v in pairs(NightState.AnimatronicControllers) do
+            v.update(elapsed)
+        end
     end
 
     -- animatronic in office --
@@ -491,7 +518,11 @@ function NightState:update(elapsed)
             day = 13
         end
     })
-    night.time = night.time + elapsed
+    
+    if not officeState.phoneCall then
+        night.time = night.time + elapsed
+    end
+
     night.h, night.m, night.s, night.period = _formatAdjustedTimeAMPM(night.time, 1.2, night.startingHour, night.startingMinute, night.startingPeriod)
     night.text = string.format("%02d/11/2005 - %02d:%02d:%02d%s", day, night.h, night.m, night.s, night.period:lower())
 
@@ -552,6 +583,13 @@ function NightState:update(elapsed)
 
     if gameCam.y > Y_BOTTOM_FRAME then
         gameCam.y = Y_BOTTOM_FRAME
+    end
+
+    -- phone begin --
+    if NightState.nightID >= 1 and NightState.nightID <= 5 then
+        if not AudioSources["call_night" .. NightState.nightID]:isPlaying() then
+            tmr_nightStartPhone:update(elapsed)
+        end
     end
 end
 

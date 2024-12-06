@@ -19,7 +19,9 @@
             "menu_settings_vsync" : "V-Sync",
             "menu_settings_antialiasing" : "Antialiasing",
             "menu_settings_window_effects" : "Window effects",
+            "menu_settings_display_fps" : "Show FPS",
             "menu_settings_preserve_assets" : "Cache night assets",
+            "menu_settings_subtitles" : "Subtitles",
             "menu_settings_reset_settings" : "Reset Settings",
             "menu_settings_gamejolt" : {
                 "menu_settings_gamejolt_not_connect" : "Login to gamejolt",
@@ -32,7 +34,9 @@
                 "menu_settings_description_vsync" : "Enable or disable Vertical sync (VSync)",
                 "menu_settings_description_antialiasing" : "Make the textures more smooth and less pixelated",
                 "menu_settings_description_window_effects" : "Enable or disable effects with game window (move, shake, etc.)",
+                "menu_settings_description_display_fps" : "Show the game FPS on the top-left corner of the screen",
                 "menu_settings_description_preserve_assets" : "Cache all night assets, the loading times for a night will be faster\nbut will consume more device memory.",
+                "menu_settings_description_subtitles" : "Display subtitles for audio calls and cutscenes",
                 "menu_settings_description_gamejolt" : "Connect with gamejolt to allow special stuff",
                 "menu_settings_description_language" : "Change the game current language [Click to switch]",
                 "menu_settings_description_reset_settings" : "Reset all the settings to their default value"
@@ -47,10 +51,31 @@
         }
     },
     "game" : {
+        "game_night_announce" : "Night %s",
+        "game_custom_night_announce" : "Custom Night",
         "game_mask_toxic" : "Toxic",
         "game_vent_state_closed" : "Vent status: Closed",
         "game_vent_state_open" : "Vent status: Open",
         "game_energy_usage" : "Enery usage",
-        "game_energy" : "Energy: %s"
+        "game_energy" : "Energy: %s",
+        "misc" : {
+            "game_misc_camera_error" : "Failed to fetch camera footage...",
+            "game_misc_camera_error_id" : "Report this error to specialized team\nand give them this code:"
+        }
+    },
+    "subtitles" : {
+        "call_night1" : [
+            ["0:00:0", ""],
+            ["0:00:2", "*Phone ringing noises...*"],
+            ["0:06:2", "Hello? Hello?"],
+            ["0:09:6", "Hey, if you're listening to this\nknow that you've chosen a very poor career path."],
+            ["0:18:2", "Mike Smith, right? I hope so, at least."],
+            ["0:24:2", "You know, I really wasn't expecting a guy\nlike you to volunteer for this work."],
+            ["0:30:4", "Look, let's start with the basics."],
+            ["0:33:5", "First of all, I have to read to you the terms and conditions."],
+            ["0:39:7", "It's mandatory\nso I have to, unfortunately."],
+            ["4:55:0", ""],
+            ["4:57:0"]
+        ]
     }
 }

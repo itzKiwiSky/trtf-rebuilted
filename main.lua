@@ -11,7 +11,7 @@ local function preloadAudio()
 
     for f = 1, #files, 1 do
         local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
-        local mode = gameslot.save.game.user.settings.streamAudio and "stream" or "static"
+        --local mode = gameslot.save.game.user.settings.streamAudio and "stream" or "static"
         love.graphics.clear()
             effect(function()
                 love.graphics.draw(preloadBanner, 0, 0, 0, love.graphics.getWidth() / preloadBanner:getWidth() ,love.graphics.getHeight() / preloadBanner:getHeight())
@@ -21,7 +21,7 @@ local function preloadAudio()
                 love.graphics.printf(string.format("Preloading Sounds: %s%%", math.floor((f / #files) * 100)), textFont, 0, love.graphics.getHeight() - (textFont:getHeight() + 48), love.graphics.getWidth(), "center")
             end)
         love.graphics.present()
-        AudioSources[filename] = love.audio.newSource(files[f], mode)
+        AudioSources[filename] = love.audio.newSource(files[f], "stream")
         if DEBUG_APP then
             io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file preloaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", filename))
         end
@@ -48,6 +48,15 @@ function love.initialize(args)
 
     fontcache.init()
 
+    fnt_subtitle = fontcache.getFont("tnr", 24)
+    bg_subtitles = love.graphics.newGradient("horizontal", 
+        {0, 0, 0, 0}, 
+        {255, 255, 255, 255}, 
+        {255, 255, 255, 255}, 
+        {255, 255, 255, 255},
+        {0, 0, 0, 0}
+    )
+
     gameslot = neuron.new("trtfa")
 
     gameslot.save.game = {
@@ -64,6 +73,8 @@ function love.initialize(args)
                 vsync = false,
                 antialiasing = true,
                 windowEffects = true,
+                subtitles = true,
+                displayFPS = false,
             },
             progress = {
                 initialCutscene = false,
@@ -74,7 +85,8 @@ function love.initialize(args)
     }
     gameslot:initialize()
 
-    languageService = LanguageController(gameslot.save.game.user.settings.language)
+    languageService = LanguageController:getData(gameslot.save.game.user.settings.language)
+    languageRaw = LanguageController:getRawData(gameslot.save.game.user.settings.language)
 
     registers = {
         user = {
@@ -128,7 +140,7 @@ function love.initialize(args)
     end)
 
     gamestate.registerEvents()
-    gamestate.switch(LoadingState)
+    gamestate.switch(SplashState)
 end
 
 function love.update(elapsed)
@@ -147,6 +159,9 @@ function love.keypressed(k)
         end
         if k == "f7" then
             registers.system.camEdit = not registers.system.camEdit
+        end
+        if k == "f4" then
+            gamestate.switch(LoadingState)
         end
         if registers.system.camEdit then
             if editBTN then

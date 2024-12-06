@@ -15,7 +15,7 @@ function MenuState:init()
     fnt_textWarn = fontcache.getFont("ocrx", 35)
     fnt_menu = fontcache.getFont("tnr", 40)
     fnt_settingsTitle = fontcache.getFont("tnr", 55)
-    fnt_settingsDesc = fontcache.getFont("tnr", 25)
+    fnt_settingsDesc = fontcache.getFont("tnr", 20)
 
     shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
     shd_blur = moonshine(moonshine.effects.boxblur)
@@ -122,7 +122,7 @@ function MenuState:enter()
         fadeTween:ease("linear")
         fadeTween:oncomplete(function()
             AudioSources["menu_theme_again"]:stop()
-            gamestate.switch(NightState)
+            gamestate.switch(LoadingState)
         end)
     end)
 
@@ -427,10 +427,6 @@ function MenuState:keypressed(k)
     if not skippedWarn then
         skippedWarn = true
     end
-end
-
-function MenuState:wheelmoved(x, y)
-    settingsSubstate:wheelmoved(x, y)
 end
 
 return MenuState

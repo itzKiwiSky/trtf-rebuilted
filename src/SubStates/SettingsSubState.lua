@@ -59,6 +59,22 @@ function SettingsSubState:load()
                 meta = {},
             },
             {
+                text = languageService["menu_settings_display_fps"],
+                type = "bool",
+                target = false,
+                valueTarget = "displayFPS",
+                description = languageService["menu_settings_description_display_fps"],
+                meta = {},
+            },
+            {
+                text = languageService["menu_settings_subtitles"],
+                type = "bool",
+                target = false,
+                valueTarget = "subtitles",
+                description = languageService["menu_settings_description_subtitles"],
+                meta = {},
+            },
+            {
                 text = languageService["menu_settings_preserve_assets"],
                 type = "bool",
                 target = false,
@@ -71,6 +87,9 @@ function SettingsSubState:load()
                 type = "button",
                 target = function()
                     SettingsSubState.currentLangID = SettingsSubState.currentLangID + 1
+                    gameslot.save.game.user.settings.language = langFiles[SettingsSubState.currentLangID]
+                    languageService = LanguageController:getData()
+                    languageRaw = LanguageController:getData(gameslot.save.game.user.settings.language)
                     if SettingsSubState.currentLangID > #langFiles then
                         SettingsSubState.currentLangID = 1
                     end
@@ -187,7 +206,7 @@ function SettingsSubState:draw()
 
             if o.description then
                 if o.meta.hovered then
-                    love.graphics.printf(o.description, fnt_settingsDesc, 0, love.graphics.getHeight() - 100, love.graphics.getWidth(), "center")
+                    love.graphics.printf(o.description, fnt_settingsDesc, 0, love.graphics.getHeight() - fnt_settingsDesc:getHeight() - 2, love.graphics.getWidth(), "center")
                 end
             end
         end
@@ -240,17 +259,6 @@ function SettingsSubState:mousepressed(x, y, button)
 
         gameslot:saveSlot()
     end
-end
-
-
-function SettingsSubState:wheelmoved(x, y)
-    --[[
-    if y < 0 then
-        self.options.config.offsetY = self.options.config.offsetY - 1
-    elseif y > 0 then
-        self.options.config.offsetY = self.options.config.offsetY + 1
-    end
-    ]]--
 end
 
 return SettingsSubState

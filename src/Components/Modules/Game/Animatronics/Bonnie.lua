@@ -43,9 +43,14 @@ function BonnieAI.update(elapsed)
                     end
                 end
                 BonnieAI.currentState = BonnieAI.currentState + 1
-    
                 NightState.playWalk()
-                
+
+                if officeState.flashlight.state then
+                    if BonnieAI.currentState == 4 then
+                        officeState.flashlight.isFlicking = true
+                    end
+                end
+
                 if DEBUG_APP then
                     print(string.format("[%s] Moved | MoveID: %s State: %s", BonnieAI.__name__, BonnieAI.move, BonnieAI.currentState))
                 end
@@ -57,25 +62,23 @@ function BonnieAI.update(elapsed)
             BonnieAI.timer = 0
         end
     else
-        print("to dkadjkadjakd")
         if not AudioSources["stare"]:isPlaying() then
             AudioSources["stare"]:play()
         end
 
         BonnieAI.timer = BonnieAI.timer + elapsed
-        if BonnieAI.timer >= 0.1 then
+        if BonnieAI.timer >= 0.02 then
             BonnieAI.timer = 0
             BonnieAI.patience = BonnieAI.patience + 1
             officeState.hasAnimatronicInOffice = true
-            print(BonnieAI.patience)
         end
 
         if officeState.hasAnimatronicInOffice then
             if BonnieAI.patience >= 150 and not officeState.maskUp then
-                --ded
-                print("se fudekkk")
+                --officeState.jumpscareRunning = true
             elseif BonnieAI.patience >= 150 and officeState.maskUp then
                 print("tchau")
+                BonnieAI.patience = 0
                 BonnieAI.timer = 0
                 BonnieAI.currentState = 1
                 officeState.hasAnimatronicInOffice = false

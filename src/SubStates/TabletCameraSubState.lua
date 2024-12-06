@@ -139,7 +139,10 @@ function TabletCameraSubState:draw()
                 love.graphics.setColor(1, 1, 1, 1)
 
                 love.graphics.draw(NightState.assets.camSystemError, love.graphics.getWidth() / 2, 200, 0, 0.8, 0.8, NightState.assets.camSystemError:getWidth() / 2, NightState.assets.camSystemError:getHeight() / 2)
-                love.graphics.printf("Failed to fetch camera footage...", fnt_camError, 0, 550, love.graphics.getWidth(), "center")
+                love.graphics.printf(languageService["game_misc_camera_error"], fnt_camError, 0, 450, love.graphics.getWidth(), "center")
+                love.graphics.setColor(0.5, 0.5, 0.5, 1)
+                    love.graphics.printf(languageService["game_misc_camera_error_id"] .. " FAZ-CM08823", fnt_timerfnt, 0, 530, love.graphics.getWidth(), "center")
+                love.graphics.setColor(1, 1, 1, 1)
             end
     end)
 
