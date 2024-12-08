@@ -8,7 +8,7 @@ end
 function DeathState:draw()
     love.graphics.setColor(0, 0, 0, bgfade)
         love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-l   ove.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.draw(bg, 0, 0)
 end
 
