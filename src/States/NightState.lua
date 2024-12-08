@@ -1,6 +1,7 @@
 NightState = {}
 
 NightState.KilledBy = ""
+NightState.killed = false
 NightState.nightID = 1
 NightState.isCustomNight = false
 NightState.animatronicsAI = {
@@ -65,7 +66,8 @@ function NightState:init()
     NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {31, 225, 34, 255}, {20, 100, 28, 255})
     NightState.assets.grd_toxicmeter = love.graphics.newGradient("vertical", {255, 255, 255, 255}, {0, 0, 0, 255})
 
-    blurFX = moonshine(moonshine.effects.boxblur)
+    blurFX = moonshine(moonshine.effects.gaussianblur)
+    blurFX.gaussianblur.sigma = 5
 
     fnt_vhs = fontcache.getFont("vcr", 25)
     fnt_camfnt = fontcache.getFont("vcr", 16)
@@ -73,6 +75,10 @@ function NightState:init()
     fnt_camError = fontcache.getFont("vcr", 30)
     fnt_camName = fontcache.getFont("vcr", 42)
     fnt_boldtnr = fontcache.getFont("tnr_bold", 20)
+    fnt_nightDisplay = fontcache.getFont("tnr", 60)
+
+    fnt_phoneCallName = fontcache.getFont("ocrx", 25)
+    fnt_phoneCallFooter = fontcache.getFont("ocrx", 18)
 
     shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
     shd_perspective:send("latitudeVar", 22.5)
@@ -81,10 +87,14 @@ function NightState:init()
 
     cnv_mainCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
     cnv_phone = love.graphics.newCanvas(love.graphics.getDimensions())
+    cnv_blurPhone = love.graphics.newCanvas(love.graphics.getDimensions())
     love.graphics.clear(love.graphics.getBackgroundColor())
 end
 
 function NightState:enter()
+    NightState.KilledBy = ""
+    NightState.killed = false
+
     love.mouse.setVisible(true)
     -- scripts --
     doorController = require 'src.Components.Modules.Game.DoorController'
@@ -93,6 +103,8 @@ function NightState:enter()
     tabletCameraSubState = require 'src.SubStates.TabletCameraSubState'
     maskController = require 'src.Components.Modules.Game.MaskController'
     phoneController = require 'src.Components.Modules.Game.PhoneController'
+    ShakeController = require 'src.Components.Modules.Game.Utils.ShakeController'
+    jumpscareController = require 'src.Components.Modules.Game.JumpscareController'
 
     -- import AI --
     local aif = love.filesystem.getDirectoryItems("src/Components/Modules/Game/Animatronics")
@@ -110,7 +122,7 @@ function NightState:enter()
 
         AudioSources["amb_night"]:play()
         AudioSources["amb_night"]:setLooping(true)
-        AudioSources["amb_night"]:setVolume(0.48)
+        AudioSources["amb_night"]:setVolume(0.68)
     end
 
     AudioSources["cam_interference"]:setVolume(0.60)
@@ -165,7 +177,10 @@ function NightState:enter()
     nightTextDisplay = {
         text = string.format("Night %s", NightState.nightID),
         fade = 0,
-        acc = 0
+        scale = 1,
+        acc = 0,
+        displayNightText = false,
+        invert = false
     }
 
     -- room --
@@ -183,8 +198,14 @@ function NightState:enter()
     gameCam.factorX = 2.46
     gameCam.factorY = 25
 
-    phoneController:init(NightState.assets.phoneModel, 30, "ph")
+    phoneController:init(NightState.assets.phoneModel, 45, "ph")
     phoneController.visible = false
+    phoneController.hitbox = {
+        x = 1036, 
+        y = 540, 
+        w = 48, 
+        h = 48
+    }
 
     tabletController:init(NightState.assets.tablet, 34, "tab_")
     tabletController.visible = false
@@ -207,13 +228,15 @@ function NightState:enter()
 
     officeState = {
         _t = 0,
+        nightRun = false,
         jumpscareRunning = false,
         dead = false,
         fadealpha = 1,
         tabletFirstBoot = true,
         tabletBootProgress = 0,
         tabletBootProgressAlpha = 1,
-        phoneCall = true,
+        phoneCall = false,
+        phoneCallNotRefused = false,
         power = 100,
         tabletUp = false,
         maskUp = false,
@@ -254,8 +277,6 @@ function NightState:enter()
         }
     }
 
-    print(tostring(gameslot.save.game.user.settings.subtitles))
-
     tmr_nightStartPhone = timer.new()
 
     tmr_nightStartPhone:script(function(sleep)
@@ -267,6 +288,16 @@ function NightState:enter()
                 NightState.assets.calls["call_night" .. NightState.nightID]:play()
                 subtitlesController.clear()
                 subtitlesController.queue(languageRaw.subtitles["call_night" .. NightState.nightID])
+            sleep(6)
+                officeState.phoneCallNotRefused = true
+                officeState.phoneCall = true
+                phoneController.hitbox.x = 1090
+            sleep(NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") - 6)
+                phoneController:setState(false)
+                AudioSources["phone_pickup"]:play()
+                nightTextDisplay.displayNightText = true
+                subtitlesController.clear()
+                officeState.phoneCall = false
         end
     end)
 end
@@ -303,7 +334,49 @@ function NightState:draw()
         love.graphics.draw(cnv_mainCanvas, 0, 0)
     love.graphics.setShader()
 
-    -- tablet --
+    -- phone shit --
+    cnv_phone:renderTo(function()
+        love.graphics.clear(0, 0, 0, 0)
+        if phoneController.visible and phoneController.frame == 1 then
+            local btn_refuse = NightState.assets["phone_refuse"]
+            local btn_accept = NightState.assets["phone_accept"]
+            love.graphics.draw(NightState.assets["phone_bg"], 1010, 375, 0, 200 / NightState.assets["phone_bg"]:getWidth(), 236 / NightState.assets["phone_bg"]:getHeight())
+            if officeState.phoneCallNotRefused then
+                love.graphics.draw(btn_refuse, 1090, 540, 0, 48 / btn_refuse:getWidth(), 48 / btn_refuse:getHeight())
+            else
+                love.graphics.draw(btn_refuse, 1036, 540, 0, 48 / btn_refuse:getWidth(), 48 / btn_refuse:getHeight())
+                love.graphics.draw(btn_accept, 1140, 540, 0, 48 / btn_accept:getWidth(), 48 / btn_accept:getHeight())
+            end
+            love.graphics.printf(languageService["game_misc_call_name"], fnt_phoneCallName, 1011, 430, 193, "center")
+            if officeState.phoneCallNotRefused then
+                local tm, ts = convertTime(NightState.assets.calls["call_night" .. NightState.nightID]:tell("seconds"), -6)
+                love.graphics.printf(string.format("%02d:%02d", tm, ts), fnt_phoneCallFooter, 1011, 470, 193, "center")
+            else
+                love.graphics.printf(languageService["game_misc_call_incoming"], fnt_phoneCallFooter, 1011, 470, 193, "center")
+            end
+            love.graphics.printf(languageService["game_misc_buttons_exit"], fnt_phoneCallFooter, 1011, 596, 193, "left")
+            love.graphics.printf(languageService["game_misc_buttons_options"], fnt_phoneCallFooter, 1011, 596, 193, "right")
+        end
+    end)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(cnv_phone, 0, 0)
+
+    cnv_blurPhone:renderTo(function()
+        love.graphics.clear(0, 0, 0, 0)
+        blurFX(function()
+            love.graphics.draw(cnv_phone, 0, 0)
+        end)
+    end)
+    
+    phoneController:draw()
+
+    love.graphics.setColor(1, 1, 1, 0.8)
+        love.graphics.setBlendMode("add")
+            love.graphics.draw(cnv_blurPhone, 0, 0)
+        love.graphics.setBlendMode("alpha")
+    love.graphics.setColor(1, 1, 1, 1)
+
+        -- tablet --
     tabletController:draw()
 
     -- mask --
@@ -320,26 +393,6 @@ function NightState:draw()
         love.graphics.setColor(1, 1, 1, 1)
     end
 
-    -- phone shit --
-    cnv_phone:renderTo(function()
-        if phoneController.visible and phoneController.frame == 1 then
-            local btn = NightState.assets["phone_refuse"]
-            love.graphics.draw(NightState.assets["phone_bg"], 1010, 375, 0, 200 / NightState.assets["phone_bg"]:getWidth(), 236 / NightState.assets["phone_bg"]:getHeight())
-            love.graphics.draw(btn, 1070, 445, 0, 24 / btn:getWidth(), 24 / btn:getHeight())
-        end
-    end)
-    love.graphics.draw(cnv_phone, 0, 0)
-    
-    love.graphics.setColor(1, 1, 1, 0.4)
-        love.graphics.setBlendMode("add")
-            blurFX(function()
-                love.graphics.draw(cnv_phone, 0, 0)
-            end)
-        love.graphics.setBlendMode("alpha")
-    love.graphics.setColor(1, 1, 1, 1)
-    
-    phoneController:draw()
-
     -- camera render substate --
     if tabletController.tabUp then
         tabletCameraSubState:draw()
@@ -350,7 +403,7 @@ function NightState:draw()
         if officeState.maskUp then
             love.graphics.setColor(1, 1, 1, 0.3)
         else
-            love.graphics.setColor(1, 1, 1, 0.6)
+            love.graphics.setColor(1, 1, 1, 0.4)
         end
         maskBtn:draw()
         love.graphics.setColor(1, 1, 1, 1)
@@ -359,7 +412,7 @@ function NightState:draw()
         if tabletController.tabUp then
             love.graphics.setColor(1, 1, 1, 0.3)
         else
-            love.graphics.setColor(1, 1, 1, 0.6)
+            love.graphics.setColor(1, 1, 1, 0.4)
         end
         camBtn:draw()
         love.graphics.setColor(1, 1, 1, 1)
@@ -376,10 +429,25 @@ function NightState:draw()
     end
 
     -- jumpscare --
+    if NightState.killed then
+        love.graphics.setColor(0, 0, 0, 1)
+            love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+        love.graphics.setColor(1, 1, 1, 1)
+    end
+    jumpscareController:draw()
+
+    -- display --
+    if nightTextDisplay.displayNightText then
+        local txt = NightState.nightID <= 7 and languageService["game_night_announce"]:format(NightState.nightID) or languageService["game_custom_night_announce"]
+        love.graphics.setColor(1, 1, 1, nightTextDisplay.fade)
+            love.graphics.print(txt, fnt_nightDisplay, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2 - fnt_nightDisplay:getHeight() / 2, 0, nightTextDisplay.scale, nightTextDisplay.scale, fnt_nightDisplay:getWidth(txt) / 2, fnt_nightDisplay:getHeight())
+        love.graphics.setColor(1, 1, 1, 1)
+    end
 
     -- debug shit --
     if DEBUG_APP then
         --love.graphics.print(string.format("mask : %s\n tablet : %s", officeState.maskUp, officeState.tabletUp), 90, 90)
+        love.graphics.print(debug.formattable(nightTextDisplay), 90, 90)
         if registers.system.showDebugHitbox then
             gameCam:attach()
                 love.graphics.setColor(0.7, 0, 1, 0.4)
@@ -391,7 +459,12 @@ function NightState:draw()
                         love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
                     love.graphics.setColor(1, 1, 1, 1)
                 end
+
             gameCam:detach()
+
+            love.graphics.setColor(1, 1, 0.6, 0.4)
+                love.graphics.rectangle("fill", phoneController.hitbox.x, phoneController.hitbox.y, phoneController.hitbox.w, phoneController.hitbox.h)
+            love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setColor(0.3, 1, 1, 0.4)
                 love.graphics.rectangle("fill", camBtn.x, camBtn.y, camBtn.w, camBtn.h)
             love.graphics.setColor(1, 1, 1, 1)
@@ -405,9 +478,11 @@ end
 function NightState:update(elapsed)
     local mx, my = gameCam:mousePosition()
 
-    if officeState.fadealpha > 0 then
+    if officeState.fadealpha >= 0 then
         officeState.fadealpha = officeState.fadealpha - 0.4 * elapsed
     end
+
+    --NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") - 6
 
         -- phone shit --
     phoneController:update(elapsed)
@@ -477,7 +552,7 @@ function NightState:update(elapsed)
     end
 
     if officeState.maskUp then
-        officeState.toxicmeter = officeState.toxicmeter + 13 * elapsed
+        officeState.toxicmeter = officeState.toxicmeter + 9 * elapsed
 
         if officeState.toxicmeter >= 100 then
             officeState.toxicmeter = 100
@@ -487,7 +562,7 @@ function NightState:update(elapsed)
     end
 
     -- animatronic --
-    if not officeState.phoneCall then
+    if officeState.nightRun then
         for k, v in pairs(NightState.AnimatronicControllers) do
             v.update(elapsed)
         end
@@ -539,7 +614,7 @@ function NightState:update(elapsed)
         end
     })
     
-    if not officeState.phoneCall then
+    if officeState.nightRun then
         night.time = night.time + elapsed
     end
 
@@ -578,6 +653,9 @@ function NightState:update(elapsed)
     -- mask animation --
     maskController:update(elapsed)
 
+    -- jumpscare --
+    jumpscareController:update(elapsed)
+
     -- camera update substate --
     if tabletController.tabUp then
         tabletCameraSubState:update(elapsed)
@@ -607,10 +685,46 @@ function NightState:update(elapsed)
 
     -- phone begin --
     if NightState.nightID >= 1 and NightState.nightID <= 5 then
-        if not NightState.assets.calls["call_night" .. NightState.nightID]:isPlaying() then
+        if not officeState.phoneCallNotRefused and NightState.assets.calls["call_night" .. NightState.nightID]:tell("seconds") <= NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") then
             tmr_nightStartPhone:update(elapsed)
         end
     end
+
+    if nightTextDisplay.displayNightText and not nightTextDisplay.invert then
+        if not AudioSources["bells"]:isPlaying() then
+            AudioSources["bells"]:play()
+        end
+        nightTextDisplay.acc = nightTextDisplay.acc + elapsed
+        if nightTextDisplay.acc >= 0.1 then
+            nightTextDisplay.acc = 0
+            nightTextDisplay.fade = nightTextDisplay.fade + 8.5 * elapsed
+            nightTextDisplay.scale = nightTextDisplay.scale + 0.4 * elapsed
+
+            if nightTextDisplay.fade >= 1.2 then
+                nightTextDisplay.invert = true
+            end
+        end
+    elseif nightTextDisplay.displayNightText and nightTextDisplay.invert then
+        officeState.nightRun = true
+        nightTextDisplay.acc = nightTextDisplay.acc + elapsed
+        if nightTextDisplay.acc >= 0.1 then
+            nightTextDisplay.acc = 0
+            nightTextDisplay.fade = nightTextDisplay.fade - 10.2 * elapsed
+            nightTextDisplay.scale = nightTextDisplay.scale + 0.2 * elapsed
+
+            if nightTextDisplay.fade <= 0 then
+                nightTextDisplay.displayNightText = false
+            end
+        end
+    end
+    
+--[[
+    if not officeState.phoneCallNotRefused and not NightState.assets.calls["call_night" .. NightState.nightID]:isPlaying() then
+        phoneController:setState(false)
+        AudioSources["phone_pickup"]:play()
+        --officeState.displayNightText = true
+    end
+    ]]--
 end
 
 function NightState:mousepressed(x, y, button)
@@ -649,6 +763,17 @@ function NightState:mousepressed(x, y, button)
                         end
                     end
                 end
+            end
+        end
+
+        if phoneController.visible and officeState.phoneCallNotRefused and not nightTextDisplay.displayNightText then
+            if collision.pointRect({x = x, y = y}, phoneController.hitbox) then
+                NightState.assets.calls["call_night" .. NightState.nightID]:seek(NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") - 1)
+                phoneController:setState(false)
+                AudioSources["phone_pickup"]:play()
+                nightTextDisplay.displayNightText = true
+                subtitlesController.clear()
+                officeState.phoneCall = false
             end
         end
     end

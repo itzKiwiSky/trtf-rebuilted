@@ -76,8 +76,15 @@ function BonnieAI.update(elapsed)
         if officeState.hasAnimatronicInOffice then
             if BonnieAI.patience >= 150 and not officeState.maskUp then
                 --officeState.jumpscareRunning = true
+                if not NightState.killed then
+                    NightState.killed = true
+                    jumpscareController:init("bonnie", 35)
+                    jumpscareController.onComplete = function()
+                        NightState.KilledBy = "bonnie"
+                        gamestate.switch(DeathState)
+                    end
+                end
             elseif BonnieAI.patience >= 150 and officeState.maskUp then
-                print("tchau")
                 BonnieAI.patience = 0
                 BonnieAI.timer = 0
                 BonnieAI.currentState = 1

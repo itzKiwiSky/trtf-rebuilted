@@ -63,7 +63,25 @@
         "game_energy" : "Energy: %s",
         "misc" : {
             "game_misc_camera_error" : "Failed to fetch camera footage...",
-            "game_misc_camera_error_id" : "Report this error to specialized team\nand give them this code:"
+            "game_misc_camera_error_id" : "Report this error to specialized team\nand give them this code:",
+            "game_misc_call_name" : "Boss",
+            "game_misc_call_incoming" : "Incoming call...",
+            "game_misc_buttons_options" : "Options",
+            "game_misc_buttons_exit" : "Exit"
+        }
+    },
+    "gameover" : {
+        "gameover_title" : "You are dead!",
+        "gameover_button_retry" : "Retry shift",
+        "gameover_button_exit" : "Back to menu",
+        "gameover_explain" : {
+            "gameover_explain_bonnie" : "Bonnie will make his way to your office, you can use your flashlight to see if he's on the window of your office. Use the mask to make him go away.",
+            "gameover_explain_chica" : "Chica will move to your office as well, use the mask to make she back to the stage.",
+            "gameover_explain_freddy" : "Freddy will move towards your office, use your flashlight on the cameras to make he return, and don't let the power go off.",
+            "gameover_explain_foxy" : "He will appear in front of your office, use your flashlight to check his stage, when he's about to move, check which side he's going and close the door to make him go away.",
+            "gameover_explain_sugar" : "She will make her way to your office at the right vent, close the vent to not let her come to you.",
+            "gameover_explain_kitty" : "She will come to the left vent, close the vent to not let her come.",
+            "gameover_explain_puppet" : ""
         }
     },
     "subtitles" : {

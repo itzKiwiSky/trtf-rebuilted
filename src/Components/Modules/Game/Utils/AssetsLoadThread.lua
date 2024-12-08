@@ -135,7 +135,7 @@ return function()
     phone = nil
     loveloader.newImage(assets, "phone_bg", "assets/images/game/night/phone/UI/bg.png")
     loveloader.newImage(assets, "phone_refuse", "assets/images/game/night/phone/UI/phone_refuse_button.png")
-
+    loveloader.newImage(assets, "phone_accept", "assets/images/game/night/phone/UI/phone_accept_button.png")
 
     -- jumpscares --
     assets["jumpscares"] = {}
@@ -144,16 +144,14 @@ return function()
         local isFolder = love.filesystem.getInfo(j).type == "directory"
         local folderName = j:match("[^/]+$")
         if isFolder then
-            assets["jumpscares"][folderName] = {}
             local fls = love.filesystem.getDirectoryItems(j)
+            assets["jumpscares"][folderName] = {}
             assets["jumpscares"][folderName].frameCount = 0
             for f = 1, #fls, 1 do
                 loveloader.newImage(assets["jumpscares"][folderName], "jmp_" .. f, j .. "/" .. fls[f])
-                assets["jumpscares"][folderName].frameCount = fls
+                assets["jumpscares"][folderName].frameCount = f
             end
-            fls = nil
         end
     end
-
     return assets
 end
