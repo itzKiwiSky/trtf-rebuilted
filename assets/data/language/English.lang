@@ -70,7 +70,7 @@
         }
     },
     "gameover" : {
-        "gameover_title" : "You are dead!",
+        "gameover_title" : "Game over!",
         "gameover_button_retry" : "Retry shift",
         "gameover_button_exit" : "Back to menu",
         "gameover_explain" : {

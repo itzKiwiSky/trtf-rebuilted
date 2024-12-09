@@ -27,6 +27,7 @@ function DeathState:enter()
         clickItems = false,
         textDisplay = 0,
         canDisplay = false,
+        color = 1
     }
 
     explaindeath = {
@@ -87,17 +88,25 @@ function DeathState:draw()
         love.graphics.draw(bg, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, math.rad(startAngle), startZoom, startZoom, bg:getWidth() / 2, bg:getHeight() / 2)
 
         for _, i in ipairs(gitems) do
-            love.graphics.rectangle("line", i.hitbox.x, i.hitbox.y, i.hitbox.w, i.hitbox.h)
+            --love.graphics.rectangle("line", i.hitbox.x, i.hitbox.y, i.hitbox.w, i.hitbox.h)
             if i.hovered then
-                blurFX(function()
-                    love.graphics.clear(0, 0, 0, 0)
-                    love.graphics.print(i.text, fnt_gameover, love.graphics.getWidth() / 2 - fnt_gameover:getWidth(i.text) / 2, gameOptions.y + (fnt_gameover:getHeight() + 16) * _)
-                end)
+                love.graphics.setBlendMode("add")
+                    blurFX(function()
+                        love.graphics.clear(0, 0, 0, 0)
+                        love.graphics.print(i.text, fnt_gameover, love.graphics.getWidth() / 2 - fnt_gameover:getWidth(i.text) / 2, gameOptions.y + (fnt_gameover:getHeight() + 16) * _)
+                    end)
+                love.graphics.setBlendMode("alpha")
             end
             love.graphics.print(i.text, fnt_gameover, love.graphics.getWidth() / 2 - fnt_gameover:getWidth(i.text) / 2, gameOptions.y + (fnt_gameover:getHeight() + 16) * _)
         end
 
-        love.graphics.setColor(1, 1, 1, gameOptions.textDisplay)
+        love.graphics.setColor(1, gameOptions.color, gameOptions.color, gameOptions.textDisplay)
+            love.graphics.setBlendMode("add")
+                blurFX(function()
+                    love.graphics.clear(0, 0, 0, 0)
+                    love.graphics.printf(languageService["gameover_title"], fnt_gameoverTitle, 0, 200, love.graphics.getWidth(), "center")
+                end)
+            love.graphics.setBlendMode("alpha")
             love.graphics.printf(languageService["gameover_title"], fnt_gameoverTitle, 0, 200, love.graphics.getWidth(), "center")
         love.graphics.setColor(1, 1, 1, 1)
 
@@ -105,17 +114,21 @@ function DeathState:draw()
         love.graphics.setColor(1, 1, 1, explaindeath.alpha)
         if NightState.KilledBy == "" then
             love.graphics.draw(dicons["dummy"], 24, explaindeath.y, 0, 72 / dicons["dummy"]:getWidth(), 72 / dicons["dummy"]:getHeight())
-            blurFX(function()
-                love.graphics.clear(0, 0, 0, 0)
-                love.graphics.printf(languageService["gameover_explain_dummy"], fnt_gameoverExplain, 120, explaindeath.y, love.graphics.getWidth() - 260, "left")
-            end)
+            love.graphics.setBlendMode("add")
+                blurFX(function()
+                    love.graphics.clear(0, 0, 0, 0)
+                    love.graphics.printf(languageService["gameover_explain_dummy"], fnt_gameoverExplain, 120, explaindeath.y, love.graphics.getWidth() - 260, "left")
+                end)
+            love.graphics.setBlendMode("alpha")
             love.graphics.printf(languageService["gameover_explain_dummy"], fnt_gameoverExplain, 120, explaindeath.y, love.graphics.getWidth() - 260, "left")
         else
             love.graphics.draw(dicons[NightState.KilledBy], 24, explaindeath.y, 0, 72 / dicons[NightState.KilledBy]:getWidth(), 72 / dicons[NightState.KilledBy]:getHeight())
-            blurFX(function()
-                love.graphics.clear(0, 0, 0, 0)
-                love.graphics.printf(languageService["gameover_explain_" .. NightState.KilledBy], fnt_gameoverExplain, 120, explaindeath.y, love.graphics.getWidth() - 260, "left")
-            end)
+            love.graphics.setBlendMode("add")
+                blurFX(function()
+                    love.graphics.clear(0, 0, 0, 0)
+                    love.graphics.printf(languageService["gameover_explain_" .. NightState.KilledBy], fnt_gameoverExplain, 120, explaindeath.y, love.graphics.getWidth() - 260, "left")
+                end)
+            love.graphics.setBlendMode("alpha")
             love.graphics.printf(languageService["gameover_explain_" .. NightState.KilledBy], fnt_gameoverExplain, 120, explaindeath.y, love.graphics.getWidth() - 260, "left")
         end
         love.graphics.setLineWidth(5)
@@ -130,11 +143,14 @@ function DeathState:draw()
 end
 
 function DeathState:update(elapsed)
-    startAngle = math.lerp(startAngle, 0, 0.007)
-    startZoom = math.lerp(startZoom, 1, 0.007)
+    startAngle = math.lerp(startAngle, 0, 0.039)
+    startZoom = math.lerp(startZoom, 1, 0.039)
 
     if gameOptions.canDisplay then
         gameOptions.textDisplay = gameOptions.textDisplay + 0.5 * elapsed
+        if gameOptions.textDisplay >= 1 then
+            gameOptions.color = gameOptions.color - 0.8 * elapsed
+        end
     end
 
     if gameOptions.clickItems then
