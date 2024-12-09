@@ -12,7 +12,6 @@
             "menu_button_continue" : "Continue",
             "menu_button_extras" : "Extras",
             "menu_button_custom_night" : "Custom Night",
-            "menu_button_extra_shift" : "8th Night",
             "menu_button_exit" : "Exit"
         },
         "settings" : {
@@ -81,7 +80,8 @@
             "gameover_explain_foxy" : "He will appear in front of your office, use your flashlight to check his stage, when he's about to move, check which side he's going and close the door to make him go away.",
             "gameover_explain_sugar" : "She will make her way to your office at the right vent, close the vent to not let her come to you.",
             "gameover_explain_kitty" : "She will come to the left vent, close the vent to not let her come.",
-            "gameover_explain_puppet" : "she exist..."
+            "gameover_explain_puppet" : "She will move randomly on the cameras, rewind her music box to calm her down.",
+            "gameover_explain_dummy" : "How the fuck did you get killed by the dummy?"
         }
     },
     "subtitles" : {

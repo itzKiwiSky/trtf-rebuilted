@@ -166,16 +166,6 @@ function MenuState:enter()
                 end,
             },
             {
-                text = languageService["menu_button_extra_shift"],
-                hitbox = {},
-                locked = gameslot.save.game.user.progress.night < 7,
-                hovered = false,
-                offset = 0,
-                action = function()
-                    
-                end,
-            },
-            {
                 text = languageService["menu_button_exit"],
                 hitbox = {},
                 locked = false,
