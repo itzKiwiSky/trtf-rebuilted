@@ -5,7 +5,6 @@ local function preloadAudio()
 
     for f = 1, #files, 1 do
         local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
-        --AudioSources[filename] = love.audio.newSource(files[f], "stream")
         loveloader.newSource(AudioSources, filename, files[f], "stream")
         if DEBUG_APP then
             io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file preloaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", filename))
