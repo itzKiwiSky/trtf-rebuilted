@@ -120,8 +120,13 @@ function Neuron:saveSlot()
     end
 end
 
-function Neuron:clear()
-    self.save = utils.clear(self.save)
+function Neuron:removeSlot()
+    local slotHashedName = love.data.encode("string", "hex", love.data.hash("sha1", self.name))
+    local slotFile = love.filesystem.getInfo("slots/" .. slotHashedName .. ".neu")
+    if slotFile then
+        love.filesystem.remove("slots/" .. slotHashedName .. ".neu")
+        love.filesystem.remove("slots/" .. slotHashedName .. "backup.neu")
+    end
 end
 
 return Neuron

@@ -1,43 +1,6 @@
 love.filesystem.load("src/Components/Initialization/Run.lua")()
 love.filesystem.load("src/Components/Initialization/ErrorHandler.lua")()
 
-local function preloadAudio()
-    local effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
-    local glowEffect = moonshine(moonshine.effects.glow)
-    local textFont = fontcache.getFont("ocrx", 30)
-    local preloadBanner = love.graphics.newImage("assets/images/game/banner.png")
-
-    local files = fsutil.scanFolder("assets/sounds", false, {"assets/sounds/night/calls"})
-
-    for f = 1, #files, 1 do
-        local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
-        --local mode = gameslot.save.game.user.settings.streamAudio and "stream" or "static"
-        love.graphics.clear()
-            effect(function()
-                love.graphics.draw(preloadBanner, 0, 0, 0, love.graphics.getWidth() / preloadBanner:getWidth() ,love.graphics.getHeight() / preloadBanner:getHeight())
-            end)
-            glowEffect(function()
-                love.graphics.rectangle("fill", 0, love.graphics.getHeight() - 28, math.floor(love.graphics.getWidth() * (((f / #files) * 100) / 100)), 28)
-                love.graphics.printf(string.format("Preloading Sounds: %s%%", math.floor((f / #files) * 100)), textFont, 0, love.graphics.getHeight() - (textFont:getHeight() + 48), love.graphics.getWidth(), "center")
-            end)
-        love.graphics.present()
-        AudioSources[filename] = love.audio.newSource(files[f], "stream")
-        if DEBUG_APP then
-            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file preloaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", filename))
-        end
-    end
-
-    -- clear mess --
-    textFont:release()
-    preloadBanner:release()
-    effect = nil
-    glowEffect = nil
-    files = nil
-
-    collectgarbage("collect")
-    love.graphics.clear(love.graphics.getBackgroundColor())
-end
-
 function love.initialize(args)
     fontcache = require 'src.Components.Modules.System.FontCache'
     LanguageController = require 'src.Components.Modules.System.LanguageManager'
@@ -108,9 +71,6 @@ function love.initialize(args)
     else
         love.graphics.setDefaultFilter("nearest", "nearest")
     end
-    
-    -- audio preloading --
-    preloadAudio()
 
     local gitStuff = require 'src.Components.Initialization.GitStuff'
     connectGJ()
@@ -140,7 +100,7 @@ function love.initialize(args)
     end)
 
     gamestate.registerEvents()
-    gamestate.switch(DeathState)
+    gamestate.switch(SplashState)
 end
 
 function love.update(elapsed)

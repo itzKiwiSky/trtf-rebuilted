@@ -21,6 +21,7 @@ function TabletCameraSubState:load()
     .chain(moonshine.effects.vignette)
     .chain(moonshine.effects.pixelate)
     .chain(moonshine.effects.chromasep)
+    .chain(moonshine.effect.scanlines)
 
     fxTV.pixelate.feedback = 0.1
     fxTV.pixelate.size = {1.5, 1.5}

@@ -51,14 +51,6 @@ function SettingsSubState:load()
                 meta = {},
             },
             {
-                text = languageService["menu_settings_window_effects"],
-                type = "bool",
-                target = false,
-                valueTarget = "windowEffects",
-                description = languageService["menu_settings_description_window_effects"],
-                meta = {},
-            },
-            {
                 text = languageService["menu_settings_display_fps"],
                 type = "bool",
                 target = false,
@@ -117,6 +109,7 @@ function SettingsSubState:load()
                         vsync = false,
                         antialiasing = true,
                         windowEffects = true,
+                        subtitles = true,
                     }
 
                     for k, v in pairs(defaultSettings) do

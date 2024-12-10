@@ -53,6 +53,12 @@ function MenuState:init()
 end
 
 function MenuState:enter()
+    gameProgress = {
+        initialCutscene = false,
+        extras = false,
+        night = 0
+    }
+
     settingsSubstate = require 'src.SubStates.SettingsSubState'
 
     settingsSubstate:load()
@@ -178,6 +184,11 @@ function MenuState:enter()
         },
     }
 
+    holdDelete = {
+        progress = 0,
+        active = false,
+    }
+
     warnFadeInTween = flux.to(warnItems, 3.2, { songVol = 1, fade = 0, textAlpha = 0, vignetteOpactiy = 0.6, y = love.graphics.getWidth() + 200, vignetteRadius = 0.8})
     warnFadeInTween:ease("backin")
     warnFadeInTween:oncomplete(function()
@@ -266,6 +277,8 @@ function MenuState:draw()
                 love.graphics.draw(staticfx.frames[staticfx.config.frameid], 0, 0)
             love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
+
+        love.graphics.printf(holdDelete.active and languageService["menu_hold_to_delete_progress"] or languageService["menu_hold_to_delete_data"], fnt_settingsDesc, -48, love.graphics.getHeight() - fnt_settingsDesc:getHeight() - 16, love.graphics.getWidth(), "right")
 
         -- fade rectangle --
         love.graphics.setColor(0, 0, 0, warnItems.fade)
@@ -361,6 +374,25 @@ function MenuState:update(elapsed)
             else
                 t.offset = math.lerp(t.offset, 0, 0.05)
             end
+        end
+
+        holdDelete.active = love.keyboard.isDown("delete")
+        if holdDelete.active then
+            holdDelete.progress = holdDelete.progress + elapsed
+            if holdDelete.progress >= 2.5 then
+                for k, v in pairs(gameProgress) do
+                    gameslot.save.game.user.progress[k] = v
+                end
+                gameslot:saveSlot()
+
+                for k, v in pairs(AudioSources) do
+                    v:stop()
+                end
+
+                love.event.quit("restart")
+            end
+        else
+            holdDelete.progress = 0
         end
     end
 

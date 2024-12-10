@@ -20,7 +20,6 @@
             "menu_settings_fullscreen" : "Fullscreen",
             "menu_settings_vsync" : "V-Sync",
             "menu_settings_antialiasing" : "Antialiasing",
-            "menu_settings_window_effects" : "Window effects",
             "menu_settings_display_fps" : "Show FPS",
             "menu_settings_preserve_assets" : "Cache night assets",
             "menu_settings_subtitles" : "Subtitles",
@@ -35,9 +34,8 @@
                 "menu_settings_description_fullscreen" : "Fullscreen mode",
                 "menu_settings_description_vsync" : "Enable or disable Vertical sync (VSync)",
                 "menu_settings_description_antialiasing" : "Make the textures more smooth and less pixelated",
-                "menu_settings_description_window_effects" : "Enable or disable effects with game window (move, shake, etc.)",
                 "menu_settings_description_display_fps" : "Show the game FPS on the top-left corner of the screen",
-                "menu_settings_description_preserve_assets" : "Cache all night assets, the loading times for a night will be faster\nbut will consume more device memory.",
+                "menu_settings_description_preserve_assets" : "Cache all night assets, the loading times for a night will be faster but will consume more device memory.",
                 "menu_settings_description_subtitles" : "Display subtitles for audio calls and cutscenes",
                 "menu_settings_description_gamejolt" : "Connect with gamejolt to allow special stuff",
                 "menu_settings_description_language" : "Change the game current language [Click to switch]",
@@ -45,8 +43,8 @@
             }
         },
         "menu_gamejolt_login_text" : "Welcome back %s",
-        "menu_deletion_in_progress" : "Data deletion in progress",
         "menu_hold_to_delete_data" : "Hold [DELETE] to erase your data",
+        "menu_hold_to_delete_progress" : "all your data will be erased, relese the key now to cancel or wait.",
         "loading" : {
             "loading_text" : "Loading... %d%%",
             "loading_ready" : "Press any key or click anywhere to continue"
