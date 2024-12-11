@@ -6,6 +6,13 @@ function DeathState:enter()
     fnt_gameoverExplain = fontcache.getFont("tnr", 24)
 
     screen_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
+
+    if gameslot.save.game.user.settings.shaders then
+        screen_effect.enable("crt", "vignette")
+    else
+        screen_effect.disable("crt", "vignette")
+    end
+
     blurFX = moonshine(moonshine.effects.gaussianblur)
     blurFX.gaussianblur.sigma = 8
 

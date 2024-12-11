@@ -4,7 +4,7 @@ love.filesystem.load("src/Components/Initialization/ErrorHandler.lua")()
 function love.initialize(args)
     fontcache = require 'src.Components.Modules.System.FontCache'
     LanguageController = require 'src.Components.Modules.System.LanguageManager'
-    local connectGJ = require 'src.Components.Modules.API.InitializeGJ'
+    _connectGJ = require 'src.Components.Modules.API.InitializeGJ'
     fsutil = require 'src.Components.Modules.Utils.FSUtils'
 
     AudioSources = {}
@@ -31,11 +31,9 @@ function love.initialize(args)
                     username = "",
                     usertoken = ""
                 },
-                preserveAssets = false,
                 fullscreen = false,
                 vsync = false,
                 antialiasing = true,
-                windowEffects = true,
                 subtitles = true,
                 displayFPS = false,
             },
@@ -54,6 +52,7 @@ function love.initialize(args)
     registers = {
         user = {
             paused = false,
+            gamejoltUI = false
         },
         system = {
             showDebugHitbox = false,
@@ -73,7 +72,7 @@ function love.initialize(args)
     end
 
     local gitStuff = require 'src.Components.Initialization.GitStuff'
-    connectGJ()
+    _connectGJ()
 
     if not love.filesystem.isFused() then
         gitStuff.getAll()

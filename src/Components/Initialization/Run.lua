@@ -1,8 +1,45 @@
-require("src.Components.Initialization.Imports")()
-require("src.Components.Initialization.AddonLoad")()
-DEBUG_APP = not love.filesystem.isFused()
+local function copyLib()
+    if not love.filesystem.getInfo("bin") then
+        love.filesystem.createDirectory("bin")
+    end
+
+    if love.system.getOS() == "Windows" then
+        --love.filesystem.write("devi.dll", love.filesystem.read("bin/devi.dll"))
+        local dlf = love.filesystem.getDirectoryItems("assets/bin/win")
+        for d = 1, #dlf, 1 do
+            love.filesystem.write("bin/" .. dlf[d], love.filesystem.read("assets/bin/win/" .. dlf[d]))
+        end
+    elseif love.system.getOS() == "OS X" then
+        --love.filesystem.write("devi.dylib", love.filesystem.read("bin/devi.dylib"))
+        local dlf = love.filesystem.getDirectoryItems("assets/bin/macos")
+        for d = 1, #dlf, 1 do
+            love.filesystem.write("bin/" .. dlf[d], love.filesystem.read("assets/bin/macos/" .. dlf[d]))
+        end
+    elseif love.system.getOS() == "Linux" then
+        --love.filesystem.write("devi.so", love.filesystem.read("bin/devi.so"))
+        local dlf = love.filesystem.getDirectoryItems("assets/bin/linux")
+        for d = 1, #dlf, 1 do
+            love.filesystem.write("bin/" .. dlf[d], love.filesystem.read("assets/bin/linux/" .. dlf[d]))
+        end
+    end
+end
+
 subtitlesController = require 'src.Components.Modules.Game.Utils.Subtitles'
 function love.run()
+    require("src.Components.Initialization.AddonLoad")()
+    local sourcePath = love.filesystem.getSaveDirectory()
+    local newCPath = string.format(
+        "%s/?.dll;%s/?.so;%s/?.dylib;%s",
+        sourcePath,
+        sourcePath,
+        sourcePath,
+        package.cpath)
+    package.cpath = newCPath
+
+    copyLib()
+
+    require("src.Components.Initialization.Imports")()
+    DEBUG_APP = not love.filesystem.isFused()
 
     love.math.setRandomSeed(os.time())
     math.randomseed(os.time())

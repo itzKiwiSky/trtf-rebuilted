@@ -21,11 +21,17 @@ function TabletCameraSubState:load()
     .chain(moonshine.effects.vignette)
     .chain(moonshine.effects.pixelate)
     .chain(moonshine.effects.chromasep)
-    .chain(moonshine.effect.scanlines)
+    .chain(moonshine.effects.scanlines)
 
     fxTV.pixelate.feedback = 0.1
     fxTV.pixelate.size = {1.5, 1.5}
     fxTV.chromasep.radius = 1
+
+    if gameslot.save.game.user.settings.shaders then
+        fxTV.enable("vignette", "chromasep")
+    else
+        fxTV.disable("vignette", "chromasep")
+    end
 
     interferenceFX = love.graphics.newShader("assets/shaders/Interference.glsl")
     interferenceFX:send("intensity", 0.012)

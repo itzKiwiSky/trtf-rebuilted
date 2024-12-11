@@ -33,7 +33,7 @@ function SplashState:draw()
 end
 
 function SplashState:update(elapsed)
-    if not introVideo:isPlaying() and canContinue then
+    if not introVideo:isPlaying() then
         --[[
         if not gameslot.save.game.user.progress.initialCutscene then
             VideoSceneState.path = "assets/videos/lockjaw_cinematic.ogv"
@@ -51,6 +51,15 @@ function SplashState:update(elapsed)
         gamestate.switch(MenuState)
     else
         loveloader.update()
+    end
+end
+
+function SplashState:keypressed(k)
+    if canContinue then
+        introVideo:pause()
+        introVideo:rewind()
+        love.mouse.setVisible(true)
+        gamestate.switch(MenuState)
     end
 end
 

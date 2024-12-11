@@ -42,6 +42,16 @@
                 "menu_settings_description_reset_settings" : "Reset all the settings to their default value"
             }
         },
+        "menu_settings_gamejolt" : {
+            "menu_settings_gamejolt_username" : "Username",
+            "menu_settings_gamejolt_token" : "Token",
+            "menu_settings_gamejolt_error" : "[FAILURE] An error occurred during authentication.",
+            "menu_settings_gamejolt_buttons" : {
+                "menu_settings_gamejolt_button_connect" : "Connect",
+                "menu_settings_gamejolt_button_cancel" : "Cancel",
+                "menu_settings_gamejolt_button_clear" : "Clear"
+            }
+        },
         "menu_gamejolt_login_text" : "Welcome back %s",
         "menu_hold_to_delete_data" : "Hold [DELETE] to erase your data",
         "menu_hold_to_delete_progress" : "all your data will be erased, relese the key now to cancel or wait.",

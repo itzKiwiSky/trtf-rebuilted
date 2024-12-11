@@ -57,7 +57,7 @@ end
 NightState.assets = {}
 
 -- I had to change the name of the local variables bc the compiler is bitching about it :( --
-function NightState:init()
+function NightState:enter()
     -- radar --
     NightState.assets["radar_icons"] = {}
     NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads = love.graphics.getQuads("assets/images/game/night/cameraUI/radar_animatronics")
@@ -89,9 +89,9 @@ function NightState:init()
     cnv_phone = love.graphics.newCanvas(love.graphics.getDimensions())
     cnv_blurPhone = love.graphics.newCanvas(love.graphics.getDimensions())
     love.graphics.clear(love.graphics.getBackgroundColor())
-end
 
-function NightState:enter()
+-----------------------------------------------
+
     NightState.KilledBy = ""
     NightState.killed = false
 

@@ -5,6 +5,10 @@ function SettingsSubState:load()
     shd_glowEffectText = moonshine(moonshine.effects.glow)
     shd_glowEffectText.glow.strength = 5
 
+    slab.Initialize({"NoDocks"})
+
+    gamejoltUI = require 'src.Components.Modules.Game.Interface.GamejoltLoginUI'
+
     spr_settings = {}
     spr_settings.img, spr_settings.quads = love.graphics.getHashedQuads("assets/images/game/menu/UI/settingsUI")
     spr_arrow = love.graphics.newImage("assets/images/game/menu/UI/arrow.png")
@@ -67,24 +71,16 @@ function SettingsSubState:load()
                 meta = {},
             },
             {
-                text = languageService["menu_settings_preserve_assets"],
-                type = "bool",
-                target = false,
-                valueTarget = "preserveAssets",
-                description = languageService["menu_settings_description_preserve_assets"],
-                meta = {},
-            },
-            {
                 text = languageService["menu_settings_language"] .. " : " .. langFiles[SettingsSubState.currentLangID],
                 type = "button",
                 target = function()
                     SettingsSubState.currentLangID = SettingsSubState.currentLangID + 1
-                    gameslot.save.game.user.settings.language = langFiles[SettingsSubState.currentLangID]
-                    languageService = LanguageController:getData()
-                    languageRaw = LanguageController:getData(gameslot.save.game.user.settings.language)
-                    if SettingsSubState.currentLangID > #langFiles then
+                    if SettingsSubState.currentLangID >= #langFiles then
                         SettingsSubState.currentLangID = 1
                     end
+                    gameslot.save.game.user.settings.language = langFiles[SettingsSubState.currentLangID]
+                    languageService = LanguageController:getData(gameslot.save.game.user.settings.language)
+                    languageRaw = LanguageController:getRawData(gameslot.save.game.user.settings.language)
                 end,
                 description = languageService["menu_settings_description_language"],
                 meta = {},
@@ -93,7 +89,10 @@ function SettingsSubState:load()
                 text = gamejolt.isLoggedIn and languageService["menu_settings_gamejolt_connected"] or languageService["menu_settings_gamejolt_not_connect"] ,
                 type = "button",
                 target = function()
-                    print("Im a button")
+                    if gamejolt.isLoggedIn then
+                    else
+                        registers.user.gamejoltUI = true
+                    end
                 end,
                 description = languageService["menu_settings_description_gamejolt"],
                 meta = {},
@@ -105,10 +104,8 @@ function SettingsSubState:load()
                     local defaultSettings = {
                         shaders = true,
                         language = "English",
-                        preserveAssets = false,
                         vsync = false,
                         antialiasing = true,
-                        windowEffects = true,
                         subtitles = true,
                     }
 
@@ -199,10 +196,12 @@ function SettingsSubState:draw()
 
             if o.description then
                 if o.meta.hovered then
-                    love.graphics.printf(o.description, fnt_settingsDesc, 0, love.graphics.getHeight() - fnt_settingsDesc:getHeight() - 2, love.graphics.getWidth(), "center")
+                    love.graphics.printf(o.description, fnt_settingsDesc, 0, love.graphics.getHeight() - fnt_settingsDesc:getHeight() - 10, love.graphics.getWidth(), "center")
                 end
             end
         end
+
+        slab.Draw()
     end
 end
 
@@ -220,6 +219,10 @@ function SettingsSubState:update(elapsed)
                 o.meta.alpha = math.lerp(o.meta.alpha, 0, 0.06)
             end
         end
+
+        slab.Update(elapsed)
+
+        gamejoltUI()
     else
         self.blur = math.lerp(self.blur, 0, 0.05)
     end
@@ -230,27 +233,29 @@ end
 
 function SettingsSubState:mousepressed(x, y, button)
     if self.active then
-        for _, o in ipairs(self.options.elements) do
-            if o.meta.hovered then
-                if type(o.target) == "boolean" then
-                    o.target = not o.target
-                    gameslot.save.game.user.settings[o.valueTarget] = o.target
-                else
-                    o.target()
+        if not registers.user.gamejoltUI then
+            for _, o in ipairs(self.options.elements) do
+                if o.meta.hovered then
+                    if type(o.target) == "boolean" then
+                        o.target = not o.target
+                        gameslot.save.game.user.settings[o.valueTarget] = o.target
+                    else
+                        o.target()
+                    end
                 end
             end
-        end
-
-        --love.window.setFullscreen(gameslot.save.game.user.settings.fullscreen, "exclusive")
-        love.window.setVSync(gameslot.save.game.user.settings.vsync and 1 or 0)
     
-        if gameslot.save.game.user.settings.antialiasing then
-            love.graphics.setDefaultFilter("linear", "linear")
-        else
-            love.graphics.setDefaultFilter("nearest", "nearest")
+            --love.window.setFullscreen(gameslot.save.game.user.settings.fullscreen, "exclusive")
+            love.window.setVSync(gameslot.save.game.user.settings.vsync and 1 or 0)
+        
+            if gameslot.save.game.user.settings.antialiasing then
+                love.graphics.setDefaultFilter("linear", "linear")
+            else
+                love.graphics.setDefaultFilter("nearest", "nearest")
+            end
+    
+            gameslot:saveSlot()
         end
-
-        gameslot:saveSlot()
     end
 end
 

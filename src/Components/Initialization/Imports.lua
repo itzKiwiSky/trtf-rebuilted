@@ -1,6 +1,6 @@
 return function()
     jit = require 'jit'
-    http = require 'socket.http'
+    https = require 'https'
     utf8 = require 'utf8'
     bit = require 'bit'
     moonshine = require 'libraries.moonshine'
