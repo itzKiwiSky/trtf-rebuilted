@@ -11,7 +11,7 @@ local function loadAnimatronic(id)
     return anfiles
 end
 
-function MenuState:init()
+function MenuState:enter()
     fnt_textWarn = fontcache.getFont("ocrx", 35)
     fnt_menu = fontcache.getFont("tnr", 40)
     fnt_settingsTitle = fontcache.getFont("tnr", 55)
@@ -50,9 +50,7 @@ function MenuState:init()
     end
     
     journal = love.graphics.newImage("assets/images/game/menu/news/en.png")
-end
 
-function MenuState:enter()
     gameProgress = {
         initialCutscene = false,
         extras = false,

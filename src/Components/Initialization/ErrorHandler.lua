@@ -1,6 +1,7 @@
 function love.errorhandler(msg)
     utf8 = require 'utf8'
     nfs = require 'libraries.nativefs'
+    fontcache = require 'src.Components.Modules.System.FontCache'
 
     local function error_printer(msg, layer)
         print((debug.traceback("[Error]: " .. tostring(msg), 1+(layer or 1)):gsub("\n[^\n]+$", "")))
@@ -88,58 +89,57 @@ function love.errorhandler(msg)
     p = p:gsub("\t", "")
     p = p:gsub("%[string \"(.-)\"%]", "%1")
 
-    local fnt_error = love.graphics.newFont("assets/fonts/ocrx.ttf", 20)
-    local cnv_noise = love.graphics.newCanvas(love.graphics.getDimensions())
-    local shd_noise = love.graphics.newShader("assets/shaders/Fract.glsl")
-    shd_noise:send("resolution", {love.graphics.getWidth(), love.graphics.getHeight()})
-    shd_noise:send("OCTAVES", 9)
-    shd_noise:send("LACUNARITY", 2.5)
-    shd_noise:send("GAIN", 0.52)
-    shd_noise:send("AMPLITUDE", 0.4)
-    shd_noise:send("FREQUENCY", 1.5)
-    shd_noise:send("SCALE", 2.5)
-
     -- generate log file --
     local pt = nfs.getWorkingDirectory() .. "/crashlog.txt"
     pt = pt:gsub("\\", "/")
-    local fl, err = nfs.newFile(nfs.getWorkingDirectory() .. "/crashlog.txt", "w")
-    print(pt)
+    local fl, err = nfs.newFile(pt, "w")
     fl:write(p)
     fl:close()
 
+    local sc = love.graphics.newImage("assets/images/system/Screen.png")
+    local staticfx = {
+        config = {
+            timer = 0,
+            frameid = 1,
+            speed = 0.05
+        },
+        frames = {}
+    }
+
+    local disp = false
+
+    local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static")
+    for s = 1, #statics, 1 do
+        table.insert(staticfx.frames, love.graphics.newImage("assets/images/game/effects/static/" .. statics[s]))
+    end
+
+    local fnt_title = fontcache.getFont("tnr", 60)
+    local fnt_error = fontcache.getFont("tnr", 30)
+    local fnt_errdisp = fontcache.getFont("ocrx", 18)
+
     local function draw()
         if not love.graphics.isActive() then return end
-        local pos = 70
+        local pos = 200
         love.graphics.clear(0, 0, 0, 0)
         
-        cnv_noise:renderTo(function()
-            love.graphics.clear(0, 0, 0, 0)
-            love.graphics.setShader(shd_noise)
-                love.graphics.setColor(0.76, 0, 0)
-                love.graphics.draw(errorGradient, 0, 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-                love.graphics.setColor(1, 1, 1)
-            love.graphics.setShader()
-        end)
     
-        love.graphics.draw(cnv_noise, 0, 0)
+        love.graphics.draw(sc, 0, 0)
+        love.graphics.setBlendMode("add")
+            love.graphics.setColor(1, 1, 1, 0.2)
+                love.graphics.draw(staticfx.frames[staticfx.config.frameid], 0, 0)
+            love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setBlendMode("alpha")
 
-        love.graphics.setColor(0, 0, 0, 1)
-            love.graphics.printf(p, fnt_error, pos, pos + 2, love.graphics.getWidth() - pos)
-        love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.printf(p, fnt_error, pos, pos, love.graphics.getWidth() - pos)
+        local txt = "Oh no! apparently frankburt has died due and game error\nAn error log has been saved on the game folder.\nPlease contact the developers and send the \"crashlog.txt\" file to them\n\n\nThe game will be terminated, press [ESC] to close or press [F1] to see the error."
+
+        love.graphics.printf("-[ERROR]-", fnt_title, 0, 100, love.graphics.getWidth(), "center")
+        love.graphics.printf(txt, fnt_error, 0, 250, love.graphics.getWidth(), "center")
+
+        if disp then
+            love.graphics.printf(p, fnt_errdisp, 80, 500, love.graphics.getWidth() - 80)
+        end
 
         love.graphics.present()
-    end
-
-    local fullErrorText = p
-    local function copyToClipboard()
-        if not love.system then return end
-        love.system.setClipboardText(fullErrorText)
-        p = p .. "\nCopied to clipboard!"
-    end
-
-    if love.system then
-        p = p .. "\n\nPress Ctrl+C or tap to copy this error"
     end
 
     return function()
@@ -150,31 +150,26 @@ function love.errorhandler(msg)
                 return 1
             elseif e == "keypressed" and a == "escape" then
                 return 1
-            elseif e == "keypressed" and a == "c" and love.keyboard.isDown("lctrl", "rctrl") then
-                copyToClipboard()
-            elseif e == "touchpressed" then
-                local name = love.window.getTitle()
-                if #name == 0 or name == "Untitled" then name = "Game" end
-                local buttons = {"OK", "Cancel"}
-                if love.system then
-                    buttons[3] = "Copy to clipboard"
-                end
-                local pressed = love.window.showMessageBox("Quit "..name.."?", "", buttons)
-                if pressed == 1 then
-                    return 1
-                elseif pressed == 3 then
-                    copyToClipboard()
-                end
+            elseif e == "keypressed" and a == "f1" then
+                disp = not disp
             end
         end
 
-        shd_noise:send("time", love.timer.getTime() * 2)
+        local elapsed = love.timer.step()
+
+        staticfx.config.timer = staticfx.config.timer + elapsed
+        if staticfx.config.timer >= staticfx.config.speed then
+            staticfx.config.timer = 0
+            staticfx.config.frameid = staticfx.config.frameid + 1
+            if staticfx.config.frameid >= #staticfx.frames then
+                staticfx.config.frameid = 1
+            end
+        end
 
         draw()
 
         if love.timer then
-            love.timer.sleep(0.1)
+            love.timer.sleep(0.01)
         end
     end
-
 end
