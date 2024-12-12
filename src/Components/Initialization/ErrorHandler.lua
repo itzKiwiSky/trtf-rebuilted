@@ -130,7 +130,7 @@ function love.errorhandler(msg)
             love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
 
-        local txt = "Oh no! apparently frankburt has died due and game error\nAn error log has been saved on the game folder.\nPlease contact the developers and send the \"crashlog.txt\" file to them\n\n\nThe game will be terminated, press [ESC] to close or press [F1] to see the error."
+        local txt = "Oh no! apparently frankburt has died due an game error\nAn error log has been saved on the game folder.\nPlease contact the developers and send the \"crashlog.txt\" file to them\n\n\nThe game will be terminated, press [ESC] to close or press [F1] to see the error."
 
         love.graphics.printf("-[ERROR]-", fnt_title, 0, 100, love.graphics.getWidth(), "center")
         love.graphics.printf(txt, fnt_error, 0, 250, love.graphics.getWidth(), "center")
