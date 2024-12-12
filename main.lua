@@ -92,6 +92,8 @@ function love.initialize(args)
         love.filesystem.createDirectory("screenshots")
     end
 
+    error("wtf you did wrong...?")
+
     tmr_gamejoltHeartbeat = timer.new()
     tmr_gamejoltHeartbeat:every(20, function()
         gamejolt.pingSession(true)

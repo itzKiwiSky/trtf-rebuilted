@@ -86,13 +86,9 @@ function SettingsSubState:load()
                 meta = {},
             },
             {
-                text = gamejolt.isLoggedIn and languageService["menu_settings_gamejolt_connected"] or languageService["menu_settings_gamejolt_not_connect"] ,
+                text = gamejolt.isLoggedIn and languageService["menu_settings_gamejolt_connected"] or languageService["menu_settings_gamejolt_not_connect"],
                 type = "button",
                 target = function()
-                    if gamejolt.isLoggedIn then
-                    else
-                        registers.user.gamejoltUI = true
-                    end
                 end,
                 description = languageService["menu_settings_description_gamejolt"],
                 meta = {},
@@ -126,6 +122,21 @@ function SettingsSubState:load()
             },
         }
     }
+
+    self.options.elements[7].target = function()
+        if gamejolt.isLoggedIn then
+            gameslot.save.game.user.settings.gamejolt.usertoken = ""
+            gameslot.save.game.user.settings.gamejolt.username = ""
+            gamejolt.username = ""
+            gamejolt.userToken = ""
+            gamejolt.isLoggedIn = false
+            --gamejolt.authUser("", "")
+            gameslot:saveSlot()
+        else
+            registers.user.gamejoltUI = true
+        end
+        self.options.elements[7].text = gamejolt.isLoggedIn and languageService["menu_settings_gamejolt_connected"] or languageService["menu_settings_gamejolt_not_connect"] 
+    end
 
     for _, o in ipairs(self.options.elements) do
         if o.type then

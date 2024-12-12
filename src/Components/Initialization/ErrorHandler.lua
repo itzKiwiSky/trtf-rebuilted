@@ -1,5 +1,6 @@
 function love.errorhandler(msg)
     utf8 = require 'utf8'
+    nfs = require 'libraries.nativefs'
 
     local function error_printer(msg, layer)
         print((debug.traceback("[Error]: " .. tostring(msg), 1+(layer or 1)):gsub("\n[^\n]+$", "")))
@@ -19,7 +20,7 @@ function love.errorhandler(msg)
     error_printer(msg, 2)
 
     -- assets --
-    local errorGradient = love.graphics.newGradient("vertical", {104, 184, 97}, {48, 93, 44, 255})
+    local errorGradient = love.graphics.newGradient("vertical", {230, 58, 58}, {99, 18, 26, 255})
 
     if not love.window or not love.graphics or not love.event then
         return
@@ -87,17 +88,45 @@ function love.errorhandler(msg)
     p = p:gsub("\t", "")
     p = p:gsub("%[string \"(.-)\"%]", "%1")
 
+    local fnt_error = love.graphics.newFont("assets/fonts/ocrx.ttf", 20)
+    local cnv_noise = love.graphics.newCanvas(love.graphics.getDimensions())
+    local shd_noise = love.graphics.newShader("assets/shaders/Fract.glsl")
+    shd_noise:send("resolution", {love.graphics.getWidth(), love.graphics.getHeight()})
+    shd_noise:send("OCTAVES", 9)
+    shd_noise:send("LACUNARITY", 2.5)
+    shd_noise:send("GAIN", 0.52)
+    shd_noise:send("AMPLITUDE", 0.4)
+    shd_noise:send("FREQUENCY", 1.5)
+    shd_noise:send("SCALE", 2.5)
+
+    -- generate log file --
+    local pt = nfs.getWorkingDirectory() .. "/crashlog.txt"
+    pt = pt:gsub("\\", "/")
+    local fl, err = nfs.newFile(nfs.getWorkingDirectory() .. "/crashlog.txt", "w")
+    print(pt)
+    fl:write(p)
+    fl:close()
+
     local function draw()
         if not love.graphics.isActive() then return end
         local pos = 70
-        love.graphics.clear(62/255, 157/255, 53/255)
-
-        love.graphics.draw(errorGradient, 0, 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+        love.graphics.clear(0, 0, 0, 0)
+        
+        cnv_noise:renderTo(function()
+            love.graphics.clear(0, 0, 0, 0)
+            love.graphics.setShader(shd_noise)
+                love.graphics.setColor(0.76, 0, 0)
+                love.graphics.draw(errorGradient, 0, 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+                love.graphics.setColor(1, 1, 1)
+            love.graphics.setShader()
+        end)
+    
+        love.graphics.draw(cnv_noise, 0, 0)
 
         love.graphics.setColor(0, 0, 0, 1)
-        love.graphics.printf(p, pos, pos + 2, love.graphics.getWidth() - pos)
+            love.graphics.printf(p, fnt_error, pos, pos + 2, love.graphics.getWidth() - pos)
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(p, pos, pos, love.graphics.getWidth() - pos)
+            love.graphics.printf(p, fnt_error, pos, pos, love.graphics.getWidth() - pos)
 
         love.graphics.present()
     end
@@ -138,6 +167,8 @@ function love.errorhandler(msg)
                 end
             end
         end
+
+        shd_noise:send("time", love.timer.getTime() * 2)
 
         draw()
 
