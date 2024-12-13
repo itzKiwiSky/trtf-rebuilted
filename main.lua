@@ -52,7 +52,8 @@ function love.initialize(args)
     registers = {
         user = {
             paused = false,
-            gamejoltUI = false
+            gamejoltUI = false,
+            loggedIn = false,
         },
         system = {
             showDebugHitbox = false,
@@ -92,12 +93,15 @@ function love.initialize(args)
         love.filesystem.createDirectory("screenshots")
     end
 
-    error("wtf you did wrong...?")
+    th_ping = love.thread.newThread("src/Components/Modules/Game/Utils/ThreadPing.lua")
 
     tmr_gamejoltHeartbeat = timer.new()
     tmr_gamejoltHeartbeat:every(20, function()
-        gamejolt.pingSession(true)
-        io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client heartbeated a session (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
+        th_ping:start(
+            registers,
+            gameslot.save.game.user.settings.gamejolt.username, 
+            gameslot.save.game.user.settings.gamejolt.usertoken
+        )
     end)
 
     gamestate.registerEvents()

@@ -63,11 +63,11 @@
     "game" : {
         "game_night_announce" : "Night %s",
         "game_custom_night_announce" : "Custom Night",
-        "game_mask_toxic" : "Toxic",
+        "game_mask_toxic" : "Oxygen",
         "game_vent_state_closed" : "Vent status: Closed",
         "game_vent_state_open" : "Vent status: Open",
         "game_energy_usage" : "Enery usage",
-        "game_energy" : "Energy: %s",
+        "game_energy" : "Energy: %d%%",
         "misc" : {
             "game_misc_camera_error" : "Failed to fetch camera footage...",
             "game_misc_camera_error_id" : "Report this error to specialized team\nand give them this code:",
@@ -89,7 +89,8 @@
             "gameover_explain_sugar" : "She will make her way to your office at the right vent, close the vent to not let her come to you.",
             "gameover_explain_kitty" : "She will come to the left vent, close the vent to not let her come.",
             "gameover_explain_puppet" : "She will move randomly on the cameras, rewind her music box to calm her down.",
-            "gameover_explain_dummy" : "How the fuck did you get killed by the dummy?"
+            "gameover_explain_dummy" : "How the fuck did you get killed by the dummy?",
+            "gameover_explain_oxygen" : "Don't let your oxygen go lower, or you will be suffocated."
         }
     },
     "subtitles" : {

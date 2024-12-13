@@ -1,3 +1,5 @@
+termColors = require 'src.Addons.TermColors'
+
 --- Prints a text with format styled
 ---@param _str string
 function io.printf(_str)

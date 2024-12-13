@@ -1,6 +1,23 @@
 DeathState = {}
 
 function DeathState:enter()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
+
+    staticfx = {
+        config = {
+            timer = 0,
+            frameid = 1,
+            speed = 0.05
+        },
+        frames = {}
+    }
+    local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static")
+    for s = 1, #statics, 1 do
+        table.insert(staticfx.frames, love.graphics.newImage("assets/images/game/effects/static/" .. statics[s]))
+    end
+
     fnt_gameover = fontcache.getFont("tnr", 30)
     fnt_gameoverTitle = fontcache.getFont("tnr", 60)
     fnt_gameoverExplain = fontcache.getFont("tnr", 24)
@@ -76,12 +93,12 @@ function DeathState:enter()
     tmr_deathbegin = timer.new()
     tmr_deathbegin:after(3.5, function()
         gameOptions.canDisplay = true
-        tween_Options = flux.to(gameOptions, 1.5, { y = love.graphics.getHeight() - 400 })
+        tween_Options = flux.to(gameOptions, 0.8, { y = love.graphics.getHeight() - 400 })
         :ease("sineout")
         :oncomplete(function()
             gameOptions.clickItems = true
         end)
-        :after(explaindeath, 2, {y = love.graphics.getHeight() - 120, alpha = 1})
+        :after(explaindeath, 1.2, {y = love.graphics.getHeight() - 120, alpha = 1})
         :ease("sineout")
     end)
 
@@ -94,8 +111,13 @@ function DeathState:draw()
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.draw(bg, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, math.rad(startAngle), startZoom, startZoom, bg:getWidth() / 2, bg:getHeight() / 2)
 
+        love.graphics.setBlendMode("add")
+            love.graphics.setColor(1, 1, 1, 0.2)
+                love.graphics.draw(staticfx.frames[staticfx.config.frameid], 0, 0)
+            love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setBlendMode("alpha")
+
         for _, i in ipairs(gitems) do
-            --love.graphics.rectangle("line", i.hitbox.x, i.hitbox.y, i.hitbox.w, i.hitbox.h)
             if i.hovered then
                 love.graphics.setBlendMode("add")
                     blurFX(function()
@@ -106,7 +128,7 @@ function DeathState:draw()
             end
             love.graphics.print(i.text, fnt_gameover, love.graphics.getWidth() / 2 - fnt_gameover:getWidth(i.text) / 2, gameOptions.y + (fnt_gameover:getHeight() + 16) * _)
         end
-
+        
         love.graphics.setColor(1, gameOptions.color, gameOptions.color, gameOptions.textDisplay)
             love.graphics.setBlendMode("add")
                 blurFX(function()
@@ -128,7 +150,7 @@ function DeathState:draw()
                 end)
             love.graphics.setBlendMode("alpha")
             love.graphics.printf(languageService["gameover_explain_dummy"], fnt_gameoverExplain, 120, explaindeath.y, love.graphics.getWidth() - 260, "left")
-        else
+        elseif dicons[NightState.KilledBy] then
             love.graphics.draw(dicons[NightState.KilledBy], 24, explaindeath.y, 0, 72 / dicons[NightState.KilledBy]:getWidth(), 72 / dicons[NightState.KilledBy]:getHeight())
             love.graphics.setBlendMode("add")
                 blurFX(function()
@@ -137,6 +159,14 @@ function DeathState:draw()
                 end)
             love.graphics.setBlendMode("alpha")
             love.graphics.printf(languageService["gameover_explain_" .. NightState.KilledBy], fnt_gameoverExplain, 120, explaindeath.y, love.graphics.getWidth() - 260, "left")
+        else
+            love.graphics.setBlendMode("add")
+                blurFX(function()
+                    love.graphics.clear(0, 0, 0, 0)
+                    love.graphics.printf(languageService["gameover_explain_oxygen"], fnt_gameoverExplain, 120, explaindeath.y, love.graphics.getWidth() - 260, "left")
+                end)
+            love.graphics.setBlendMode("alpha")
+            love.graphics.printf(languageService["gameover_explain_oxygen"], fnt_gameoverExplain, 120, explaindeath.y, love.graphics.getWidth() - 260, "left")
         end
         love.graphics.setLineWidth(5)
             blurFX(function()
@@ -159,7 +189,16 @@ function DeathState:update(elapsed)
             gameOptions.color = gameOptions.color - 0.8 * elapsed
         end
     end
-
+        -- static animation --
+    staticfx.config.timer = staticfx.config.timer + elapsed
+    if staticfx.config.timer >= staticfx.config.speed then
+        staticfx.config.timer = 0
+        staticfx.config.frameid = staticfx.config.frameid + 1
+        if staticfx.config.frameid >= #staticfx.frames then
+            staticfx.config.frameid = 1
+        end
+    end
+    
     if gameOptions.clickItems then
         for _, i in ipairs(gitems) do
             local mx, my = love.mouse.getPosition()

@@ -23,6 +23,9 @@ function TabletCameraSubState:load()
     .chain(moonshine.effects.chromasep)
     .chain(moonshine.effects.scanlines)
 
+    fxTV.scanlines.width = 1.5
+    fxTV.scanlines.opacity = 0.65
+
     fxTV.pixelate.feedback = 0.1
     fxTV.pixelate.size = {1.5, 1.5}
     fxTV.chromasep.radius = 1
@@ -62,18 +65,18 @@ function TabletCameraSubState:load()
     }
 
     self.camerasName = {
-        "arcade",
-        "storage",
-        "dining_area",
-        "pirate_cove",
-        "parts_and_service",
-        "showstage",
-        "kitchen",
-        "prize_corner",
-        "left_hall",
-        "right_hall",
-        "left_vent",
-        "right_vent",
+        "Arcade",
+        "Storage",
+        "Dining area",
+        "Pirate cove",
+        "Parts & service",
+        "Showstage",
+        "Kitchen",
+        "Prize corner",
+        "Left hall",
+        "Right hall",
+        "Left vent",
+        "Right vent",
     }
 
     self.camerasID = {
@@ -126,31 +129,31 @@ end
 function TabletCameraSubState:draw()
     fxCanvas:renderTo(function()
         love.graphics.clear(0, 0, 0, 0)
-            if NightState.assets.cameras[self.camID] then
-                love.graphics.setShader(interferenceFX)
-                    if officeState.lightCam.state then
-                        if not officeState.lightCam.isFlicking then
-                            love.graphics.draw(NightState.assets.cameras[self.camID]["cs_" .. self.cameraMeta[self.camID].frame], 0, 0)
-                        end
+        if NightState.assets.cameras[self.camID] then
+            love.graphics.setShader(interferenceFX)
+                if officeState.lightCam.state then
+                    if not officeState.lightCam.isFlicking then
+                        love.graphics.draw(NightState.assets.cameras[self.camID]["cs_" .. self.cameraMeta[self.camID].frame], 0, 0)
                     end
-                love.graphics.setShader()
-                
-                love.graphics.setLineWidth(5)
-                    love.graphics.setColor(1, 1, 1, 0.7)
-                        self.camMarker:draw()
-                    love.graphics.setColor(1, 1, 1, 1)
-                love.graphics.setLineWidth(1)
-            else
-                love.graphics.setColor(0, 0, 0, 1)
-                    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+                end
+            love.graphics.setShader()
+            
+            love.graphics.setLineWidth(5)
+                love.graphics.setColor(1, 1, 1, 0.7)
+                    self.camMarker:draw()
                 love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.setLineWidth(1)
+        else
+            love.graphics.setColor(0, 0, 0, 1)
+                love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+            love.graphics.setColor(1, 1, 1, 1)
 
-                love.graphics.draw(NightState.assets.camSystemError, love.graphics.getWidth() / 2, 200, 0, 0.8, 0.8, NightState.assets.camSystemError:getWidth() / 2, NightState.assets.camSystemError:getHeight() / 2)
-                love.graphics.printf(languageService["game_misc_camera_error"], fnt_camError, 0, 450, love.graphics.getWidth(), "center")
-                love.graphics.setColor(0.5, 0.5, 0.5, 1)
-                    love.graphics.printf(languageService["game_misc_camera_error_id"] .. " FAZ-CM08823", fnt_timerfnt, 0, 530, love.graphics.getWidth(), "center")
-                love.graphics.setColor(1, 1, 1, 1)
-            end
+            love.graphics.draw(NightState.assets.camSystemError, love.graphics.getWidth() / 2, 200, 0, 0.8, 0.8, NightState.assets.camSystemError:getWidth() / 2, NightState.assets.camSystemError:getHeight() / 2)
+            love.graphics.printf(languageService["game_misc_camera_error"], fnt_camError, 0, 450, love.graphics.getWidth(), "center")
+            love.graphics.setColor(0.5, 0.5, 0.5, 1)
+                love.graphics.printf(languageService["game_misc_camera_error_id"] .. " FAZ-CM08823", fnt_timerfnt, 0, 530, love.graphics.getWidth(), "center")
+            love.graphics.setColor(1, 1, 1, 1)
+        end
     end)
 
     loadingCanvas:renderTo(function()
@@ -192,14 +195,8 @@ function TabletCameraSubState:draw()
         love.graphics.printf(self.camerasName[self.camButtonID], fnt_camName, 0, 32, love.graphics.getWidth(), "center")
         love.graphics.print(night.text, fnt_timerfnt, 64, 37)
 
-        if officeState.tabletFirstBoot then
-            love.graphics.setColor(1, 1, 1, officeState.tabletBootProgressAlpha)
-                love.graphics.draw(loadingCanvas, 0, 0)
-            love.graphics.setColor(1, 1, 1, 1)
-        end
-    end)
-
-    if officeState.tabletBootProgress >= 100 and officeState.tabletBootProgressAlpha <= 0.8 then
+        love.graphics.print(languageService["game_energy"]:format(officeState.power.powerDisplay), fnt_camError, 64, love.graphics.getHeight() - 148)
+        love.graphics.print(languageService["game_energy_usage"], fnt_camError, 64, love.graphics.getHeight() - 120)
         love.graphics.draw(NightState.assets.camMap, love.graphics.getWidth() - 370, 200, 0, 1.5, 1.5)
         for _, b in ipairs(self.buttons) do
             if _ == self.camButtonID  then
@@ -223,7 +220,14 @@ function TabletCameraSubState:draw()
 
             love.graphics.printf(string.upper("cam_" .. _), fnt_camfnt, b.btn.x, b.btn.y, b.btn.w - 8, "center")
         end
-    end
+
+        if officeState.tabletFirstBoot then
+            love.graphics.setColor(1, 1, 1, officeState.tabletBootProgressAlpha)
+                love.graphics.draw(loadingCanvas, 0, 0)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
+    end)
+
     if DEBUG_APP then
         if registers.system.showDebugHitbox then
             love.graphics.setColor(0.7, 0.2, 1, 0.4)

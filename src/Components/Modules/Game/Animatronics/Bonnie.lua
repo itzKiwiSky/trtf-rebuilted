@@ -22,7 +22,7 @@ BonnieAI.path = {
 
 -- just for radar shit --
 function BonnieAI.draw()
-    if  NightState.modifiers.radarMode then
+    if NightState.modifiers.radarMode then
         love.graphics.draw(NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads[2], BonnieAI.x, BonnieAI.y, 0, 2, 2, 16, 16)
     end
 end

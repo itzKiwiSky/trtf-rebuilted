@@ -58,13 +58,28 @@ NightState.assets = {}
 
 -- I had to change the name of the local variables bc the compiler is bitching about it :( --
 function NightState:enter()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
+
     -- radar --
     NightState.assets["radar_icons"] = {}
     NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads = love.graphics.getQuads("assets/images/game/night/cameraUI/radar_animatronics")
     NightState.assets["radar_icons"].image:setFilter("nearest", "nearest")
 
     NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {31, 225, 34, 255}, {20, 100, 28, 255})
-    NightState.assets.grd_toxicmeter = love.graphics.newGradient("vertical", {255, 255, 255, 255}, {0, 0, 0, 255})
+    NightState.assets.grd_toxicmeter = love.graphics.newGradient("vertical", 
+        {130, 129, 158, 255},
+        {191, 198, 227, 255},
+        {130, 129, 158, 255}
+    )
+    NightState.assets.grd_bars = love.graphics.newGradient("vertical", 
+        {242, 246, 248, 255}, 
+        {216, 225, 231, 255},
+        {181, 198, 208, 255},
+        {193, 211, 222, 255},
+        {224, 239, 249, 255}
+    )
 
     blurFX = moonshine(moonshine.effects.gaussianblur)
     blurFX.gaussianblur.sigma = 5
@@ -115,15 +130,13 @@ function NightState:enter()
     aif = nil
 
     -- sound config --
-    if not AudioSources["amb_rainleak"]:isPlaying() then
-        AudioSources["amb_rainleak"]:play()
-        AudioSources["amb_rainleak"]:setLooping(true)
-        AudioSources["amb_rainleak"]:setVolume(0.38)
+    AudioSources["amb_rainleak"]:play()
+    AudioSources["amb_rainleak"]:setLooping(true)
+    AudioSources["amb_rainleak"]:setVolume(0.38)
 
-        AudioSources["amb_night"]:play()
-        AudioSources["amb_night"]:setLooping(true)
-        AudioSources["amb_night"]:setVolume(0.68)
-    end
+    AudioSources["amb_night"]:play()
+    AudioSources["amb_night"]:setLooping(true)
+    AudioSources["amb_night"]:setVolume(0.68)
 
     AudioSources["cam_interference"]:setVolume(0.60)
 
@@ -139,6 +152,8 @@ function NightState:enter()
     AudioSources["cam_animatronic_interference"]:setVolume(0.7)
 
     AudioSources["stare"]:setLooping(true)
+
+    AudioSources["bells"]:setVolume(0.6)
 
     -- config for AI --
     local aicgf = require 'src.Components.Modules.Game.Utils.AIConfig'
@@ -237,7 +252,12 @@ function NightState:enter()
         tabletBootProgressAlpha = 1,
         phoneCall = false,
         phoneCallNotRefused = false,
-        power = 100,
+        power = {
+            powerStat = 1000,
+            powerDisplay = 100,
+            powerQueue = 1,
+            timeracc = 2.5,
+        },
         tabletUp = false,
         maskUp = false,
         flashlight = {
@@ -251,6 +271,7 @@ function NightState:enter()
         toxicmeter = 0,
         hasAnimatronicInOffice = false,
         officeFlick = false,
+        isOfficeDisabled = false,
         doors = {
             left = false,
             right = false,
@@ -319,7 +340,7 @@ function NightState:draw()
                         end
                     end
                 end
-                love.graphics.draw(NightState.assets.office[officeState.power > 0 and "idle" or "off"], 0, 0)
+                love.graphics.draw(NightState.assets.office[officeState.isOfficeDisabled and "off" or "idle"], 0, 0)
                 love.graphics.draw(NightState.assets.fanAnim["fan_" .. fanShit.fid], 0, 0)
 
                 if collision.rectRect(NightState.AnimatronicControllers["bonnie"], tabletCameraSubState.areas["office"]) then
@@ -354,8 +375,10 @@ function NightState:draw()
             else
                 love.graphics.printf(languageService["game_misc_call_incoming"], fnt_phoneCallFooter, 1011, 470, 193, "center")
             end
-            love.graphics.printf(languageService["game_misc_buttons_exit"], fnt_phoneCallFooter, 1011, 596, 193, "left")
-            love.graphics.printf(languageService["game_misc_buttons_options"], fnt_phoneCallFooter, 1011, 596, 193, "right")
+            love.graphics.setColor(0, 0, 0, 1)
+                love.graphics.printf(languageService["game_misc_buttons_exit"], fnt_phoneCallFooter, 1011, 590, 193, "left")
+                love.graphics.printf(languageService["game_misc_buttons_options"], fnt_phoneCallFooter, 1011, 590, 193, "right")
+            love.graphics.setColor(1, 1, 1, 1)
         end
     end)
     love.graphics.setColor(1, 1, 1, 1)
@@ -399,23 +422,25 @@ function NightState:draw()
     end
 
     -- ui stuff --
-    if not officeState.tabletUp then
-        if officeState.maskUp then
-            love.graphics.setColor(1, 1, 1, 0.3)
-        else
-            love.graphics.setColor(1, 1, 1, 0.4)
+    if not officeState.isOfficeDisabled then
+        if not officeState.tabletUp then
+            if officeState.maskUp then
+                love.graphics.setColor(1, 1, 1, 0.3)
+            else
+                love.graphics.setColor(1, 1, 1, 0.4)
+            end
+            maskBtn:draw()
+            love.graphics.setColor(1, 1, 1, 1)
         end
-        maskBtn:draw()
-        love.graphics.setColor(1, 1, 1, 1)
-    end
-    if not officeState.maskUp then
-        if tabletController.tabUp then
-            love.graphics.setColor(1, 1, 1, 0.3)
-        else
-            love.graphics.setColor(1, 1, 1, 0.4)
+        if not officeState.maskUp then
+            if tabletController.tabUp then
+                love.graphics.setColor(1, 1, 1, 0.3)
+            else
+                love.graphics.setColor(1, 1, 1, 0.4)
+            end
+            camBtn:draw()
+            love.graphics.setColor(1, 1, 1, 1)
         end
-        camBtn:draw()
-        love.graphics.setColor(1, 1, 1, 1)
     end
 
     love.graphics.setColor(0, 0, 0, officeState.fadealpha)
@@ -446,8 +471,7 @@ function NightState:draw()
 
     -- debug shit --
     if DEBUG_APP then
-        --love.graphics.print(string.format("mask : %s\n tablet : %s", officeState.maskUp, officeState.tabletUp), 90, 90)
-        love.graphics.print(debug.formattable(nightTextDisplay), 90, 90)
+        --love.graphics.print(debug.formattable(nightTextDisplay), 90, 90)
         if registers.system.showDebugHitbox then
             gameCam:attach()
                 love.graphics.setColor(0.7, 0, 1, 0.4)
@@ -482,8 +506,6 @@ function NightState:update(elapsed)
         officeState.fadealpha = officeState.fadealpha - 0.4 * elapsed
     end
 
-    --NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") - 6
-
         -- phone shit --
     phoneController:update(elapsed)
 
@@ -494,33 +516,35 @@ function NightState:update(elapsed)
 
     -- hud buttons --
     -- camera --
-    if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, camBtn) then
-        if not officeState.maskUp then
-            if not camBtn.isHover then
-                camBtn.isHover = true
-                if not tabletController.animationRunning then
-                    if AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:isPlaying() then
-                        AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:seek(0)
+    if not officeState.isOfficeDisabled then
+        if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, camBtn) then
+            if not officeState.maskUp then
+                if not camBtn.isHover then
+                    camBtn.isHover = true
+                    if not tabletController.animationRunning then
+                        if AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:isPlaying() then
+                            AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:seek(0)
+                        end
+                        AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:play()
+        
+                        if not officeState.tabletUp then
+                            AudioSources["amb_cam"]:play()
+                        else
+                            AudioSources["amb_cam"]:pause()
+                        end
+        
+                        officeState.tabletUp = not officeState.tabletUp
+                        tabletController:setState(officeState.tabletUp)
                     end
-                    AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:play()
-    
-                    if not officeState.tabletUp then
-                        AudioSources["amb_cam"]:play()
-                    else
-                        AudioSources["amb_cam"]:pause()
-                    end
-    
-                    officeState.tabletUp = not officeState.tabletUp
-                    tabletController:setState(officeState.tabletUp)
                 end
             end
+        else
+            camBtn.isHover = false
         end
-    else
-        camBtn.isHover = false
     end
 
     -- mask --
-    if maskController.acc >= maskController.timeout then
+    if maskController.acc >= maskController.timeout and not officeState.isOfficeDisabled then
         if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, maskBtn) then
             if not officeState.tabletUp then
                 if not maskBtn.isHover then
@@ -558,13 +582,19 @@ function NightState:update(elapsed)
             officeState.toxicmeter = 100
         end
     else
-        officeState.toxicmeter = math.lerp(officeState.toxicmeter, 0, 0.07)
+        officeState.toxicmeter = math.lerp(officeState.toxicmeter, 0, 0.05)
     end
 
     -- animatronic --
     if officeState.nightRun then
         for k, v in pairs(NightState.AnimatronicControllers) do
-            v.update(elapsed)
+            if not officeState.isOfficeDisabled then
+                v.update(elapsed)
+            else
+                if k == "freddy" then
+                    v.update(elapsed)
+                end
+            end
         end
     end
 
@@ -578,14 +608,32 @@ function NightState:update(elapsed)
     end
 
     -- fan animation --
-    fanShit.acc = fanShit.acc + elapsed
-    if fanShit.acc >= fanShit.speed then
-        fanShit.acc = 0
-        fanShit.fid = fanShit.fid + 1
-        if fanShit.fid >= NightState.assets["fanAnim"].frameCount then
-            fanShit.fid = 1
+    if not officeState.isOfficeDisabled then
+        fanShit.acc = fanShit.acc + elapsed
+        if fanShit.acc >= fanShit.speed then
+            fanShit.acc = 0
+            fanShit.fid = fanShit.fid + 1
+            if fanShit.fid >= NightState.assets["fanAnim"].frameCount then
+                fanShit.fid = 1
+            end
+        end
+    else
+        fanShit.fid = 1
+    end
+
+    -- office power control --
+    if officeState.nightRun and not officeState.isOfficeDisabled then
+        officeState.power.timeracc = officeState.power.timeracc + elapsed
+        if officeState.power.timeracc >= 4 then
+            officeState.power.powerStat = officeState.power.powerStat - officeState.power.powerQueue
+            officeState.power.timeracc = 0
+        end
+
+        if officeState.power.powerStat <= 0 then
+            officeState.isOfficeDisabled = true
         end
     end
+    officeState.power.powerDisplay = math.floor(officeState.power.powerStat / 10)
 
     -- night progression --
     -- for now I will enable this for testing but it will disable until the call is complete or refused --
@@ -717,14 +765,17 @@ function NightState:update(elapsed)
             end
         end
     end
-    
---[[
-    if not officeState.phoneCallNotRefused and not NightState.assets.calls["call_night" .. NightState.nightID]:isPlaying() then
-        phoneController:setState(false)
-        AudioSources["phone_pickup"]:play()
-        --officeState.displayNightText = true
+
+    if officeState.isOfficeDisabled then
+        if tabletController.tabUp then
+            
+        end
+
+        officeState.doors.left = false
+        officeState.doors.right = false
+        doorL:setState(officeState.doors.left)
+        doorR:setState(officeState.doors.right)
     end
-    ]]--
 end
 
 function NightState:mousepressed(x, y, button)
@@ -737,43 +788,45 @@ function NightState:mousepressed(x, y, button)
 
     -- door buttons --officeState.maskUp
     if button == 1 then
-        for k, h in pairs(officeState.doors.hitboxes) do
-            if not officeState.maskUp and not officeState.tabletUp then
-                if k == "left" then
-                    if collision.pointRect({x = mx, y = my}, h) then
-                        if not doorL.animationRunning then
-                            if AudioSources[officeState.doors.left and "door_open" or "door_close"]:isPlaying() then
-                                AudioSources[officeState.doors.left and "door_open" or "door_close"]:seek(0)
+        if not officeState.isOfficeDisabled then
+            for k, h in pairs(officeState.doors.hitboxes) do
+                if not officeState.maskUp and not officeState.tabletUp then
+                    if k == "left" then
+                        if collision.pointRect({x = mx, y = my}, h) then
+                            if not doorL.animationRunning then
+                                if AudioSources[officeState.doors.left and "door_open" or "door_close"]:isPlaying() then
+                                    AudioSources[officeState.doors.left and "door_open" or "door_close"]:seek(0)
+                                end
+                                AudioSources[officeState.doors.left and "door_open" or "door_close"]:play()
+                                officeState.doors.left = not officeState.doors.left
+                                doorL:setState(officeState.doors.left)
                             end
-                            AudioSources[officeState.doors.left and "door_open" or "door_close"]:play()
-                            officeState.doors.left = not officeState.doors.left
-                            doorL:setState(officeState.doors.left)
                         end
                     end
-                end
-                if k == "right" then
-                    if collision.pointRect({x = mx, y = my}, h) then
-                        if not doorR.animationRunning then
-                            if AudioSources[officeState.doors.right and "door_open" or "door_close"]:isPlaying() then
-                                AudioSources[officeState.doors.right and "door_open" or "door_close"]:seek(0)
+                    if k == "right" then
+                        if collision.pointRect({x = mx, y = my}, h) then
+                            if not doorR.animationRunning then
+                                if AudioSources[officeState.doors.right and "door_open" or "door_close"]:isPlaying() then
+                                    AudioSources[officeState.doors.right and "door_open" or "door_close"]:seek(0)
+                                end
+                                AudioSources[officeState.doors.right and "door_open" or "door_close"]:play()
+                                officeState.doors.right = not officeState.doors.right
+                                doorR:setState(officeState.doors.right)
                             end
-                            AudioSources[officeState.doors.right and "door_open" or "door_close"]:play()
-                            officeState.doors.right = not officeState.doors.right
-                            doorR:setState(officeState.doors.right)
                         end
                     end
                 end
             end
-        end
-
-        if phoneController.visible and officeState.phoneCallNotRefused and not nightTextDisplay.displayNightText then
-            if collision.pointRect({x = x, y = y}, phoneController.hitbox) then
-                NightState.assets.calls["call_night" .. NightState.nightID]:seek(NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") - 1)
-                phoneController:setState(false)
-                AudioSources["phone_pickup"]:play()
-                nightTextDisplay.displayNightText = true
-                subtitlesController.clear()
-                officeState.phoneCall = false
+    
+            if phoneController.visible and officeState.phoneCallNotRefused and not nightTextDisplay.displayNightText then
+                if collision.pointRect({x = x, y = y}, phoneController.hitbox) then
+                    NightState.assets.calls["call_night" .. NightState.nightID]:seek(NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") - 1)
+                    phoneController:setState(false)
+                    AudioSources["phone_pickup"]:play()
+                    nightTextDisplay.displayNightText = true
+                    subtitlesController.clear()
+                    officeState.phoneCall = false
+                end
             end
         end
     end
