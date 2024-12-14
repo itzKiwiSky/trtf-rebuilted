@@ -1,5 +1,7 @@
 MenuState = {}
 
+MenuState.warn = false
+
 local function loadAnimatronic(id)
     local chars = {"bonnie", "chica", "foxy", "freddy", "sugar", "kitty_fazcat", "lockjaw"}
     local anfiles = {}
@@ -146,17 +148,18 @@ function MenuState:enter()
                 hovered = false,
                 offset = 0,
                 action = function()
+                    gameslot.save.game.user.progress.newgame = true
                     journalConfig.active = true
                 end,
             },
             {
                 text = languageService["menu_button_continue"],
                 hitbox = {},
-                locked = gameslot.save.game.user.progress.night < 1,
+                locked = not gameslot.save.game.user.progress.newgame,
                 hovered = false,
                 offset = 0,
                 action = function()
-                    
+                    journalConfig.active = true
                 end,
             },
             {
@@ -187,9 +190,7 @@ function MenuState:enter()
         active = false,
     }
 
-    warnFadeInTween = flux.to(warnItems, 3.2, { songVol = 1, fade = 0, textAlpha = 0, vignetteOpactiy = 0.6, y = love.graphics.getWidth() + 200, vignetteRadius = 0.8})
-    warnFadeInTween:ease("backin")
-    warnFadeInTween:oncomplete(function()
+    local function _init()
         menuItemsTween = flux.to(textItems.tween, 2.3, { alpha = 1, x = 64 })
         menuItemsTween:ease("sineout")
         menuItemsTween:oncomplete(function()
@@ -202,7 +203,26 @@ function MenuState:enter()
         AudioSources["menu_theme_again"]:play()
         AudioSources["menu_theme_again"]:setLooping(true)
         AudioSources["amb_rainleak"]:setVolume(0.3)
-    end)
+    end
+
+    if not MenuState.warn then
+        warnFadeInTween = flux.to(warnItems, 3.2, { songVol = 1, fade = 0, textAlpha = 0, vignetteOpactiy = 0.6, y = love.graphics.getWidth() + 200, vignetteRadius = 0.8})
+        warnFadeInTween:ease("backin")
+        warnFadeInTween:oncomplete(function()
+            MenuState.warn = true
+            _init()
+        end)
+    else
+        warnItems.fade = 0
+        warnItems.songVol = 1
+        warnItems.textAlpha = 0
+        warnItems.vignetteOpactiy = 0.6
+        warnItems.y = love.graphics.getWidth() + 200
+        warnItems.vignetteRadius = 0.8
+
+        _init()
+    end
+
 
     menuAnimatronic = {
         x = 0,
@@ -354,7 +374,7 @@ function MenuState:update(elapsed)
         end
     end
 
-    if skippedWarn then
+    if MenuState.warn then
         flux.update(elapsed)
     end
     -- animatronic menu anim --
@@ -420,8 +440,8 @@ function MenuState:update(elapsed)
 end
 
 function MenuState:mousepressed(x, y, button)
-    if not skippedWarn then
-        skippedWarn = true
+    if not MenuState.warn then
+        MenuState.warn = true
     end
 
     settingsSubstate:mousepressed(x, y, button)
@@ -444,8 +464,8 @@ function MenuState:mousepressed(x, y, button)
 end
 
 function MenuState:keypressed(k)
-    if not skippedWarn then
-        skippedWarn = true
+    if not MenuState.warn then
+        MenuState.warn = true
     end
 end
 

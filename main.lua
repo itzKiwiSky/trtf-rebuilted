@@ -39,6 +39,7 @@ function love.initialize(args)
             },
             progress = {
                 initialCutscene = false,
+                newgame = false,
                 extras = false,
                 night = 0
             }
@@ -126,6 +127,9 @@ function love.keypressed(k)
             registers.system.camEdit = not registers.system.camEdit
         end
         if k == "f4" then
+            for k, v in pairs(AudioSources) do
+                v:stop()
+            end
             gamestate.switch(LoadingState)
         end
         if registers.system.camEdit then

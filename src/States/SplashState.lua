@@ -63,4 +63,12 @@ function SplashState:keypressed(k)
     end
 end
 
+function SplashState:leave()
+    introVideo:pause()
+    introVideo:rewind()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
+end
+
 return SplashState

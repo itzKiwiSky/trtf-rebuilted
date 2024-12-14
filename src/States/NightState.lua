@@ -26,6 +26,19 @@ function NightState.playWalk()
     end
 end
 
+local function mapToRange(input, min, max, step)
+    local clampedInput = math.max(min, math.min(max, input))
+    
+    local proportion = (clampedInput - min) / (max - min)
+
+    local invertedProportion = 1 - proportion
+    
+    local range = max - min
+    local steppedValue = math.floor(invertedProportion * range / step + 0.5) * step + min
+    
+    return steppedValue
+end
+
 local function convertTime(sc, offset)
     local tSeconds = sc + (offset or 0)
     local minutes = math.floor(tSeconds / 60)
@@ -83,6 +96,9 @@ function NightState:enter()
 
     blurFX = moonshine(moonshine.effects.gaussianblur)
     blurFX.gaussianblur.sigma = 5
+
+    blurVisionFX = moonshine(moonshine.effects.boxblur)
+    blurVisionFX.boxblur.radius = {0, 0}
 
     fnt_vhs = fontcache.getFont("vcr", 25)
     fnt_camfnt = fontcache.getFont("vcr", 16)
@@ -243,6 +259,7 @@ function NightState:enter()
 
     officeState = {
         _t = 0,
+        _f = 0,
         nightRun = false,
         jumpscareRunning = false,
         dead = false,
@@ -268,7 +285,7 @@ function NightState:enter()
             state = false,
             isFlicking = false,
         },
-        toxicmeter = 0,
+        toxicmeter = 100,
         hasAnimatronicInOffice = false,
         officeFlick = false,
         isOfficeDisabled = false,
@@ -351,9 +368,6 @@ function NightState:draw()
                 love.graphics.draw(NightState.assets.doorButtons.right[officeState.doors.right and "on" or "off"], 0, 0)
         end)
     gameCam:detach()
-    love.graphics.setShader(shd_perspective)
-        love.graphics.draw(cnv_mainCanvas, 0, 0)
-    love.graphics.setShader()
 
     -- phone shit --
     cnv_phone:renderTo(function()
@@ -381,47 +395,59 @@ function NightState:draw()
             love.graphics.setColor(1, 1, 1, 1)
         end
     end)
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.draw(cnv_phone, 0, 0)
 
-    cnv_blurPhone:renderTo(function()
+    blurVisionFX(function()
         love.graphics.clear(0, 0, 0, 0)
-        blurFX(function()
-            love.graphics.draw(cnv_phone, 0, 0)
-        end)
-    end)
+        love.graphics.setShader(shd_perspective)
+            love.graphics.draw(cnv_mainCanvas, 0, 0)
+        love.graphics.setShader()
+        
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.draw(cnv_phone, 0, 0)
     
-    phoneController:draw()
+        cnv_blurPhone:renderTo(function()
+            love.graphics.clear(0, 0, 0, 0)
+            blurFX(function()
+                love.graphics.draw(cnv_phone, 0, 0)
+            end)
+        end)
+        
+        phoneController:draw()
+    
+        love.graphics.setColor(1, 1, 1, 0.8)
+            love.graphics.setBlendMode("add")
+                love.graphics.draw(cnv_blurPhone, 0, 0)
+            love.graphics.setBlendMode("alpha")
+        love.graphics.setColor(1, 1, 1, 1)
+    
+            -- tablet --
+        tabletController:draw()
+    
+        -- mask --
+        maskController:draw()
+    
+        -- toxicmeter --
+        if officeState.maskUp then
+            love.graphics.rectangle("line", 16, 48, 256, 32)
+    
+            love.graphics.print(languageService["game_mask_toxic"], fnt_boldtnr, 16, 24)
+    
+            love.graphics.setColor(236 / 255, 56 / 255, 41 / 255, 1)
+                love.graphics.draw(NightState.assets.grd_toxicmeter, 16 + 3, 48 + 3, 0, math.floor(250 * (officeState.toxicmeter / 100)), 26)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
+    
+        -- camera render substate --
+        if tabletController.tabUp then
+            tabletCameraSubState:draw()
+        end
+    end)
 
-    love.graphics.setColor(1, 1, 1, 0.8)
-        love.graphics.setBlendMode("add")
-            love.graphics.draw(cnv_blurPhone, 0, 0)
-        love.graphics.setBlendMode("alpha")
+    love.graphics.setColor(0, 0, 0, officeState._f)
+        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
     love.graphics.setColor(1, 1, 1, 1)
 
-        -- tablet --
-    tabletController:draw()
-
-    -- mask --
-    maskController:draw()
-
-    -- toxicmeter --
-    if officeState.maskUp then
-        love.graphics.rectangle("line", 16, 48, 256, 32)
-
-        love.graphics.print(languageService["game_mask_toxic"], fnt_boldtnr, 16, 24)
-
-        love.graphics.setColor(236 / 255, 56 / 255, 41 / 255, 1)
-            love.graphics.draw(NightState.assets.grd_toxicmeter, 16 + 3, 48 + 3, 0, math.floor(250 * (officeState.toxicmeter / 100)), 26)
-        love.graphics.setColor(1, 1, 1, 1)
-    end
-
-    -- camera render substate --
-    if tabletController.tabUp then
-        tabletCameraSubState:draw()
-    end
-
-    -- ui stuff --
+        -- ui stuff --
     if not officeState.isOfficeDisabled then
         if not officeState.tabletUp then
             if officeState.maskUp then
@@ -443,15 +469,15 @@ function NightState:draw()
         end
     end
 
-    love.graphics.setColor(0, 0, 0, officeState.fadealpha)
-        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-    love.graphics.setColor(1, 1, 1, 1)
-
     if officeState.hasAnimatronicInOffice and not officeState.officeFlick then
         love.graphics.setColor(0, 0, 0, 1)
             love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
         love.graphics.setColor(1, 1, 1, 1)
     end
+
+    love.graphics.setColor(0, 0, 0, officeState.fadealpha)
+        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+    love.graphics.setColor(1, 1, 1, 1)
 
     -- jumpscare --
     if NightState.killed then
@@ -576,13 +602,30 @@ function NightState:update(elapsed)
     end
 
     if officeState.maskUp then
-        officeState.toxicmeter = officeState.toxicmeter + 9 * elapsed
+        officeState.toxicmeter = officeState.toxicmeter - 12 * elapsed
+
+        if officeState.toxicmeter <= 0 then
+            officeState.toxicmeter = 0
+
+            -- dead --
+            NightState.KilledBy = "oxygen"
+            gamestate.switch(DeathState)
+        end
+    else
+        officeState.toxicmeter = officeState.toxicmeter + 15 * elapsed
 
         if officeState.toxicmeter >= 100 then
             officeState.toxicmeter = 100
         end
+    end
+
+    local s = mapToRange(officeState.toxicmeter, 0, 100, 1) / 10
+    officeState._f = mapToRange(officeState.toxicmeter, 0, 100, 1) / 100
+    blurVisionFX.boxblur.radius = {s, s}
+    if officeState.toxicmeter >= 100 then
+        blurVisionFX.disable("boxblur")
     else
-        officeState.toxicmeter = math.lerp(officeState.toxicmeter, 0, 0.05)
+        blurVisionFX.enable("boxblur")
     end
 
     -- animatronic --

@@ -1,6 +1,11 @@
 LoadingState = {}
 
 function LoadingState:init()
+
+end
+
+function LoadingState:enter()
+    local assetThread = require 'src.Components.Modules.Game.Utils.AssetsLoadThread'
     ldBackgrounds = {}
     local bgs = love.filesystem.getDirectoryItems("assets/images/game/menu/backgrounds")
     for b = 1, #bgs, 1 do
@@ -12,10 +17,6 @@ function LoadingState:init()
     glowTextEffect = moonshine(moonshine.effects.glow)
     textLoadingFont = fontcache.getFont("ocrx", 34)
     clockIcon = love.graphics.newImage("assets/images/game/clockico.png")
-end
-
-function LoadingState:enter()
-    local assetThread = require 'src.Components.Modules.Game.Utils.AssetsLoadThread'
 
     ready = false
     pressToGO = false

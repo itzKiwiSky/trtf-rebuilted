@@ -73,7 +73,10 @@ function DeathState:enter()
             hovered = false,
             hitbox = {},
             action = function()
-                
+                for k, v in pairs(AudioSources) do
+                    v:stop()
+                end
+                gamestate.switch(MenuState)
             end
         },
     }
@@ -159,7 +162,7 @@ function DeathState:draw()
                 end)
             love.graphics.setBlendMode("alpha")
             love.graphics.printf(languageService["gameover_explain_" .. NightState.KilledBy], fnt_gameoverExplain, 120, explaindeath.y, love.graphics.getWidth() - 260, "left")
-        else
+        elseif NightState.KilledBy == "oxygen" then
             love.graphics.setBlendMode("add")
                 blurFX(function()
                     love.graphics.clear(0, 0, 0, 0)
