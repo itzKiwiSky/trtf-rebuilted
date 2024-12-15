@@ -2,12 +2,12 @@ NightState = {}
 
 NightState.KilledBy = ""
 NightState.killed = false
-NightState.nightID = 1
+NightState.nightID = 100
 NightState.isCustomNight = false
 NightState.animatronicsAI = {
     freddy = 0,
-    bonnie = 20,
-    chica = 0,
+    bonnie = 0,
+    chica = 20,
     foxy = 0,
     sugar = 0,
     kitty = 0,
@@ -336,6 +336,10 @@ function NightState:enter()
                 nightTextDisplay.displayNightText = true
                 subtitlesController.clear()
                 officeState.phoneCall = false
+        elseif NightState.nightID >= 6 then
+            sleep(3)
+                nightTextDisplay.displayNightText = true
+                officeState.phoneCall = false
         end
     end)
 end
@@ -355,6 +359,9 @@ function NightState:draw()
                         if collision.rectRect(NightState.AnimatronicControllers["bonnie"], tabletCameraSubState.areas["front_office"]) then
                             love.graphics.draw(NightState.assets["front_office_bonnie"], 0, 0)
                         end
+                        if collision.rectRect(NightState.AnimatronicControllers["chica"], tabletCameraSubState.areas["front_office"]) then
+                            love.graphics.draw(NightState.assets["front_office_chica"], 0, 0)
+                        end
                     end
                 end
                 love.graphics.draw(NightState.assets.office[officeState.isOfficeDisabled and "off" or "idle"], 0, 0)
@@ -362,6 +369,9 @@ function NightState:draw()
 
                 if collision.rectRect(NightState.AnimatronicControllers["bonnie"], tabletCameraSubState.areas["office"]) then
                     love.graphics.draw(NightState.assets["in_office_bonnie"], 0, 0)
+                end
+                if collision.rectRect(NightState.AnimatronicControllers["chica"], tabletCameraSubState.areas["office"]) then
+                    love.graphics.draw(NightState.assets["in_office_chica"], 0, 0)
                 end
 
                 love.graphics.draw(NightState.assets.doorButtons.left[officeState.doors.left and "on" or "off"], 0, 0)
@@ -775,11 +785,13 @@ function NightState:update(elapsed)
     end
 
     -- phone begin --
-    if NightState.nightID >= 1 and NightState.nightID <= 5 then
-        if not officeState.phoneCallNotRefused and NightState.assets.calls["call_night" .. NightState.nightID]:tell("seconds") <= NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") then
-            tmr_nightStartPhone:update(elapsed)
-        end
+    --[[
+    if not officeState.phoneCallNotRefused and NightState.assets.calls["call_night" .. NightState.nightID]:tell("seconds") <= NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") then
+        tmr_nightStartPhone:update(elapsed)
     end
+    ]]--
+
+    tmr_nightStartPhone:update(elapsed)
 
     if nightTextDisplay.displayNightText and not nightTextDisplay.invert then
         if not AudioSources["bells"]:isPlaying() then

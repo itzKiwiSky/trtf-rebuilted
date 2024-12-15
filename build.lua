@@ -5,35 +5,28 @@ return {
     version = "0.0.1",
     love = "11.5",
     ignore = {
-        "export", 
-        "boot.cmd", 
+        -- folders --
+        "static",
+        "export",
+        "assets",
+        "project",
+        "gjassets",
+        "docs", 
+        ".VSCodeCounter",
+        ".git",
+        -- files --
+        "boot.cmd",
+        "make.cmd",
         ".gitignore", 
         ".gitattribute", 
         ".commitid", 
-        "icon_old.png", 
-        "docs", 
-        ".VSCodeCounter", 
-        "project",
-        "gjassets"
+        "README.md",
+        "lookup.txt"
     },
     icon = "icon.png",
     identifier = "com.brightsmileteam.trtfrebuiltagain", 
     libs = { 
-        --[[
-        windows = {
-            "assets/bin/win/https.dll",
-            "assets/bin/win/discord-rpc.dll"
-        },
-        macos = {
-            "assets/bin/macos/https.so",
-            "assets/bin/macos/libdiscord-rpc.dylib"
-        },
-        linux = {
-            "assets/bin/linux/https.so",
-            "assets/bin/linux/libdiscord-rpc.so"
-        },
-        ]]--
-        all = {"LICENSE"}
+        all = {"static/LICENSE"}
     },
-    platforms = {"windows", "linux", "macos"} 
+    platforms = {"love"} 
 }

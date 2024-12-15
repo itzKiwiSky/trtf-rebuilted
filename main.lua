@@ -63,6 +63,8 @@ function love.initialize(args)
         }
     }
 
+    --error("Error caused by a intentional game design XD")
+
     -- do some shit with config --
     --love.window.setFullscreen(gameslot.save.game.user.settings.fullscreen, "exclusive")
     love.window.setVSync(gameslot.save.game.user.settings.vsync and 1 or 0)

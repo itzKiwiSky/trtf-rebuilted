@@ -4,3 +4,5 @@ scripts/SendGJ.lua
 /.VSCodeCounter
 /export
 crashlog.txt
+/static
+*.love
