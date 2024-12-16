@@ -207,8 +207,7 @@ function TabletCameraSubState:draw()
 
         if officeState.tabletBootProgress < 100 then
             love.graphics.rectangle("line", love.graphics.getWidth() / 2 - 128, 500, 256, 32)
-            --love.graphics.draw(NightState.assets.grd_progressBar, (love.graphics.getWidth() / 2 - 128) + 3, 503, 0, math.floor(250 * (officeState.tabletBootProgress / 100)), 26)
-            drawQueue((love.graphics.getWidth() / 2 - 128) + 3, 503, 256, 32, officeState.tabletBootProgress * 0.2, 20, 5, 5, {41, 165, 236}, {52, 63, 234})
+            drawQueue((love.graphics.getWidth() / 2 - 128), 500, 256, 32, officeState.tabletBootProgress * 0.2, 20, 5, 5, {41, 165, 236}, {52, 63, 234})
         end
 
         love.graphics.printf("Initializing...", fnt_vhs, 0, 550, love.graphics.getWidth(), "center")
