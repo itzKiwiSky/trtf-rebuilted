@@ -21,7 +21,7 @@ function MenuState:enter()
 
     shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
     shd_blur = moonshine(moonshine.effects.boxblur)
-    shd_chromafx = love.graphics.newShader("assets/shaders/chromatic.glsl")
+    shd_chromafx = love.graphics.newShader("assets/shaders/Chromatic.glsl")
     shd_chromafx:send("distortion", 0)
     shd_glowEffect = moonshine(moonshine.effects.glow)
     shd_glowEffect.glow.strength = 5

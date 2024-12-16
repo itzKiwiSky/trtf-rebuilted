@@ -1,4 +1,4 @@
 @echo off
 cls
 echo Making...
-lovebuild.exe ".\main.lua"
+python ".\scripts\wincompile.py"

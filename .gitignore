@@ -6,3 +6,4 @@ scripts/SendGJ.lua
 crashlog.txt
 /static
 *.love
+*/__pycache__

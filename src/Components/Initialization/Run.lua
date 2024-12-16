@@ -31,7 +31,7 @@ end
 subtitlesController = require 'src.Components.Modules.Game.Utils.Subtitles'
 function love.run()
     DEBUG_APP = not love.filesystem.isFused()
-    local sourcePath = love.filesystem.getSaveDirectory()
+    local sourcePath = love.filesystem.getSaveDirectory() .. "/bin"
     copyLib()
 
     local newCPath = string.format(

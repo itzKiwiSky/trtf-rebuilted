@@ -29,27 +29,3 @@ def makeZip(base, name, ignore = []):
                 else:
                     zip.write(i, rpath)
                 progressbar.update(1)
-
-
-
-def main():
-    ig = [
-        "./crashlog.txt",
-        "./build.lua",
-        "./boot.cmd",
-        "./make.cmd",
-        "./README.md",
-        "./.gitattributes",
-        "./.gitignore",
-        "./.commitid",
-        "./gjpromo",
-        "./export",
-        "./static",
-        "./scripts",
-        "./.git"
-    ]
-
-    makeZip("./", "feddy.love", ig)
-
-if __name__ == "__main__":
-    main()

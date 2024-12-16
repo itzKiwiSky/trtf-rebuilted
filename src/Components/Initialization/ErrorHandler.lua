@@ -90,11 +90,14 @@ function love.errorhandler(msg)
     p = p:gsub("%[string \"(.-)\"%]", "%1")
 
     -- generate log file --
-    local pt = nfs.getWorkingDirectory() .. "/crashlog.txt"
-    pt = pt:gsub("\\", "/")
-    local fl, err = nfs.newFile(pt, "w")
-    fl:write(p)
-    fl:close()
+    local pt = love.filesystem.isFused() and love.filesystem.getSourceBaseDirectory() or love.filesystem.getSaveDirectory()
+    pt = pt:gsub("\\", "/") .. "/crashes"
+    if love.filesystem.isFused() then
+        nfs.createDirectory(pt)
+    else
+        love.filesystem.createDirectory("crashes")
+    end
+    local err, f = nfs.write(string.format("%s/[%s]crashlog_%s.txt", pt, os.date("%Y%m%d"), love.data.encode("string", "hex", love.data.hash("md5", p):sub(1, 12))), tostring(p))
 
     local sc = love.graphics.newImage("assets/images/system/Screen.png")
     local staticfx = {
