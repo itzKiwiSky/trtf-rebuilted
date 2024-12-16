@@ -62,9 +62,9 @@ return function(this)
         ["right_hall"] = function()
             if collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["right_hall"]) then
                 -- only chica --
-                this.cameraMeta["left_hall"].frame = 2
+                this.cameraMeta["right_hall"].frame = 2
             else
-                this.cameraMeta["left_hall"].frame = 1
+                this.cameraMeta["right_hall"].frame = 1
             end
         end,
         ["left_vent"] = function()

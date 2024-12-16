@@ -5,18 +5,19 @@ local function interpColors(iniCol, endCol, steps)
 
     for i = 0, steps - 1 do
         local t = i / (steps - 1) -- Interpolação de 0 a 1
-        local r = math.floor(iniCol[1] * (1 - t) + iniCol[1] * t)
-        local g = math.floor(iniCol[2] * (1 - t) + iniCol[2] * t)
-        local b = math.floor(iniCol[3] * (1 - t) + iniCol[3] * t)
+        local r = math.floor((iniCol[1] / 255) * (1 - t) + (endCol[1] / 255) * t)
+        local g = math.floor((iniCol[2] / 255) * (1 - t) + (iniCol[2] / 255) * t)
+        local b = math.floor((iniCol[3] / 255) * (1 - t) + (endCol[3] / 255) * t)
         table.insert(c, {r, g, b})
     end
 
     return c
 end
 
-local function drawQueue(x, y, areaWidth, areaHeight, count, maxCount, padding, spacing, enterColor, endColor)
-    enterColor = enterColor or {0, 255, 0}
-    endColor = endColor or {255, 0, 0}
+local function drawQueue(x, y, areaWidth, areaHeight, count, maxCount, padding, spacing, ...)
+    local col = {...}
+    local enterColor = col[1] or {0, 255, 0}
+    local endColor = col[2] or {255, 0, 0}
 
     local lx = x + padding
     local ly = y + padding
@@ -25,11 +26,13 @@ local function drawQueue(x, y, areaWidth, areaHeight, count, maxCount, padding, 
     local rectHeight = areaHeight - 2 * padding
 
     assert(rectWidth >= 0 or rectHeight >= 0, "[ERROR] : Can't be less than 0")
-
-    local c = interpColors(enterColor, endColor, maxCount)
+    --print(debug.formattable(c))
 
     for i = 1, maxCount do
-        local r, g, b = c[i][1] / 255 or 0, c[i][2] / 255 or 1, c[i][3] / 255 or 0
+        local c = interpColors(enterColor, endColor, i)
+
+        local r, g, b = c[i][1] or 0, c[i][2] or 1, c[i][3] or 0
+        print(r,g,b)
     
         love.graphics.setColor(r, g, b, 1)
             if i <= count then
@@ -207,7 +210,7 @@ function TabletCameraSubState:draw()
 
         if officeState.tabletBootProgress < 100 then
             love.graphics.rectangle("line", love.graphics.getWidth() / 2 - 128, 500, 256, 32)
-            drawQueue((love.graphics.getWidth() / 2 - 128), 500, 256, 32, officeState.tabletBootProgress * 0.2, 20, 5, 5, {41, 165, 236}, {52, 63, 234})
+            drawQueue((love.graphics.getWidth() / 2 - 128), 500, 256, 38, math.floor(officeState.tabletBootProgress * 0.2), 20, 5, 5, {41, 165, 236}, {41, 165, 236})
         end
 
         love.graphics.printf("Initializing...", fnt_vhs, 0, 550, love.graphics.getWidth(), "center")
