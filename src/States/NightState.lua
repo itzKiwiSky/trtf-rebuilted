@@ -15,6 +15,10 @@ NightState.animatronicsAI = {
 }
 NightState.AnimatronicControllers = {}
 
+
+local mod = {
+    radarMode = false,
+}
 NightState.modifiers = {
     radarMode = true,      -- can be use to debug or just for cheat (I know why u will use it your mf)
 }
@@ -66,6 +70,18 @@ local function _formatAdjustedTimeAMPM(realSeconds, scaleFactor, startHour, star
 
     return hours, minutes, seconds, period
 end
+
+local function getPowerQueueCount()
+    local c = 1
+    for k, v in pairs(officeState.power.powerQueueCount) do
+        if v then
+            c = c + 1
+        end
+    end
+    return c
+end
+
+-----------------------------------------------
 
 NightState.assets = {}
 
@@ -272,6 +288,12 @@ function NightState:enter()
         power = {
             powerStat = 1000,
             powerDisplay = 100,
+            powerQueueCount = {
+                doorL = false,
+                doorR = false,
+                flashlight = false,
+                tablet = false,
+            },
             powerQueue = 1,
             timeracc = 2.5,
         },
@@ -536,6 +558,14 @@ function NightState:draw()
 end
 
 function NightState:update(elapsed)
+    if love.filesystem.isFused() then
+        if NightState.nightID <= 7 then
+            for k, v in pairs(mod) do
+                NightState.modifiers[k] = v
+            end
+        end
+    end
+
     local mx, my = gameCam:mousePosition()
 
     if officeState.fadealpha >= 0 then
@@ -674,20 +704,6 @@ function NightState:update(elapsed)
         fanShit.fid = 1
     end
 
-    -- office power control --
-    if officeState.nightRun and not officeState.isOfficeDisabled then
-        officeState.power.timeracc = officeState.power.timeracc + elapsed
-        if officeState.power.timeracc >= 4 then
-            officeState.power.powerStat = officeState.power.powerStat - officeState.power.powerQueue
-            officeState.power.timeracc = 0
-        end
-
-        if officeState.power.powerStat <= 0 then
-            officeState.isOfficeDisabled = true
-        end
-    end
-    officeState.power.powerDisplay = math.floor(officeState.power.powerStat / 10)
-
     -- night progression --
     -- for now I will enable this for testing but it will disable until the call is complete or refused --
     local day = 0
@@ -784,13 +800,6 @@ function NightState:update(elapsed)
         gameCam.y = Y_BOTTOM_FRAME
     end
 
-    -- phone begin --
-    --[[
-    if not officeState.phoneCallNotRefused and NightState.assets.calls["call_night" .. NightState.nightID]:tell("seconds") <= NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") then
-        tmr_nightStartPhone:update(elapsed)
-    end
-    ]]--
-
     tmr_nightStartPhone:update(elapsed)
 
     if nightTextDisplay.displayNightText and not nightTextDisplay.invert then
@@ -822,15 +831,39 @@ function NightState:update(elapsed)
     end
 
     if officeState.isOfficeDisabled then
-        if tabletController.tabUp then
-            
-        end
-
+        officeState.tabletUp = false
         officeState.doors.left = false
         officeState.doors.right = false
+        officeState.maskUp = true
+        maskController.setState(officeState.maskUp)
+        tabletController.setState(officeState.tabletUp)
         doorL:setState(officeState.doors.left)
         doorR:setState(officeState.doors.right)
     end
+
+    -- office power control --
+    officeState.power.powerQueue = getPowerQueueCount()
+    if officeState.nightRun and not officeState.isOfficeDisabled then
+        officeState.power.timeracc = officeState.power.timeracc + elapsed
+        if officeState.power.timeracc >= 4 then
+            officeState.power.powerStat = officeState.power.powerStat - officeState.power.powerQueue
+            officeState.power.timeracc = 0
+        end
+
+        if officeState.power.powerStat <= 0 then
+            officeState.isOfficeDisabled = true
+        end
+    end
+    officeState.power.powerDisplay = math.floor(officeState.power.powerStat / 10)
+
+    officeState.power.powerQueueCount.tablet = officeState.tabletUp
+    if officeState.tabletUp then
+        officeState.power.powerQueueCount.flashlight = officeState.lightCam.state
+    else
+        officeState.power.powerQueueCount.flashlight = officeState.flashlight.state
+    end
+    officeState.power.powerQueueCount.doorL = officeState.doors.left
+    officeState.power.powerQueueCount.doorR = officeState.doors.right
 end
 
 function NightState:mousepressed(x, y, button)

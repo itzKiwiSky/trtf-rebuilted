@@ -93,10 +93,12 @@ function DeathState:enter()
 
     gameOptions.y = love.graphics.getHeight() * 2
 
+    twn_death = flux.group()
+
     tmr_deathbegin = timer.new()
     tmr_deathbegin:after(3.5, function()
         gameOptions.canDisplay = true
-        tween_Options = flux.to(gameOptions, 0.8, { y = love.graphics.getHeight() - 400 })
+        tween_Options = twn_death:to(gameOptions, 0.8, { y = love.graphics.getHeight() - 400 })
         :ease("sineout")
         :oncomplete(function()
             gameOptions.clickItems = true
@@ -214,7 +216,7 @@ function DeathState:update(elapsed)
     end
 
     tmr_deathbegin:update(elapsed)
-    flux.update(elapsed)
+    twn_death:update(elapsed)
 end
 
 function DeathState:mousepressed(x, y, button)

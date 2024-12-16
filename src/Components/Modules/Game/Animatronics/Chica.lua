@@ -32,7 +32,7 @@ function ChicaAi.update(elapsed)
         ChicaAi.timer = ChicaAi.timer + elapsed
         if ChicaAi.timer >= 9.3 then
             ChicaAi.move = math.random(0, 20)
-            if ChicaAi.move <= NightState.animatronicsAI.chica and NightState.animatronicsAI.chica > 0 then
+            if ChicaAi.move <= NightState.animatronicsAI.chica and NightState.animatronicsAI.chica > 0 and not officeState.hasAnimatronicInOffice then
                 if officeState.tabletUp then
                     if tabletCameraSubState.camerasID[ChicaAi.metadataCameraID] then
                         if tabletCameraSubState.camerasID[ChicaAi.metadataCameraID] == tabletCameraSubState.camID then

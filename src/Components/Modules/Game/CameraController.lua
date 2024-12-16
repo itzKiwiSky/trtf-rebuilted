@@ -15,10 +15,10 @@ return function(this)
         ["dining_area"] = function()
             if collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["dining_area"]) then
                 -- only chica --
-                this.cameraMeta["dining_area"].frame = 4
+                this.cameraMeta["dining_area"].frame = 3
             else
                 -- empty --
-                this.cameraMeta["dining_area"].frame = 1
+                this.cameraMeta["dining_area"].frame = 2
             end
         end,
         ["pirate_cove"] = function()
@@ -60,7 +60,12 @@ return function(this)
             end
         end,
         ["right_hall"] = function()
-            
+            if collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["right_hall"]) then
+                -- only chica --
+                this.cameraMeta["left_hall"].frame = 2
+            else
+                this.cameraMeta["left_hall"].frame = 1
+            end
         end,
         ["left_vent"] = function()
             

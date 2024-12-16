@@ -1,5 +1,47 @@
 TabletCameraSubState = {}
 
+local function interpColors(iniCol, endCol, steps)
+    local c = {}
+
+    for i = 0, steps - 1 do
+        local t = i / (steps - 1) -- Interpolação de 0 a 1
+        local r = math.floor(iniCol[1] * (1 - t) + iniCol[1] * t)
+        local g = math.floor(iniCol[2] * (1 - t) + iniCol[2] * t)
+        local b = math.floor(iniCol[3] * (1 - t) + iniCol[3] * t)
+        table.insert(c, {r, g, b})
+    end
+
+    return c
+end
+
+local function drawQueue(x, y, areaWidth, areaHeight, count, maxCount, padding, spacing, enterColor, endColor)
+    enterColor = enterColor or {0, 255, 0}
+    endColor = endColor or {255, 0, 0}
+
+    local lx = x + padding
+    local ly = y + padding
+    local maxWidth = areaWidth - 2 * padding
+    local rectWidth = (maxWidth - (maxCount - 1) * spacing) / maxCount
+    local rectHeight = areaHeight - 2 * padding
+
+    assert(rectWidth >= 0 or rectHeight >= 0, "[ERROR] : Can't be less than 0")
+
+    local c = interpColors(enterColor, endColor, maxCount)
+
+    for i = 1, maxCount do
+        local r, g, b = c[i][1] / 255 or 0, c[i][2] / 255 or 1, c[i][3] / 255 or 0
+    
+        love.graphics.setColor(r, g, b, 1)
+            if i <= count then
+                love.graphics.draw(NightState.assets.grd_bars, lx, ly, 0, rectWidth, rectHeight)
+            end
+        love.graphics.setColor(1, 1, 1, 1)
+        lx = lx + rectWidth + spacing
+    end
+end
+
+-----------------------------------------------
+
 function TabletCameraSubState.doInterference(seconds, intensity, speed, px)
     interferenceData.timer = seconds
     interferenceIntensity = intensity
@@ -165,7 +207,8 @@ function TabletCameraSubState:draw()
 
         if officeState.tabletBootProgress < 100 then
             love.graphics.rectangle("line", love.graphics.getWidth() / 2 - 128, 500, 256, 32)
-            love.graphics.draw(NightState.assets.grd_progressBar, (love.graphics.getWidth() / 2 - 128) + 3, 503, 0, math.floor(250 * (officeState.tabletBootProgress / 100)), 26)
+            --love.graphics.draw(NightState.assets.grd_progressBar, (love.graphics.getWidth() / 2 - 128) + 3, 503, 0, math.floor(250 * (officeState.tabletBootProgress / 100)), 26)
+            drawQueue((love.graphics.getWidth() / 2 - 128) + 3, 503, 256, 32, officeState.tabletBootProgress * 0.2, 20, 5, 5, {41, 165, 236}, {52, 63, 234})
         end
 
         love.graphics.printf("Initializing...", fnt_vhs, 0, 550, love.graphics.getWidth(), "center")
@@ -175,7 +218,7 @@ function TabletCameraSubState:draw()
     fxTV(function()
         love.graphics.draw(fxCanvas, 0, 0)
         love.graphics.setBlendMode("add")
-            love.graphics.setColor(1, 1, 1, 0.1)
+            love.graphics.setColor(1, 1, 1, 0.14)
                 love.graphics.draw(NightState.assets.staticfx["static_" .. staticfx.frameid], 0, 0)
             love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
@@ -195,8 +238,12 @@ function TabletCameraSubState:draw()
         love.graphics.printf(self.camerasName[self.camButtonID], fnt_camName, 0, 32, love.graphics.getWidth(), "center")
         love.graphics.print(night.text, fnt_timerfnt, 64, 37)
 
-        love.graphics.print(languageService["game_energy"]:format(officeState.power.powerDisplay), fnt_camError, 64, love.graphics.getHeight() - 148)
-        love.graphics.print(languageService["game_energy_usage"], fnt_camError, 64, love.graphics.getHeight() - 120)
+        love.graphics.print(languageService["game_energy"]:format(officeState.power.powerDisplay), fnt_camError, 64, love.graphics.getHeight() - 168)
+        love.graphics.print(languageService["game_energy_usage"], fnt_camError, 64, love.graphics.getHeight() - 140)
+
+        drawQueue(64, love.graphics.getHeight() - 120, 128, 48, officeState.power.powerQueue, 5, 5, 5)
+
+        love.graphics.rectangle("line", 64, love.graphics.getHeight() - 120, 128, 48)
         love.graphics.draw(NightState.assets.camMap, love.graphics.getWidth() - 370, 200, 0, 1.5, 1.5)
         for _, b in ipairs(self.buttons) do
             if _ == self.camButtonID  then

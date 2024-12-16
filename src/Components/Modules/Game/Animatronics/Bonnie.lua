@@ -32,7 +32,7 @@ function BonnieAI.update(elapsed)
         BonnieAI.timer = BonnieAI.timer + elapsed
         if BonnieAI.timer >= 7.3 then
             BonnieAI.move = math.random(0, 20)
-            if BonnieAI.move <= NightState.animatronicsAI.bonnie and NightState.animatronicsAI.bonnie > 0 then
+            if BonnieAI.move <= NightState.animatronicsAI.bonnie and NightState.animatronicsAI.bonnie > 0 and not officeState.hasAnimatronicInOffice then
                 if officeState.tabletUp then
                     if tabletCameraSubState.camerasID[BonnieAI.metadataCameraID] then
                         if tabletCameraSubState.camerasID[BonnieAI.metadataCameraID] == tabletCameraSubState.camID then
