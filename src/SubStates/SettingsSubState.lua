@@ -1,4 +1,4 @@
-SettingsSubState = {}
+local SettingsSubState = {}
 
 function SettingsSubState:load()
     self.active = false

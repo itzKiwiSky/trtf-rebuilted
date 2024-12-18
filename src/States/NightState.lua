@@ -74,7 +74,7 @@ end
 local function getPowerQueueCount()
     local c = 1
     for k, v in pairs(officeState.power.powerQueueCount) do
-        if v then
+        if v == true then
             c = c + 1
         end
     end
@@ -87,6 +87,8 @@ NightState.assets = {}
 
 -- I had to change the name of the local variables bc the compiler is bitching about it :( --
 function NightState:enter()
+    doorParticle = require 'src.Components.Modules.Game.Utils.ParticleDoor'
+
     for k, v in pairs(AudioSources) do
         v:stop()
     end
@@ -273,6 +275,9 @@ function NightState:enter()
     doorL = doorController.new(NightState.assets.doorsAnim.left, 55, false, "dl_")
     doorR = doorController.new(NightState.assets.doorsAnim.right, 55, false, "dr_")
 
+    doorLFX = doorParticle()
+    doorRFX = doorParticle()
+
     officeState = {
         _t = 0,
         _f = 0,
@@ -297,6 +302,7 @@ function NightState:enter()
             powerQueue = 1,
             timeracc = 2.5,
         },
+        tabletInformationDisplay = false,
         tabletUp = false,
         maskUp = false,
         flashlight = {
@@ -312,8 +318,16 @@ function NightState:enter()
         officeFlick = false,
         isOfficeDisabled = false,
         doors = {
+            maxDoorTime = 25,
+            doorReloadBoost = 3,
+            doorUsageBoost = 5,
+
+            canUseDoorL = true,
+            canUseDoorR = true,
             left = false,
             right = false,
+            lDoorTimer = 10,
+            rDoorTimer = 10,
             hitboxes = {
                 right = {
                     x = -32,
@@ -336,6 +350,9 @@ function NightState:enter()
             }
         }
     }
+
+    officeState.doors.lDoorTimer = officeState.doors.maxDoorTime
+    officeState.doors.rDoorTimer = officeState.doors.maxDoorTime
 
     tmr_nightStartPhone = timer.new()
 
@@ -372,6 +389,8 @@ function NightState:draw()
         -- canvas to render the game content and apply the shader --
         cnv_mainCanvas:renderTo(function()
             love.graphics.clear(love.graphics.getBackgroundColor())
+                love.graphics.draw(doorLFX, 1700, 178)
+                love.graphics.draw(doorRFX, 140, 178)
                 doorL:draw()
                 doorR:draw()
                 -- flicking front XD --
@@ -529,7 +548,9 @@ function NightState:draw()
 
     -- debug shit --
     if DEBUG_APP then
-        --love.graphics.print(debug.formattable(nightTextDisplay), 90, 90)
+        love.graphics.print(debug.formattable(officeState.doors), 90, 90)
+        --local mx, my = gameCam:mousePosition()
+        --love.graphics.print(string.format("%s, %s", mx, my), 90, 90)
         if registers.system.showDebugHitbox then
             gameCam:attach()
                 love.graphics.setColor(0.7, 0, 1, 0.4)
@@ -764,6 +785,52 @@ function NightState:update(elapsed)
     doorL:update(elapsed)
     doorR:update(elapsed)
 
+    doorLFX:update(elapsed)
+    doorRFX:update(elapsed)
+
+    -- door timer --
+    if officeState.doors.left and officeState.doors.canUseDoorL then
+        officeState.doors.lDoorTimer = officeState.doors.lDoorTimer - officeState.doors.doorUsageBoost * elapsed
+        if officeState.doors.lDoorTimer <= 0 then
+            officeState.doors.left = false
+            doorL:setState(false)
+            officeState.doors.canUseDoorL = false
+            officeState.doors.lDoorTimer = 0
+            doorLFX:start()
+            doorLFX:emit(54)
+        end
+    elseif not officeState.doors.left or not officeState.doors.canUseDoorL then
+        officeState.doors.lDoorTimer = officeState.doors.lDoorTimer + officeState.doors.doorReloadBoost * elapsed
+        if officeState.doors.lDoorTimer >= officeState.doors.maxDoorTime then
+            officeState.doors.lDoorTimer = officeState.doors.maxDoorTime
+        end
+    end
+
+    if not officeState.doors.canUseDoorL and officeState.doors.lDoorTimer >= officeState.doors.maxDoorTime then
+        officeState.doors.canUseDoorL = true
+    end
+
+    if officeState.doors.right and officeState.doors.canUseDoorR then
+        officeState.doors.rDoorTimer = officeState.doors.rDoorTimer - officeState.doors.doorUsageBoost * elapsed
+        if officeState.doors.rDoorTimer <= 0 then
+            officeState.doors.right = false
+            doorR:setState(false)
+            officeState.doors.canUseDoorR = false
+            officeState.doors.rDoorTimer = 0
+            doorRFX:start()
+            doorRFX:emit(54)
+        end
+    elseif not officeState.doors.right or not officeState.doors.canUseDoorR then
+        officeState.doors.rDoorTimer = officeState.doors.rDoorTimer + officeState.doors.doorReloadBoost * elapsed
+        if officeState.doors.rDoorTimer >= officeState.doors.maxDoorTime then
+            officeState.doors.rDoorTimer = officeState.doors.maxDoorTime
+        end
+    end
+
+    if not officeState.doors.canUseDoorR and officeState.doors.rDoorTimer >= officeState.doors.maxDoorTime then
+        officeState.doors.canUseDoorR = true
+    end
+
     -- tablet animation controller --
     tabletController:update(elapsed)
 
@@ -845,7 +912,7 @@ function NightState:update(elapsed)
     officeState.power.powerQueue = getPowerQueueCount()
     if officeState.nightRun and not officeState.isOfficeDisabled then
         officeState.power.timeracc = officeState.power.timeracc + elapsed
-        if officeState.power.timeracc >= 4 then
+        if officeState.power.timeracc >= 2 then
             officeState.power.powerStat = officeState.power.powerStat - officeState.power.powerQueue
             officeState.power.timeracc = 0
         end
@@ -879,7 +946,7 @@ function NightState:mousepressed(x, y, button)
         if not officeState.isOfficeDisabled then
             for k, h in pairs(officeState.doors.hitboxes) do
                 if not officeState.maskUp and not officeState.tabletUp then
-                    if k == "left" then
+                    if k == "left" and officeState.doors.canUseDoorL then
                         if collision.pointRect({x = mx, y = my}, h) then
                             if not doorL.animationRunning then
                                 if AudioSources[officeState.doors.left and "door_open" or "door_close"]:isPlaying() then
@@ -891,7 +958,7 @@ function NightState:mousepressed(x, y, button)
                             end
                         end
                     end
-                    if k == "right" then
+                    if k == "right" and officeState.doors.canUseDoorR then
                         if collision.pointRect({x = mx, y = my}, h) then
                             if not doorR.animationRunning then
                                 if AudioSources[officeState.doors.right and "door_open" or "door_close"]:isPlaying() then
@@ -920,7 +987,40 @@ function NightState:mousepressed(x, y, button)
     end
 end
 
-function NightState:keypressed(k)
+function NightState:keypressed(key)
+    -- door shit --
+    if not officeState.isOfficeDisabled then
+        for k, h in pairs(officeState.doors.hitboxes) do
+            if not officeState.maskUp and not officeState.tabletUp then
+                if key == "left" or key == "d" then
+                    if k == "left" and officeState.doors.canUseDoorL then
+                        if not doorL.animationRunning then
+                            if AudioSources[officeState.doors.left and "door_open" or "door_close"]:isPlaying() then
+                                AudioSources[officeState.doors.left and "door_open" or "door_close"]:seek(0)
+                            end
+                            AudioSources[officeState.doors.left and "door_open" or "door_close"]:play()
+                            officeState.doors.left = not officeState.doors.left
+                            doorL:setState(officeState.doors.left)
+                        end
+                    end
+                end
+                if key == "right" or key == "a" then
+                        if k == "right" and officeState.doors.canUseDoorR then
+                            if not doorR.animationRunning then
+                                if AudioSources[officeState.doors.right and "door_open" or "door_close"]:isPlaying() then
+                                    AudioSources[officeState.doors.right and "door_open" or "door_close"]:seek(0)
+                                end
+                                AudioSources[officeState.doors.right and "door_open" or "door_close"]:play()
+                                officeState.doors.right = not officeState.doors.right
+                                doorR:setState(officeState.doors.right)
+                            end
+                        end
+                end
+            end
+        end
+    end
+
+
     if DEBUG_APP then
         if k == "=" then
             for k, v in pairs(NightState.AnimatronicControllers) do

@@ -1,50 +1,6 @@
-TabletCameraSubState = {}
+local TabletCameraSubState = {}
 
-local function interpColors(iniCol, endCol, steps)
-    local c = {}
-
-    for i = 0, steps - 1 do
-        local t = i / (steps - 1) -- Interpolação de 0 a 1
-        local r = math.floor((iniCol[1] / 255) * (1 - t) + (endCol[1] / 255) * t)
-        local g = math.floor((iniCol[2] / 255) * (1 - t) + (iniCol[2] / 255) * t)
-        local b = math.floor((iniCol[3] / 255) * (1 - t) + (endCol[3] / 255) * t)
-        table.insert(c, {r, g, b})
-    end
-
-    return c
-end
-
-local function drawQueue(x, y, areaWidth, areaHeight, count, maxCount, padding, spacing, ...)
-    local col = {...}
-    local enterColor = col[1] or {0, 255, 0}
-    local endColor = col[2] or {255, 0, 0}
-
-    local lx = x + padding
-    local ly = y + padding
-    local maxWidth = areaWidth - 2 * padding
-    local rectWidth = (maxWidth - (maxCount - 1) * spacing) / maxCount
-    local rectHeight = areaHeight - 2 * padding
-
-    assert(rectWidth >= 0 or rectHeight >= 0, "[ERROR] : Can't be less than 0")
-    --print(debug.formattable(c))
-
-    for i = 1, maxCount do
-        local c = interpColors(enterColor, endColor, i)
-
-        local r, g, b = c[i][1] or 0, c[i][2] or 1, c[i][3] or 0
-        print(r,g,b)
-    
-        love.graphics.setColor(r, g, b, 1)
-            if i <= count then
-                love.graphics.draw(NightState.assets.grd_bars, lx, ly, 0, rectWidth, rectHeight)
-            end
-        love.graphics.setColor(1, 1, 1, 1)
-        lx = lx + rectWidth + spacing
-    end
-end
-
------------------------------------------------
-
+local drawQueue = require 'src.Components.Modules.Game.Utils.DrawQueueBar'
 function TabletCameraSubState.doInterference(seconds, intensity, speed, px)
     interferenceData.timer = seconds
     interferenceIntensity = intensity
@@ -53,6 +9,7 @@ function TabletCameraSubState.doInterference(seconds, intensity, speed, px)
 end
 
 function TabletCameraSubState:load()
+    tabletDisplay = require 'src.Components.Modules.Game.TabletInfoDisplay'
     marker = require 'src.Components.Modules.Game.Utils.Marker'
     buttonCamera = require 'src.Components.Modules.Game.Utils.ButtonCamera'
     cameraController = require 'src.Components.Modules.Game.CameraController'
@@ -90,6 +47,8 @@ function TabletCameraSubState:load()
 
     fxCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
     loadingCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
+
+    self.cameraMeta = require 'src.Components.Modules.Game.CameraConfig'
 
     self.areas = {
         ["arcade"] = {x = 950, y = 431, w = 72, h = 40},
@@ -157,7 +116,15 @@ function TabletCameraSubState:load()
         {btn = buttonCamera(1116, 636, 72, 40)}, 
     }
 
-    self.cameraMeta = require 'src.Components.Modules.Game.CameraConfig'
+    self.miscButtons = {
+        {
+            text = "Info.",
+            hitbox = buttonCamera(46, 724, 128, 42),
+            action = function()
+                
+            end
+        }
+    }
 
     editBTN = {}
 
@@ -240,13 +207,35 @@ function TabletCameraSubState:draw()
         love.graphics.printf(self.camerasName[self.camButtonID], fnt_camName, 0, 32, love.graphics.getWidth(), "center")
         love.graphics.print(night.text, fnt_timerfnt, 64, 37)
 
-        love.graphics.print(languageService["game_energy"]:format(officeState.power.powerDisplay), fnt_camError, 64, love.graphics.getHeight() - 168)
-        love.graphics.print(languageService["game_energy_usage"], fnt_camError, 64, love.graphics.getHeight() - 140)
 
-        drawQueue(64, love.graphics.getHeight() - 120, 128, 48, officeState.power.powerQueue, 5, 5, 5)
-
-        love.graphics.rectangle("line", 64, love.graphics.getHeight() - 120, 128, 48)
+        love.graphics.rectangle("line", 64, love.graphics.getHeight() - 110, 128, 48)
         love.graphics.draw(NightState.assets.camMap, love.graphics.getWidth() - 370, 200, 0, 1.5, 1.5)
+        for _, b in ipairs(self.buttons) do
+            if _ == self.camButtonID  then
+                if love.timer.getTime() % 1 > 0.5 then
+                    love.graphics.setColor(0, 0, 1, 1)
+                else
+                    love.graphics.setColor(1, 1, 0, 1)
+                end
+            else
+                love.graphics.setColor(0.5, 0.5, 0.5, 1)
+            end
+            love.graphics.rectangle("fill", b.btn.x + 8, b.btn.y + 8, b.btn.w - 8, b.btn.h - 8)
+            love.graphics.setColor(0.75, 0.75, 0.75, 1)
+
+            love.graphics.rectangle("fill", b.btn.x, b.btn.y, b.btn.w - 8, b.btn.h - 8)
+            love.graphics.setColor(1, 1, 1, 1)
+
+            for k, v in pairs(NightState.AnimatronicControllers) do
+                v.draw()
+            end
+
+            love.graphics.printf(string.upper("cam_" .. _), fnt_camfnt, b.btn.x, b.btn.y, b.btn.w - 8, "center")
+        end
+
+        -- info --
+        tabletDisplay(self)
+
         for _, b in ipairs(self.buttons) do
             if _ == self.camButtonID  then
                 if love.timer.getTime() % 1 > 0.5 then
