@@ -7,7 +7,7 @@ local function preloadAudio()
         local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
         loveloader.newSource(AudioSources, filename, files[f], "stream")
         if DEBUG_APP then
-            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file preloaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", filename))
+            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file queue to load with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", filename))
         end
     end
 end
@@ -25,6 +25,10 @@ function SplashState:enter()
 
     loveloader.start(function()
         canContinue = true
+    end, function(k, h, n)
+        if DEBUG_APP then
+            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", n))
+        end
     end)
 end
 

@@ -2,12 +2,12 @@ NightState = {}
 
 NightState.KilledBy = ""
 NightState.killed = false
-NightState.nightID = 100
+NightState.nightID = 1000
 NightState.isCustomNight = false
 NightState.animatronicsAI = {
-    freddy = 0,
+    freddy = 20,
     bonnie = 0,
-    chica = 20,
+    chica = 0,
     foxy = 0,
     sugar = 0,
     kitty = 0,
@@ -592,7 +592,6 @@ function NightState:update(elapsed)
     if officeState.fadealpha >= 0 then
         officeState.fadealpha = officeState.fadealpha - 0.4 * elapsed
     end
-
         -- phone shit --
     phoneController:update(elapsed)
 
@@ -1020,14 +1019,62 @@ function NightState:keypressed(key)
         end
     end
 
+    if not officeState.isOfficeDisabled then
+        if key == "space" or key == "s" or key == "x" then
+            if not officeState.maskUp then
+                if not tabletController.animationRunning then
+                    if AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:isPlaying() then
+                        AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:seek(0)
+                    end
+                    AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:play()
+    
+                    if not officeState.tabletUp then
+                        AudioSources["amb_cam"]:play()
+                    else
+                        AudioSources["amb_cam"]:pause()
+                    end
+    
+                    officeState.tabletUp = not officeState.tabletUp
+                    tabletController:setState(officeState.tabletUp)
+                end
+            end
+        end
+    end
+
+    if key == "lalt" or key == "z" or key == "x" then
+        if not officeState.tabletUp then
+            maskBtn.isHover = true
+            maskController.acc = 0
+            if not maskBtn.animationRunning then
+                if AudioSources["mask_off"]:isPlaying() then
+                    AudioSources["mask_off"]:seek(0)
+                end
+                AudioSources["mask_breath"]:setLooping(true)
+                AudioSources["mask_off"]:play()
+
+                if not officeState.maskUp then
+                    AudioSources["mask_breath"]:play()
+                else
+                    AudioSources["mask_breath"]:stop()
+                end
+
+                officeState.maskUp = not officeState.maskUp
+                maskController:setState(officeState.maskUp)
+            end
+        end
+    end
+
+    if tabletController.tabUp then
+        tabletCameraSubState:keypressed(key)
+    end
 
     if DEBUG_APP then
-        if k == "=" then
+        if key == "=" then
             for k, v in pairs(NightState.AnimatronicControllers) do
                 v.currentState = v.currentState + 1
             end
         end
-        if k == "-" then
+        if key == "-" then
             for k, v in pairs(NightState.AnimatronicControllers) do
                 v.currentState = v.currentState - 1
             end

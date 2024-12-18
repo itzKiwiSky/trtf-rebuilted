@@ -89,6 +89,7 @@ function BonnieAI.update(elapsed)
                 BonnieAI.currentState = 1
                 officeState.hasAnimatronicInOffice = false
                 AudioSources["stare"]:stop()
+                officeState.fadealpha = 1
             end
         end
     end

@@ -11,6 +11,8 @@ function love.initialize(args)
 
     fontcache.init()
 
+    globalJoystick = love.joystick.getJoysticks()[1]
+
     fnt_subtitle = fontcache.getFont("tnr", 24)
     bg_subtitles = love.graphics.newGradient("horizontal", 
         {0, 0, 0, 0}, 

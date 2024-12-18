@@ -1,6 +1,15 @@
 local TabletCameraSubState = {}
 
 local drawQueue = require 'src.Components.Modules.Game.Utils.DrawQueueBar'
+
+local function changeCamFX()
+    TabletCameraSubState.doInterference(0.3, 70, 100, 1.5)
+    if AudioSources["cam_interference"]:isPlaying() then
+        AudioSources["cam_interference"]:seek(0) 
+    end
+    AudioSources["cam_interference"]:play()
+end
+
 function TabletCameraSubState.doInterference(seconds, intensity, speed, px)
     interferenceData.timer = seconds
     interferenceIntensity = intensity
@@ -252,11 +261,11 @@ function TabletCameraSubState:draw()
             love.graphics.rectangle("fill", b.btn.x, b.btn.y, b.btn.w - 8, b.btn.h - 8)
             love.graphics.setColor(1, 1, 1, 1)
 
-            for k, v in pairs(NightState.AnimatronicControllers) do
-                v.draw()
-            end
-
             love.graphics.printf(string.upper("cam_" .. _), fnt_camfnt, b.btn.x, b.btn.y, b.btn.w - 8, "center")
+        end
+
+        for k, v in pairs(NightState.AnimatronicControllers) do
+            v.draw()
         end
 
         if officeState.tabletFirstBoot then
@@ -356,6 +365,13 @@ function TabletCameraSubState:update(elapsed)
         end
     end
 
+    if self.camButtonID < 1 then
+        self.camButtonID = #self.camerasID
+    end
+    if self.camButtonID > #self.camerasID then
+        self.camButtonID = 1
+    end
+
     -- render camera --
     cameraController(self)
 end
@@ -365,22 +381,32 @@ function TabletCameraSubState:mousepressed(x, y, button)
         for _, b in ipairs(self.buttons) do
             if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, b.btn) then
                 self.camButtonID = _
-                TabletCameraSubState.doInterference(0.3, 70, 100, 1.5)
-                if AudioSources["cam_interference"]:isPlaying() then
-                    AudioSources["cam_interference"]:seek(0) 
-                end
-                AudioSources["cam_interference"]:play()
+                changeCamFX()
             end
         end
     end
 
-    if registers.system.camEdit then
-        if button == 1 then
-            table.insert(editBTN, {btn = buttonCamera(love.mouse.getX(), love.mouse.getY(), 72, 40)})
+    if DEBUG_APP then
+        if registers.system.camEdit then
+            if button == 1 then
+                table.insert(editBTN, {btn = buttonCamera(love.mouse.getX(), love.mouse.getY(), 72, 40)})
+            end
+            if button == 2 then
+                lume.clear(editBTN)
+            end
         end
-        if button == 2 then
-            lume.clear(editBTN)
-        end
+    end
+end
+
+function TabletCameraSubState:keypressed(k)
+    if k == "left" then
+        self.camButtonID = self.camButtonID + 1
+        changeCamFX()
+    end
+    if k == "right" then
+        self.camButtonID = self.camButtonID - 1
+        TabletCameraSubState.doInterference(0.3, 70, 100, 1.5)
+        changeCamFX()
     end
 end
 

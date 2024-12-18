@@ -4,7 +4,7 @@
     },
     "warn" : {
         "warn_title" : "[WARNING]",
-        "warn_text" : "This game contains loud sounds, flashing\nlights, mild swearing, and many jumpscares!\n\n\nPD: This game is not an official remake of\nTRTF 1 and TRTF Rebuilt.\n\n\nPress any key or click anywhere to continue"
+        "warn_text" : "This game contains loud sounds, flashing\nlights, mild swearing, and many jumpscares!\n\n\nPD: This game is not an official remake of\nTRTF 1 and TRTF Rebuilt.\n\n\nPress any key or click anywhere to continue\n\nPS: This is a beta demo version, distributed only selected beta testers\nand not represent the final demonstration."
     },
     "menu" : {
         "menu_button" : {
@@ -68,6 +68,7 @@
         "game_vent_state_open" : "Vent status: Open",
         "game_energy_usage" : "Enery usage",
         "game_energy" : "Energy: %d%%",
+        "game_btn_rewind_box" : "Rewind Music Box",
         "misc" : {
             "game_misc_camera_error" : "Failed to fetch camera footage...",
             "game_misc_camera_error_id" : "Report this error to specialized team\nand give them this code:",

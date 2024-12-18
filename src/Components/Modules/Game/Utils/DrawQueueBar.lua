@@ -1,16 +1,15 @@
 local function interpColors(startCol, endCol, maxSteps)
     local c = {}
 
-    for step = 0, maxSteps, 1 do
+    for step = 1, maxSteps, 1 do
         local r, g, b
         local t = step / maxSteps
         r = startCol[1] + (endCol[1] - startCol[1]) * t
         g = startCol[2] + (endCol[2] - startCol[2]) * t
         b = startCol[3] + (endCol[3] - startCol[3]) * t
-
         table.insert(c, {r, g, b})
     end
-
+    
     return c
 end
 
@@ -26,7 +25,7 @@ return function(x, y, areaWidth, areaHeight, count, maxCount, padding, spacing, 
     local rectHeight = areaHeight - 2 * padding
 
     assert(rectWidth >= 0 or rectHeight >= 0, "[ERROR] : Can't be less than 0")
-    --print(debug.formattable(c))
+
     local c = interpColors(enterColor, endColor, maxCount)
 
     for i = 1, maxCount do

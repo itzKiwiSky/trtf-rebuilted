@@ -1,9 +1,5 @@
 LoadingState = {}
 
-function LoadingState:init()
-
-end
-
 function LoadingState:enter()
     local assetThread = require 'src.Components.Modules.Game.Utils.AssetsLoadThread'
     ldBackgrounds = {}
@@ -24,16 +20,20 @@ function LoadingState:enter()
 
     _tempAssets = assetThread()
 
+    randBG = math.random(1, #ldBackgrounds)
     if table.compare(NightState.assets, _tempAssets) then
         ready = true
     else
-        randBG = math.random(1, #ldBackgrounds)
-
-        collectgarbage("collect")
-    
         loveloader.start(function()
             ready = true
         end)
+
+        --[[
+        function(k, h, k)
+            if DEBUG_APP then
+                io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : File loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", k))
+            end
+        end]]
     end
 end
 
@@ -44,6 +44,7 @@ function LoadingState:draw()
     love.graphics.draw(clockIcon, love.graphics.getWidth() - 69, love.graphics.getHeight() - 69, 0, 64 / clockIcon:getWidth(), 64 / clockIcon:getHeight())
     
     glowTextEffect(function()
+        love.graphics.clear(0, 0, 0, 0)
         local percent = 0
         if loveloader.resourceCount ~= 0 then percent = loveloader.loadedCount / loveloader.resourceCount end
         love.graphics.printf(string.format(languageService[not ready and "loading_text" or "loading_ready"], (not ready and math.floor(percent * 100) or nil)), textLoadingFont, 0, love.graphics.getHeight() - (textLoadingFont:getHeight() + 16), love.graphics.getWidth(), "center")
