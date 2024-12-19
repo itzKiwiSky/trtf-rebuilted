@@ -15,7 +15,6 @@ NightState.animatronicsAI = {
 }
 NightState.AnimatronicControllers = {}
 
-
 local mod = {
     radarMode = false,
 }
@@ -549,8 +548,8 @@ function NightState:draw()
     -- debug shit --
     if DEBUG_APP then
         love.graphics.print(debug.formattable(officeState.doors), 90, 90)
-        --local mx, my = gameCam:mousePosition()
-        --love.graphics.print(string.format("%s, %s", mx, my), 90, 90)
+        local mx, my = love.mouse.getPosition() --gameCam:mousePosition()
+        love.graphics.print(string.format("%s, %s", mx, my), 90, 90)
         if registers.system.showDebugHitbox then
             gameCam:attach()
                 love.graphics.setColor(0.7, 0, 1, 0.4)
@@ -796,7 +795,7 @@ function NightState:update(elapsed)
             officeState.doors.canUseDoorL = false
             officeState.doors.lDoorTimer = 0
             doorLFX:start()
-            doorLFX:emit(54)
+            doorLFX:emit(154)
         end
     elseif not officeState.doors.left or not officeState.doors.canUseDoorL then
         officeState.doors.lDoorTimer = officeState.doors.lDoorTimer + officeState.doors.doorReloadBoost * elapsed
@@ -817,7 +816,7 @@ function NightState:update(elapsed)
             officeState.doors.canUseDoorR = false
             officeState.doors.rDoorTimer = 0
             doorRFX:start()
-            doorRFX:emit(54)
+            doorRFX:emit(154)
         end
     elseif not officeState.doors.right or not officeState.doors.canUseDoorR then
         officeState.doors.rDoorTimer = officeState.doors.rDoorTimer + officeState.doors.doorReloadBoost * elapsed
@@ -911,7 +910,7 @@ function NightState:update(elapsed)
     officeState.power.powerQueue = getPowerQueueCount()
     if officeState.nightRun and not officeState.isOfficeDisabled then
         officeState.power.timeracc = officeState.power.timeracc + elapsed
-        if officeState.power.timeracc >= 2 then
+        if officeState.power.timeracc >= 1.3 then
             officeState.power.powerStat = officeState.power.powerStat - officeState.power.powerQueue
             officeState.power.timeracc = 0
         end

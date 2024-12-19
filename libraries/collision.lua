@@ -9,6 +9,7 @@ local distance = nil   -- Funciton that gets distance between two points
 --                     --
 
 function collision.pointPoint(point1, point2)
+  if not point1 and not point2 then return end
   if point1.x == point2.x and point1.y == point2.y
   then return true end
 
@@ -16,6 +17,8 @@ function collision.pointPoint(point1, point2)
 end
 
 function collision.rectRect(rect1, rect2)
+  if not rect1 and not rect2 then return end
+
   if rect1.x + rect1.w > rect2.x and       -- right  rect1 > left   rect2
      rect1.y + rect1.h > rect2.y and       -- bottom rect1 > top    rect2
      rect1.x < rect2.x + rect2.w and       -- left   rect1 > left   rect2
@@ -26,6 +29,8 @@ function collision.rectRect(rect1, rect2)
 end
 
 function collision.pointRect(point, rect)
+  if not point and not rect then return end
+
   if point.x > rect.x and
      point.y > rect.y and
      point.x < rect.x + rect.w and

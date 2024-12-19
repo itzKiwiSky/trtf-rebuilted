@@ -13,9 +13,10 @@ ChicaAi.__name__ = "Chica" -- Nome da tabela
 ChicaAi.currentState = 1
 ChicaAi.metadataCameraID = 0
 ChicaAi.path = {
-    {1094, 256, 6},        -- showstage
+    {1124, 256, 6},        -- showstage
     {1064, 323, 1},         -- dining_area
-    {1127, 490, 9},         -- left_hall
+    {1165, 432, 2},         -- storage
+    {1127, 490, 9},         -- right_hall
     {1116, 544, nil},        -- front_office
     {1079, 592, nil},        -- office
 }

@@ -127,13 +127,18 @@ function TabletCameraSubState:load()
 
     self.miscButtons = {
         {
-            text = "Info.",
+            text = "Rewind",
             hitbox = buttonCamera(46, 724, 128, 42),
+            visible = false,
             action = function()
                 
             end
         }
     }
+
+    for k, b in pairs(self.miscButtons) do
+        self.miscButtons[k].active = false 
+    end
 
     editBTN = {}
 
@@ -245,23 +250,25 @@ function TabletCameraSubState:draw()
         -- info --
         tabletDisplay(self)
 
-        for _, b in ipairs(self.buttons) do
-            if _ == self.camButtonID  then
-                if love.timer.getTime() % 1 > 0.5 then
-                    love.graphics.setColor(0, 0, 1, 1)
+        for _, b in ipairs(self.miscButtons) do
+            if b.visible then
+                if b.active then
+                    if love.timer.getTime() % 1 > 0.5 then
+                        love.graphics.setColor(0, 0, 1, 1)
+                    else
+                        love.graphics.setColor(1, 1, 0, 1)
+                    end
                 else
-                    love.graphics.setColor(1, 1, 0, 1)
+                    love.graphics.setColor(0.5, 0.5, 0.5, 1)
                 end
-            else
-                love.graphics.setColor(0.5, 0.5, 0.5, 1)
+                love.graphics.rectangle("fill", b.hitbox.x + 8, b.hitbox.y + 8, b.hitbox.w - 8, b.hitbox.h - 8)
+                love.graphics.setColor(0.75, 0.75, 0.75, 1)
+    
+                love.graphics.rectangle("fill", b.hitbox.x, b.hitbox.y, b.hitbox.w - 8, b.hitbox.h - 8)
+                love.graphics.setColor(1, 1, 1, 1)
+    
+                love.graphics.printf(b.text, fnt_camfnt, b.hitbox.x, b.hitbox.y, b.hitbox.w - 8, "center")
             end
-            love.graphics.rectangle("fill", b.btn.x + 8, b.btn.y + 8, b.btn.w - 8, b.btn.h - 8)
-            love.graphics.setColor(0.75, 0.75, 0.75, 1)
-
-            love.graphics.rectangle("fill", b.btn.x, b.btn.y, b.btn.w - 8, b.btn.h - 8)
-            love.graphics.setColor(1, 1, 1, 1)
-
-            love.graphics.printf(string.upper("cam_" .. _), fnt_camfnt, b.btn.x, b.btn.y, b.btn.w - 8, "center")
         end
 
         for k, v in pairs(NightState.AnimatronicControllers) do
@@ -382,6 +389,16 @@ function TabletCameraSubState:mousepressed(x, y, button)
             if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, b.btn) then
                 self.camButtonID = _
                 changeCamFX()
+            end
+        end
+
+        for _, b in ipairs(self.miscButtons) do
+            if b.visible then
+                if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, b.hitbox) then
+                    self.active = true
+                    b.action()
+                end
+                self.active = false
             end
         end
     end
