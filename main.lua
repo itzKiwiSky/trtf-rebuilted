@@ -107,8 +107,10 @@ function love.initialize(args)
         )
     end)
 
+    print(love.graphics.isGammaCorrect())
+
     gamestate.registerEvents()
-    gamestate.switch(SplashState)
+    gamestate.switch(DebugState)
 end
 
 function love.update(elapsed)

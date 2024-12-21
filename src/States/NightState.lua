@@ -414,8 +414,17 @@ function NightState:draw()
                     love.graphics.draw(NightState.assets["in_office_chica"], 0, 0)
                 end
 
-                love.graphics.draw(NightState.assets.doorButtons.left[officeState.doors.left and "on" or "off"], 0, 0)
-                love.graphics.draw(NightState.assets.doorButtons.right[officeState.doors.right and "on" or "off"], 0, 0)
+                if not officeState.doors.canUseDoorL then
+                    love.graphics.draw(NightState.assets.doorButtons.left[love.timer.getTime() % 1 > 0.5 and "not_ok" or "off"], 0, 0)
+                else
+                    love.graphics.draw(NightState.assets.doorButtons.left[officeState.doors.left and "on" or "off"], 0, 0)
+                end
+
+                if not officeState.doors.canUseDoorR then
+                    love.graphics.draw(NightState.assets.doorButtons.right[love.timer.getTime() % 1 > 0.5 and "not_ok" or "off"], 0, 0)
+                else
+                    love.graphics.draw(NightState.assets.doorButtons.right[officeState.doors.left and "on" or "off"], 0, 0)
+                end
         end)
     gameCam:detach()
 

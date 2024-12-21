@@ -19,7 +19,7 @@ FreddyAI.path = {
     {
         {1064, 256, 6},        -- showstage
         {1064, 323, 1},         -- dining_area
-        {1165, 432, 3},         -- storage 
+        {950, 431, 1},         -- arcade 
         {999, 490, 9},         -- left_hall
         {1154, 569, nil},         -- freddy_hall
         {1079, 592, nil},        -- office
@@ -55,7 +55,7 @@ function FreddyAI.update(elapsed)
                         if tabletCameraSubState.camerasID[FreddyAI.metadataCameraID] == tabletCameraSubState.camID then
                             if officeState.lightCam.state then
                                 FreddyAI.flash = FreddyAI.flash + 1
-                                if FreddyAI.flash > 100 and FreddyAI.currentState > 1 then
+                                if FreddyAI.flash >= 100 and FreddyAI.currentState > 1 then
                                     FreddyAI.laughRand = math.random(1, 5)
                                     if FreddyAI.laughRand == 2 then
                                         FreddyAI.laughID = math.random(1, 3)
@@ -67,6 +67,7 @@ function FreddyAI.update(elapsed)
                                     end
                                     FreddyAI.currentState = FreddyAI.currentState - 1
                                     FreddyAI.timer = 0
+                                    FreddyAI.flash = 0
                                 end
                             end
                             AudioSources["cam_animatronic_interference"]:seek(0)
@@ -90,13 +91,13 @@ function FreddyAI.update(elapsed)
         end
     elseif FreddyAI.currentState == 5 then
         FreddyAI.timer = FreddyAI.timer + elapsed
-        if FreddyAI.timer >= 12.5 then
+        if FreddyAI.timer >= 3.4 then
             FreddyAI.move = math.random(0, 20)
             if FreddyAI.move <= NightState.animatronicsAI.freddy and NightState.animatronicsAI.freddy > 0 and not officeState.hasAnimatronicInOffice then
                 if officeState.tabletUp then
-                    if FreddyAI.pathID == 1 and officeState.doors.left then
+                    if FreddyAI.pathID == 1 and not officeState.doors.left then
                         FreddyAI.currentState = FreddyAI.currentState + 1
-                    elseif FreddyAI.pathID == 2 and officeState.doors.right then
+                    elseif FreddyAI.pathID == 2 and not officeState.doors.right then
                         FreddyAI.currentState = FreddyAI.currentState + 1
                     end
                 end
@@ -114,7 +115,7 @@ function FreddyAI.update(elapsed)
         end
     end
 
-    FreddyAI.x, FreddyAI.y, FreddyAI.metadataCameraID = FreddyAI.path[FreddyAI.pathID][FreddyAI.currentState][1] + 6, FreddyAI.path[FreddyAI.pathID][FreddyAI.currentState][2] + 6, FreddyAI.path[FreddyAI.pathID][FreddyAI.currentState][3]
+    FreddyAI.x, FreddyAI.y, FreddyAI.metadataCameraID = FreddyAI.path[FreddyAI.pathID][FreddyAI.currentState][1] + 26, FreddyAI.path[FreddyAI.pathID][FreddyAI.currentState][2] + 26, FreddyAI.path[FreddyAI.pathID][FreddyAI.currentState][3]
 end
 
 return FreddyAI

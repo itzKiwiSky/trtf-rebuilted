@@ -5,7 +5,7 @@ function DeathState:enter()
         v:stop()
     end
 
-    staticfx = {
+    staticeffect = {
         config = {
             timer = 0,
             frameid = 1,
@@ -15,7 +15,7 @@ function DeathState:enter()
     }
     local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static")
     for s = 1, #statics, 1 do
-        table.insert(staticfx.frames, love.graphics.newImage("assets/images/game/effects/static/" .. statics[s]))
+        table.insert(staticeffect.frames, love.graphics.newImage("assets/images/game/effects/static/" .. statics[s]))
     end
 
     fnt_gameover = fontcache.getFont("tnr", 30)
@@ -118,7 +118,7 @@ function DeathState:draw()
 
         love.graphics.setBlendMode("add")
             love.graphics.setColor(1, 1, 1, 0.2)
-                love.graphics.draw(staticfx.frames[staticfx.config.frameid], 0, 0)
+                love.graphics.draw(staticeffect.frames[staticeffect.config.frameid], 0, 0)
             love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
 
@@ -195,12 +195,12 @@ function DeathState:update(elapsed)
         end
     end
         -- static animation --
-    staticfx.config.timer = staticfx.config.timer + elapsed
-    if staticfx.config.timer >= staticfx.config.speed then
-        staticfx.config.timer = 0
-        staticfx.config.frameid = staticfx.config.frameid + 1
-        if staticfx.config.frameid >= #staticfx.frames then
-            staticfx.config.frameid = 1
+    staticeffect.config.timer = staticeffect.config.timer + elapsed
+    if staticeffect.config.timer >= staticeffect.config.speed then
+        staticeffect.config.timer = 0
+        staticeffect.config.frameid = staticeffect.config.frameid + 1
+        if staticeffect.config.frameid >= #staticeffect.frames then
+            staticeffect.config.frameid = 1
         end
     end
     

@@ -9,11 +9,14 @@ like so
 
 function DebugState:enter()
     dbginterface = require 'src.Components.Modules.Game.Interface.DebugInterface'
-    tex = love.graphics.newImage("assets/images/game/noname.png")
+    roomoff = love.graphics.newImage("assets/images/game/test/room_off.png")
+    roomlight = love.graphics.newImage("assets/images/game/test/room_light.png")
+    flashlight = love.graphics.newImage("assets/images/game/night8/flashlight.png")
+    light = love.graphics.newImage("assets/images/game/night8/lantern_light.png")
 
     shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
     tuneConfig = {
-        latitudeVar = 22.5,
+        latitudeVar = 26.6,
         longitudeVar = 40,
         fovVar = 0.263000
     }
@@ -27,13 +30,18 @@ function DebugState:enter()
     roomSize = {
         windowWidth = love.graphics.getWidth(),
         windowHeight = love.graphics.getHeight(),
-        width = 1600,
+        width = 2000,
         height = 800,
         compensation = 400,
     }
 
+    flash = {
+        x = 0,
+        y = 0
+    }
+
     gameCam = camera.new(0, nil)
-    gameCam.factorX = 4.85
+    gameCam.factorX = 2.8
     gameCam.factorY = 25
 
     X_LEFT_FRAME = gameCam.x
@@ -41,34 +49,42 @@ function DebugState:enter()
     Y_TOP_FRAME = gameCam.y
     Y_BOTTOM_FRAME = gameCam.y + roomSize.height
 
-    cnv_mainCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
-    cnv_distcanvas = love.graphics.newCanvas(love.graphics.getDimensions())
-    love.graphics.clear(love.graphics.getBackgroundColor())
+    cnv_mainCanvas = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
+    cnv_invertedRoom = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
+    cnv_flash = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
 
-    subtitlesController.clear()
-    subtitlesController.queue(languageRaw.subtitles["call_night" .. NightState.nightID])
+    --subtitlesController.clear()
+    --subtitlesController.queue(languageRaw.subtitles["call_night" .. NightState.nightID])
+    love.graphics.setBackgroundColor(0, 0, 0, 0)
 end
 
 function DebugState:draw()
-    gameCam:attach()
-        cnv_mainCanvas:renderTo(function()
-            love.graphics.clear(love.graphics.getBackgroundColor())
-            love.graphics.draw(tex, 0, 0)
-        end)
-    gameCam:detach()
+    cnv_mainCanvas:renderTo(function()
+        gameCam:attach()
+        love.graphics.draw(roomlight, 0, 0)
+        gameCam:detach()
+    end)
 
+    cnv_flash:renderTo(function()
+            gameCam:attach()
+                love.graphics.draw(roomoff, 0, 0)
+            gameCam:detach()
+        love.graphics.draw(flashlight, flash.x, flash.y, 0, 1.2, 1.1, flashlight:getWidth() / 2, flashlight:getHeight() / 2)
+    end)
 
     love.graphics.setShader(shd_perspective)
         love.graphics.draw(cnv_mainCanvas, 0, 0)
+        love.graphics.setBlendMode("multiply", "premultiplied")
+        love.graphics.draw(cnv_flash, 0, 0)
+        love.graphics.setBlendMode("alpha")
     love.graphics.setShader()
-
-
-    slab.Draw()
 end
 
 function DebugState:update(elapsed)
     slab.Update(elapsed)
-    dbginterface()
+    --dbginterface()
+
+    flash.x, flash.y = love.mouse.getPosition()
     
     shd_perspective:send("latitudeVar", tuneConfig.latitudeVar)
     shd_perspective:send("longitudeVar", tuneConfig.longitudeVar)

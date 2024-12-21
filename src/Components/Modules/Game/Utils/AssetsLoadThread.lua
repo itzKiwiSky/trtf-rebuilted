@@ -49,6 +49,9 @@ return function()
     loveloader.newImage(assets.doorButtons.right, "on", "assets/images/game/night/doors/br_on.png")
     loveloader.newImage(assets.doorButtons.right, "off", "assets/images/game/night/doors/br_off.png")
 
+    loveloader.newImage(assets.doorButtons.left, "not_ok", "assets/images/game/night/doors/bl_not_ok.png")
+    loveloader.newImage(assets.doorButtons.right, "not_ok", "assets/images/game/night/doors/br_not_ok.png")
+
     -- doors --
     assets.doorsAnim = { left = {}, right = {} }
 
