@@ -20,6 +20,10 @@ FoxyAI.path = {
     {1079, 592, nil},        -- office
 }
 
+function FoxyAI.init()
+    
+end
+
 -- just for radar shit --
 function FoxyAI.draw()
     --[[

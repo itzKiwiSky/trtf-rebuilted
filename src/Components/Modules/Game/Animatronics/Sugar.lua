@@ -20,6 +20,10 @@ SugarAI.path = {
     {1079, 592, nil},        -- office
 }
 
+function SugarAI.init()
+
+end
+
 -- just for radar shit --
 function SugarAI.draw()
     --[[

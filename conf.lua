@@ -11,7 +11,6 @@ function love.conf(w)
     w.window.fullscreen     =       false
     w.window.depth          =       16
     w.window.vsync          =       0
-    w.gammacorrect          =       true              -- Enable gamma-correct rendering, when supported by the system (boolean)
 
     --% Debug %--
     w.console               =       not love.filesystem.isFused()

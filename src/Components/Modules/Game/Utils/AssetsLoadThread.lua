@@ -30,6 +30,9 @@ return function()
     loveloader.newImage(assets, "in_office_bonnie", "assets/images/game/night/in_office/bonnie.png")
     loveloader.newImage(assets, "in_office_chica", "assets/images/game/night/in_office/chica.png")
 
+    loveloader.newImage(assets, "door_freddy_attack", "assets/images/game/night/freddy_door/attack.png")
+    loveloader.newImage(assets, "door_freddy_idle", "assets/images/game/night/freddy_door/idle.png")
+
     -- fan --
     assets["fanAnim"] = {}
     assets["fanAnim"].frameCount = 0

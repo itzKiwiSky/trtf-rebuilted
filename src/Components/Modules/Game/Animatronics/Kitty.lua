@@ -20,6 +20,10 @@ KittyAI.path = {
     {1079, 592, nil},        -- office
 }
 
+function KittyAI.init()
+    
+end
+
 -- just for radar shit --
 function KittyAI.draw()
     --[[

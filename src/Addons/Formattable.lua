@@ -1,7 +1,6 @@
 function debug.formattable(tbl, indent)
-    if not indent then 
-        indent = 0 
-    end
+    indent = indent or 0
+
     local toprint = string.rep(" ", indent) .. "{\r\n"
     indent = indent + 1 
     for k, v in pairs(tbl) do

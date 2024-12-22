@@ -188,6 +188,8 @@ function NightState:enter()
 
     AudioSources["bells"]:setVolume(0.6)
 
+    AudioSources["crank_machine"]:setVolume(0.4)
+
     -- config for AI --
     local aicgf = require 'src.Components.Modules.Game.Utils.AIConfig'
 
@@ -278,8 +280,10 @@ function NightState:enter()
     doorRFX = doorParticle()
 
     officeState = {
+        _f = 0.04,
         _t = 0,
         _f = 0,
+        _d = false,
         nightRun = false,
         jumpscareRunning = false,
         dead = false,
@@ -290,6 +294,7 @@ function NightState:enter()
         phoneCall = false,
         phoneCallNotRefused = false,
         power = {
+            officeFlick = false,
             powerStat = 1000,
             powerDisplay = 100,
             powerQueueCount = {
@@ -320,7 +325,6 @@ function NightState:enter()
             maxDoorTime = 25,
             doorReloadBoost = 3,
             doorUsageBoost = 5,
-
             canUseDoorL = true,
             canUseDoorR = true,
             left = false,
@@ -380,6 +384,10 @@ function NightState:enter()
                 officeState.phoneCall = false
         end
     end)
+
+    for k, v in pairs(NightState.AnimatronicControllers) do
+        if v.init then v.init() end
+    end
 end
 
 function NightState:draw()
@@ -388,43 +396,54 @@ function NightState:draw()
         -- canvas to render the game content and apply the shader --
         cnv_mainCanvas:renderTo(function()
             love.graphics.clear(love.graphics.getBackgroundColor())
-                love.graphics.draw(doorLFX, 1700, 178)
-                love.graphics.draw(doorRFX, 140, 178)
-                doorL:draw()
-                doorR:draw()
-                -- flicking front XD --
-                if officeState.flashlight.state then
-                    if not officeState.flashlight.isFlicking then
-                        love.graphics.draw(NightState.assets.front_office.idle, 0, 0)
-                        if collision.rectRect(NightState.AnimatronicControllers["bonnie"], tabletCameraSubState.areas["front_office"]) then
-                            love.graphics.draw(NightState.assets["front_office_bonnie"], 0, 0)
-                        end
-                        if collision.rectRect(NightState.AnimatronicControllers["chica"], tabletCameraSubState.areas["front_office"]) then
-                            love.graphics.draw(NightState.assets["front_office_chica"], 0, 0)
-                        end
+            love.graphics.draw(doorLFX, 1700, 178)
+            love.graphics.draw(doorRFX, 140, 178)
+            if officeState.isOfficeDisabled then
+                if NightState.AnimatronicControllers["freddy"].currentState == 5 then
+                    if NightState.AnimatronicControllers["freddy"].animState then
+                        love.graphics.draw(NightState.assets["door_freddy_attack"], 0, 0)
+                    else
+                        love.graphics.draw(NightState.assets["door_freddy_idle"], 0, 0)
                     end
                 end
-                love.graphics.draw(NightState.assets.office[officeState.isOfficeDisabled and "off" or "idle"], 0, 0)
-                love.graphics.draw(NightState.assets.fanAnim["fan_" .. fanShit.fid], 0, 0)
-
-                if collision.rectRect(NightState.AnimatronicControllers["bonnie"], tabletCameraSubState.areas["office"]) then
-                    love.graphics.draw(NightState.assets["in_office_bonnie"], 0, 0)
+            end
+            doorL:draw()
+            doorR:draw()
+            -- flicking front XD --
+            if officeState.flashlight.state then
+                if not officeState.flashlight.isFlicking then
+                    love.graphics.draw(NightState.assets.front_office.idle, 0, 0)
+                    if collision.rectRect(NightState.AnimatronicControllers["bonnie"], tabletCameraSubState.areas["front_office"]) then
+                        love.graphics.draw(NightState.assets["front_office_bonnie"], 0, 0)
+                    end
+                    if collision.rectRect(NightState.AnimatronicControllers["chica"], tabletCameraSubState.areas["front_office"]) then
+                        love.graphics.draw(NightState.assets["front_office_chica"], 0, 0)
+                    end
                 end
-                if collision.rectRect(NightState.AnimatronicControllers["chica"], tabletCameraSubState.areas["office"]) then
-                    love.graphics.draw(NightState.assets["in_office_chica"], 0, 0)
-                end
+            end
+            love.graphics.draw(NightState.assets.office[officeState.isOfficeDisabled and "off" or "idle"], 0, 0)
+            love.graphics.draw(NightState.assets.fanAnim["fan_" .. fanShit.fid], 0, 0)
 
+            if collision.rectRect(NightState.AnimatronicControllers["bonnie"], tabletCameraSubState.areas["office"]) then
+                love.graphics.draw(NightState.assets["in_office_bonnie"], 0, 0)
+            end
+            if collision.rectRect(NightState.AnimatronicControllers["chica"], tabletCameraSubState.areas["office"]) then
+                love.graphics.draw(NightState.assets["in_office_chica"], 0, 0)
+            end
+
+            if not officeState.isOfficeDisabled then
                 if not officeState.doors.canUseDoorL then
                     love.graphics.draw(NightState.assets.doorButtons.left[love.timer.getTime() % 1 > 0.5 and "not_ok" or "off"], 0, 0)
                 else
                     love.graphics.draw(NightState.assets.doorButtons.left[officeState.doors.left and "on" or "off"], 0, 0)
                 end
-
+    
                 if not officeState.doors.canUseDoorR then
                     love.graphics.draw(NightState.assets.doorButtons.right[love.timer.getTime() % 1 > 0.5 and "not_ok" or "off"], 0, 0)
                 else
-                    love.graphics.draw(NightState.assets.doorButtons.right[officeState.doors.left and "on" or "off"], 0, 0)
+                    love.graphics.draw(NightState.assets.doorButtons.right[officeState.doors.right and "on" or "off"], 0, 0)
                 end
+            end
         end)
     gameCam:detach()
 
@@ -528,7 +547,7 @@ function NightState:draw()
         end
     end
 
-    if officeState.hasAnimatronicInOffice and not officeState.officeFlick then
+    if officeState.hasAnimatronicInOffice or officeState.power.officeFlick and not officeState.officeFlick then
         love.graphics.setColor(0, 0, 0, 1)
             love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
         love.graphics.setColor(1, 1, 1, 1)
@@ -556,9 +575,10 @@ function NightState:draw()
 
     -- debug shit --
     if DEBUG_APP then
-        love.graphics.print(debug.formattable(officeState.doors), 90, 90)
-        local mx, my = love.mouse.getPosition() --gameCam:mousePosition()
-        love.graphics.print(string.format("%s, %s", mx, my), 90, 90)
+        --love.graphics.print(debug.formattable(officeState), 90, 90)
+        --local mx, my = love.mouse.getPosition() --gameCam:mousePosition()
+        --love.graphics.print(string.format("%s, %s", mx, my), 90, 90)
+        love.graphics.print(NightState.AnimatronicControllers["freddy"].patience, 20, 20)
         if registers.system.showDebugHitbox then
             gameCam:attach()
                 love.graphics.setColor(0.7, 0, 1, 0.4)
@@ -769,11 +789,11 @@ function NightState:update(elapsed)
     -- office front flashlight --
     officeState.flashlight.state = false
     -- keyboard --
-    officeState.flashlight.state = love.keyboard.isDown("lctrl") and not officeState.maskUp and not officeState.tabletUp
+    officeState.flashlight.state = love.keyboard.isDown("lctrl") and not officeState.maskUp and not officeState.tabletUp and not officeState.isOfficeDisabled
     -- mouse --
     if love.mouse.isDown(1) then
         for k, h in pairs(officeState.doors.hitboxes) do
-            if not officeState.maskUp and not officeState.tabletUp then
+            if not officeState.maskUp and not officeState.tabletUp and not officeState.isOfficeDisabled then
                 if k == "center" then
                     if collision.pointRect({x = mx, y = my}, h) then
                         officeState.flashlight.state = true
@@ -781,6 +801,23 @@ function NightState:update(elapsed)
                 end
             end
         end
+    end
+    
+
+    if officeState.flashlight.state then
+        AudioSources["buzzlight"]:setLooping(true)
+        AudioSources["buzzlight"]:play()
+        for k, v in pairs(NightState.AnimatronicControllers) do
+            if v.stared then
+                v.stared = true
+                if not AudioSources["window_stare"]:isPlaying() then
+                    AudioSources["window_stare"]:play()
+                end
+            end
+        end
+    else
+        AudioSources["buzzlight"]:setLooping(false)
+        AudioSources["buzzlight"]:stop()
     end
 
     -- loigic --
@@ -895,7 +932,7 @@ function NightState:update(elapsed)
         nightTextDisplay.acc = nightTextDisplay.acc + elapsed
         if nightTextDisplay.acc >= 0.1 then
             nightTextDisplay.acc = 0
-            nightTextDisplay.fade = nightTextDisplay.fade - 10.2 * elapsed
+            nightTextDisplay.fade = nightTextDisplay.fade - 8.2 * elapsed
             nightTextDisplay.scale = nightTextDisplay.scale + 0.2 * elapsed
 
             if nightTextDisplay.fade <= 0 then
@@ -904,40 +941,79 @@ function NightState:update(elapsed)
         end
     end
 
-    if officeState.isOfficeDisabled then
-        officeState.tabletUp = false
-        officeState.doors.left = false
-        officeState.doors.right = false
-        officeState.maskUp = true
-        maskController.setState(officeState.maskUp)
-        tabletController.setState(officeState.tabletUp)
-        doorL:setState(officeState.doors.left)
-        doorR:setState(officeState.doors.right)
+    if officeState.isOfficeDisabled and not officeState._d then
+        AudioSources["office_disable"]:play()
+        
+        if officeState.tabletUp then
+            if AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:isPlaying() then
+                AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:seek(0)
+            end
+            AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:play()
+            tabletController:setState(true)
+            officeState.tabletUp = false
+        end
+        if officeState.maskUp then
+            if AudioSources["mask_off"]:isPlaying() then
+                AudioSources["mask_off"]:seek(0)
+            end
+            AudioSources["mask_off"]:play()
+            officeState.maskUp = false
+            maskController:setState(false)
+        end
+        if officeState.doors.left then
+            if AudioSources["door_open"]:isPlaying() then
+                AudioSources["door_open"]:seek(0)
+            end
+            AudioSources["door_open"]:play()
+            officeState.doors.left = false
+            doorL:setState(false)
+        end
+        if officeState.doors.right then
+            if AudioSources["door_open"]:isPlaying() then
+                AudioSources["door_open"]:seek(0)
+            end
+            
+            AudioSources["door_open"]:play()
+            officeState.doors.right = false
+            doorR:setState(false)
+        end
+        
+        officeState._d = true
+    end
+
+    if officeState.power.powerStat <= 2 and not officeState.isOfficeDisabled then
+        officeState._t = officeState._t + elapsed
+        if officeState._t >= officeState._f then
+            officeState.power.officeFlick = not officeState.power.officeFlick
+            officeState._f = officeState._f - 0.005
+            officeState._t = 0
+        end
     end
 
     -- office power control --
     officeState.power.powerQueue = getPowerQueueCount()
     if officeState.nightRun and not officeState.isOfficeDisabled then
         officeState.power.timeracc = officeState.power.timeracc + elapsed
-        if officeState.power.timeracc >= 1.3 then
+        if officeState.power.timeracc >= 1.5 then
             officeState.power.powerStat = officeState.power.powerStat - officeState.power.powerQueue
             officeState.power.timeracc = 0
         end
 
-        if officeState.power.powerStat <= 0 then
-            officeState.isOfficeDisabled = true
+        officeState.power.powerQueueCount.tablet = officeState.tabletUp
+        if officeState.tabletUp then
+            officeState.power.powerQueueCount.flashlight = officeState.lightCam.state
+        else
+            officeState.power.powerQueueCount.flashlight = officeState.flashlight.state
         end
+        officeState.power.powerQueueCount.doorL = officeState.doors.left
+        officeState.power.powerQueueCount.doorR = officeState.doors.right
     end
-    officeState.power.powerDisplay = math.floor(officeState.power.powerStat / 10)
 
-    officeState.power.powerQueueCount.tablet = officeState.tabletUp
-    if officeState.tabletUp then
-        officeState.power.powerQueueCount.flashlight = officeState.lightCam.state
-    else
-        officeState.power.powerQueueCount.flashlight = officeState.flashlight.state
+    if officeState.power.powerStat <= 0 then
+        officeState.isOfficeDisabled = true
     end
-    officeState.power.powerQueueCount.doorL = officeState.doors.left
-    officeState.power.powerQueueCount.doorR = officeState.doors.right
+
+    officeState.power.powerDisplay = math.floor(officeState.power.powerStat / 10)
 end
 
 function NightState:mousepressed(x, y, button)
@@ -1077,15 +1153,8 @@ function NightState:keypressed(key)
     end
 
     if DEBUG_APP then
-        if key == "=" then
-            for k, v in pairs(NightState.AnimatronicControllers) do
-                v.currentState = v.currentState + 1
-            end
-        end
-        if key == "-" then
-            for k, v in pairs(NightState.AnimatronicControllers) do
-                v.currentState = v.currentState - 1
-            end
+        if love.keyboard.isDown("ralt") and key == "o" then
+            officeState.power.powerStat = 2
         end
     end
 end

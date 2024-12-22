@@ -20,6 +20,10 @@ PuppetAI.path = {
     {1079, 592, nil},        -- office
 }
 
+function PuppetAI.init()
+    
+end
+
 -- just for radar shit --
 function PuppetAI.draw()
     --[[

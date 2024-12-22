@@ -6,6 +6,7 @@ local BonnieAI = {
     timer = 0,
     move = 0,
     patience = 0,
+    stared = false
 }
 
 BonnieAI.__name__ = "Bonnie" -- Nome da tabela
@@ -19,6 +20,10 @@ BonnieAI.path = {
     {1076, 544, nil},        -- front_office
     {1079, 592, nil},        -- office
 }
+
+function BonnieAI.init()
+    BonnieAI.x, BonnieAI.y, BonnieAI.metadataCameraID = BonnieAI.path[BonnieAI.currentState][1] + 3, BonnieAI.path[BonnieAI.currentState][2] + 3, BonnieAI.path[BonnieAI.currentState][3]
+end
 
 -- just for radar shit --
 function BonnieAI.draw()

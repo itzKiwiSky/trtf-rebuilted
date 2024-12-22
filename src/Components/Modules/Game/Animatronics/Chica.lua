@@ -6,6 +6,7 @@ local ChicaAi = {
     timer = 0,
     move = 0,
     patience = 0,
+    stared = false
 }
 
 ChicaAi.__name__ = "Chica" -- Nome da tabela
@@ -14,12 +15,16 @@ ChicaAi.currentState = 1
 ChicaAi.metadataCameraID = 0
 ChicaAi.path = {
     {1124, 256, 6},        -- showstage
-    {1064, 323, 1},         -- dining_area
+    {1064, 323, 3},         -- dining_area
     {1165, 432, 2},         -- storage
-    {1127, 490, 9},         -- right_hall
+    {1127, 490, 10},         -- right_hall
     {1116, 544, nil},        -- front_office
     {1079, 592, nil},        -- office
 }
+
+function ChicaAi.init()
+    ChicaAi.x, ChicaAi.y, ChicaAi.metadataCameraID = ChicaAi.path[ChicaAi.currentState][1] + 3, ChicaAi.path[ChicaAi.currentState][2] + 3, ChicaAi.path[ChicaAi.currentState][3]
+end
 
 -- just for radar shit --
 function ChicaAi.draw()
