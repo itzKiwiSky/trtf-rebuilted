@@ -33,6 +33,7 @@ After the big incident of Fredbear's Family Diner, in 2005, Vincent, decided to 
 [**lume**](https://github.com/rxi/lume/tree/master)<br>
 [**json**](https://github.com/actboy168/json.lua)<br>
 [**love-loader**](https://github.com/kikito/love-loader)<br>
+**Neuron** (Proprietary save and serialization library, will be open sourced)
 
 #### Other credits
 
