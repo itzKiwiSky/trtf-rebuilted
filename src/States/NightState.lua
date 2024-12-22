@@ -280,7 +280,7 @@ function NightState:enter()
     doorRFX = doorParticle()
 
     officeState = {
-        _f = 0.04,
+        _fc = 0.04,
         _t = 0,
         _f = 0,
         _d = false,
@@ -923,7 +923,7 @@ function NightState:update(elapsed)
             nightTextDisplay.fade = nightTextDisplay.fade + 8.5 * elapsed
             nightTextDisplay.scale = nightTextDisplay.scale + 0.4 * elapsed
 
-            if nightTextDisplay.fade >= 1.2 then
+            if nightTextDisplay.fade >= 1.4 then
                 nightTextDisplay.invert = true
             end
         end
@@ -932,7 +932,7 @@ function NightState:update(elapsed)
         nightTextDisplay.acc = nightTextDisplay.acc + elapsed
         if nightTextDisplay.acc >= 0.1 then
             nightTextDisplay.acc = 0
-            nightTextDisplay.fade = nightTextDisplay.fade - 8.2 * elapsed
+            nightTextDisplay.fade = nightTextDisplay.fade - 7.2 * elapsed
             nightTextDisplay.scale = nightTextDisplay.scale + 0.2 * elapsed
 
             if nightTextDisplay.fade <= 0 then
@@ -943,7 +943,7 @@ function NightState:update(elapsed)
 
     if officeState.isOfficeDisabled and not officeState._d then
         AudioSources["office_disable"]:play()
-        
+
         if officeState.tabletUp then
             if AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:isPlaying() then
                 AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:seek(0)
@@ -983,9 +983,9 @@ function NightState:update(elapsed)
 
     if officeState.power.powerStat <= 2 and not officeState.isOfficeDisabled then
         officeState._t = officeState._t + elapsed
-        if officeState._t >= officeState._f then
+        if officeState._t >= officeState._fc then
             officeState.power.officeFlick = not officeState.power.officeFlick
-            officeState._f = officeState._f - 0.005
+            officeState._fc = officeState._fc - 0.005
             officeState._t = 0
         end
     end
