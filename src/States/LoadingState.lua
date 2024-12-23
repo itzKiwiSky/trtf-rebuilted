@@ -13,6 +13,14 @@ function LoadingState:enter()
     glowTextEffect = moonshine(moonshine.effects.glow)
     textLoadingFont = fontcache.getFont("ocrx", 34)
     clockIcon = love.graphics.newImage("assets/images/game/clockico.png")
+    lockjawdance = {
+        cfg = {
+            acc = 0,
+            speed = 35,
+            frame = 1
+        }
+    }
+    lockjawdance.image, lockjawdance.quads = love.graphics.getQuads("assets/images/game/loading_lockjaw")
 
     ready = false
     pressToGO = false
@@ -41,8 +49,9 @@ function LoadingState:draw()
     ctrEffect(function()
         love.graphics.draw(ldBackgrounds[randBG], 0, 0, 0, love.graphics.getWidth() / ldBackgrounds[randBG]:getWidth(), love.graphics.getHeight() / ldBackgrounds[randBG]:getHeight())
     end)
-    love.graphics.draw(clockIcon, love.graphics.getWidth() - 69, love.graphics.getHeight() - 69, 0, 64 / clockIcon:getWidth(), 64 / clockIcon:getHeight())
-    
+    --love.graphics.draw(clockIcon, love.graphics.getWidth() - 69, love.graphics.getHeight() - 69, 0, 64 / clockIcon:getWidth(), 64 / clockIcon:getHeight())
+    love.graphics.draw(lockjawdance.image, lockjawdance.quads[lockjawdance.cfg.frame], love.graphics.getWidth() - 135, love.graphics.getHeight() - 135, 0, 128 / 300, 128 / 300)
+
     glowTextEffect(function()
         love.graphics.clear(0, 0, 0, 0)
         local percent = 0
@@ -56,6 +65,16 @@ function LoadingState:draw()
 end
 
 function LoadingState:update(elapsed)
+    lockjawdance.cfg.acc = lockjawdance.cfg.acc + elapsed
+
+    if lockjawdance.cfg.acc >= 1 / lockjawdance.cfg.speed then
+        lockjawdance.cfg.acc = 0
+        lockjawdance.cfg.frame = lockjawdance.cfg.frame + 1
+        if lockjawdance.cfg.frame > #lockjawdance.quads then
+            lockjawdance.cfg.frame = 1
+        end
+    end
+
     if not ready then
         loveloader.update()
     elseif ready and pressToGO then
@@ -77,20 +96,6 @@ end
 function LoadingState:mousepressed(x, y, button)
     if ready and not pressToGO then
         pressToGO = true
-    end
-end
-
-function LoadingState:leave()
-    if not gameslot.save.game.user.settings.preserveAssets then
-        ctrEffect = nil
-        glowTextEffect = nil
-        textLoadingFont:release()
-        clockIcon:release()
-        for b = 1, #ldBackgrounds, 1 do
-            ldBackgrounds[b]:release()
-        end
-
-        collectgarbage("collect")
     end
 end
 

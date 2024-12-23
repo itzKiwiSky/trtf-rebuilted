@@ -5,13 +5,13 @@ NightState.killed = false
 NightState.nightID = 1000
 NightState.isCustomNight = false
 NightState.animatronicsAI = {
-    freddy = 20,
+    freddy = 0,
     bonnie = 0,
     chica = 0,
     foxy = 0,
     sugar = 0,
     kitty = 0,
-    puppet = 0,
+    puppet = 20,
 }
 NightState.AnimatronicControllers = {}
 
@@ -188,7 +188,9 @@ function NightState:enter()
 
     AudioSources["bells"]:setVolume(0.6)
 
-    AudioSources["crank_machine"]:setVolume(0.4)
+    AudioSources["msc_puppet_music_box"]:setVolume(0)
+    AudioSources["msc_puppet_music_box"]:setLooping(true)
+    AudioSources["msc_puppet_music_box"]:play()
 
     -- config for AI --
     local aicgf = require 'src.Components.Modules.Game.Utils.AIConfig'
@@ -578,7 +580,7 @@ function NightState:draw()
         --love.graphics.print(debug.formattable(officeState), 90, 90)
         --local mx, my = love.mouse.getPosition() --gameCam:mousePosition()
         --love.graphics.print(string.format("%s, %s", mx, my), 90, 90)
-        love.graphics.print(NightState.AnimatronicControllers["freddy"].patience, 20, 20)
+        love.graphics.print(NightState.AnimatronicControllers["puppet"].musicBoxTimer, 20, 20)
         if registers.system.showDebugHitbox then
             gameCam:attach()
                 love.graphics.setColor(0.7, 0, 1, 0.4)
@@ -994,7 +996,7 @@ function NightState:update(elapsed)
     officeState.power.powerQueue = getPowerQueueCount()
     if officeState.nightRun and not officeState.isOfficeDisabled then
         officeState.power.timeracc = officeState.power.timeracc + elapsed
-        if officeState.power.timeracc >= 1.5 then
+        if officeState.power.timeracc >= 2.5 then
             officeState.power.powerStat = officeState.power.powerStat - officeState.power.powerQueue
             officeState.power.timeracc = 0
         end

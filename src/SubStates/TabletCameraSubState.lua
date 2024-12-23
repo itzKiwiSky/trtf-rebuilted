@@ -125,13 +125,21 @@ function TabletCameraSubState:load()
         {btn = buttonCamera(1116, 636, 72, 40)}, 
     }
 
+    self.reloadTimer = 0
     self.miscButtons = {
-        {
-            text = "Rewind",
-            hitbox = buttonCamera(46, 724, 128, 42),
+        reload = {
+            text = "Rewind Music Box",
+            type = "hold",
+            hitbox = buttonCamera(546, love.graphics.getHeight() - 110, 128, 48),
             visible = false,
             action = function()
-                
+                self.reloadTimer = self.reloadTimer + love.timer.getDelta()
+                if self.reloadTimer >= 0.05 then
+                    if NightState.AnimatronicControllers["puppet"].musicBoxTimer <= NightState.AnimatronicControllers["puppet"].maxRewind - 1 then
+                        NightState.AnimatronicControllers["puppet"].musicBoxTimer = NightState.AnimatronicControllers["puppet"].musicBoxTimer + math.random(6, 12)
+                    end
+                    self.reloadTimer = 0
+                end
             end
         }
     }
@@ -160,6 +168,9 @@ function TabletCameraSubState:draw()
                 if officeState.lightCam.state then
                     if not officeState.lightCam.isFlicking then
                         love.graphics.draw(NightState.assets.cameras[self.camID]["cs_" .. self.cameraMeta[self.camID].frame], 0, 0)
+                        if tabletCameraSubState.camerasID[NightState.AnimatronicControllers["puppet"].metadataCameraID] == tabletCameraSubState.camID and NightState.AnimatronicControllers["puppet"].released then
+                            love.graphics.draw(NightState.assets.cameras["puppet"]["cs_" .. NightState.AnimatronicControllers["puppet"].position], 0, 0)
+                        end
                     end
                 end
             love.graphics.setShader()
@@ -190,7 +201,7 @@ function TabletCameraSubState:draw()
         love.graphics.draw(NightState.assets.camSystemLogo, love.graphics.getWidth() / 2, love.graphics.getHeight() - 490, 0, 0.7, 0.7, NightState.assets.camSystemLogo:getWidth() / 2, NightState.assets.camSystemLogo:getHeight() / 2)
 
         if officeState.tabletBootProgress < 100 then
-            love.graphics.rectangle("line", love.graphics.getWidth() / 2 - 128, 500, 256, 32)
+            love.graphics.rectangle("line", love.graphics.getWidth() / 2 - 128, 500, 256, 42)
             drawQueue((love.graphics.getWidth() / 2 - 128), 500, 256, 38, math.floor(officeState.tabletBootProgress * 0.2), 20, 5, 5, {41, 165, 236}, {41, 165, 236})
         end
 
@@ -250,7 +261,7 @@ function TabletCameraSubState:draw()
         -- info --
         tabletDisplay(self)
 
-        for _, b in ipairs(self.miscButtons) do
+        for k, b in pairs(self.miscButtons) do
             if b.visible then
                 if b.active then
                     if love.timer.getTime() % 1 > 0.5 then
@@ -351,10 +362,25 @@ function TabletCameraSubState:update(elapsed)
     -- keyboard --
     officeState.lightCam.state = love.keyboard.isDown("lctrl") and officeState.tabletUp
 
+    self.miscButtons["reload"].visible = false
+    if tabletCameraSubState.camerasID[NightState.AnimatronicControllers["puppet"].metadataCameraID] == tabletCameraSubState.camID and NightState.AnimatronicControllers["puppet"].released then
+        self.miscButtons["reload"].visible = true
+    end
+
     if love.mouse.isDown(1) then
         if officeState.tabletUp then
             if collision.pointRect({x = mx, y = my}, self.clickArea) then
                 officeState.lightCam.state = true
+            end
+        end
+
+        for k, b in pairs(self.miscButtons) do
+            b.active = false
+            if b.visible and b.type == "hold" then
+                if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, b.hitbox) then
+                    b.active = true
+                    b.action()
+                end
             end
         end
     end
@@ -393,12 +419,12 @@ function TabletCameraSubState:mousepressed(x, y, button)
         end
 
         for _, b in ipairs(self.miscButtons) do
-            if b.visible then
+            self.active = false
+            if b.visible and b.type == "click" then
                 if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, b.hitbox) then
-                    self.active = true
+                    b.active = true
                     b.action()
                 end
-                self.active = false
             end
         end
     end

@@ -138,9 +138,9 @@ return function(this)
         end,
         ["prize_corner"] = function()
             if collision.rectRect(NightState.AnimatronicControllers["puppet"], this.areas["prize_corner"]) then
-                this.cameraMeta["right_vent"].frame = 1
-            else
-                this.cameraMeta["right_vent"].frame = 2
+                this.cameraMeta["prize_corner"].frame = 1
+            elseif not NightState.AnimatronicControllers["puppet"].released then
+                this.cameraMeta["prize_corner"].frame = 2
             end
         end,
         ["left_hall"] = function()
@@ -169,18 +169,18 @@ return function(this)
                 this.cameraMeta["right_hall"].frame = 4
             end
         end,
-        ["left_vent"] = function()
+        ["sugar_vent"] = function()
             if collision.rectRect(NightState.AnimatronicControllers["sugar"], this.areas["left_vent"]) then
-                this.cameraMeta["left_vent"].frame = 1
+                this.cameraMeta["sugar_vent"].frame = 1
             else
-                this.cameraMeta["left_vent"].frame = 2
+                this.cameraMeta["sugar_vent"].frame = 2
             end
         end,
-        ["right_vent"] = function()
+        ["kitty_vent"] = function()
             if collision.rectRect(NightState.AnimatronicControllers["sugar"], this.areas["right_vent"]) then
-                this.cameraMeta["right_vent"].frame = 1
+                this.cameraMeta["kitty_vent"].frame = 1
             else
-                this.cameraMeta["right_vent"].frame = 2
+                this.cameraMeta["kitty_vent"].frame = 2
             end
         end,
     })
