@@ -8,100 +8,111 @@ local KittyAI = {
     patience = 0,
 }
 
-KittyAI.__name__ = "Bonnie" -- Nome da tabela
+KittyAI.__name__ = "Kitty" -- Nome da tabela
 
 KittyAI.currentState = 1
 KittyAI.metadataCameraID = 0
+KittyAI.active = false
 KittyAI.path = {
-    {1064, 256, 6},        -- showstage
-    {950, 431, 1},         -- arcade
-    {999, 490, 9},         -- left_hall
-    {1076, 544, nil},        -- front_office
-    {1079, 592, nil},        -- office
+    {1165, 432, 2},         -- storage
+    {1064, 323, 3},         -- dining_area
+    {906, 339, 4},
+    {1076, 544, 4},        -- left_vent
+    {1004, 636, 12},        -- office
 }
 
 function KittyAI.init()
-    
+    KittyAI.x, KittyAI.y, KittyAI.metadataCameraID = KittyAI.path[KittyAI.currentState][1] + 16, KittyAI.path[KittyAI.currentState][2] + 93, KittyAI.path[KittyAI.currentState][3]
 end
 
 -- just for radar shit --
 function KittyAI.draw()
-    --[[
     if NightState.modifiers.radarMode then
-        love.graphics.draw(NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads[2], KittyAI.x, KittyAI.y, 0, 2, 2, 16, 16)
-    end]]
+        love.graphics.draw(NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads[6], KittyAI.x, KittyAI.y, 0, 2, 2, 16, 16)
+    end
 end
 
 function KittyAI.update(elapsed)
-    --[[
-    if KittyAI.currentState <= 4 then
+    if KittyAI.active then
+        if KittyAI.currentState <= 2 then
+            KittyAI.timer = KittyAI.timer + elapsed
+            if KittyAI.timer >= 7.3 then
+                KittyAI.move = math.random(0, 20)
+                if KittyAI.move <= NightState.animatronicsAI.bonnie and NightState.animatronicsAI.bonnie > 0 and not officeState.hasAnimatronicInOffice then
+                    if officeState.tabletUp then
+                        if tabletCameraSubState.camerasID[KittyAI.metadataCameraID] then
+                            if tabletCameraSubState.camerasID[KittyAI.metadataCameraID] == tabletCameraSubState.camID then
+                                AudioSources["cam_animatronic_interference"]:seek(0)
+                                tabletCameraSubState.doInterference(0.1, 200, 200, 6)
+                                AudioSources["cam_animatronic_interference"]:play()
+                            end
+                        end
+                    end
+                    KittyAI.currentState = KittyAI.currentState + 1
+                    if KittyAI.currentState < 3 then
+                        NightState.playWalk()
+                    elseif KittyAI.currentState == 3 then
+                        AudioSources["vent_walk"]:seek(0)
+                        AudioSources["vent_walk"]:play()
+                    end
+    
+                    if DEBUG_APP then
+                        print(string.format("[%s] Moved | MoveID: %s State: %s", KittyAI.__name__, KittyAI.move, KittyAI.currentState))
+                    end
+                else
+                    if DEBUG_APP then
+                        print(string.format("[%s] Failed to move | MoveID: %s", KittyAI.__name__, KittyAI.move))
+                    end
+                end
+                KittyAI.timer = 0
+            end
+        elseif KittyAI.currentState == 4 then
+            KittyAI.timer = KittyAI.timer + elapsed
+            if KittyAI.timer >= 0.02 then
+                KittyAI.timer = 0
+                KittyAI.patience = KittyAI.patience + 1
+            end
+    
+            if not officeState.hasAnimatronicInOffice then
+                if KittyAI.patience >= 250 and not officeState.vent.left then
+                    if not NightState.killed then
+                        NightState.killed = true
+                        jumpscareController:init("kitty", 35)
+                        jumpscareController.onComplete = function()
+                            NightState.KilledBy = "kitty"
+                            gamestate.switch(DeathState)
+                        end
+                    end
+                elseif KittyAI.patience >= 250 and officeState.vent.left then
+                    AudioSources["vent_amb2"]:seek(0)
+                    AudioSources["vent_amb2"]:play()
+                    KittyAI.patience = 0
+                    KittyAI.timer = 0
+                    KittyAI.currentState = 2
+                end
+            end
+        end
+    
+        KittyAI.x, KittyAI.y, KittyAI.metadataCameraID = KittyAI.path[KittyAI.currentState][1] + 3, KittyAI.path[KittyAI.currentState][2] + 3, KittyAI.path[KittyAI.currentState][3]
+    else
         KittyAI.timer = KittyAI.timer + elapsed
-        if KittyAI.timer >= 7.3 then
+        if KittyAI.timer >= 4.9 then
             KittyAI.move = math.random(0, 20)
-            if KittyAI.move <= NightState.animatronicsAI.bonnie and NightState.animatronicsAI.bonnie > 0 and not officeState.hasAnimatronicInOffice then
+            if KittyAI.move <= NightState.animatronicsAI.bonnie and NightState.animatronicsAI.bonnie > 0 then
                 if officeState.tabletUp then
                     if tabletCameraSubState.camerasID[KittyAI.metadataCameraID] then
-                        if tabletCameraSubState.camerasID[KittyAI.metadataCameraID] == tabletCameraSubState.camID then
+                        if tabletCameraSubState.camerasID[9] == tabletCameraSubState.camID then
                             AudioSources["cam_animatronic_interference"]:seek(0)
                             tabletCameraSubState.doInterference(0.1, 200, 200, 6)
                             AudioSources["cam_animatronic_interference"]:play()
                         end
                     end
                 end
-                KittyAI.currentState = KittyAI.currentState + 1
-                NightState.playWalk()
-
-                if officeState.flashlight.state then
-                    if KittyAI.currentState == 4 then
-                        officeState.flashlight.isFlicking = true
-                    end
-                end
-
-                if DEBUG_APP then
-                    print(string.format("[%s] Moved | MoveID: %s State: %s", KittyAI.__name__, KittyAI.move, KittyAI.currentState))
-                end
-            else
-                if DEBUG_APP then
-                    print(string.format("[%s] Failed to move | MoveID: %s", KittyAI.__name__, KittyAI.move))
-                end
-            end
-            KittyAI.timer = 0
-        end
-    else
-        if not AudioSources["stare"]:isPlaying() then
-            AudioSources["stare"]:play()
-        end
-
-        KittyAI.timer = KittyAI.timer + elapsed
-        if KittyAI.timer >= 0.02 then
-            KittyAI.timer = 0
-            KittyAI.patience = KittyAI.patience + 1
-            officeState.hasAnimatronicInOffice = true
-        end
-
-        if officeState.hasAnimatronicInOffice then
-            if KittyAI.patience >= 150 and not officeState.maskUp then
-                if not NightState.killed then
-                    NightState.killed = true
-                    jumpscareController:init("bonnie", 35)
-                    jumpscareController.onComplete = function()
-                        NightState.KilledBy = "bonnie"
-                        gamestate.switch(DeathState)
-                    end
-                end
-            elseif KittyAI.patience >= 150 and officeState.maskUp then
-                KittyAI.patience = 0
+                KittyAI.active = true
                 KittyAI.timer = 0
-                KittyAI.currentState = 1
-                officeState.hasAnimatronicInOffice = false
-                AudioSources["stare"]:stop()
-                officeState.fadealpha = 1
             end
         end
     end
-
-    KittyAI.x, KittyAI.y, KittyAI.metadataCameraID = KittyAI.path[KittyAI.currentState][1] + 3, KittyAI.path[KittyAI.currentState][2] + 3, KittyAI.path[KittyAI.currentState][3]
-    ]]
 end
 
 return KittyAI

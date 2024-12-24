@@ -18,6 +18,8 @@ function SettingsSubState:load()
         langFiles[l] = langFiles[l]:gsub("%.[^.]+$", "")
     end
 
+    print(debug.formattable(langFiles))
+
     self.blur = 0
     self.currentLangID = 1
     
@@ -250,7 +252,7 @@ function SettingsSubState:mousepressed(x, y, button)
                     if type(o.target) == "boolean" then
                         o.target = not o.target
                         gameslot.save.game.user.settings[o.valueTarget] = o.target
-                    else
+                    elseif type(o.target) == "button" then
                         o.target()
                     end
                 end

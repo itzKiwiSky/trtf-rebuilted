@@ -75,6 +75,8 @@ function TabletCameraSubState:load()
         ["front_office"] = {x = 1076, y = 544, w = 72, h = 40},
         ["office"] = {x = 1079, y = 592, w = 72, h = 40},
         ["freddy_hall"] = {x = 1154, y = 569, w = 72, h = 40},
+        ["foxy_hall_right"] = {x = 979, y = 545, w = 72, h = 40},
+        ["foxy_hall_left"] = {x = 1137, y = 545, w = 72, h = 40},
     }
 
     self.camerasName = {
@@ -128,7 +130,7 @@ function TabletCameraSubState:load()
     self.reloadTimer = 0
     self.miscButtons = {
         reload = {
-            text = "Rewind Music Box",
+            text = languageService["game_btn_rewind_box"],
             type = "hold",
             hitbox = buttonCamera(546, love.graphics.getHeight() - 110, 128, 48),
             visible = false,
@@ -141,7 +143,21 @@ function TabletCameraSubState:load()
                     self.reloadTimer = 0
                 end
             end
-        }
+        },
+        ["seal_vent"] = {
+            text = officeState.vent.left and languageService["game_btn_unseal_vent"] or languageService["game_btn_seal_vent"],
+            type = "click",
+            hitbox = buttonCamera(486, love.graphics.getHeight() - 110, 128, 48),
+            visible = tabletCameraSubState.camID == 11 and tabletCameraSubState.camID == 12,
+            action = function()
+                if tabletCameraSubState.camID == 11 then
+                    if not officeState.vent.requestClose then
+                        officeState.vent.timerAcc = 0
+                        officeState.vent.requestClose = true
+                    end
+                end
+            end
+        },
     }
 
     for k, b in pairs(self.miscButtons) do

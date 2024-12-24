@@ -45,15 +45,21 @@ function PuppetAI.update(elapsed)
     if PuppetAI.released then
         if officeState.tabletUp then
             if tabletCameraSubState.camerasID[PuppetAI.metadataCameraID] then
+                AudioSources["msc_puppet_music_box"]:setPosition(0, 0, 0)
                 if tabletCameraSubState.camerasID[PuppetAI.metadataCameraID] == tabletCameraSubState.camID then
                     AudioSources["msc_puppet_music_box"]:setVolume(1)
                 else
                     AudioSources["msc_puppet_music_box"]:setVolume(0)
                 end
             end
-        elseif PuppetAI.currentState == 9 or PuppetAI.currentState == 10 then
+        elseif PuppetAI.currentState == 9 then
+            AudioSources["msc_puppet_music_box"]:setPosition(-0.001, 0, 0)
+            AudioSources["msc_puppet_music_box"]:setVolume(0.1)
+        elseif PuppetAI.currentState == 10 then
+            AudioSources["msc_puppet_music_box"]:setPosition(0.001, 0, 0)
             AudioSources["msc_puppet_music_box"]:setVolume(0.1)
         else
+            AudioSources["msc_puppet_music_box"]:setPosition(0, 0, 0)
             AudioSources["msc_puppet_music_box"]:setVolume(0)
         end
     

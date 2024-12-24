@@ -43,7 +43,9 @@ function love.initialize(args)
                 initialCutscene = false,
                 newgame = false,
                 extras = false,
-                night = 0
+                night = 1,
+                playingMinigame = false,
+                minigameID = 0,
             }
         }
     }

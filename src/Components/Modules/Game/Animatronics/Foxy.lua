@@ -8,37 +8,49 @@ local FoxyAI = {
     patience = 0,
 }
 
-FoxyAI.__name__ = "Bonnie" -- Nome da tabela
+FoxyAI.__name__ = "Foxy" -- Nome da tabela
 
 FoxyAI.currentState = 1
 FoxyAI.metadataCameraID = 0
+FoxyAI.position = 1
+FoxyAI.direction = "none"
 FoxyAI.path = {
-    {1064, 256, 6},        -- showstage
-    {950, 431, 1},         -- arcade
-    {999, 490, 9},         -- left_hall
+    {906, 339, 4},  -- pirate_cove
+    {1076, 544, nil},        -- front_office
+    {1076, 544, nil},        -- front_office
+    {1076, 544, nil},        -- front_office
     {1076, 544, nil},        -- front_office
     {1079, 592, nil},        -- office
 }
 
+local function kill()
+    if not NightState.killed then
+        NightState.killed = true
+        jumpscareController:init("foxy", 35)
+        jumpscareController.onComplete = function()
+            NightState.KilledBy = "foxy"
+            gamestate.switch(DeathState)
+        end
+    end
+end
+
 function FoxyAI.init()
-    
+    FoxyAI.x, FoxyAI.y, FoxyAI.metadataCameraID = FoxyAI.path[FoxyAI.currentState][1] + 7, FoxyAI.path[FoxyAI.currentState][2] + 3, FoxyAI.path[FoxyAI.currentState][3]
 end
 
 -- just for radar shit --
 function FoxyAI.draw()
-    --[[
     if NightState.modifiers.radarMode then
-        love.graphics.draw(NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads[2], FoxyAI.x, FoxyAI.y, 0, 2, 2, 16, 16)
-    end]]
+        love.graphics.draw(NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads[4], FoxyAI.x, FoxyAI.y, 0, 2, 2, 16, 16)
+    end
 end
 
 function FoxyAI.update(elapsed)
-    --[[
-    if FoxyAI.currentState <= 4 then
+    if FoxyAI.currentState <= 1 then
         FoxyAI.timer = FoxyAI.timer + elapsed
         if FoxyAI.timer >= 7.3 then
             FoxyAI.move = math.random(0, 20)
-            if FoxyAI.move <= NightState.animatronicsAI.bonnie and NightState.animatronicsAI.bonnie > 0 and not officeState.hasAnimatronicInOffice then
+            if FoxyAI.move <= NightState.animatronicsAI.foxy and NightState.animatronicsAI.foxy > 0 and not officeState.hasAnimatronicInOffice then
                 if officeState.tabletUp then
                     if tabletCameraSubState.camerasID[FoxyAI.metadataCameraID] then
                         if tabletCameraSubState.camerasID[FoxyAI.metadataCameraID] == tabletCameraSubState.camID then
@@ -48,18 +60,37 @@ function FoxyAI.update(elapsed)
                         end
                     end
                 end
-                FoxyAI.currentState = FoxyAI.currentState + 1
+                FoxyAI.currentState = 2
                 NightState.playWalk()
 
                 if officeState.flashlight.state then
-                    if FoxyAI.currentState == 4 then
-                        officeState.flashlight.isFlicking = true
-                    end
+                    officeState.flashlight.isFlicking = true
                 end
 
                 if DEBUG_APP then
                     print(string.format("[%s] Moved | MoveID: %s State: %s", FoxyAI.__name__, FoxyAI.move, FoxyAI.currentState))
                 end
+            else
+                FoxyAI.position = math.random(1, 2)
+                if DEBUG_APP then
+                    print(string.format("[%s] Failed to move | MoveID: %s", FoxyAI.__name__, FoxyAI.move))
+                end
+            end
+            FoxyAI.timer = 0
+        end
+    elseif FoxyAI.currentState == 2 then
+        FoxyAI.timer = FoxyAI.timer + elapsed
+        if FoxyAI.timer >= 14.8 then
+            FoxyAI.move = math.random(0, 20)
+            if FoxyAI.move <= NightState.animatronicsAI.foxy and NightState.animatronicsAI.foxy > 0 and not officeState.hasAnimatronicInOffice then
+                if officeState.flashlight.state then
+                    officeState.flashlight.isFlicking = true
+                end
+
+                if DEBUG_APP then
+                    print(string.format("[%s] Moved | MoveID: %s State: %s", FoxyAI.__name__, FoxyAI.move, FoxyAI.currentState))
+                end
+                FoxyAI.currentState = 3
             else
                 if DEBUG_APP then
                     print(string.format("[%s] Failed to move | MoveID: %s", FoxyAI.__name__, FoxyAI.move))
@@ -67,41 +98,92 @@ function FoxyAI.update(elapsed)
             end
             FoxyAI.timer = 0
         end
-    else
-        if not AudioSources["stare"]:isPlaying() then
-            AudioSources["stare"]:play()
-        end
-
+    elseif FoxyAI.currentState == 3 then
         FoxyAI.timer = FoxyAI.timer + elapsed
         if FoxyAI.timer >= 0.02 then
             FoxyAI.timer = 0
             FoxyAI.patience = FoxyAI.patience + 1
-            officeState.hasAnimatronicInOffice = true
         end
 
-        if officeState.hasAnimatronicInOffice then
-            if FoxyAI.patience >= 150 and not officeState.maskUp then
-                if not NightState.killed then
-                    NightState.killed = true
-                    jumpscareController:init("bonnie", 35)
-                    jumpscareController.onComplete = function()
-                        NightState.KilledBy = "bonnie"
-                        gamestate.switch(DeathState)
+        if FoxyAI.patience >= 160 - NightState.animatronicsAI.foxy then
+            FoxyAI.currentState = math.random(4, 5)
+        end
+    elseif FoxyAI.currentState == 4 then
+        FoxyAI.position = 3
+        FoxyAI.timer = FoxyAI.timer + elapsed
+        if FoxyAI.timer >= 0.05 then
+            FoxyAI.timer = 0
+            FoxyAI.patience = FoxyAI.patience + 1
+        end
+
+        if FoxyAI.patience >= 180 then
+            FoxyAI.direction = "right"
+            FoxyAI.patience = 0
+            FoxyAI.currentState = 6
+        end
+    elseif FoxyAI.currentState == 5 then
+        FoxyAI.position = 4
+        FoxyAI.timer = FoxyAI.timer + elapsed
+        if FoxyAI.timer >= 0.02 then
+            FoxyAI.timer = 0
+            FoxyAI.patience = FoxyAI.patience + 1
+        end
+
+        if FoxyAI.patience >= 180 then
+            FoxyAI.direction = "left"
+            FoxyAI.patience = 0
+            FoxyAI.currentState = 6
+        end
+    elseif FoxyAI.currentState == 6 then
+        AudioSources["run"]:setVolume(1)
+        FoxyAI.timer = FoxyAI.timer + elapsed
+        if FoxyAI.timer >= 0.034 then
+            FoxyAI.timer = 0
+            FoxyAI.patience = FoxyAI.patience + 1
+            if FoxyAI.patience == 20 then
+                if not AudioSources["run"]:isPlaying() then
+                    if FoxyAI.direction == "right" then
+                        AudioSources["run"]:seek(0)
+                        AudioSources["run"]:setPosition(-0.001, 0, 0)
+                        AudioSources["run"]:play()
+                    elseif FoxyAI.direction == "left" then
+                        AudioSources["run"]:seek(0)
+                        AudioSources["run"]:setPosition(0.001, 0, 0)
+                        AudioSources["run"]:play()
                     end
                 end
-            elseif FoxyAI.patience >= 150 and officeState.maskUp then
-                FoxyAI.patience = 0
-                FoxyAI.timer = 0
-                FoxyAI.currentState = 1
-                officeState.hasAnimatronicInOffice = false
-                AudioSources["stare"]:stop()
-                officeState.fadealpha = 1
+            end
+        end
+
+        if FoxyAI.patience >= 90 then
+            if FoxyAI.direction == "left" then
+                if officeState.doors.left then
+                    AudioSources["door_knocking"]:setVolume(1)
+                    AudioSources["door_knocking"]:setPosition(0.001, 0, 0)
+                    AudioSources["door_knocking"]:play()
+                    FoxyAI.currentState = 2
+                    FoxyAI.timer = 0
+                    FoxyAI.position = math.random(1, 2)
+                    FoxyAI.patience = 0
+                else
+                    kill()
+                end
+            elseif FoxyAI.direction == "right" then
+                if officeState.doors.right then
+                    AudioSources["door_knocking"]:setVolume(1)
+                    AudioSources["door_knocking"]:setPosition(-0.001, 0, 0)
+                    AudioSources["door_knocking"]:play()
+                    FoxyAI.currentState = 2
+                    FoxyAI.position = math.random(1, 2)
+                    FoxyAI.timer = 0
+                    FoxyAI.patience = 0
+                else
+                    kill()
+                end
             end
         end
     end
-
-    FoxyAI.x, FoxyAI.y, FoxyAI.metadataCameraID = FoxyAI.path[FoxyAI.currentState][1] + 3, FoxyAI.path[FoxyAI.currentState][2] + 3, FoxyAI.path[FoxyAI.currentState][3]
-    ]]
+    FoxyAI.x, FoxyAI.y, FoxyAI.metadataCameraID = FoxyAI.path[FoxyAI.currentState][1] + 7, FoxyAI.path[FoxyAI.currentState][2] + 3, FoxyAI.path[FoxyAI.currentState][3]
 end
 
 return FoxyAI

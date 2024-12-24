@@ -4,6 +4,7 @@ NightState.KilledBy = ""
 NightState.killed = false
 NightState.nightID = 1000
 NightState.isCustomNight = false
+NightState.nightPassed = false
 NightState.animatronicsAI = {
     freddy = 0,
     bonnie = 0,
@@ -11,7 +12,7 @@ NightState.animatronicsAI = {
     foxy = 0,
     sugar = 0,
     kitty = 0,
-    puppet = 20,
+    puppet = 0,
 }
 NightState.AnimatronicControllers = {}
 
@@ -86,6 +87,9 @@ NightState.assets = {}
 
 -- I had to change the name of the local variables bc the compiler is bitching about it :( --
 function NightState:enter()
+    NightState.isCustomNight = false
+    NightState.nightPassed = false
+
     doorParticle = require 'src.Components.Modules.Game.Utils.ParticleDoor'
 
     for k, v in pairs(AudioSources) do
@@ -227,7 +231,17 @@ function NightState:enter()
 
     -- night text --
     nightTextDisplay = {
-        text = string.format("Night %s", NightState.nightID),
+        text = string.format(languageService["game_night_announce"], NightState.nightID),
+        fade = 0,
+        scale = 1,
+        acc = 0,
+        displayNightText = false,
+        invert = false
+    }
+
+    -- night end text --
+    nightEndTextDisplay = {
+        text = languageService["game_night_shift_end"],
         fade = 0,
         scale = 1,
         acc = 0,
@@ -243,8 +257,6 @@ function NightState:enter()
         height = 800,
         compensation = 400,
     }
-
-    tabletCameraSubState:load()
 
     gameCam = camera.new(0, nil)
     gameCam.factorX = 2.46
@@ -282,6 +294,7 @@ function NightState:enter()
     doorRFX = doorParticle()
 
     officeState = {
+        _op = false,
         _fc = 0.04,
         _t = 0,
         _f = 0,
@@ -304,6 +317,8 @@ function NightState:enter()
                 doorR = false,
                 flashlight = false,
                 tablet = false,
+                leftVent = false,
+                rightVent = false,
             },
             powerQueue = 1,
             timeracc = 2.5,
@@ -319,14 +334,22 @@ function NightState:enter()
             state = false,
             isFlicking = false,
         },
+        vent = {
+            direction = "right",
+            requestClose = false,
+            left = false,
+            right = false,
+            timerAcc = 0,
+            ventMaxTimer = 4.5,
+        },
         toxicmeter = 100,
         hasAnimatronicInOffice = false,
         officeFlick = false,
         isOfficeDisabled = false,
         doors = {
-            maxDoorTime = 25,
-            doorReloadBoost = 3,
-            doorUsageBoost = 5,
+            maxDoorTime = 30,
+            doorReloadBoost = 3.5,
+            doorUsageBoost = 5.5,
             canUseDoorL = true,
             canUseDoorR = true,
             left = false,
@@ -356,10 +379,14 @@ function NightState:enter()
         }
     }
 
+    tabletCameraSubState:load()
+
     officeState.doors.lDoorTimer = officeState.doors.maxDoorTime
     officeState.doors.rDoorTimer = officeState.doors.maxDoorTime
 
     tmr_nightStartPhone = timer.new()
+
+    tmr_nightEnd = timer.new()
 
     tmr_nightStartPhone:script(function(sleep)
         if NightState.nightID >= 1 and NightState.nightID <= 5 then
@@ -385,6 +412,20 @@ function NightState:enter()
                 nightTextDisplay.displayNightText = true
                 officeState.phoneCall = false
         end
+    end)
+
+
+    tmr_nightEnd:script(function(sleep)
+        sleep(0.5)
+        officeState._op = true
+        sleep(4)
+        for k, v in pairs(AudioSources) do
+            v:stop()
+        end
+        gameslot.save.game.user.progress.night = gameslot.save.game.user.progress.night + 1
+        gameslot.save.game.user.progress.newgame = false
+        gameslot:saveSlot()
+        gamestate.switch(WinState)
     end)
 
     for k, v in pairs(NightState.AnimatronicControllers) do
@@ -414,7 +455,11 @@ function NightState:draw()
             -- flicking front XD --
             if officeState.flashlight.state then
                 if not officeState.flashlight.isFlicking then
-                    love.graphics.draw(NightState.assets.front_office.idle, 0, 0)
+                    if collision.rectRect(NightState.AnimatronicControllers["foxy"], tabletCameraSubState.areas["front_office"]) then
+                        love.graphics.draw(NightState.assets.front_office["foxy" .. NightState.AnimatronicControllers["foxy"].position], 0, 0)
+                    else
+                        love.graphics.draw(NightState.assets.front_office.idle, 0, 0)
+                    end
                     if collision.rectRect(NightState.AnimatronicControllers["bonnie"], tabletCameraSubState.areas["front_office"]) then
                         love.graphics.draw(NightState.assets["front_office_bonnie"], 0, 0)
                     end
@@ -575,12 +620,18 @@ function NightState:draw()
         love.graphics.setColor(1, 1, 1, 1)
     end
 
+    if nightEndTextDisplay.displayNightText then
+        love.graphics.setColor(1, 1, 1, nightEndTextDisplay.fade)
+            love.graphics.print(nightEndTextDisplay.text, fnt_nightDisplay, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2 - fnt_nightDisplay:getHeight() / 2, 0, nightEndTextDisplay.scale, nightEndTextDisplay.scale, fnt_nightDisplay:getWidth(nightEndTextDisplay.text) / 2, fnt_nightDisplay:getHeight())
+        love.graphics.setColor(1, 1, 1, 1)
+    end
+
     -- debug shit --
     if DEBUG_APP then
         --love.graphics.print(debug.formattable(officeState), 90, 90)
         --local mx, my = love.mouse.getPosition() --gameCam:mousePosition()
         --love.graphics.print(string.format("%s, %s", mx, my), 90, 90)
-        love.graphics.print(NightState.AnimatronicControllers["puppet"].musicBoxTimer, 20, 20)
+        --love.graphics.print(NightState.AnimatronicControllers["puppet"].musicBoxTimer, 20, 20)
         if registers.system.showDebugHitbox then
             gameCam:attach()
                 love.graphics.setColor(0.7, 0, 1, 0.4)
@@ -619,8 +670,14 @@ function NightState:update(elapsed)
 
     local mx, my = gameCam:mousePosition()
 
-    if officeState.fadealpha >= 0 then
-        officeState.fadealpha = officeState.fadealpha - 0.4 * elapsed
+    if officeState._op then
+        if officeState.fadealpha <= 1 then
+            officeState.fadealpha = officeState.fadealpha + 0.4 * elapsed
+        end
+    else
+        if officeState.fadealpha >= 0 then
+            officeState.fadealpha = officeState.fadealpha - 0.4 * elapsed
+        end
     end
         -- phone shit --
     phoneController:update(elapsed)
@@ -719,9 +776,9 @@ function NightState:update(elapsed)
     end
 
     -- animatronic --
-    if officeState.nightRun then
+    if officeState.nightRun and not NightState.killed then
         for k, v in pairs(NightState.AnimatronicControllers) do
-            if not officeState.isOfficeDisabled then
+            if not officeState.isOfficeDisabled and not NightState.nightPassed then
                 v.update(elapsed)
             else
                 if k == "freddy" then
@@ -781,12 +838,18 @@ function NightState:update(elapsed)
         end
     })
     
-    if officeState.nightRun then
+    if officeState.nightRun and not NightState.nightPassed then
         night.time = night.time + elapsed
     end
 
-    night.h, night.m, night.s, night.period = _formatAdjustedTimeAMPM(night.time, 1.2, night.startingHour, night.startingMinute, night.startingPeriod)
-    night.text = string.format("%02d/11/2005 - %02d:%02d:%02d%s", day, night.h, night.m, night.s, night.period:lower())
+    night.h, night.m, night.s, night.period = _formatAdjustedTimeAMPM(night.time, 72, night.startingHour, night.startingMinute, night.startingPeriod)
+    night.text = string.format("%02d/11/2005 - %02d:%02d:%s", day, night.h, night.m, night.period:lower())
+
+    if night.time >= 300 then
+        -- night end
+        officeState.isOfficeDisabled = true
+        NightState.nightPassed = true
+    end
 
     -- office front flashlight --
     officeState.flashlight.state = false
@@ -810,7 +873,7 @@ function NightState:update(elapsed)
         AudioSources["buzzlight"]:setLooping(true)
         AudioSources["buzzlight"]:play()
         for k, v in pairs(NightState.AnimatronicControllers) do
-            if v.stared then
+            if v.stared ~= nil and not v.stared then
                 v.stared = true
                 if not AudioSources["window_stare"]:isPlaying() then
                     AudioSources["window_stare"]:play()
@@ -839,6 +902,11 @@ function NightState:update(elapsed)
         officeState.doors.lDoorTimer = officeState.doors.lDoorTimer - officeState.doors.doorUsageBoost * elapsed
         if officeState.doors.lDoorTimer <= 0 then
             officeState.doors.left = false
+            if AudioSources["door_open"]:isPlaying() then
+                AudioSources["door_open"]:seek(0)
+            end
+            
+            AudioSources["door_open"]:play()
             doorL:setState(false)
             officeState.doors.canUseDoorL = false
             officeState.doors.lDoorTimer = 0
@@ -860,6 +928,11 @@ function NightState:update(elapsed)
         officeState.doors.rDoorTimer = officeState.doors.rDoorTimer - officeState.doors.doorUsageBoost * elapsed
         if officeState.doors.rDoorTimer <= 0 then
             officeState.doors.right = false
+            if AudioSources["door_open"]:isPlaying() then
+                AudioSources["door_open"]:seek(0)
+            end
+
+            AudioSources["door_open"]:play()
             doorR:setState(false)
             officeState.doors.canUseDoorR = false
             officeState.doors.rDoorTimer = 0
@@ -885,6 +958,41 @@ function NightState:update(elapsed)
 
     -- jumpscare --
     jumpscareController:update(elapsed)
+
+    -- vent seal --
+    if not officeState.isOfficeDisabled then
+        if officeState.vent.requestClose then
+            if officeState.vent.direction == "right" and not officeState.vent.right then
+                officeState.vent.timerAcc = officeState.vent.timerAcc + elapsed
+                if officeState.vent.timerAcc >= officeState.vent.ventMaxTimer then
+                    officeState.vent.timerAcc = 0
+                    officeState.vent.right = true
+                    officeState.vent.requestClose = false
+                end
+            elseif officeState.vent.direction == "right" and officeState.vent.right then
+                officeState.vent.timerAcc = officeState.vent.timerAcc + elapsed
+                if officeState.vent.timerAcc >= officeState.vent.ventMaxTimer then
+                    officeState.vent.timerAcc = 0
+                    officeState.vent.right = false
+                    officeState.vent.requestClose = false
+                end
+            elseif officeState.vent.direction == "right" and not officeState.vent.left then
+                officeState.vent.timerAcc = officeState.vent.timerAcc + elapsed
+                if officeState.vent.timerAcc >= officeState.vent.ventMaxTimer then
+                    officeState.vent.timerAcc = 0
+                    officeState.vent.left = true
+                    officeState.vent.requestClose = false
+                end
+            elseif officeState.vent.direction == "right" and officeState.vent.left then
+                officeState.vent.timerAcc = officeState.vent.timerAcc + elapsed
+                if officeState.vent.timerAcc >= officeState.vent.ventMaxTimer then
+                    officeState.vent.timerAcc = 0
+                    officeState.vent.left = false
+                    officeState.vent.requestClose = false
+                end
+            end
+        end
+    end
 
     -- camera update substate --
     if tabletController.tabUp then
@@ -932,15 +1040,43 @@ function NightState:update(elapsed)
     elseif nightTextDisplay.displayNightText and nightTextDisplay.invert then
         officeState.nightRun = true
         nightTextDisplay.acc = nightTextDisplay.acc + elapsed
-        if nightTextDisplay.acc >= 0.1 then
+        if nightTextDisplay.acc >= 0.3 then
             nightTextDisplay.acc = 0
-            nightTextDisplay.fade = nightTextDisplay.fade - 7.2 * elapsed
+            nightTextDisplay.fade = nightTextDisplay.fade - 3.2 * elapsed
             nightTextDisplay.scale = nightTextDisplay.scale + 0.2 * elapsed
 
             if nightTextDisplay.fade <= 0 then
                 nightTextDisplay.displayNightText = false
             end
         end
+    end
+
+    if nightEndTextDisplay.displayNightText and not nightEndTextDisplay.invert then
+        nightEndTextDisplay.acc = nightEndTextDisplay.acc + elapsed
+        if nightEndTextDisplay.acc >= 0.1 then
+            nightEndTextDisplay.acc = 0
+            nightEndTextDisplay.fade = nightEndTextDisplay.fade + 8.5 * elapsed
+            nightEndTextDisplay.scale = nightEndTextDisplay.scale + 0.4 * elapsed
+    
+            if nightEndTextDisplay.fade >= 1.4 then
+                nightEndTextDisplay.invert = true
+            end
+        end
+    elseif nightEndTextDisplay.displayNightText and nightEndTextDisplay.invert then
+        nightEndTextDisplay.acc = nightEndTextDisplay.acc + elapsed
+        if nightEndTextDisplay.acc >= 0.3 then
+            nightEndTextDisplay.acc = 0
+            nightEndTextDisplay.fade = nightEndTextDisplay.fade - 3.2 * elapsed
+            nightEndTextDisplay.scale = nightEndTextDisplay.scale + 0.2 * elapsed
+    
+            if nightEndTextDisplay.fade <= 0 then
+                nightEndTextDisplay.displayNightText = false
+            end
+        end
+    end
+
+    if officeState.isOfficeDisabled and NightState.nightPassed then
+        tmr_nightEnd:update(elapsed)
     end
 
     if officeState.isOfficeDisabled and not officeState._d then
@@ -951,8 +1087,8 @@ function NightState:update(elapsed)
                 AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:seek(0)
             end
             AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:play()
-            tabletController:setState(true)
             officeState.tabletUp = false
+            tabletController:setState(false)
         end
         if officeState.maskUp then
             if AudioSources["mask_off"]:isPlaying() then
@@ -1090,16 +1226,16 @@ function NightState:keypressed(key)
                     end
                 end
                 if key == "right" or key == "a" then
-                        if k == "right" and officeState.doors.canUseDoorR then
-                            if not doorR.animationRunning then
-                                if AudioSources[officeState.doors.right and "door_open" or "door_close"]:isPlaying() then
-                                    AudioSources[officeState.doors.right and "door_open" or "door_close"]:seek(0)
-                                end
-                                AudioSources[officeState.doors.right and "door_open" or "door_close"]:play()
-                                officeState.doors.right = not officeState.doors.right
-                                doorR:setState(officeState.doors.right)
+                    if k == "right" and officeState.doors.canUseDoorR then
+                        if not doorR.animationRunning then
+                            if AudioSources[officeState.doors.right and "door_open" or "door_close"]:isPlaying() then
+                                AudioSources[officeState.doors.right and "door_open" or "door_close"]:seek(0)
                             end
+                            AudioSources[officeState.doors.right and "door_open" or "door_close"]:play()
+                            officeState.doors.right = not officeState.doors.right
+                            doorR:setState(officeState.doors.right)
                         end
+                    end
                 end
             end
         end
@@ -1156,7 +1292,7 @@ function NightState:keypressed(key)
 
     if DEBUG_APP then
         if love.keyboard.isDown("ralt") and key == "o" then
-            officeState.power.powerStat = 2
+            night.time = 290
         end
     end
 end

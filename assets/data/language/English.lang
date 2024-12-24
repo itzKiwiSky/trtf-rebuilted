@@ -62,6 +62,7 @@
     },
     "game" : {
         "game_night_announce" : "Night %s",
+        "game_night_shift_end" : "Shift complete",
         "game_custom_night_announce" : "Custom Night",
         "game_mask_toxic" : "Oxygen",
         "game_vent_state_closed" : "Vent status: Closed",
@@ -69,13 +70,17 @@
         "game_energy_usage" : "Enery usage",
         "game_energy" : "Energy: %d%%",
         "game_btn_rewind_box" : "Rewind Music Box",
+        "game_btn_seal_vent" : "Seal vent",
+        "game_btn_unseal_vent" : "Unseal vent",
         "misc" : {
             "game_misc_camera_error" : "Failed to fetch camera footage...",
             "game_misc_camera_error_id" : "Report this error to specialized team\nand give them this code:",
             "game_misc_call_name" : "Boss",
             "game_misc_call_incoming" : "Incoming call...",
             "game_misc_buttons_options" : "Options",
-            "game_misc_buttons_exit" : "Exit"
+            "game_misc_buttons_exit" : "Exit",
+            "game_misc_text_sealing" : "Sealing ventilation",
+            "game_misc_text_unsealing" : "Unsealing ventilation"
         }
     },
     "gameover" : {

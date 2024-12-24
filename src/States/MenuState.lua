@@ -14,6 +14,8 @@ local function loadAnimatronic(id)
 end
 
 function MenuState:enter()
+    nightstate = require 'src.States.NightState'
+
     fnt_textWarn = fontcache.getFont("ocrx", 35)
     fnt_menu = fontcache.getFont("tnr", 40)
     fnt_settingsTitle = fontcache.getFont("tnr", 55)
@@ -155,17 +157,18 @@ function MenuState:enter()
             {
                 text = languageService["menu_button_continue"],
                 hitbox = {},
-                locked = not gameslot.save.game.user.progress.newgame,
+                locked = not gameslot.save.game.user.progress.night > 1,
                 hovered = false,
                 offset = 0,
                 action = function()
                     journalConfig.active = true
+                    nightstate.nightID = gameslot.save.game.user.progress.night
                 end,
             },
             {
                 text = languageService["menu_button_extras"],
                 hitbox = {},
-                locked = not gameslot.save.game.user.progress.extras,
+                locked = gameslot.save.game.user.progress.extras,
                 hovered = false,
                 offset = 0,
                 action = function()
