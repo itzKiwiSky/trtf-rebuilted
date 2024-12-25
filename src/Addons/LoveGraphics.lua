@@ -27,13 +27,29 @@ function love.graphics.getHashedQuads(filename)
 
     local quads = {}
     for key, obj in pairs(sparrow.frames) do
-        quads[key:gsub("%.[^.]+$", "")] = love.graphics.newQuad(
-            obj.frame.x,
-            obj.frame.y,
-            obj.frame.w,
-            obj.frame.h,
-            image
-        )
+        if obj.trimmed then
+            quads[key:gsub("%.[^.]+$", "")] = {
+                quad = love.graphics.newQuad(
+                    obj.frame.x,
+                    obj.frame.y,
+                    obj.frame.w,
+                    obj.frame.h,
+                    image
+                ),
+                sw = obj.sourceSize.w,
+                sh = obj.sourceSize.h,
+                w = obj.spriteSourceSize.w,
+                h = obj.spriteSourceSize.h,
+            }
+        else
+            quads[key:gsub("%.[^.]+$", "")] = love.graphics.newQuad(
+                obj.frame.x,
+                obj.frame.y,
+                obj.frame.w,
+                obj.frame.h,
+                image
+            )
+        end
     end
 
     return image, quads

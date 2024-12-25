@@ -157,11 +157,10 @@ function MenuState:enter()
             {
                 text = languageService["menu_button_continue"],
                 hitbox = {},
-                locked = not gameslot.save.game.user.progress.night > 1,
+                locked = not gameslot.save.game.user.progress.canContinue,
                 hovered = false,
                 offset = 0,
                 action = function()
-                    journalConfig.active = true
                     nightstate.nightID = gameslot.save.game.user.progress.night
                 end,
             },

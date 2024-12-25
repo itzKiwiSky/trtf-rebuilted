@@ -43,6 +43,7 @@ function love.initialize(args)
                 initialCutscene = false,
                 newgame = false,
                 extras = false,
+                canContinue = false,
                 night = 1,
                 playingMinigame = false,
                 minigameID = 0,
@@ -108,8 +109,6 @@ function love.initialize(args)
             gameslot.save.game.user.settings.gamejolt.usertoken
         )
     end)
-
-    print(love.graphics.isGammaCorrect())
 
     gamestate.registerEvents()
     gamestate.switch(SplashState)

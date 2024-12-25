@@ -424,6 +424,7 @@ function NightState:enter()
         end
         gameslot.save.game.user.progress.night = gameslot.save.game.user.progress.night + 1
         gameslot.save.game.user.progress.newgame = false
+        gameslot.save.game.user.progress.canContinue = true
         gameslot:saveSlot()
         gamestate.switch(WinState)
     end)
