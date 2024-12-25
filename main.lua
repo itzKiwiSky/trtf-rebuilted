@@ -137,6 +137,12 @@ function love.keypressed(k)
             end
             gamestate.switch(LoadingState)
         end
+        if k == "f6" then
+            for k, v in pairs(AudioSources) do
+                v:stop()
+            end
+            gamestate.switch(WinState)
+        end
         if registers.system.camEdit then
             if editBTN then
                 if k == "f5" then
