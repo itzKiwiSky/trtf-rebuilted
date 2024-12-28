@@ -144,16 +144,23 @@ function TabletCameraSubState:load()
                 end
             end
         },
-        ["seal_vent_right"] = {
+        ["seal_vent"] = {
             text = officeState.vent.right and languageService["game_btn_unseal_vent"] or languageService["game_btn_seal_vent"],
             type = "click",
             hitbox = buttonCamera(486, love.graphics.getHeight() - 110, 128, 48),
-            visible = not tabletCameraSubState.camID == "vent_kitty",
+            visible = false,
             action = function()
+                print("vai toma no cu")
                 if not officeState.vent.requestClose then
-                    officeState.vent.timerAcc = 0
-                    officeState.vent.direction = "right"
-                    officeState.vent.requestClose = true
+                    if tabletCameraSubState.camID == "vent_kitty" then
+                        officeState.vent.timerAcc = 0
+                        officeState.vent.direction = "right"
+                        officeState.vent.requestClose = true
+                    elseif tabletCameraSubState.camID == "vent_sugar" then
+                        officeState.vent.timerAcc = 0
+                        officeState.vent.direction = "left"
+                        officeState.vent.requestClose = true
+                    end
                 end
             end
         },
@@ -382,6 +389,11 @@ function TabletCameraSubState:update(elapsed)
         self.miscButtons["reload"].visible = true
     end
 
+    self.miscButtons["seal_vent"].visible = false
+    if tabletCameraSubState.camID == "vent_kitty" or tabletCameraSubState.camID == "vent_sugar" then
+        self.miscButtons["seal_vent"].visible = true
+    end
+
     if love.mouse.isDown(1) then
         if officeState.tabletUp then
             if collision.pointRect({x = mx, y = my}, self.clickArea) then
@@ -433,7 +445,7 @@ function TabletCameraSubState:mousepressed(x, y, button)
             end
         end
 
-        for _, b in ipairs(self.miscButtons) do
+        for k, b in pairs(self.miscButtons) do
             self.active = false
             if b.visible and b.type == "click" then
                 if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, b.hitbox) then

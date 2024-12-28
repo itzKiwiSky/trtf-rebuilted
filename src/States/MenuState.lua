@@ -16,6 +16,8 @@ end
 function MenuState:enter()
     nightstate = require 'src.States.NightState'
 
+    subtitlesController.clear()
+
     fnt_textWarn = fontcache.getFont("ocrx", 35)
     fnt_menu = fontcache.getFont("tnr", 40)
     fnt_settingsTitle = fontcache.getFont("tnr", 55)

@@ -34,6 +34,8 @@ function love.run()
     local sourcePath = love.filesystem.getSaveDirectory() .. "/bin"
     copyLib()
 
+    subtitlesController.clear()
+
     _G.GLOBAL_BUFFER = {}
 
     local newCPath = string.format(

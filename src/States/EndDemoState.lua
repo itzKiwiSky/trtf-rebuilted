@@ -5,6 +5,8 @@ local function map(t, a, b)
 end
 
 function EndDemoState:enter()
+    subtitlesController.clear()
+
     endScreen = love.graphics.newImage("assets/images/game/end_of_demo_gay_sex.png")
     cnv_noise = love.graphics.newCanvas(love.graphics.getDimensions())
     shd_noise = love.graphics.newShader("assets/shaders/Fract.glsl")

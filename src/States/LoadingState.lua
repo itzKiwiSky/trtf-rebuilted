@@ -1,6 +1,8 @@
 LoadingState = {}
 
 function LoadingState:enter()
+    subtitlesController.clear()
+
     local assetThread = require 'src.Components.Modules.Game.Utils.AssetsLoadThread'
     ldBackgrounds = {}
     local bgs = love.filesystem.getDirectoryItems("assets/images/game/menu/backgrounds")

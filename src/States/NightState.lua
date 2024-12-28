@@ -336,11 +336,10 @@ function NightState:enter()
         },
         vent = {
             direction = "right",
-            requestClose = false,
             left = false,
             right = false,
             timerAcc = 0,
-            ventMaxTimer = 4.5,
+            ventMaxTimer = 3.6,
         },
         toxicmeter = 100,
         hasAnimatronicInOffice = false,
@@ -963,34 +962,13 @@ function NightState:update(elapsed)
     -- vent seal --
     if not officeState.isOfficeDisabled then
         if officeState.vent.requestClose then
-            if officeState.vent.direction == "right" and not officeState.vent.right then
-                officeState.vent.timerAcc = officeState.vent.timerAcc + elapsed
-                if officeState.vent.timerAcc >= officeState.vent.ventMaxTimer then
-                    officeState.vent.timerAcc = 0
-                    officeState.vent.right = true
-                    officeState.vent.requestClose = false
-                end
-            elseif officeState.vent.direction == "right" and officeState.vent.right then
-                officeState.vent.timerAcc = officeState.vent.timerAcc + elapsed
-                if officeState.vent.timerAcc >= officeState.vent.ventMaxTimer then
-                    officeState.vent.timerAcc = 0
-                    officeState.vent.right = false
-                    officeState.vent.requestClose = false
-                end
-            elseif officeState.vent.direction == "right" and not officeState.vent.left then
-                officeState.vent.timerAcc = officeState.vent.timerAcc + elapsed
-                if officeState.vent.timerAcc >= officeState.vent.ventMaxTimer then
-                    officeState.vent.timerAcc = 0
-                    officeState.vent.left = true
-                    officeState.vent.requestClose = false
-                end
-            elseif officeState.vent.direction == "right" and officeState.vent.left then
-                officeState.vent.timerAcc = officeState.vent.timerAcc + elapsed
-                if officeState.vent.timerAcc >= officeState.vent.ventMaxTimer then
-                    officeState.vent.timerAcc = 0
-                    officeState.vent.left = false
-                    officeState.vent.requestClose = false
-                end
+            officeState.vent.timerAcc = officeState.vent.timerAcc + elapsed
+            if officeState.vent.timerAcc >= officeState.vent.ventMaxTimer then
+                officeState.vent["left"] = false
+                officeState.vent["right"] = false
+                officeState.vent[officeState.vent.direction] = not officeState.vent[officeState.vent.direction]
+                officeState.vent.timerAcc = 0
+                officeState.vent.requestClose = false
             end
         end
     end

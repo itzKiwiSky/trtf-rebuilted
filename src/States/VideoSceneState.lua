@@ -5,7 +5,7 @@ VideoSceneState.onSceneComplete = function()end
 VideoSceneState.targetState = nil
 
 function VideoSceneState:enter()
-    
+    subtitlesController.clear()
     sceneRun = love.graphics.newVideo(VideoSceneState.path)
     sceneRun:play()
 end

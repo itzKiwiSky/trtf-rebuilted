@@ -13,6 +13,8 @@ local function renderDigit(img, quads, x, y, ...)
 end
 
 function WinState:enter()
+    subtitlesController.clear()
+    
     ps_confetti = require 'src.Components.Modules.Game.Utils.confettiParticles'
     for k, v in pairs(AudioSources) do
         v:stop()

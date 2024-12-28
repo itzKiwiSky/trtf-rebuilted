@@ -60,6 +60,7 @@ function SettingsSubState:load()
             description = languageService["menu_settings_description_subtitles"],
             meta = {},
         }
+        --[[
         this.options.elements[6] = {
             text = languageService["menu_settings_language"] .. " : " .. langFiles[SettingsSubState.currentLangID],
             type = "button",
@@ -76,6 +77,7 @@ function SettingsSubState:load()
             description = languageService["menu_settings_description_language"],
             meta = {},
         }
+        ]]--
         this.options.elements[7] = {
             text = gamejolt.isLoggedIn and languageService["menu_settings_gamejolt_connected"] or languageService["menu_settings_gamejolt_not_connect"],
             type = "button",

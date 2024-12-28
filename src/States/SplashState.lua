@@ -13,6 +13,8 @@ local function preloadAudio()
 end
 
 function SplashState:enter()
+    subtitlesController.clear()
+
     preloadAudio()
 
     local introID = "trtl_meme.ogv" -- new_intro.ogv
