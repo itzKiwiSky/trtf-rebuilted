@@ -7,3 +7,5 @@ Changelog for The return to freddy's Rebuilt Again
     - Added kitty AI
     - Added Sugar AI
     - Fixed foxy state
+    - Fixed autoreload language when changing
+    - Fixed settings buttons
