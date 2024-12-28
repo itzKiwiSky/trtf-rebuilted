@@ -192,9 +192,6 @@ function SettingsSubState:draw()
 
                     love.graphics.draw(spr_settings.img, spr_settings.quads["settingsBox"], self.options.config.startX - math.floor(self.options.config.lpadding / 2), self.options.config.startY + self.options.config.offsetY * _, 0, 48 / qw, 48 / qh)
                     love.graphics.print(o.text, fnt_menu, self.options.config.startX + self.options.config.lpadding, self.options.config.startY + (fnt_menu:getHeight() + self.options.config.padding) * _)
-                    if o.meta.hitbox then
-                        --love.graphics.rectangle("line", o.meta.hitbox.x, o.meta.hitbox.y, o.meta.hitbox.w, o.meta.hitbox.h)
-                    end
                 end,
                 ["button"] = function()
                     if o.meta.hovered then
@@ -204,9 +201,6 @@ function SettingsSubState:draw()
                     end
                     love.graphics.print(o.text, fnt_menu, self.options.config.startX + self.options.config.lpadding, self.options.config.startY + (fnt_menu:getHeight() + self.options.config.padding) * _)
                     love.graphics.setColor(1, 1, 1, 1)
-                    if o.meta.hitbox then
-                        --love.graphics.rectangle("line", o.meta.hitbox.x, o.meta.hitbox.y, o.meta.hitbox.w, o.meta.hitbox.h)
-                    end
                 end
             })
 
@@ -252,7 +246,7 @@ function SettingsSubState:mousepressed(x, y, button)
         if not registers.user.gamejoltUI then
             for _, o in ipairs(self.options.elements) do
                 if o.meta.hovered then
-                    if o.type == "boolean" then
+                    if type(o.target) == "boolean" then
                         o.target = not o.target
                         gameslot.save.game.user.settings[o.valueTarget] = o.target
                     elseif o.type == "button" then
