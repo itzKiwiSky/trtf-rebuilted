@@ -15,6 +15,7 @@ After the big incident of Fredbear's Family Diner, in 2005, Vincent, decided to 
 ## Credits
 
 [**@El_Eternauta_1957**](https://gamejolt.com/@El_Eternauta_1957) & [@ShotOfRabbetDev](https://gamejolt.com/@ShotOfRabbetDev) - Main Developers / Designers / Modellers<br>
+[**@Only_Emiliano_**](https://gamejolt.com/@Only_Emiliano_) - 2D Artist<br>
 [**@ItzKiwiSky**](https://gamejolt.com/@ItzKiwiSky) - Coder (me lol)<br>
 [**@SpoopsVA**](https://gamejolt.com/@SpoopsVA) - Voice actor (English)<br>
 [**@El_Eternauta_1957**](https://gamejolt.com/@El_Eternauta_1957) - Voice actor (Spanish)<br>
