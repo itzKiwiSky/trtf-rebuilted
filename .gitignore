@@ -7,3 +7,5 @@ crashlog.txt
 /static
 *.love
 */__pycache__
+*/secret
+/secret

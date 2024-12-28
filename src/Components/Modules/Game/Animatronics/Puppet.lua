@@ -84,14 +84,6 @@ function PuppetAI.update(elapsed)
                         end
                     end
                     PuppetAI.currentState = math.random(1, #PuppetAI.path)
-    
-                    if DEBUG_APP then
-                        print(string.format("[%s] Moved | MoveID: %s State: %s", PuppetAI.__name__, PuppetAI.move, PuppetAI.currentState))
-                    end
-                else
-                    if DEBUG_APP then
-                        print(string.format("[%s] Failed to move | MoveID: %s", PuppetAI.__name__, PuppetAI.move))
-                    end
                 end
                 PuppetAI.timer = 0
             end

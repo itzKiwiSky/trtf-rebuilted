@@ -42,7 +42,6 @@ termColors = {
     blink = "\27[5m",
     invert = "\27[7m",
     hidden = "\27[8m",
-
 }
 
 return termColors

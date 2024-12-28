@@ -11,7 +11,7 @@ NightState.animatronicsAI = {
     chica = 0,
     foxy = 0,
     sugar = 0,
-    kitty = 0,
+    kitty = 20,
     puppet = 0,
 }
 NightState.AnimatronicControllers = {}

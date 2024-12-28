@@ -56,14 +56,6 @@ function ChicaAi.update(elapsed)
                         officeState.flashlight.isFlicking = true
                     end
                 end
-
-                if DEBUG_APP then
-                    print(string.format("[%s] Moved | MoveID: %s State: %s", ChicaAi.__name__, ChicaAi.move, ChicaAi.currentState))
-                end
-            else
-                if DEBUG_APP then
-                    print(string.format("[%s] Failed to move | MoveID: %s", ChicaAi.__name__, ChicaAi.move))
-                end
             end
             ChicaAi.timer = 0
         end

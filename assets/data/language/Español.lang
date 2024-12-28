@@ -4,7 +4,7 @@
     },
     "warn" : {
         "warn_title" : "[ADVERTENCIA]",
-        "warn_text" : "Este juego contiene sonidos fuertes, luces parpadeantes, palabrotas suaves y muchos sustos. PD: Este juego no es un remake oficial de TRTF 1 y TRTF Rebuilt. Pulsa cualquier tecla o haz clic en cualquier parte para continuar. PS: Esta es una versión beta de demostración, distribuida sólo a probadores beta seleccionados, y no representa la demostración final."
+        "warn_text" : "Este juego contiene sonidos fuertes, luces parpadeantes\npalabrotas suaves y muchos sustos!\n\n\nPD: Este juego no es un remake oficial de TRTF 1 y TRTF Rebuilt.\n\n\nPulsa cualquier tecla o haz clic en cualquier parte para continuar.\n\nPS: Esta es una versión beta de demostración, distribuida sólo a probadores beta seleccionados,\ny no representa la demostración final."
     },
     "menu" : {
         "menu_button" : {

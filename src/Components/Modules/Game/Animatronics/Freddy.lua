@@ -120,14 +120,6 @@ function FreddyAI.update(elapsed)
                     end
                     FreddyAI.currentState = FreddyAI.currentState + 1
                     NightState.playWalk()
-    
-                    if DEBUG_APP then
-                        print(string.format("[%s] Moved | MoveID: %s State: %s", FreddyAI.__name__, FreddyAI.move, FreddyAI.currentState))
-                    end
-                else
-                    if DEBUG_APP then
-                        print(string.format("[%s] Failed to move | MoveID: %s", FreddyAI.__name__, FreddyAI.move))
-                    end
                 end
                 FreddyAI.timer = 0
             end

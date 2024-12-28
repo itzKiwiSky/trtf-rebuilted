@@ -97,7 +97,22 @@ function love.errorhandler(msg)
     else
         love.filesystem.createDirectory("crashes")
     end
-    local err, f = nfs.write(string.format("%s/[%s]crashlog_%s.txt", pt, os.date("%Y%m%d"), love.data.encode("string", "hex", love.data.hash("md5", p):sub(1, 12))), tostring(p))
+
+    local fdcrash = pt .. "/session_" .. tostring(os.date("%Y_%m_%d%H.%M.%S"))
+
+    nfs.createDirectory(fdcrash)
+
+    local err, f = nfs.write(string.format("%s/traceback.txt", fdcrash), tostring(p))
+    if DEBUG_APP then
+        local err, f = nfs.write(string.format("%s/outputlog.txt", fdcrash), tostring(table.concat(_G.GLOBAL_BUFFER, "")))
+    end
+    local s, p, sc = love.system.getPowerInfo()
+    local err, f = nfs.write(string.format("%s/system.txt", fdcrash), tostring(table.concat({
+        "Operating system: " .. love.system.getOS(),
+        "Processor Count:" .. love.system.getProcessorCount(),
+        ("Power: {\n    State: %s\n    Percent: %s\n    Seconds: %s\n}"):format(s, p, sc),
+
+    }, "\r\n")))
 
     local sc = love.graphics.newImage("assets/images/system/Screen.png")
     local staticfx = {

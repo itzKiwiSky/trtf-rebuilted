@@ -55,14 +55,6 @@ function BonnieAI.update(elapsed)
                         officeState.flashlight.isFlicking = true
                     end
                 end
-
-                if DEBUG_APP then
-                    print(string.format("[%s] Moved | MoveID: %s State: %s", BonnieAI.__name__, BonnieAI.move, BonnieAI.currentState))
-                end
-            else
-                if DEBUG_APP then
-                    print(string.format("[%s] Failed to move | MoveID: %s", BonnieAI.__name__, BonnieAI.move))
-                end
             end
             BonnieAI.timer = 0
         end

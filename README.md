@@ -2,8 +2,10 @@
 
 # The Return To Freddy's Rebuilted - Again
 
+> [!IMPORTANT]
 > This game is not an official remake and its creator is not involved in this project or anything, it was just made by 2 people who wanted to improve the original concept with new models, improvements and added elements.
 > This is an improved version of the fangame "TRTF Rebuilt" game originally developed by MoonieGlare/Black Moon Studios with new models, re-made map and some changes.
+> [!WARNING]
 > *This is an experimental game because it is a practice*<br>
 
 ## HISTORY

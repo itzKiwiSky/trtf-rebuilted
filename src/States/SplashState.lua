@@ -15,7 +15,8 @@ end
 function SplashState:enter()
     preloadAudio()
 
-    introVideo = love.graphics.newVideo("assets/videos/new_intro.ogv")
+    local introID = "trtl_meme.ogv" -- new_intro.ogv
+    introVideo = love.graphics.newVideo("assets/videos/" .. introID)
     canContinue = false
 
     if introVideo then
@@ -30,10 +31,13 @@ function SplashState:enter()
             io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", n))
         end
     end)
+
+    VIDEO_WIDTH = love.graphics.getWidth() / introVideo:getWidth()
+    VIDEO_HEIGHT = love.graphics.getHeight() / introVideo:getHeight()
 end
 
 function SplashState:draw()
-    love.graphics.draw(introVideo, 0, 0)
+    love.graphics.draw(introVideo, 0, 0, 0, VIDEO_WIDTH, VIDEO_HEIGHT)
 end
 
 function SplashState:update(elapsed)

@@ -142,50 +142,62 @@ function MenuState:enter()
             itemsVisible = false,
             target = 32,
         },
-        elements = {
-            {
-                text = languageService["menu_button_new_game"],
-                hitbox = {},
-                locked = false,
-                hovered = false,
-                offset = 0,
-                action = function()
-                    gameslot.save.game.user.progress.newgame = true
-                    journalConfig.active = true
-                end,
-            },
-            {
-                text = languageService["menu_button_continue"],
-                hitbox = {},
-                locked = not gameslot.save.game.user.progress.canContinue,
-                hovered = false,
-                offset = 0,
-                action = function()
-                    nightstate.nightID = gameslot.save.game.user.progress.night
-                end,
-            },
-            {
-                text = languageService["menu_button_extras"],
-                hitbox = {},
-                locked = gameslot.save.game.user.progress.extras,
-                hovered = false,
-                offset = 0,
-                action = function()
-                    
-                end,
-            },
-            {
-                text = languageService["menu_button_exit"],
-                hitbox = {},
-                locked = false,
-                hovered = false,
-                offset = 0,
-                action = function()
-                    love.event.quit()
-                end,
-            },
-        },
+        elements = {},
     }
+
+    function MenuState.rebuilMenuUI(this)
+        lume.clear(textItems.elements)
+        textItems.elements[1] = {
+            text = languageService["menu_button_new_game"],
+            hitbox = {},
+            locked = false,
+            hovered = false,
+            offset = 0,
+            action = function()
+                gameslot.save.game.user.progress.newgame = true
+                journalConfig.active = true
+            end,
+        }
+        textItems.elements[2] = {
+            text = languageService["menu_button_continue"],
+            hitbox = {},
+            locked = not gameslot.save.game.user.progress.canContinue,
+            hovered = false,
+            offset = 0,
+            action = function()
+                nightstate.nightID = gameslot.save.game.user.progress.night
+            end,
+        }
+        textItems.elements[3] = {
+            text = languageService["menu_button_extras"],
+            hitbox = {},
+            locked = not gameslot.save.game.user.progress.extras,
+            hovered = false,
+            offset = 0,
+            action = function()
+                
+            end,
+        }
+        textItems.elements[4] = {
+            text = languageService["menu_button_exit"],
+            hitbox = {},
+            locked = false,
+            hovered = false,
+            offset = 0,
+            action = function()
+                love.event.quit()
+            end,
+        }
+        -- create button hitboxes --
+        for t = 1, #textItems.elements, 1 do
+            textItems.elements[t].hitbox = {
+                x = 60,
+                y = (textItems.tween.y + (fnt_menu:getHeight() + 16) * t) - 4,
+                w = fnt_menu:getWidth(textItems.elements[t].text) + 8,
+                h = fnt_menu:getHeight() + 8
+            }
+        end
+    end
 
     holdDelete = {
         progress = 0,
@@ -193,6 +205,7 @@ function MenuState:enter()
     }
 
     local function _init()
+        MenuState.rebuilMenuUI()
         menuItemsTween = flux.to(textItems.tween, 2.3, { alpha = 1, x = 64 })
         menuItemsTween:ease("sineout")
         menuItemsTween:oncomplete(function()

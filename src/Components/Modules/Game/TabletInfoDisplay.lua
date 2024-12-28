@@ -10,10 +10,10 @@ return function(this)
     love.graphics.print(languageService["game_energy"]:format(officeState.power.powerDisplay), fnt_camError, 64, love.graphics.getHeight() - 174)
     love.graphics.print(languageService["game_energy_usage"], fnt_camError, 64, love.graphics.getHeight() - 144)
 
-    if tabletCameraSubState.camID == 11 then
-        love.graphics.print(officeState.vent.right and languageService["game_vent_state_closed"] or languageService["game_vent_state_open"], fnt_camError, 64, love.graphics.getHeight() - 204)
-    elseif tabletCameraSubState.camID == 12 then
+    if tabletCameraSubState.camID == "vent_kitty" then
         love.graphics.print(officeState.vent.left and languageService["game_vent_state_closed"] or languageService["game_vent_state_open"], fnt_camError, 64, love.graphics.getHeight() - 204)
+    elseif tabletCameraSubState.camID == "vent_sugar" then
+        love.graphics.print(officeState.vent.right and languageService["game_vent_state_closed"] or languageService["game_vent_state_open"], fnt_camError, 64, love.graphics.getHeight() - 204)
     end
 
     if officeState.vent.requestClose then

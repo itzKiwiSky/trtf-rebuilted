@@ -34,11 +34,11 @@ end
 
 function KittyAI.update(elapsed)
     if KittyAI.active then
-        if KittyAI.currentState <= 2 then
+        if KittyAI.currentState <= 3 then
             KittyAI.timer = KittyAI.timer + elapsed
             if KittyAI.timer >= 7.3 then
                 KittyAI.move = math.random(0, 20)
-                if KittyAI.move <= NightState.animatronicsAI.bonnie and NightState.animatronicsAI.bonnie > 0 and not officeState.hasAnimatronicInOffice then
+                if KittyAI.move <= NightState.animatronicsAI.kitty and NightState.animatronicsAI.kitty > 0 and not officeState.hasAnimatronicInOffice then
                     if officeState.tabletUp then
                         if tabletCameraSubState.camerasID[KittyAI.metadataCameraID] then
                             if tabletCameraSubState.camerasID[KittyAI.metadataCameraID] == tabletCameraSubState.camID then
@@ -48,21 +48,14 @@ function KittyAI.update(elapsed)
                             end
                         end
                     end
-                    KittyAI.currentState = KittyAI.currentState + 1
-                    if KittyAI.currentState < 3 then
+                    if KittyAI.currentState <= 3 then
                         NightState.playWalk()
-                    elseif KittyAI.currentState == 3 then
+                    elseif KittyAI.currentState == 4 then
                         AudioSources["vent_walk"]:seek(0)
                         AudioSources["vent_walk"]:play()
                     end
-    
-                    if DEBUG_APP then
-                        print(string.format("[%s] Moved | MoveID: %s State: %s", KittyAI.__name__, KittyAI.move, KittyAI.currentState))
-                    end
-                else
-                    if DEBUG_APP then
-                        print(string.format("[%s] Failed to move | MoveID: %s", KittyAI.__name__, KittyAI.move))
-                    end
+
+                    KittyAI.currentState = KittyAI.currentState + 1
                 end
                 KittyAI.timer = 0
             end
@@ -98,7 +91,7 @@ function KittyAI.update(elapsed)
         KittyAI.timer = KittyAI.timer + elapsed
         if KittyAI.timer >= 4.9 then
             KittyAI.move = math.random(0, 20)
-            if KittyAI.move <= NightState.animatronicsAI.bonnie and NightState.animatronicsAI.bonnie > 0 then
+            if KittyAI.move <= NightState.animatronicsAI.kitty and NightState.animatronicsAI.kitty > 0 then
                 if officeState.tabletUp then
                     if tabletCameraSubState.camerasID[KittyAI.metadataCameraID] then
                         if tabletCameraSubState.camerasID[9] == tabletCameraSubState.camID then

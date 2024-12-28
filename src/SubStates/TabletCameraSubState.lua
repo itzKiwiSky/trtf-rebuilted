@@ -144,17 +144,16 @@ function TabletCameraSubState:load()
                 end
             end
         },
-        ["seal_vent"] = {
-            text = officeState.vent.left and languageService["game_btn_unseal_vent"] or languageService["game_btn_seal_vent"],
+        ["seal_vent_right"] = {
+            text = officeState.vent.right and languageService["game_btn_unseal_vent"] or languageService["game_btn_seal_vent"],
             type = "click",
             hitbox = buttonCamera(486, love.graphics.getHeight() - 110, 128, 48),
-            visible = tabletCameraSubState.camID == 11 and tabletCameraSubState.camID == 12,
+            visible = not tabletCameraSubState.camID == "vent_kitty",
             action = function()
-                if tabletCameraSubState.camID == 11 then
-                    if not officeState.vent.requestClose then
-                        officeState.vent.timerAcc = 0
-                        officeState.vent.requestClose = true
-                    end
+                if not officeState.vent.requestClose then
+                    officeState.vent.timerAcc = 0
+                    officeState.vent.direction = "right"
+                    officeState.vent.requestClose = true
                 end
             end
         },

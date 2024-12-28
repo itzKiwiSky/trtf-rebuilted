@@ -1,0 +1,9 @@
+Changelog for The return to freddy's Rebuilt Again
+-------------------
+
+[0.2.5]
+    - Beggining of the changelogs XD
+    - Better crashlog
+    - Added kitty AI
+    - Added Sugar AI
+    - Fixed foxy state

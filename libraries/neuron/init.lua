@@ -23,7 +23,8 @@ end
 
 function Neuron:initialize()
     -- check if slot exist, if exist load it, else create then load --
-    local slotHashedName = love.data.encode("string", "hex", love.data.hash("sha1", self.name))
+    local hashStr = love._version_major == 12 and love.data.hash("string", "sha1", self.name) or love.data.hash("sha1", self.name)
+    local slotHashedName = love.data.encode("string", "hex", hashStr)
     local slotFile = love.filesystem.getInfo("slots/" .. slotHashedName .. ".neu")
     if slotFile then
         -- load save process --
@@ -99,7 +100,8 @@ end
 
 function Neuron:saveSlot()
     -- check if slot exist, if exist load it, else create then load --
-    local slotHashedName = love.data.encode("string", "hex", love.data.hash("sha1", self.name))
+    local hashStr = love._version_major == 12 and love.data.hash("string", "sha1", self.name) or love.data.hash("sha1", self.name)
+    local slotHashedName = love.data.encode("string", "hex", hashStr)
     local slotFile = love.filesystem.getInfo("slots/" .. slotHashedName .. ".neu")
     if slotFile then
         if self.allowBackup then
@@ -121,7 +123,8 @@ function Neuron:saveSlot()
 end
 
 function Neuron:removeSlot()
-    local slotHashedName = love.data.encode("string", "hex", love.data.hash("sha1", self.name))
+    local hashStr = love._version_major == 12 and love.data.hash("string", "sha1", self.name) or love.data.hash("sha1", self.name)
+    local slotHashedName = love.data.encode("string", "hex", hashStr)
     local slotFile = love.filesystem.getInfo("slots/" .. slotHashedName .. ".neu")
     if slotFile then
         love.filesystem.remove("slots/" .. slotHashedName .. ".neu")

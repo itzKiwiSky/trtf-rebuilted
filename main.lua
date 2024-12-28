@@ -2,6 +2,7 @@ love.filesystem.load("src/Components/Initialization/Run.lua")()
 love.filesystem.load("src/Components/Initialization/ErrorHandler.lua")()
 
 function love.initialize(args)
+    --CHEAT = false
     fontcache = require 'src.Components.Modules.System.FontCache'
     LanguageController = require 'src.Components.Modules.System.LanguageManager'
     _connectGJ = require 'src.Components.Modules.API.InitializeGJ'
@@ -51,6 +52,8 @@ function love.initialize(args)
         }
     }
     gameslot:initialize()
+
+    --CHEAT = true --gameslot.save.game.user.canUse
 
     languageService = LanguageController:getData(gameslot.save.game.user.settings.language)
     languageRaw = LanguageController:getRawData(gameslot.save.game.user.settings.language)
@@ -111,7 +114,11 @@ function love.initialize(args)
     end)
 
     gamestate.registerEvents()
-    gamestate.switch(SplashState)
+    --if CHEAT then
+        --gamestate.switch(CheatState)
+    --else
+        gamestate.switch(SplashState)
+    --end
 end
 
 function love.update(elapsed)
@@ -124,6 +131,9 @@ function love.keypressed(k)
     if DEBUG_APP then
         if k == "f11" then
             love.graphics.captureScreenshot("screenshots/screen_" .. os.date("%Y-%m-%d %H-%M-%S") .. ".png")
+        end
+        if k == "f12" then
+            error("Crash caused by manual trigger")
         end
         if k == "f9" then
             registers.system.showDebugHitbox = not registers.system.showDebugHitbox

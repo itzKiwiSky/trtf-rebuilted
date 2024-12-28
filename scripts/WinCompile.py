@@ -31,7 +31,8 @@ def main():
         "./export",
         "./static",
         "./scripts",
-        "./.git"
+        "./.git",
+        "./mapping_data.b64"
     ]
     
     base = os.getcwd()

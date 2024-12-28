@@ -10,7 +10,7 @@ local FoxyAI = {
 
 FoxyAI.__name__ = "Foxy" -- Nome da tabela
 
-FoxyAI.currentState = 1
+FoxyAI.currentState = NightState.nightID == 1 and 1 or 2
 FoxyAI.metadataCameraID = 0
 FoxyAI.position = 1
 FoxyAI.direction = "none"
