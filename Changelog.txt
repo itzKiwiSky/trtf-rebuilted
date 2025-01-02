@@ -2,13 +2,36 @@ Changelog for The return to freddy's Rebuilt Again
 -------------------
 
 [0.2.5]
-    - Beggining of the changelogs XD
-    - Better crashlog
-    - Added kitty AI
-    - Added Sugar AI
-    - Fixed foxy state
-    - Fixed autoreload language when changing
-    - Fixed settings buttons
+    Added:
+        - Beggining of the changelogs XD
+        - Better crashlog
+        - Added kitty AI
+        - Added Sugar AI
+    Fixed:
+        - Fixed foxy state
+        - Fixed autoreload language when changing
+        - Fixed settings buttons
+    Removed:
+        none
+    Deprecated:
+        none
 
 [0.2.6]
-    - Added minigame alpha test
+    Added:
+        - Added minigame alpha test
+    Fixed:
+        none
+    Removed:
+        none
+    Deprecated:
+        none
+
+[0.2.61]
+    Added:
+       none
+    Fixed:
+        - Fixed vent seal system
+    Removed:
+        none
+    Deprecated:
+        none
