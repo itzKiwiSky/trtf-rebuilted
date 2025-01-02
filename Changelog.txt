@@ -35,3 +35,14 @@ Changelog for The return to freddy's Rebuilt Again
         none
     Deprecated:
         none
+
+[0.2.7]
+    Added:
+       none
+    Fixed:
+        - Better visibility for button text in the camera
+        - Sugar and Kitty wait for each other try to attack you
+    Removed:
+        none
+    Deprecated:
+        none

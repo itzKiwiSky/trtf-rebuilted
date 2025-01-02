@@ -10,7 +10,7 @@ NightState.animatronicsAI = {
     bonnie = 0,
     chica = 0,
     foxy = 0,
-    sugar = 0,
+    sugar = 20,
     kitty = 20,
     puppet = 0,
 }
@@ -632,7 +632,7 @@ function NightState:draw()
         --local mx, my = love.mouse.getPosition() --gameCam:mousePosition()
         --love.graphics.print(string.format("%s, %s", mx, my), 90, 90)
         --love.graphics.print(NightState.AnimatronicControllers["puppet"].musicBoxTimer, 20, 20)
-        --love.graphics.print(debug.formattable(NightState.AnimatronicControllers["kitty"]), 10, 10)
+        love.graphics.print(debug.formattable(NightState.AnimatronicControllers["sugar"]), 10, 10)
         if registers.system.showDebugHitbox then
             gameCam:attach()
                 love.graphics.setColor(0.7, 0, 1, 0.4)

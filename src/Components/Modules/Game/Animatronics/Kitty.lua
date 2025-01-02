@@ -17,8 +17,8 @@ KittyAI.path = {
     {1165, 432, 2},         -- storage
     {1064, 323, 3},         -- dining_area
     {906, 339, 4},
-    {1116, 636, 4},        -- left_vent
-    {1004, 636, 12},        -- office
+    {1116, 636, 11},        -- left_vent
+    {1004, 636, 11},        -- office
 }
 
 function KittyAI.init()
@@ -54,8 +54,9 @@ function KittyAI.update(elapsed)
                         AudioSources["vent_walk"]:seek(0)
                         AudioSources["vent_walk"]:play()
                     end
-
-                    KittyAI.currentState = KittyAI.currentState + 1
+                    if NightState.AnimatronicControllers["sugar"].currentState < 3 then
+                        KittyAI.currentState = KittyAI.currentState + 1
+                    end
                 end
                 KittyAI.timer = 0
             end

@@ -276,7 +276,9 @@ function TabletCameraSubState:draw()
                 v.draw()
             end
 
-            love.graphics.printf(string.upper("cam_" .. _), fnt_camfnt, b.btn.x, b.btn.y, b.btn.w - 8, "center")
+            love.graphics.setColor(0.5, 0.5, 0.5, 1)
+            love.graphics.printf(string.upper("cam_" .. _), fnt_camfnt, b.btn.x, b.btn.y + 3, b.btn.w - 8, "center")
+            love.graphics.setColor(1, 1, 1, 1)
         end
 
         -- info --
@@ -298,8 +300,10 @@ function TabletCameraSubState:draw()
     
                 love.graphics.rectangle("fill", b.hitbox.x, b.hitbox.y, b.hitbox.w - 8, b.hitbox.h - 8)
                 love.graphics.setColor(1, 1, 1, 1)
-    
-                love.graphics.printf(b.text, fnt_camfnt, b.hitbox.x, b.hitbox.y, b.hitbox.w - 8, "center")
+
+                love.graphics.setColor(0.5, 0.5, 0.5, 1)
+                love.graphics.printf(b.text, fnt_camfnt, b.hitbox.x, b.hitbox.y + 3, b.hitbox.w - 8, "center")
+                love.graphics.setColor(1, 1, 1, 1)
             end
         end
 
