@@ -9,7 +9,7 @@ local FreddyAI = {
     maxPatience = math.random(100, 200)
 }
 
-FreddyAI.__name__ = "Freddy" -- Nome da tabela
+FreddyAI.__name__ = "Freddy"
 
 FreddyAI.currentState = 1
 FreddyAI.metadataCameraID = 0

@@ -9,7 +9,7 @@ local ChicaAi = {
     stared = false
 }
 
-ChicaAi.__name__ = "Chica" -- Nome da tabela
+ChicaAi.__name__ = "Chica"
 
 ChicaAi.currentState = 1
 ChicaAi.metadataCameraID = 0

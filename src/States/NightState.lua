@@ -632,6 +632,7 @@ function NightState:draw()
         --local mx, my = love.mouse.getPosition() --gameCam:mousePosition()
         --love.graphics.print(string.format("%s, %s", mx, my), 90, 90)
         --love.graphics.print(NightState.AnimatronicControllers["puppet"].musicBoxTimer, 20, 20)
+        --love.graphics.print(debug.formattable(NightState.AnimatronicControllers["kitty"]), 10, 10)
         if registers.system.showDebugHitbox then
             gameCam:attach()
                 love.graphics.setColor(0.7, 0, 1, 0.4)
@@ -963,10 +964,21 @@ function NightState:update(elapsed)
     if not officeState.isOfficeDisabled then
         if officeState.vent.requestClose then
             officeState.vent.timerAcc = officeState.vent.timerAcc + elapsed
+            if not AudioSources["exec_reverb"]:isPlaying() then
+                AudioSources["exec_reverb"]:play()
+            end
             if officeState.vent.timerAcc >= officeState.vent.ventMaxTimer then
+                if not AudioSources["done_reverb"]:isPlaying() then
+                    AudioSources["done_reverb"]:seek(0)
+                end
+                AudioSources["done_reverb"]:play()
+
                 officeState.vent["left"] = false
                 officeState.vent["right"] = false
-                officeState.vent[officeState.vent.direction] = not officeState.vent[officeState.vent.direction]
+
+
+
+                --officeState.vent[officeState.vent.direction] = not officeState.vent[officeState.vent.direction]
                 officeState.vent.timerAcc = 0
                 officeState.vent.requestClose = false
             end

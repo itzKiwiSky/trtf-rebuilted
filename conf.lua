@@ -9,7 +9,7 @@ function love.conf(w)
     w.window.borderless     =       false
     w.window.resizable      =       false
     w.window.fullscreen     =       false
-    w.window.depth          =       love._version_major == 12 and true or 16
+    w.window.depth          =       love._version_major >= 12 and true or 16
     w.window.vsync          =       0
 
     --% Debug %--

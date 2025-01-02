@@ -8,7 +8,7 @@ local KittyAI = {
     patience = 0,
 }
 
-KittyAI.__name__ = "Kitty" -- Nome da tabela
+KittyAI.__name__ = "Kitty"
 
 KittyAI.currentState = 1
 KittyAI.metadataCameraID = 0
@@ -17,7 +17,7 @@ KittyAI.path = {
     {1165, 432, 2},         -- storage
     {1064, 323, 3},         -- dining_area
     {906, 339, 4},
-    {1076, 544, 4},        -- left_vent
+    {1116, 636, 4},        -- left_vent
     {1004, 636, 12},        -- office
 }
 
@@ -61,13 +61,13 @@ function KittyAI.update(elapsed)
             end
         elseif KittyAI.currentState == 4 then
             KittyAI.timer = KittyAI.timer + elapsed
-            if KittyAI.timer >= 0.02 then
+            if KittyAI.timer >= 0.04 then
                 KittyAI.timer = 0
                 KittyAI.patience = KittyAI.patience + 1
             end
     
             if not officeState.hasAnimatronicInOffice then
-                if KittyAI.patience >= 250 and not officeState.vent.left then
+                if KittyAI.patience >= 350 and not officeState.vent.left then
                     if not NightState.killed then
                         NightState.killed = true
                         jumpscareController:init("kitty", 35)
@@ -76,7 +76,7 @@ function KittyAI.update(elapsed)
                             gamestate.switch(DeathState)
                         end
                     end
-                elseif KittyAI.patience >= 250 and officeState.vent.left then
+                elseif KittyAI.patience >= 350 and officeState.vent.left then
                     AudioSources["vent_amb2"]:seek(0)
                     AudioSources["vent_amb2"]:play()
                     KittyAI.patience = 0

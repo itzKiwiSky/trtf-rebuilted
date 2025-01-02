@@ -78,7 +78,7 @@ function SettingsSubState:load()
             meta = {},
         }
         ]]--
-        this.options.elements[7] = {
+        this.options.elements[6] = {
             text = gamejolt.isLoggedIn and languageService["menu_settings_gamejolt_connected"] or languageService["menu_settings_gamejolt_not_connect"],
             type = "button",
             target = function()
@@ -99,7 +99,7 @@ function SettingsSubState:load()
             description = languageService["menu_settings_description_gamejolt"],
             meta = {},
         }
-        this.options.elements[8] = {
+        this.options.elements[7] = {
             text = languageService["menu_settings_reset_settings"],
             type = "button",
             target = function()

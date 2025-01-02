@@ -9,7 +9,7 @@ local BonnieAI = {
     stared = false
 }
 
-BonnieAI.__name__ = "Bonnie" -- Nome da tabela
+BonnieAI.__name__ = "Bonnie"
 
 BonnieAI.currentState = 1
 BonnieAI.metadataCameraID = 0

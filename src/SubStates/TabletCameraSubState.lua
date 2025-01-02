@@ -150,15 +150,14 @@ function TabletCameraSubState:load()
             hitbox = buttonCamera(486, love.graphics.getHeight() - 110, 128, 48),
             visible = false,
             action = function()
-                print("vai toma no cu")
                 if not officeState.vent.requestClose then
                     if tabletCameraSubState.camID == "vent_kitty" then
                         officeState.vent.timerAcc = 0
-                        officeState.vent.direction = "right"
+                        officeState.vent.direction = "left"
                         officeState.vent.requestClose = true
                     elseif tabletCameraSubState.camID == "vent_sugar" then
                         officeState.vent.timerAcc = 0
-                        officeState.vent.direction = "left"
+                        officeState.vent.direction = "right"
                         officeState.vent.requestClose = true
                     end
                 end

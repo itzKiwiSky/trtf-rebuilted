@@ -5,7 +5,7 @@ local function mapValue(value, inMin, inMax, outMin, outMax)
 end
 
 return function(this)
-    local cycleDuration = 0.08
+    local cycleDuration = 0.3
     local activeThreshold = 0.5
     love.graphics.print(languageService["game_energy"]:format(officeState.power.powerDisplay), fnt_camError, 64, love.graphics.getHeight() - 174)
     love.graphics.print(languageService["game_energy_usage"], fnt_camError, 64, love.graphics.getHeight() - 144)
@@ -19,9 +19,9 @@ return function(this)
     if officeState.vent.requestClose then
         if (love.timer.getTime() % cycleDuration) / cycleDuration > activeThreshold then
             if not officeState.vent.right or not officeState.vent.left then
-                love.graphics.print(languageService["game_misc_text_sealing"], fnt_camError, 512, love.graphics.getHeight() - 120)
+                love.graphics.print(languageService["game_misc_text_sealing"], fnt_camError, 430, love.graphics.getHeight() - 150)
             else
-                love.graphics.print(languageService["game_misc_text_unsealing"], fnt_camError, 512, love.graphics.getHeight() - 120)
+                love.graphics.print(languageService["game_misc_text_unsealing"], fnt_camError, 430, love.graphics.getHeight() - 150)
             end
         end
     end

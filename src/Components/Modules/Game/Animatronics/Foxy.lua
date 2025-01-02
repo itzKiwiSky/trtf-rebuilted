@@ -8,7 +8,7 @@ local FoxyAI = {
     patience = 0,
 }
 
-FoxyAI.__name__ = "Foxy" -- Nome da tabela
+FoxyAI.__name__ = "Foxy"
 
 FoxyAI.currentState = NightState.nightID == 1 and 1 or 2
 FoxyAI.metadataCameraID = 0
@@ -66,15 +66,6 @@ function FoxyAI.update(elapsed)
                 if officeState.flashlight.state then
                     officeState.flashlight.isFlicking = true
                 end
-
-                if DEBUG_APP then
-                    print(string.format("[%s] Moved | MoveID: %s State: %s", FoxyAI.__name__, FoxyAI.move, FoxyAI.currentState))
-                end
-            else
-                FoxyAI.position = math.random(1, 2)
-                if DEBUG_APP then
-                    print(string.format("[%s] Failed to move | MoveID: %s", FoxyAI.__name__, FoxyAI.move))
-                end
             end
             FoxyAI.timer = 0
         end
@@ -86,15 +77,7 @@ function FoxyAI.update(elapsed)
                 if officeState.flashlight.state then
                     officeState.flashlight.isFlicking = true
                 end
-
-                if DEBUG_APP then
-                    print(string.format("[%s] Moved | MoveID: %s State: %s", FoxyAI.__name__, FoxyAI.move, FoxyAI.currentState))
-                end
                 FoxyAI.currentState = 3
-            else
-                if DEBUG_APP then
-                    print(string.format("[%s] Failed to move | MoveID: %s", FoxyAI.__name__, FoxyAI.move))
-                end
             end
             FoxyAI.timer = 0
         end

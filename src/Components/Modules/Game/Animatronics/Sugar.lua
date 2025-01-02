@@ -8,7 +8,7 @@ local SugarAI = {
     patience = 0,
 }
 
-SugarAI.__name__ = "Bonnie" -- Nome da tabela
+SugarAI.__name__ = "Bonnie"
 
 SugarAI.currentState = 1
 SugarAI.metadataCameraID = 0

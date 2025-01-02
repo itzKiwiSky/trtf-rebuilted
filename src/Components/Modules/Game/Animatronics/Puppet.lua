@@ -8,7 +8,7 @@ local PuppetAI = {
     patience = 0,
 }
 
-PuppetAI.__name__ = "Puppet" -- Nome da tabela
+PuppetAI.__name__ = "Puppet"
 
 PuppetAI.released = false
 PuppetAI.currentState = 8
