@@ -973,10 +973,17 @@ function NightState:update(elapsed)
                 end
                 AudioSources["done_reverb"]:play()
 
-                officeState.vent["left"] = false
-                officeState.vent["right"] = false
-
-
+                if officeState.vent.direction == "left" then
+                    officeState.vent["left"] = not officeState.vent["left"]
+                    if officeState.vent["right"] then
+                        officeState.vent["right"] = false
+                    end
+                elseif officeState.vent.direction == "right" then
+                    officeState.vent["right"] = true
+                    if officeState.vent["left"] then
+                        officeState.vent["left"] = false
+                    end
+                end
 
                 --officeState.vent[officeState.vent.direction] = not officeState.vent[officeState.vent.direction]
                 officeState.vent.timerAcc = 0
@@ -984,6 +991,9 @@ function NightState:update(elapsed)
             end
         end
     end
+
+    officeState.power.powerQueueCount.leftVent = officeState.vent["left"]
+    officeState.power.powerQueueCount.rightVent = officeState.vent["right"]
 
     -- camera update substate --
     if tabletController.tabUp then
