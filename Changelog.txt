@@ -46,3 +46,15 @@ Changelog for The return to freddy's Rebuilt Again
         none
     Deprecated:
         none
+
+[0.2.8]
+    Added:
+       - Custom night menu
+       - Demo locks (no story mode and no save)
+    Fixed:
+        - Fixed vent seal system v2
+        - Fixed demo locks for nightstate
+    Removed:
+        - Refactoring some stuff
+    Deprecated:
+        none

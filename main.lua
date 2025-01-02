@@ -1,8 +1,21 @@
 love.filesystem.load("src/Components/Initialization/Run.lua")()
 love.filesystem.load("src/Components/Initialization/ErrorHandler.lua")()
 
+local function preloadAudio()
+    local files = fsutil.scanFolder("assets/sounds", false, {"assets/sounds/night/calls"})
+
+    for f = 1, #files, 1 do
+        local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
+        loveloader.newSource(AudioSources, filename, files[f], "stream")
+        if DEBUG_APP then
+            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file queue to load with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", filename))
+        end
+    end
+end
+
 function love.initialize(args)
     --CHEAT = false
+    AUDIO_LOADED = false
     fontcache = require 'src.Components.Modules.System.FontCache'
     LanguageController = require 'src.Components.Modules.System.LanguageManager'
     _connectGJ = require 'src.Components.Modules.API.InitializeGJ'
@@ -102,6 +115,14 @@ function love.initialize(args)
         love.filesystem.createDirectory("screenshots")
     end
 
+    loveloader.start(function()
+        AUDIO_LOADED = true
+    end, function(k, h, n)
+        if DEBUG_APP then
+            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", n))
+        end
+    end)
+
     th_ping = love.thread.newThread("src/Components/Modules/Game/Utils/ThreadPing.lua")
 
     tmr_gamejoltHeartbeat = timer.new()
@@ -124,6 +145,10 @@ end
 function love.update(elapsed)
     if gamejolt.isLoggedIn then
         tmr_gamejoltHeartbeat:update(elapsed)
+    end
+
+    if not AUDIO_LOADED then
+        loveloader.update()
     end
 end
 

@@ -10,8 +10,8 @@ NightState.animatronicsAI = {
     bonnie = 0,
     chica = 0,
     foxy = 0,
-    sugar = 20,
-    kitty = 20,
+    sugar = 0,
+    kitty = 0,
     puppet = 0,
 }
 NightState.AnimatronicControllers = {}
@@ -255,7 +255,6 @@ function NightState:enter()
         windowHeight = love.graphics.getHeight(),
         width = 2000,
         height = 800,
-        compensation = 400,
     }
 
     gameCam = camera.new(0, nil)
@@ -421,9 +420,11 @@ function NightState:enter()
         for k, v in pairs(AudioSources) do
             v:stop()
         end
-        gameslot.save.game.user.progress.night = gameslot.save.game.user.progress.night + 1
-        gameslot.save.game.user.progress.newgame = false
-        gameslot.save.game.user.progress.canContinue = true
+        if not DEMO_APP then
+            gameslot.save.game.user.progress.night = gameslot.save.game.user.progress.night + 1
+            gameslot.save.game.user.progress.newgame = false
+            gameslot.save.game.user.progress.canContinue = true
+        end
         gameslot:saveSlot()
         gamestate.switch(WinState)
     end)
@@ -632,7 +633,7 @@ function NightState:draw()
         --local mx, my = love.mouse.getPosition() --gameCam:mousePosition()
         --love.graphics.print(string.format("%s, %s", mx, my), 90, 90)
         --love.graphics.print(NightState.AnimatronicControllers["puppet"].musicBoxTimer, 20, 20)
-        love.graphics.print(debug.formattable(NightState.AnimatronicControllers["sugar"]), 10, 10)
+        --love.graphics.print(debug.formattable(NightState.animatronicsAI), 10, 10)
         if registers.system.showDebugHitbox then
             gameCam:attach()
                 love.graphics.setColor(0.7, 0, 1, 0.4)
@@ -979,7 +980,7 @@ function NightState:update(elapsed)
                         officeState.vent["right"] = false
                     end
                 elseif officeState.vent.direction == "right" then
-                    officeState.vent["right"] = true
+                    officeState.vent["right"] = not officeState.vent["right"]
                     if officeState.vent["left"] then
                         officeState.vent["left"] = false
                     end

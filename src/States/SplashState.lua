@@ -26,14 +26,6 @@ function SplashState:enter()
     end
     love.mouse.setVisible(false)
 
-    loveloader.start(function()
-        canContinue = true
-    end, function(k, h, n)
-        if DEBUG_APP then
-            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", n))
-        end
-    end)
-
     VIDEO_WIDTH = love.graphics.getWidth() / introVideo:getWidth()
     VIDEO_HEIGHT = love.graphics.getHeight() / introVideo:getHeight()
 end
@@ -59,18 +51,21 @@ function SplashState:update(elapsed)
         ]]--
         love.mouse.setVisible(true)
         gamestate.switch(MenuState)
-    else
-        loveloader.update()
     end
 end
 
 function SplashState:keypressed(k)
-    if canContinue then
-        introVideo:pause()
-        introVideo:rewind()
-        love.mouse.setVisible(true)
-        gamestate.switch(MenuState)
-    end
+    introVideo:pause()
+    introVideo:rewind()
+    love.mouse.setVisible(true)
+    gamestate.switch(MenuState)
+end
+
+function SplashState:mousepressed(x, y, button)
+    introVideo:pause()
+    introVideo:rewind()
+    love.mouse.setVisible(true)
+    gamestate.switch(MenuState)
 end
 
 function SplashState:leave()

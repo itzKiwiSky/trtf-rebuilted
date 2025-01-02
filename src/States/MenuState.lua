@@ -147,12 +147,20 @@ function MenuState:enter()
         elements = {},
     }
 
+    transitionFade = {
+        active = false,
+        target = nil,
+        fade = 0,
+        acc = 0,
+        maxTime = 0.12,
+    }
+
     function MenuState.rebuilMenuUI(this)
         lume.clear(textItems.elements)
         textItems.elements[1] = {
             text = languageService["menu_button_new_game"],
             hitbox = {},
-            locked = false,
+            locked = DEMO_APP,
             hovered = false,
             offset = 0,
             action = function()
@@ -163,23 +171,37 @@ function MenuState:enter()
         textItems.elements[2] = {
             text = languageService["menu_button_continue"],
             hitbox = {},
-            locked = not gameslot.save.game.user.progress.canContinue,
+            locked = DEMO_APP, --not gameslot.save.game.user.progress.canContinue,
             hovered = false,
             offset = 0,
             action = function()
-                nightstate.nightID = gameslot.save.game.user.progress.night
+                nightstate.nightID = gameslot.save.gamme.user.progress.night
             end,
         }
-        textItems.elements[3] = {
-            text = languageService["menu_button_extras"],
-            hitbox = {},
-            locked = not gameslot.save.game.user.progress.extras,
-            hovered = false,
-            offset = 0,
-            action = function()
-                
-            end,
-        }
+        if not DEMO_APP then
+            textItems.elements[3] = {
+                text = languageService["menu_button_extras"],
+                hitbox = {},
+                locked = not gameslot.save.game.user.progress.extras,
+                hovered = false,
+                offset = 0,
+                action = function()
+                    
+                end,
+            }
+        else
+            textItems.elements[3] = {
+                text = languageService["menu_button_custom_night"],
+                hitbox = {},
+                locked = false,
+                hovered = false,
+                offset = 0,
+                action = function()
+                    transitionFade.target = CustomNightMenuState
+                    transitionFade.active = true
+                end,
+            }
+        end
         textItems.elements[4] = {
             text = languageService["menu_button_exit"],
             hitbox = {},
@@ -364,7 +386,7 @@ function MenuState:draw()
     love.graphics.setColor(1, 1, 1, 1)
 
     -- trans fade rectangle --
-    love.graphics.setColor(0, 0, 0, journalConfig.transfade)
+    love.graphics.setColor(0, 0, 0, transitionFade.fade)
         love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
     love.graphics.setColor(1, 1, 1, 1)
 end
@@ -454,6 +476,15 @@ function MenuState:update(elapsed)
 
         journalConfig.timer:update(elapsed)
     end
+
+    if transitionFade.active then
+        transitionFade.fade = transitionFade.fade + 0.5 * elapsed 
+
+        if transitionFade.fade >= 1 then
+            gamestate.switch(transitionFade.target)
+        end
+    end
+
 end
 
 function MenuState:mousepressed(x, y, button)

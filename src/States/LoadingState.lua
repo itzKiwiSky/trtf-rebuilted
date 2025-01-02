@@ -1,5 +1,10 @@
 LoadingState = {}
 
+local function _checkFiles(tbl, files)
+    local filesChecked = 0
+
+end
+
 function LoadingState:enter()
     subtitlesController.clear()
 
@@ -14,7 +19,7 @@ function LoadingState:enter()
     ctrEffect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
     glowTextEffect = moonshine(moonshine.effects.glow)
     textLoadingFont = fontcache.getFont("ocrx", 34)
-    clockIcon = love.graphics.newImage("assets/images/game/clockico.png")
+    --clockIcon = love.graphics.newImage("assets/images/game/clockico.png")
     lockjawdance = {
         cfg = {
             acc = 0,
