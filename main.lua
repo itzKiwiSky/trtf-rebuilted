@@ -146,10 +146,6 @@ function love.update(elapsed)
     if gamejolt.isLoggedIn then
         tmr_gamejoltHeartbeat:update(elapsed)
     end
-
-    if not AUDIO_LOADED then
-        loveloader.update()
-    end
 end
 
 function love.keypressed(k)
