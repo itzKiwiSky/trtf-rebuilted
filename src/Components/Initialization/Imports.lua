@@ -15,5 +15,6 @@ return function()
     lume = require 'libraries.lume'
     neuron = require 'libraries.neuron'
     nativefs = require 'libraries.nativefs'
+    resolution = require 'libraries.resolution'
     timer = require 'libraries.timer'
 end

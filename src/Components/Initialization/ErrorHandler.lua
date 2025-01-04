@@ -106,14 +106,16 @@ function love.errorhandler(msg)
     if DEBUG_APP then
         local err, f = nfs.write(string.format("%s/outputlog.txt", fdcrash), tostring(table.concat(_G.GLOBAL_BUFFER, "")))
     end
+    local dskWidth, dskHeight = love.window.getDesktopDimensions(1)
+    local winW, winH = love.graphics.getDimensions()
     local stats = love.graphics.getStats()
     local s, p, sc = love.system.getPowerInfo()
     local err, f = nfs.write(string.format("%s/system.txt", fdcrash), tostring(table.concat({
         "Operating system: " .. love.system.getOS(),
         "Processor Count: " .. love.system.getProcessorCount(),
         ("Power: {\n    State: %s\n    Percent: %s\n    Seconds: %s\n}"):format(s, p, sc),
-        ("Graphics: {\n    Renderer: %s\n    Version: %s\n    Vendor: %s\n    Device: %s}"):format(love.graphics.getRendererInfo()),
-        ("Total Memory Usage: %s"):format(stats.texturememory / 1024 / 1024)
+        ("Graphics: {\n    Renderer: %s\n    Version: %s\n    Vendor: %s\n    Device: %s\n    DisplaySize: %sx%s\n    WindowSize:%sx%s}"):format(love.graphics.getRendererInfo(), dskWidth, dskHeight),
+        ("Total Memory Usage: %smb"):format(stats.texturememory / 1024 / 1024)
     }, "\r\n")))
 
     local sc = love.graphics.newImage("assets/images/system/Screen.png")

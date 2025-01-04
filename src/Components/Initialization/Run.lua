@@ -54,6 +54,18 @@ function love.run()
     love.math.setRandomSeed(os.time())
     math.randomseed(os.time())
 
+    local gameWidth, gameHeight = 1280, 800 --fixed game resolution
+    local windowWidth, windowHeight = love.window.getDesktopDimensions()
+
+    resolution.init({
+        aspectRatio = false,
+        clampMouse = true,
+        centered = true,
+        clip = true,
+        width = 1280,
+        height = 800
+    })
+
     if love.initialize then 
         love.initialize(love.arg.parseGameArguments(arg), arg)
     end
@@ -88,6 +100,7 @@ function love.run()
 
         if love.graphics and love.graphics.isActive() then
             love.graphics.origin()
+
             love.graphics.clear(love.graphics.getBackgroundColor())
 
             if love.draw then
@@ -99,6 +112,7 @@ function love.run()
             if gameslot.save.game.user.settings.displayFPS then
                 love.graphics.print("FPS : " .. love.timer.getFPS(), 5, 5)
             end
+
             love.graphics.present()
         end
 
