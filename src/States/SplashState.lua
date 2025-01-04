@@ -1,23 +1,10 @@
 SplashState = {}
 
-local function preloadAudio()
-    local files = fsutil.scanFolder("assets/sounds", false, {"assets/sounds/night/calls"})
-
-    for f = 1, #files, 1 do
-        local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
-        loveloader.newSource(AudioSources, filename, files[f], "stream")
-        if DEBUG_APP then
-            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file queue to load with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", filename))
-        end
-    end
-end
-
 function SplashState:enter()
     subtitlesController.clear()
 
-    preloadAudio()
-
-    local introID = "trtl_meme.ogv" -- new_intro.ogv
+    
+    local introID = lume.weightedchoice({["trtl_meme.ogv"] = 25, ["new_intro.ogv"] = 75}) -- new_intro.ogv
     introVideo = love.graphics.newVideo("assets/videos/" .. introID)
     canContinue = false
 
