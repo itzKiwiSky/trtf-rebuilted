@@ -202,7 +202,7 @@ function CustomNightMenuState:draw()
         
                     love.graphics.rectangle("fill", b.hitbox.x, b.hitbox.y, b.hitbox.w - 8, b.hitbox.h - 8)
                     love.graphics.setColor(1, 1, 1, 1)
-    
+
                     love.graphics.setColor(0.25, 0.25, 0.25, 1)
                     love.graphics.printf(b.text, fnt_menuCN, b.hitbox.x + 3, b.hitbox.y + 10, b.hitbox.w - 8, "center")
                     love.graphics.setColor(1, 1, 1, 1)

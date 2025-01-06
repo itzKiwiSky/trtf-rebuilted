@@ -114,9 +114,10 @@ function love.errorhandler(msg)
         "Operating system: " .. love.system.getOS(),
         "Processor Count: " .. love.system.getProcessorCount(),
         ("Power: {\n    State: %s\n    Percent: %s\n    Seconds: %s\n}"):format(s, p, sc),
-        ("Graphics: {\n    Renderer: %s\n    Version: %s\n    Vendor: %s\n    Device: %s\n    DisplaySize: %sx%s\n    WindowSize:%sx%s}"):format(love.graphics.getRendererInfo(), dskWidth, dskHeight),
+        ("Graphics: {\n    Renderer: %s\n    Version: %s\n    Vendor: %s\n    Device: %s}"):format(love.graphics.getRendererInfo()),
+        ("Display: {\n    DisplaySize: %sx%s\n    DesktopSize:%sx%s}"):format(winW, winH, dskWidth, dskHeight),
         ("Total Memory Usage: %smb"):format(stats.texturememory / 1024 / 1024)
-    }, "\r\n")))
+    }, "\n")))
 
     local sc = love.graphics.newImage("assets/images/system/Screen.png")
     local staticfx = {
@@ -145,10 +146,13 @@ function love.errorhandler(msg)
         love.graphics.clear(0, 0, 0, 0)
         
     
-        love.graphics.draw(sc, 0, 0)
+        love.graphics.draw(sc, 0, 0, 0, 
+            love.graphics.getWidth() / staticfx.frames[staticfx.config.frameid]:getWidth(),
+            love.graphics.getHeight() / staticfx.frames[staticfx.config.frameid]:getHeight()
+        )
         love.graphics.setBlendMode("add")
             love.graphics.setColor(1, 1, 1, 0.2)
-                love.graphics.draw(staticfx.frames[staticfx.config.frameid], 0, 0)
+                love.graphics.draw(staticfx.frames[staticfx.config.frameid], 0, 0, 0, love.graphics.getWidth() / sc:getWidth(), love.graphics.getHeight() / sc:getHeight())
             love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
 

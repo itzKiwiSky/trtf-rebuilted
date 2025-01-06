@@ -1,9 +1,9 @@
 DebugState = {}
 
 --[[
-THIS IS NOT A PLAYABLE MenuState
+THIS IS NOT A PLAYABLE State
 
-This state is only there to test things up before implement in a official playable MenuState
+This state is only there to test things up before implement in a official playable state
 like so
 ]]--
 
@@ -13,6 +13,8 @@ function DebugState:enter()
     roomlight = love.graphics.newImage("assets/images/game/test/room_light.png")
     flashlight = love.graphics.newImage("assets/images/game/night8/flashlight.png")
     light = love.graphics.newImage("assets/images/game/night8/lantern_light.png")
+    stage = love.graphics.newImage("assets/images/game/test/stage.png")
+    cam = love.graphics.newImage("assets/images/game/test/camera.png")
 
     shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
     tuneConfig = {
@@ -30,14 +32,15 @@ function DebugState:enter()
     roomSize = {
         windowWidth = love.graphics.getWidth(),
         windowHeight = love.graphics.getHeight(),
-        width = 2000,
+        width = 2500,
         height = 800,
         compensation = 400,
     }
 
     flash = {
         x = 0,
-        y = 0
+        y = 0,
+        active = false,
     }
 
     gameCam = camera.new(0, nil)
@@ -55,10 +58,11 @@ function DebugState:enter()
 
     --subtitlesController.clear()
     --subtitlesController.queue(languageRaw.subtitles["call_night" .. NightState.nightID])
-    love.graphics.setBackgroundColor(0, 0, 0, 0)
+    love.graphics.setBackgroundColor(0.2, 0, 0, 0)
 end
 
 function DebugState:draw()
+    --[[
     cnv_mainCanvas:renderTo(function()
         gameCam:attach()
         love.graphics.draw(roomlight, 0, 0)
@@ -77,14 +81,40 @@ function DebugState:draw()
         love.graphics.setBlendMode("multiply", "premultiplied")
         love.graphics.draw(cnv_flash, 0, 0)
         love.graphics.setBlendMode("alpha")
+    love.graphics.setShader()]]
+
+    cnv_mainCanvas:renderTo(function()
+        love.graphics.clear(love.graphics.getBackgroundColor())
+        gameCam:attach()
+        love.graphics.draw(stage, 0, 0)
+        gameCam:detach()
+    end)
+
+    love.graphics.setColor(0.2, 0, 0, 1)
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
+
+    love.graphics.print(string.format("%s, %s", gameCam:mousePosition()), 20, 20)
+
+    love.graphics.setShader(shd_perspective)
+        love.graphics.draw(cnv_mainCanvas, 0, 0)
     love.graphics.setShader()
+    if flash.active then
+        love.graphics.draw(cam, flash.x, flash.y, 0, 1, 1, cam:getWidth() / 2, cam:getHeight() / 2)
+    else
+        love.graphics.draw(cam, love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 0, 1, 1, cam:getWidth() / 2, cam:getHeight() / 2)
+    end
+
+    slab.Draw()
 end
 
 function DebugState:update(elapsed)
     slab.Update(elapsed)
-    --dbginterface()
+    dbginterface()
 
-    flash.x, flash.y = love.mouse.getPosition()
+    if flash.active then
+        flash.x, flash.y = love.mouse.getPosition()
+    end
     
     shd_perspective:send("latitudeVar", tuneConfig.latitudeVar)
     shd_perspective:send("longitudeVar", tuneConfig.longitudeVar)
@@ -92,7 +122,7 @@ function DebugState:update(elapsed)
 
     local mx, my = gameCam:mousePosition()
 
-    if slab.IsVoidHovered() then
+    if slab.IsVoidHovered() and not flash.active then
         gameCam.x = (roomSize.width / 2 + (mx - roomSize.width / 2) / gameCam.factorX)
     end
 
@@ -119,8 +149,10 @@ function DebugState:keypressed(k)
 
 end
 
-function DebugState:wheelmoved(x, y)
-
+function DebugState:mousepressed(x, y, button)
+    if button == 1 then
+        flash.active = not flash.active
+    end
 end
 
 return DebugState

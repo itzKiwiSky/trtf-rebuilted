@@ -1,12 +1,12 @@
 local args = {...}
-registers = args[1]
+local registers = args[1]
 require 'src.Addons.ColoredWrite'
-user, token = args[2], args[3]
-jit = require 'jit'
-https = require 'https'
-utf8 = require 'utf8'
-bit = require 'bit'
-json = require 'libraries.json'
+local user, token = args[2], args[3]
+local jit = require 'jit'
+local https = require 'https'
+local utf8 = require 'utf8'
+local bit = require 'bit'
+local json = require 'libraries.json'
 
 gamejolt = require 'libraries.gamejolt'
 _connectGJ = require 'src.Components.Modules.API.InitializeGJ'
@@ -22,10 +22,10 @@ if not gamejolt.isLoggedIn then
             if user ~= "" and token ~= "" then
                 loggedin = gamejolt.authUser(user, token)
                 gamejolt.openSession()
-                io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client connected (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
+                print(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client connected (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
             end
         else
-            io.printf("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Failed to connect to gamejolt, please check your internet connection{reset}\n")
+            print("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Failed to connect to gamejolt, please check your internet connection{reset}\n")
         end
     end
 end
@@ -33,5 +33,5 @@ end
 
 if loggedin then
     gamejolt.pingSession(true)
-    io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client heartbeated a session (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
+    print(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client heartbeated a session (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
 end

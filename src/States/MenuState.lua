@@ -13,7 +13,20 @@ local function loadAnimatronic(id)
     return anfiles
 end
 
+function MenuState.rebuildShader()
+    shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
+    shd_blur = moonshine(moonshine.effects.boxblur)
+    shd_glowEffect = moonshine(moonshine.effects.glow)
+    shd_glowEffect.glow.strength = 5
+
+    shd_blur.boxblur.radius = {0, 0}
+
+    shd_glowEffectText = moonshine(moonshine.effects.glow)
+    shd_glowEffectText.glow.strength = 5
+end
+
 function MenuState:enter()
+    settingsSubstate = require 'src.SubStates.SettingsSubState'
     nightstate = require 'src.States.NightState'
 
     subtitlesController.clear()
@@ -23,14 +36,10 @@ function MenuState:enter()
     fnt_settingsTitle = fontcache.getFont("tnr", 55)
     fnt_settingsDesc = fontcache.getFont("tnr", 20)
 
-    shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
-    shd_blur = moonshine(moonshine.effects.boxblur)
+    MenuState.rebuildShader()
+
     shd_chromafx = love.graphics.newShader("assets/shaders/Chromatic.glsl")
     shd_chromafx:send("distortion", 0)
-    shd_glowEffect = moonshine(moonshine.effects.glow)
-    shd_glowEffect.glow.strength = 5
-
-    shd_blur.boxblur.radius = {0, 0}
 
     spr_logo = love.graphics.newImage("assets/images/game/menu/logo.png")
 
@@ -62,8 +71,6 @@ function MenuState:enter()
         extras = false,
         night = 0
     }
-
-    settingsSubstate = require 'src.SubStates.SettingsSubState'
 
     settingsSubstate:load()
 
@@ -175,7 +182,7 @@ function MenuState:enter()
             hovered = false,
             offset = 0,
             action = function()
-                nightstate.nightID = gameslot.save.gamme.user.progress.night
+                nightstate.nightID = gameslot.save.game.user.progress.night
             end,
         }
         if not DEMO_APP then
@@ -318,9 +325,10 @@ function MenuState:draw()
     shd_blur(function()
         -- shader for menu background and animatronic display --
         shd_effect(function()
-            love.graphics.draw(menuBackgrounds[bgID], 0, 0)
-            love.graphics.draw(animatronicsAnim[menuAnimatronic.frame], menuAnimatronic.x, 0)
+            love.graphics.draw(menuBackgrounds[bgID], 0, 0, 0, love.graphics.getWidth() / menuBackgrounds[bgID]:getWidth(), love.graphics.getHeight() / menuBackgrounds[bgID]:getHeight())
+            love.graphics.draw(animatronicsAnim[menuAnimatronic.frame], menuAnimatronic.x, 0, 0, love.graphics.getWidth() / animatronicsAnim[menuAnimatronic.frame]:getWidth(), love.graphics.getHeight() / animatronicsAnim[menuAnimatronic.frame]:getHeight())
         end)
+
         -- logo effect --
         love.graphics.setShader(shd_chromafx)
             love.graphics.setBlendMode("add")
@@ -331,7 +339,7 @@ function MenuState:draw()
         -- static overlay --
         love.graphics.setBlendMode("add")
             love.graphics.setColor(1, 1, 1, 0.2)
-                love.graphics.draw(staticfx.frames[staticfx.config.frameid], 0, 0)
+                love.graphics.draw(staticfx.frames[staticfx.config.frameid], 0, 0, 0, love.graphics.getWidth() / staticfx.frames[staticfx.config.frameid]:getWidth(), love.graphics.getHeight() / staticfx.frames[staticfx.config.frameid]:getHeight())
             love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
 
@@ -402,6 +410,12 @@ function MenuState:update(elapsed)
             AudioSources["amb_rainleak"]:stop()
         end
     end
+
+    -- update res --
+    if textItems.tween.itemsVisible then
+        gearSettings.x = love.graphics.getWidth() - 128
+    end
+
 
     -- static animation --
     staticfx.config.timer = staticfx.config.timer + elapsed
@@ -515,6 +529,10 @@ function MenuState:keypressed(k)
     if not MenuState.warn then
         MenuState.warn = true
     end
+end
+
+function MenuState:resize(w, h)
+    settingsSubstate:resize(w, h)
 end
 
 return MenuState

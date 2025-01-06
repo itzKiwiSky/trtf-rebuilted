@@ -58,7 +58,7 @@ function love.run()
     local windowWidth, windowHeight = love.window.getDesktopDimensions()
 
     resolution.init({
-        aspectRatio = false,
+        aspectRatio = true,
         clampMouse = true,
         centered = true,
         clip = true,

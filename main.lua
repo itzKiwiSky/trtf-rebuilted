@@ -85,7 +85,7 @@ function love.initialize(args)
     }
 
     -- do some shit with config --
-    --love.window.setFullscreen(gameslot.save.game.user.settings.fullscreen, "exclusive")
+    love.window.setFullscreen(gameslot.save.game.user.settings.fullscreen, "desktop")
     love.window.setVSync(gameslot.save.game.user.settings.vsync and 1 or 0)
 
     if gameslot.save.game.user.settings.antialiasing then
@@ -149,6 +149,9 @@ function love.update(elapsed)
 end
 
 function love.keypressed(k)
+    if k == "escape" then
+        love.event.quit()
+    end
     if DEBUG_APP then
         if k == "f11" then
             love.graphics.captureScreenshot("screenshots/screen_" .. os.date("%Y-%m-%d %H-%M-%S") .. ".png")
@@ -167,12 +170,6 @@ function love.keypressed(k)
                 v:stop()
             end
             gamestate.switch(LoadingState)
-        end
-        if k == "f6" then
-            for k, v in pairs(AudioSources) do
-                v:stop()
-            end
-            gamestate.switch(WinState)
         end
         if registers.system.camEdit then
             if editBTN then
