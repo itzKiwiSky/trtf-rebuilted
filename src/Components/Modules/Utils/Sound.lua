@@ -8,7 +8,6 @@ function soundthread.newTone(note, waveLength, waveType, volume, amplitude, pitc
     volume = volume or 1
     pitch = pitch or nil
 
-
     local Tone = note
     
     local length    = waveLength / 32
@@ -29,11 +28,7 @@ function soundthread.newTone(note, waveLength, waveType, volume, amplitude, pitc
         end
     end
     
-    local snd = love.audio.newSource(soundData)
-    
-    snd:setVolume(volume)
-    snd:setPitch(pitch)
-    snd:play()
+    return love.audio.newSource(soundData)
 end 
 
 return soundthread

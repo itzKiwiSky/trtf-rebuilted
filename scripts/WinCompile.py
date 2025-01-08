@@ -40,25 +40,25 @@ def main():
     if not os.path.exists(os.path.join(base, "export")):
         os.mkdir("export")
 
-    secretZip = "scripts/secret/love-12.0-win64.zip"
-    fp = os.path.join(base, secretZip)
+    # secretZip = "scripts/secret/love-12.0-win64.zip"
+    fp = os.path.join(base, "export/love-11.5-win64.zip")
     fb = os.path.join(base, "export")
 
     if os.path.exists(os.path.join(fb, "love")) and os.path.isdir(os.path.join(fb, "love")):
         shutil.rmtree(os.path.join(fb, "love"))
     
     # download love from the last release
-    if currentVersion < 12:
-        url = "https://github.com/love2d/love/releases/download/11.5/love-11.5-win64.zip"
-        wget.download(url, fp)
+
+    url = "https://github.com/love2d/love/releases/download/11.5/love-11.5-win64.zip"
+    wget.download(url, fp)
 
     # extract love
     with zipfile.ZipFile(fp, 'r') as lovezip:
         lovezip.extractall(fb)
 
     # clean mess and rename the folder
-    # os.remove(fp)
-    os.rename(os.path.join(fb, "love-12.0-win64"), os.path.join(fb, "love"))
+    os.remove(fp)
+    os.rename(os.path.join(fb, "love-11.5-win64"), os.path.join(fb, "love"))
 
     # create the love
     makeZip("./", "./export/feddy.love", ig)

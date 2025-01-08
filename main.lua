@@ -152,8 +152,17 @@ function love.keypressed(k)
     if k == "escape" then
         love.event.quit()
     end
+    if k == "f11" then
+        gameslot.save.game.user.settings.fullscreen = not gameslot.save.game.user.settings.fullscreen
+
+        love.window.setFullscreen(gameslot.save.game.user.settings.fullscreen, "desktop")
+
+        MenuState.rebuilMenuUI()
+        MenuState.rebuildShader()
+        gameslot:saveSlot()
+    end
     if DEBUG_APP then
-        if k == "f11" then
+        if k == "f2" then
             love.graphics.captureScreenshot("screenshots/screen_" .. os.date("%Y-%m-%d %H-%M-%S") .. ".png")
         end
         if k == "f12" then
@@ -163,7 +172,10 @@ function love.keypressed(k)
             registers.system.showDebugHitbox = not registers.system.showDebugHitbox
         end
         if k == "f7" then
-            registers.system.camEdit = not registers.system.camEdit
+            for k, v in pairs(AudioSources) do
+                v:stop()
+            end
+            gamestate.switch(CustomNightMenuState)
         end
         if k == "f4" then
             for k, v in pairs(AudioSources) do

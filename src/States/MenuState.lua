@@ -13,6 +13,76 @@ local function loadAnimatronic(id)
     return anfiles
 end
 
+function MenuState.rebuilMenuUI(this)
+    if textItems ~= nil then
+        lume.clear(textItems.elements)
+        textItems.elements[1] = {
+            text = languageService["menu_button_new_game"],
+            hitbox = {},
+            locked = DEMO_APP,
+            hovered = false,
+            offset = 0,
+            action = function()
+                gameslot.save.game.user.progress.newgame = true
+                journalConfig.active = true
+            end,
+        }
+        textItems.elements[2] = {
+            text = languageService["menu_button_continue"],
+            hitbox = {},
+            locked = DEMO_APP, --not gameslot.save.game.user.progress.canContinue,
+            hovered = false,
+            offset = 0,
+            action = function()
+                nightstate.nightID = gameslot.save.game.user.progress.night
+            end,
+        }
+        if not DEMO_APP then
+            textItems.elements[3] = {
+                text = languageService["menu_button_extras"],
+                hitbox = {},
+                locked = not gameslot.save.game.user.progress.extras,
+                hovered = false,
+                offset = 0,
+                action = function()
+                    
+                end,
+            }
+        else
+            textItems.elements[3] = {
+                text = languageService["menu_button_custom_night"],
+                hitbox = {},
+                locked = false,
+                hovered = false,
+                offset = 0,
+                action = function()
+                    transitionFade.target = CustomNightMenuState
+                    transitionFade.active = true
+                end,
+            }
+        end
+        textItems.elements[4] = {
+            text = languageService["menu_button_exit"],
+            hitbox = {},
+            locked = false,
+            hovered = false,
+            offset = 0,
+            action = function()
+                love.event.quit()
+            end,
+        }
+        -- create button hitboxes --
+        for t = 1, #textItems.elements, 1 do
+            textItems.elements[t].hitbox = {
+                x = 60,
+                y = (textItems.tween.y + (fnt_menu:getHeight() + 16) * t) - 4,
+                w = fnt_menu:getWidth(textItems.elements[t].text) + 8,
+                h = fnt_menu:getHeight() + 8
+            }
+        end
+    end
+end
+
 function MenuState.rebuildShader()
     shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
     shd_blur = moonshine(moonshine.effects.boxblur)
@@ -74,7 +144,6 @@ function MenuState:enter()
 
     settingsSubstate:load()
 
-    --loadAnimatronic()
     for a = #animatronicsAnim, 1, -1 do
         if animatronicsAnim[a] then
             animatronicsAnim[a]:release()
@@ -146,7 +215,7 @@ function MenuState:enter()
     textItems = {
         tween = {
             x = -640,
-            y = 360,
+            y = love.graphics.getHeight() - 440,
             alpha = 0,
             itemsVisible = false,
             target = 32,
@@ -161,74 +230,6 @@ function MenuState:enter()
         acc = 0,
         maxTime = 0.12,
     }
-
-    function MenuState.rebuilMenuUI(this)
-        lume.clear(textItems.elements)
-        textItems.elements[1] = {
-            text = languageService["menu_button_new_game"],
-            hitbox = {},
-            locked = DEMO_APP,
-            hovered = false,
-            offset = 0,
-            action = function()
-                gameslot.save.game.user.progress.newgame = true
-                journalConfig.active = true
-            end,
-        }
-        textItems.elements[2] = {
-            text = languageService["menu_button_continue"],
-            hitbox = {},
-            locked = DEMO_APP, --not gameslot.save.game.user.progress.canContinue,
-            hovered = false,
-            offset = 0,
-            action = function()
-                nightstate.nightID = gameslot.save.game.user.progress.night
-            end,
-        }
-        if not DEMO_APP then
-            textItems.elements[3] = {
-                text = languageService["menu_button_extras"],
-                hitbox = {},
-                locked = not gameslot.save.game.user.progress.extras,
-                hovered = false,
-                offset = 0,
-                action = function()
-                    
-                end,
-            }
-        else
-            textItems.elements[3] = {
-                text = languageService["menu_button_custom_night"],
-                hitbox = {},
-                locked = false,
-                hovered = false,
-                offset = 0,
-                action = function()
-                    transitionFade.target = CustomNightMenuState
-                    transitionFade.active = true
-                end,
-            }
-        end
-        textItems.elements[4] = {
-            text = languageService["menu_button_exit"],
-            hitbox = {},
-            locked = false,
-            hovered = false,
-            offset = 0,
-            action = function()
-                love.event.quit()
-            end,
-        }
-        -- create button hitboxes --
-        for t = 1, #textItems.elements, 1 do
-            textItems.elements[t].hitbox = {
-                x = 60,
-                y = (textItems.tween.y + (fnt_menu:getHeight() + 16) * t) - 4,
-                w = fnt_menu:getWidth(textItems.elements[t].text) + 8,
-                h = fnt_menu:getHeight() + 8
-            }
-        end
-    end
 
     holdDelete = {
         progress = 0,
@@ -532,6 +533,8 @@ function MenuState:keypressed(k)
 end
 
 function MenuState:resize(w, h)
+    textItems.tween.y = love.graphics.getHeight() - 440
+    MenuState.rebuilMenuUI()
     settingsSubstate:resize(w, h)
 end
 

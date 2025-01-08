@@ -67,11 +67,6 @@
                 "custom_night_menu_buttons_clear" : "Clear all",
                 "custom_night_menu_buttons_add" : "Add 1",
                 "custom_night_menu_buttons_set_20" : "Set 20"
-            },
-            "custom_night_menu_presets" : {
-                "custom_night_menu_presets:fazbear_crew" : "Fazbear Crew",
-                "custom_night_menu_presets:the_returned_ones" : "The returned ones",
-                "custom_night_menu_presets:custom" : "Custom round"
             }
         }
     },

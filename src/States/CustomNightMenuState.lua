@@ -1,6 +1,7 @@
 CustomNightMenuState = {}
 
 local function doShitCalc(i)
+
     local p = animatronicsPortraits.portraits[i + 1]
     local row = math.floor(i / animatronicsPortraits.settings.maxPerRow)
     local col = i % animatronicsPortraits.settings.maxPerRow
@@ -9,32 +10,121 @@ local function doShitCalc(i)
     local startX = (love.graphics.getWidth() - totalRowWidth) / 2
     local px = startX + col * (p.img:getWidth() + animatronicsPortraits.settings.spacingX)
     local py = animatronicsPortraits.settings.startY + row * (p.img:getHeight() + animatronicsPortraits.settings.spacingY)
+
     return px, py
 end
 
-function CustomNightMenuState:enter()
-    buttonCamera = require 'src.Components.Modules.Game.Utils.ButtonCamera'
+function CustomNightMenuState.rebuidButtons()
+    lume.clear(buttonsOptions)
 
-    for k, v in pairs(AudioSources) do
-        v:stop()
+    buttonsOptions["ready"] = {
+        text = languageService["custom_night_menu_ready"],
+        hitbox = buttonCamera(love.graphics.getWidth() - 150, love.graphics.getHeight() - 130, 128, 72),
+        visible = false,
+    }
+    buttonsOptions["ready"].action = function()
+        AudioSources["blip_ui"]:play()
+        NightState.nightID = 1000
+        NightState.isCustomNight = true
+        for i = 1, #animatronicsPortraits.portraits, 1 do
+            local port = animatronicsPortraits.portraits[i]
+            NightState.animatronicsAI[port.name] = port.value
+        end
+        if NightState.animatronicsAI["bonnie"] == 1 and
+        NightState.animatronicsAI["chica"] == 9 and
+        NightState.animatronicsAI["foxy"] == 8 and
+        NightState.animatronicsAI["freddy"] == 7
+        then
+            for k, v in pairs(AudioSources) do
+                v:stop()
+            end
+            AudioSources["this_is_golden_feddy"]:play()
+            CRASH = true
+        else
+            gamestate.switch(LoadingState)
+        end
     end
 
-    AudioSources["msc_arcade"]:setLooping(true)
-    AudioSources["msc_arcade"]:setVolume(0.54)
-    AudioSources["msc_arcade"]:play()
+    buttonsOptions["back"] = {
+        text = "<<<<",
+        hitbox = buttonCamera(32, 32, 128, 72),
+        visible = true,
+    }
 
+    buttonsOptions["back"].action = function()
+        for k, v in pairs(AudioSources) do
+            v:stop()
+        end
+        gamestate.switch(MenuState)
+    end
 
+    lume.clear(animatronicsPortraits.portraits)
+
+    for p = 1, #cnicons, 1 do
+        table.insert(animatronicsPortraits.portraits, {
+            img = cnicons[p].img,
+            name = cnicons[p].name,
+            value = 0,
+            meta = {},
+        })
+    end
+
+    for i = 0, #animatronicsPortraits.portraits - 1, 1 do
+        local pt = animatronicsPortraits.portraits[i + 1]
+        local px, py = doShitCalc(i)
+
+        pt.meta.buttons = {}
+        pt.meta.buttons[1] = {
+            text = "<<",
+            hitbox = buttonCamera(px, py + 230, 48, 48),
+            visible = false,
+            acc = 0,
+            action = function()
+                pt.value = pt.value - 1
+            end
+        }
+        pt.meta.buttons[2] = {
+            text = ">>",
+            hitbox = buttonCamera(px + 128, py + 230, 48, 48),
+            visible = false,
+            acc = 0,
+            action = function()
+                pt.value = pt.value + 1
+            end
+        }
+    end
+end
+
+function CustomNightMenuState.recompileShader()
     fxBlurBG = moonshine(moonshine.effects.boxblur)
     fxBlurBG.boxblur.radius = {7, 7}
     shdFXScreen = moonshine(moonshine.effects.crt)
     .chain(moonshine.effects.pixelate)
     .chain(moonshine.effects.chromasep)
 
-    
     shdFXScreen.pixelate.feedback = 0.1
     shdFXScreen.pixelate.size = {1.5, 1.5}
 
     shdFXScreen.chromasep.radius = 1
+end
+
+function CustomNightMenuState:enter()
+    buttonCamera = require 'src.Components.Modules.Game.Utils.ButtonCamera'
+    sound = require 'src.Components.Modules.Utils.Sound'
+
+    CustomNightMenuState.recompileShader()
+
+    ransomSND = sound.newTone(600, 3, "square")
+
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
+
+    AudioSources["msc_arcade"]:setLooping(true)
+    AudioSources["msc_arcade"]:setVolume(0.74)
+    AudioSources["msc_arcade"]:play()
+
+
 
     menuCam = camera.new(0, nil)
     menuCam.factorX = 25
@@ -72,83 +162,27 @@ function CustomNightMenuState:enter()
 
     CRASH = false
     goldenFeddy = love.graphics.newImage("assets/images/game/golden_alusinacion.png")
+    goldenFeddyMask = love.graphics.newImage("assets/images/game/golden_alusinacion_mask.png")
+    ransom = lume.weightedchoice({[true] = 3, [false] = 95})
+    switchToMask = false
+    maskAcc = 0
 
     fnt_cnTitle = fontcache.getFont("tnr", 40)
     fnt_menuCN = fontcache.getFont("ocrx", 30)
     fnt_values = fontcache.getFont("vcr", 40)
 
+    buttonsOptions = {}
     animatronicsPortraits = {
         settings = {
-            spacingX= 32,
-            spacingY = 118,
+            spacingX = 24,
+            spacingY = 98,
             maxPerRow = 4,
             startY = 120
         },
         portraits = {}
     }
 
-    for p = 1, #cnicons, 1 do
-        table.insert(animatronicsPortraits.portraits, {
-            img = cnicons[p].img,
-            name = cnicons[p].name,
-            value = 0,
-            meta = {},
-        })
-    end
-
-    for i = 0, #animatronicsPortraits.portraits - 1, 1 do
-        local pt = animatronicsPortraits.portraits[i + 1]
-        local px, py = doShitCalc(i)
-
-        pt.meta.buttons = {}
-        pt.meta.buttons[1] = {
-            text = "<<",
-            hitbox = buttonCamera(px, py + 230, 72, 72),
-            visible = false,
-            acc = 0,
-            action = function()
-                pt.value = pt.value - 1
-            end
-        }
-        pt.meta.buttons[2] = {
-            text = ">>",
-            hitbox = buttonCamera(px + 128, py + 230, 72, 72),
-            visible = false,
-            acc = 0,
-            action = function()
-                pt.value = pt.value + 1
-            end
-        }
-    end
-
-    buttonsOptions = {}
-    buttonsOptions["ready"] = {
-        text = languageService["custom_night_menu_ready"],
-        hitbox = buttonCamera(love.graphics.getWidth() - 150, love.graphics.getHeight() - 130, 128, 72),
-        visible = false,
-    }
-    buttonsOptions["ready"].action = function()
-        AudioSources["blip_ui"]:play()
-        NightState.nightID = 1000
-        NightState.isCustomNight = true
-        for i = 1, #animatronicsPortraits.portraits, 1 do
-            local port = animatronicsPortraits.portraits[i]
-            NightState.animatronicsAI[port.name] = port.value
-        end
-        if NightState.animatronicsAI["bonnie"] == 1 and
-        NightState.animatronicsAI["chica"] == 9 and
-        NightState.animatronicsAI["foxy"] == 8 and
-        NightState.animatronicsAI["freddy"] == 7
-        then
-            for k, v in pairs(AudioSources) do
-                v:stop()
-            end
-            AudioSources["this_is_golden_feddy"]:play()
-            CRASH = true
-        else
-            gamestate.switch(LoadingState)
-        end
-    end
+    CustomNightMenuState.rebuidButtons()
 
     menuBG = love.graphics.newImage("assets/images/game/cn_menu.png")
     roomSize = {
@@ -173,7 +207,7 @@ function CustomNightMenuState:draw()
             love.graphics.clear(0, 0, 0, 0)
             fxBlurBG(function()
                 menuCam:attach()
-                    love.graphics.draw(menuBG)
+                    love.graphics.draw(menuBG, 0, 0, 0, love.graphics.getWidth() / menuBG:getWidth(), love.graphics.getHeight() / menuBG:getHeight())
                 menuCam:detach()
             end)
         end)
@@ -188,10 +222,19 @@ function CustomNightMenuState:draw()
                 local btns = pt.meta.buttons
                 local px, py = doShitCalc(i)
     
-                love.graphics.draw(pt.img, px, py)
+                love.graphics.draw(pt.img, px, py, 0, 128 / pt.img:getWidth(), 128 / pt.img:getHeight())
                 love.graphics.setLineWidth(4)
-                love.graphics.rectangle("line", px, py, pt.img:getWidth(), pt.img:getHeight())
+                love.graphics.rectangle(
+                    "line", px, py,
+                    (pt.img:getWidth() - math.floor((128 / pt.img:getWidth()) * 100)), 
+                    (pt.img:getHeight() - math.floor((128 / pt.img:getHeight()) * 100))
+                )
                 love.graphics.setLineWidth(1)
+                love.graphics.rectangle(
+                    "line", px + 6, py + 6, 
+                    (pt.img:getWidth() - math.floor((128 / pt.img:getWidth()) * 100)) - 12, 
+                    (pt.img:getHeight() - math.floor((128 / pt.img:getHeight()) * 100)) - 12
+                )
     
                 love.graphics.printf(pt.value, fnt_values, px, py + 240, 200, "center")
     
@@ -240,22 +283,30 @@ function CustomNightMenuState:draw()
     
             love.graphics.setBlendMode("add")
                 love.graphics.setColor(1, 1, 1, 0.07)
-                    love.graphics.draw(staticTextureFX.frames[staticTextureFX.config.frameid], 0, 0)
+                    love.graphics.draw(staticTextureFX.frames[staticTextureFX.config.frameid], 0, 0, 0, love.graphics.getWidth() / staticTextureFX.frames[staticTextureFX.config.frameid]:getWidth(), love.graphics.getHeight() / staticTextureFX.frames[staticTextureFX.config.frameid]:getHeight())
                 love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setBlendMode("alpha")
-    
-            --love.graphics.draw(mesh, 128, 128, 0, 128, 128)
         end)
     else
-        love.graphics.draw(goldenFeddy, 0, 0, 0, love.graphics.getWidth() / goldenFeddy:getWidth(), love.graphics.getHeight() / goldenFeddy:getHeight())
+        if switchToMask then
+            love.graphics.draw(goldenFeddyMask, 0, 0, 0, love.graphics.getWidth() / goldenFeddyMask:getWidth(), love.graphics.getHeight() / goldenFeddyMask:getHeight())
+        else
+            love.graphics.draw(goldenFeddy, 0, 0, 0, love.graphics.getWidth() / goldenFeddy:getWidth(), love.graphics.getHeight() / goldenFeddy:getHeight())
+        end
     end
 end
 
 function CustomNightMenuState:update(elapsed)
     local smx, smy = love.mouse.getPosition()
     local mx, my = menuCam:mousePosition()
-    menuCam.x = (roomSize.width / 2 + (mx - roomSize.width / 2) / menuCam.factorX)
-    menuCam.y = (roomSize.height / 2 + (my - roomSize.height / 2) / menuCam.factorY)
+
+    if love.graphics.getWidth() < roomSize.width then
+        menuCam.x = (roomSize.width / 2 + (mx - roomSize.width / 2) / menuCam.factorX)
+        menuCam.y = (roomSize.height / 2 + (my - roomSize.height / 2) / menuCam.factorY)
+    else
+        menuCam.x = love.graphics.getWidth() / 2
+        menuCam.y = love.graphics.getHeight() / 2
+    end
 
     -- static animation --
     staticTextureFX.config.timer = staticTextureFX.config.timer + elapsed
@@ -274,6 +325,7 @@ function CustomNightMenuState:update(elapsed)
                     b.acc = b.acc - 7 * elapsed
                 end
                 if collision.pointRect({x = smx, y = smy}, b.hitbox) and b.acc <= 0 then
+                    AudioSources["blip_ui"]:setVolume(0.2)
                     AudioSources["blip_ui"]:play()
                     b.action()
                     if animatronicsPortraits.portraits[i].value < 0 then
@@ -287,8 +339,18 @@ function CustomNightMenuState:update(elapsed)
         end
     end
 
-    if CRASH and not AudioSources["this_is_golden_feddy"]:isPlaying() then
+    if CRASH and not AudioSources["this_is_golden_feddy"]:isPlaying() and not ransom then
         love.event.quit()
+    elseif CRASH and not AudioSources["this_is_golden_feddy"]:isPlaying() and ransom then
+        switchToMask = true
+    end
+
+    if ransom and switchToMask then
+        ransomSND:play()
+        maskAcc = maskAcc + elapsed
+        if maskAcc >= 1.2 then
+            love.event.quit()
+        end
     end
 
     -- camera bounds --
@@ -321,6 +383,13 @@ function CustomNightMenuState:mousepressed(x, y, button)
             end
         end
     end
+end
+
+function CustomNightMenuState:resize()
+    CustomNightMenuState.recompileShader()
+    CustomNightMenuState.rebuidButtons()
+    cnv_blurredBG = love.graphics.newCanvas(love.graphics.getDimensions())
+    cnv_UIStuff = love.graphics.newCanvas(love.graphics.getDimensions())
 end
 
 return CustomNightMenuState
