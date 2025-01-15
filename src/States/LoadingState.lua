@@ -5,7 +5,16 @@ local function _checkFiles(tbl, files)
 
 end
 
+local function rebuildShaders()
+    ctrEffect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
+    glowTextEffect = moonshine(moonshine.effects.glow)
+end
+
 function LoadingState:enter()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
+
     subtitlesController.clear()
 
     local assetThread = require 'src.Components.Modules.Game.Utils.AssetsLoadThread'
@@ -16,8 +25,8 @@ function LoadingState:enter()
     end
     bgs = nil
 
-    ctrEffect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
-    glowTextEffect = moonshine(moonshine.effects.glow)
+    rebuildShaders()
+
     textLoadingFont = fontcache.getFont("ocrx", 34)
 
     

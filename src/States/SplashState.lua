@@ -73,6 +73,7 @@ end
 function SplashState:leave()
     introVideo:pause()
     introVideo:rewind()
+    love.mouse.setVisible(true)
     for k, v in pairs(AudioSources) do
         v:stop()
     end

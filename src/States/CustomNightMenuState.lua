@@ -1,7 +1,6 @@
 CustomNightMenuState = {}
 
 local function doShitCalc(i)
-
     local p = animatronicsPortraits.portraits[i + 1]
     local row = math.floor(i / animatronicsPortraits.settings.maxPerRow)
     local col = i % animatronicsPortraits.settings.maxPerRow
@@ -10,8 +9,16 @@ local function doShitCalc(i)
     local startX = (love.graphics.getWidth() - totalRowWidth) / 2
     local px = startX + col * (p.img:getWidth() + animatronicsPortraits.settings.spacingX)
     local py = animatronicsPortraits.settings.startY + row * (p.img:getHeight() + animatronicsPortraits.settings.spacingY)
-
     return px, py
+end
+
+local function transformObject(obj, camera)
+    -- Ajusta posição com base na câmera e no zoom
+    local tx = (obj.x - camera.x) * camera.scale
+    local ty = (obj.y - camera.y) * camera.scale
+    local tw = obj.w * camera.scale -- Ajusta o tamanho do objeto pelo zoom
+    local th = obj.h * camera.scale -- Ajusta o tamanho do objeto pelo zoom
+    return tx, ty, tw, th
 end
 
 function CustomNightMenuState.rebuidButtons()
@@ -72,11 +79,15 @@ function CustomNightMenuState.rebuidButtons()
     for i = 0, #animatronicsPortraits.portraits - 1, 1 do
         local pt = animatronicsPortraits.portraits[i + 1]
         local px, py = doShitCalc(i)
+        local trsn = love.math.newTransform()
+
+        px, py = px * animatronicsPortraits.settings.hitboxScale, py * animatronicsPortraits.settings.hitboxScale
+        local w, h = 72 * animatronicsPortraits.settings.hitboxScale, 72 * animatronicsPortraits.settings.hitboxScale
 
         pt.meta.buttons = {}
         pt.meta.buttons[1] = {
             text = "<<",
-            hitbox = buttonCamera(px, py + 230, 48, 48),
+            hitbox = buttonCamera(px, py + animatronicsPortraits.settings.buttonsPadding, w, h),
             visible = false,
             acc = 0,
             action = function()
@@ -85,7 +96,7 @@ function CustomNightMenuState.rebuidButtons()
         }
         pt.meta.buttons[2] = {
             text = ">>",
-            hitbox = buttonCamera(px + 128, py + 230, 48, 48),
+            hitbox = buttonCamera(px + animatronicsPortraits.settings.buttonsSpacing, py + animatronicsPortraits.settings.buttonsPadding, w, h),
             visible = false,
             acc = 0,
             action = function()
@@ -124,12 +135,12 @@ function CustomNightMenuState:enter()
     AudioSources["msc_arcade"]:setVolume(0.74)
     AudioSources["msc_arcade"]:play()
 
-
-
     menuCam = camera.new(0, nil)
     menuCam.factorX = 25
     menuCam.factorY = 34
 
+    portraitCamera = camera.new()
+    portraitCamera:zoomTo(0.75)
 
     staticTextureFX = {
         config = {
@@ -174,10 +185,13 @@ function CustomNightMenuState:enter()
     buttonsOptions = {}
     animatronicsPortraits = {
         settings = {
-            spacingX = 24,
-            spacingY = 98,
+            spacingX = 48,
+            spacingY = 128,
             maxPerRow = 4,
-            startY = 120
+            startY = 120,
+            buttonsPadding = 243,
+            buttonsSpacing = 128,
+            hitboxScale = 1
         },
         portraits = {}
     }
@@ -207,7 +221,11 @@ function CustomNightMenuState:draw()
             love.graphics.clear(0, 0, 0, 0)
             fxBlurBG(function()
                 menuCam:attach()
-                    love.graphics.draw(menuBG, 0, 0, 0, love.graphics.getWidth() / menuBG:getWidth(), love.graphics.getHeight() / menuBG:getHeight())
+                    if love.graphics.getWidth() < roomSize.width then
+                        love.graphics.draw(menuBG)
+                    else
+                        love.graphics.draw(menuBG, 0, 0, 0, love.graphics.getWidth() / menuBG:getWidth(), love.graphics.getHeight() / menuBG:getHeight())
+                    end
                 menuCam:detach()
             end)
         end)
@@ -222,32 +240,36 @@ function CustomNightMenuState:draw()
                 local btns = pt.meta.buttons
                 local px, py = doShitCalc(i)
     
-                love.graphics.draw(pt.img, px, py, 0, 128 / pt.img:getWidth(), 128 / pt.img:getHeight())
+                love.graphics.draw(pt.img, px, py, 0)
                 love.graphics.setLineWidth(4)
-                love.graphics.rectangle(
-                    "line", px, py,
-                    (pt.img:getWidth() - math.floor((128 / pt.img:getWidth()) * 100)), 
-                    (pt.img:getHeight() - math.floor((128 / pt.img:getHeight()) * 100))
-                )
+                love.graphics.rectangle("line", px, py, pt.img:getWidth(), pt.img:getHeight())
                 love.graphics.setLineWidth(1)
-                love.graphics.rectangle(
-                    "line", px + 6, py + 6, 
-                    (pt.img:getWidth() - math.floor((128 / pt.img:getWidth()) * 100)) - 12, 
-                    (pt.img:getHeight() - math.floor((128 / pt.img:getHeight()) * 100)) - 12
-                )
+                love.graphics.rectangle("line", px + 6, py + 6, pt.img:getWidth() - 12, pt.img:getHeight() - 12)
     
-                love.graphics.printf(pt.value, fnt_values, px, py + 240, 200, "center")
+                love.graphics.printf(pt.value, fnt_values, px, py + animatronicsPortraits.settings.buttonsPadding, 200, "center")
     
                 for _, b in ipairs(btns) do
                     love.graphics.setColor(0.5, 0.5, 0.5, 1)
-                    love.graphics.rectangle("fill", b.hitbox.x + 8, b.hitbox.y + 8, b.hitbox.w - 8, b.hitbox.h - 8)
+                    love.graphics.rectangle("fill", b.hitbox.x + 8, b.hitbox.y + 8, 72 - 8, 72 - 8)
                     love.graphics.setColor(0.75, 0.75, 0.75, 1)
         
-                    love.graphics.rectangle("fill", b.hitbox.x, b.hitbox.y, b.hitbox.w - 8, b.hitbox.h - 8)
+                    love.graphics.rectangle("fill", b.hitbox.x, b.hitbox.y, 72 - 8, 72 - 8)
                     love.graphics.setColor(1, 1, 1, 1)
 
                     love.graphics.setColor(0.25, 0.25, 0.25, 1)
                     love.graphics.printf(b.text, fnt_menuCN, b.hitbox.x + 3, b.hitbox.y + 10, b.hitbox.w - 8, "center")
+                    love.graphics.setColor(1, 1, 1, 1)
+                end
+            end
+
+            for i = 0, #animatronicsPortraits.portraits - 1, 1 do
+                local pt = animatronicsPortraits.portraits[i + 1]
+                local btns = pt.meta.buttons
+                local px, py = doShitCalc(i)
+
+                for _, b in ipairs(btns) do
+                    love.graphics.setColor(1, 1, 1, 0.5)
+                    love.graphics.rectangle("line", b.hitbox.x, b.hitbox.y, b.hitbox.w - 8, b.hitbox.h - 8)
                     love.graphics.setColor(1, 1, 1, 1)
                 end
             end
@@ -377,7 +399,8 @@ function CustomNightMenuState:mousepressed(x, y, button)
             b.active = false
         end
         for k, b in pairs(buttonsOptions) do
-            if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, b.hitbox) then
+            local mx, my = portraitCamera:mousePosition()
+            if collision.pointRect({x = mx, y = my}, b.hitbox) then
                 b.active = true
                 b.action()
             end
