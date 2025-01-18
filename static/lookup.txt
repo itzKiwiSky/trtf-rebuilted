@@ -1,0 +1,47 @@
+    {950, 431}          -- arcade
+    {1165, 432}         -- storage
+    {1064, 323}         -- dining_area
+    {906, 339}          -- pirate_cove
+    {898, 267}          -- parts_and_service
+    {1064, 256}         -- showstage
+    {1018, 195}         -- kitchen
+    {1168, 362}         -- prize_corner
+    {999, 490}          -- left_hall
+    {1127, 490}         -- right_hall
+    {1004, 636}         -- left_vent
+    {1116, 636}         -- right_vent
+    {1076, 544}         -- front_office
+    {1079, 592}         -- office
+    {1154, 569}         -- freddy_hall
+    {979, 545}          -- foxy_hall_right
+    {1137, 545}         -- foxy_hall_left
+    
+
+        "Arcade", 1
+        "Storage", 2
+        "Dining area", 3 
+        "Pirate cove", 4
+        "Parts & service", 5
+        "Showstage", 6
+        "Kitchen", 7 
+        "Prize corner", 8
+        "Left hall", 9
+        "Right hall", 10
+        "Left vent", 11
+        "Right vent", 12
+
+
+
+
+
+change log shit
+
+[MAJOR.MINOR.PATCH]
+    Added:
+       none
+    Fixed:
+        none
+    Removed:
+        none
+    Deprecated:
+        none

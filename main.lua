@@ -23,6 +23,15 @@ function love.initialize(args)
 
     AudioSources = {}
 
+    resolution.init({
+        aspectRatio = true,
+        clampMouse = true,
+        centered = true,
+        clip = false,
+        width = 1280,
+        height = 800,
+    })
+
     fontcache.init()
 
     globalJoystick = love.joystick.getJoysticks()[1]

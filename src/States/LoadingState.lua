@@ -116,4 +116,8 @@ function LoadingState:mousepressed(x, y, button)
     end
 end
 
+function LoadingState:resize(w, h)
+    rebuildShaders()
+end
+
 return LoadingState

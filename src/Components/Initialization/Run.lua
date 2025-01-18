@@ -57,18 +57,11 @@ function love.run()
     local gameWidth, gameHeight = 1280, 800 --fixed game resolution
     local windowWidth, windowHeight = love.window.getDesktopDimensions()
 
-    resolution.init({
-        aspectRatio = true,
-        clampMouse = true,
-        centered = true,
-        clip = true,
-        width = 1280,
-        height = 800
-    })
-
     if love.initialize then 
         love.initialize(love.arg.parseGameArguments(arg), arg)
     end
+
+    local mainView = love.graphics.newCanvas(love.graphics.getDimensions())
 
     if love.timer then love.timer.step() end
 

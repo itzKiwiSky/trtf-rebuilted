@@ -63,7 +63,6 @@ function res.init(c)
 
 	c.width = c.width or getWidth()
 	c.height = c.height or getHeight()
-
 	conf = c
 end
 
@@ -138,7 +137,7 @@ end
 
 
 function res.replace(modules)
-	if #modules == 0 then
+	if modules == nil then
 		modules = {"graphics","mouse","touch"}
 	end
 
