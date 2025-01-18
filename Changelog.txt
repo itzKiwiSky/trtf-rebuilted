@@ -1,0 +1,60 @@
+Changelog for The return to freddy's Rebuilt Again
+-------------------
+
+[0.2.5]
+    Added:
+        - Beggining of the changelogs XD
+        - Better crashlog
+        - Added kitty AI
+        - Added Sugar AI
+    Fixed:
+        - Fixed foxy state
+        - Fixed autoreload language when changing
+        - Fixed settings buttons
+    Removed:
+        none
+    Deprecated:
+        none
+
+[0.2.6]
+    Added:
+        - Added minigame alpha test
+    Fixed:
+        none
+    Removed:
+        none
+    Deprecated:
+        none
+
+[0.2.61]
+    Added:
+       none
+    Fixed:
+        - Fixed vent seal system
+    Removed:
+        none
+    Deprecated:
+        none
+
+[0.2.7]
+    Added:
+       none
+    Fixed:
+        - Better visibility for button text in the camera
+        - Sugar and Kitty wait for each other try to attack you
+    Removed:
+        none
+    Deprecated:
+        none
+
+[0.2.8]
+    Added:
+       - Custom night menu
+       - Demo locks (no story mode and no save)
+    Fixed:
+        - Fixed vent seal system v2
+        - Fixed demo locks for nightstate
+    Removed:
+        - Refactoring some stuff
+    Deprecated:
+        none

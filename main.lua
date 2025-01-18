@@ -1,0 +1,211 @@
+love.filesystem.load("src/Components/Initialization/Run.lua")()
+love.filesystem.load("src/Components/Initialization/ErrorHandler.lua")()
+
+local function preloadAudio()
+    local files = fsutil.scanFolder("assets/sounds", false, {"assets/sounds/night/calls"})
+
+    for f = 1, #files, 1 do
+        local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
+        loveloader.newSource(AudioSources, filename, files[f], "stream")
+        if DEBUG_APP then
+            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file queue to load with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", filename))
+        end
+    end
+end
+
+function love.initialize(args)
+    --CHEAT = false
+    AUDIO_LOADED = false
+    fontcache = require 'src.Components.Modules.System.FontCache'
+    LanguageController = require 'src.Components.Modules.System.LanguageManager'
+    _connectGJ = require 'src.Components.Modules.API.InitializeGJ'
+    fsutil = require 'src.Components.Modules.Utils.FSUtils'
+
+    AudioSources = {}
+
+    resolution.init({
+        aspectRatio = true,
+        clampMouse = true,
+        centered = true,
+        clip = false,
+        width = 1280,
+        height = 800,
+    })
+
+    fontcache.init()
+
+    globalJoystick = love.joystick.getJoysticks()[1]
+
+    fnt_subtitle = fontcache.getFont("tnr", 24)
+    bg_subtitles = love.graphics.newGradient("horizontal", 
+        {0, 0, 0, 0}, 
+        {255, 255, 255, 255},
+        {255, 255, 255, 255}, 
+        {255, 255, 255, 255}, 
+        {0, 0, 0, 0}
+    )
+
+    gameslot = neuron.new("trtfa")
+
+    gameslot.save.game = {
+        user = {
+            settings = {
+                shaders = true,
+                language = "English",
+                gamejolt = {
+                    username = "",
+                    usertoken = ""
+                },
+                fullscreen = false,
+                vsync = false,
+                antialiasing = true,
+                subtitles = true,
+                displayFPS = false,
+            },
+            progress = {
+                initialCutscene = false,
+                newgame = false,
+                extras = false,
+                canContinue = false,
+                night = 1,
+                playingMinigame = false,
+                minigameID = 0,
+            }
+        }
+    }
+    gameslot:initialize()
+
+    --CHEAT = true --gameslot.save.game.user.canUse
+
+    languageService = LanguageController:getData(gameslot.save.game.user.settings.language)
+    languageRaw = LanguageController:getRawData(gameslot.save.game.user.settings.language)
+
+    registers = {
+        user = {
+            paused = false,
+            gamejoltUI = false,
+            loggedIn = false,
+        },
+        system = {
+            showDebugHitbox = false,
+            gameTime = 0,
+            camEdit = false,
+        }
+    }
+
+    -- do some shit with config --
+    love.window.setFullscreen(gameslot.save.game.user.settings.fullscreen, "desktop")
+    love.window.setVSync(gameslot.save.game.user.settings.vsync and 1 or 0)
+
+    if gameslot.save.game.user.settings.antialiasing then
+        love.graphics.setDefaultFilter("linear", "linear")
+    else
+        love.graphics.setDefaultFilter("nearest", "nearest")
+    end
+
+    local gitStuff = require 'src.Components.Initialization.GitStuff'
+    _connectGJ()
+
+    if not love.filesystem.isFused() then
+        gitStuff.getAll()
+
+        if love.filesystem.getInfo(".commitid") then
+            local title = love.window.getTitle()
+            love.window.setTitle(title .. " | " .. love.filesystem.read(".commitid"))
+        end
+    end
+
+    local states = love.filesystem.getDirectoryItems("src/States")
+    for s = 1, #states, 1 do
+        require("src.States." .. states[s]:gsub(".lua", ""))
+    end
+
+    if DEBUG_APP then
+        love.filesystem.createDirectory("screenshots")
+    end
+
+    loveloader.start(function()
+        AUDIO_LOADED = true
+    end, function(k, h, n)
+        if DEBUG_APP then
+            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", n))
+        end
+    end)
+
+    th_ping = love.thread.newThread("src/Components/Modules/Game/Utils/ThreadPing.lua")
+
+    tmr_gamejoltHeartbeat = timer.new()
+    tmr_gamejoltHeartbeat:every(20, function()
+        th_ping:start(
+            registers,
+            gameslot.save.game.user.settings.gamejolt.username, 
+            gameslot.save.game.user.settings.gamejolt.usertoken
+        )
+    end)
+
+    gamestate.registerEvents()
+    --if CHEAT then
+        --gamestate.switch(CheatState)
+    --else
+        gamestate.switch(SplashState)
+    --end
+end
+
+function love.update(elapsed)
+    if gamejolt.isLoggedIn then
+        tmr_gamejoltHeartbeat:update(elapsed)
+    end
+end
+
+function love.keypressed(k)
+    if k == "escape" then
+        love.event.quit()
+    end
+    if k == "f11" then
+        gameslot.save.game.user.settings.fullscreen = not gameslot.save.game.user.settings.fullscreen
+
+        love.window.setFullscreen(gameslot.save.game.user.settings.fullscreen, "desktop")
+
+        MenuState.rebuilMenuUI()
+        MenuState.rebuildShader()
+        gameslot:saveSlot()
+    end
+    if DEBUG_APP then
+        if k == "f2" then
+            love.graphics.captureScreenshot("screenshots/screen_" .. os.date("%Y-%m-%d %H-%M-%S") .. ".png")
+        end
+        if k == "f12" then
+            error("Crash caused by manual trigger")
+        end
+        if k == "f9" then
+            registers.system.showDebugHitbox = not registers.system.showDebugHitbox
+        end
+        if k == "f7" then
+            for k, v in pairs(AudioSources) do
+                v:stop()
+            end
+            gamestate.switch(CustomNightMenuState)
+        end
+        if k == "f4" then
+            for k, v in pairs(AudioSources) do
+                v:stop()
+            end
+            gamestate.switch(LoadingState)
+        end
+        if registers.system.camEdit then
+            if editBTN then
+                if k == "f5" then
+                    for _, p in ipairs(editBTN) do
+                        print(string.format("{btn = buttonCamera(%s, %s, 72, 40)}", p.btn.x, p.btn.y))
+                    end
+                end
+            end
+        end
+    end
+end
+
+function love.quit()
+    if gamejolt.isLoggedIn then
+        gamejolt.closeSession()
+    end
+end

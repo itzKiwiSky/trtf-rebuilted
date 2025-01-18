@@ -1,0 +1,127 @@
+{
+    "__ENGINE__" : {
+        "voicelinePath" : "assets/sounds/night/calls/EN"
+    },
+    "warn" : {
+        "warn_title" : "[WARNING]",
+        "warn_text" : "This game contains loud sounds, flashing\nlights, mild swearing, and many jumpscares!\n\n\nPD: This game is not an official remake of\nTRTF 1 and TRTF Rebuilt.\n\n\nPress any key or click anywhere to continue\n\nPS: This is a beta demo version, distributed only selected beta testers\nand not represent the final demonstration."
+    },
+    "menu" : {
+        "menu_button" : {
+            "menu_button_new_game" : "New Game",
+            "menu_button_continue" : "Continue",
+            "menu_button_extras" : "Extras",
+            "menu_button_custom_night" : "Custom Night",
+            "menu_button_exit" : "Exit"
+        },
+        "settings" : {
+            "menu_settings_title" : "Settings",
+            "menu_settings_shaders" : "Display shaders effects",
+            "menu_settings_fullscreen" : "Fullscreen",
+            "menu_settings_vsync" : "V-Sync",
+            "menu_settings_antialiasing" : "Antialiasing",
+            "menu_settings_display_fps" : "Show FPS",
+            "menu_settings_preserve_assets" : "Cache night assets",
+            "menu_settings_subtitles" : "Subtitles",
+            "menu_settings_reset_settings" : "Reset Settings",
+            "menu_settings_gamejolt" : {
+                "menu_settings_gamejolt_not_connect" : "Login to gamejolt",
+                "menu_settings_gamejolt_connected" : "Already connected (Click to disconnect)"
+            },
+            "menu_settings_language" : "Language",
+            "settings_description" : {
+                "menu_settings_description_shaders" : "Enable or disable special effects with shaders",
+                "menu_settings_description_fullscreen" : "Fullscreen mode",
+                "menu_settings_description_vsync" : "Enable or disable Vertical sync (VSync)",
+                "menu_settings_description_antialiasing" : "Make the textures more smooth and less pixelated",
+                "menu_settings_description_display_fps" : "Show the game FPS on the top-left corner of the screen",
+                "menu_settings_description_preserve_assets" : "Cache all night assets, the loading times for a night will be faster but will consume more device memory.",
+                "menu_settings_description_subtitles" : "Display subtitles for audio calls and cutscenes",
+                "menu_settings_description_gamejolt" : "Connect with gamejolt to allow special stuff",
+                "menu_settings_description_language" : "Change the game current language [Click to switch]",
+                "menu_settings_description_reset_settings" : "Reset all the settings to their default value"
+            }
+        },
+        "menu_settings_gamejolt" : {
+            "menu_settings_gamejolt_username" : "Username",
+            "menu_settings_gamejolt_token" : "Token",
+            "menu_settings_gamejolt_error" : "[FAILURE] An error occurred during authentication.",
+            "menu_settings_gamejolt_buttons" : {
+                "menu_settings_gamejolt_button_connect" : "Connect",
+                "menu_settings_gamejolt_button_cancel" : "Cancel",
+                "menu_settings_gamejolt_button_clear" : "Clear"
+            }
+        },
+        "menu_gamejolt_login_text" : "Welcome back %s",
+        "menu_hold_to_delete_data" : "Hold [DELETE] to erase your data",
+        "menu_hold_to_delete_progress" : "all your data will be erased, relese the key now to cancel or wait.",
+        "loading" : {
+            "loading_text" : "Loading... %d%%",
+            "loading_ready" : "Press any key or click anywhere to continue"
+        },
+        "custom_night_menu" : {
+            "custom_night_menu_title" : "Custom night",
+            "custom_night_menu_challenges" : "Challenges",
+            "custom_night_menu_ready" : "Ready",
+            "custom_night_menu_buttons" : {
+                "custom_night_menu_buttons_clear" : "Clear all",
+                "custom_night_menu_buttons_add" : "Add 1",
+                "custom_night_menu_buttons_set_20" : "Set 20"
+            }
+        }
+    },
+    "game" : {
+        "game_night_announce" : "Night %s",
+        "game_night_shift_end" : "Shift complete",
+        "game_custom_night_announce" : "Custom Night",
+        "game_mask_toxic" : "Oxygen",
+        "game_vent_state_closed" : "Vent status: Closed",
+        "game_vent_state_open" : "Vent status: Open",
+        "game_energy_usage" : "Enery usage",
+        "game_energy" : "Energy: %d%%",
+        "game_btn_rewind_box" : "Rewind Music Box",
+        "game_btn_seal_vent" : "Seal vent",
+        "game_btn_unseal_vent" : "Unseal vent",
+        "misc" : {
+            "game_misc_camera_error" : "Failed to fetch camera footage...",
+            "game_misc_camera_error_id" : "Report this error to specialized team\nand give them this code:",
+            "game_misc_call_name" : "Boss",
+            "game_misc_call_incoming" : "Incoming call...",
+            "game_misc_buttons_options" : "Options",
+            "game_misc_buttons_exit" : "Exit",
+            "game_misc_text_sealing" : "Sealing ventilation",
+            "game_misc_text_unsealing" : "Unsealing ventilation"
+        }
+    },
+    "gameover" : {
+        "gameover_title" : "Game over!",
+        "gameover_button_retry" : "Retry shift",
+        "gameover_button_exit" : "Back to menu",
+        "gameover_explain" : {
+            "gameover_explain_bonnie" : "Bonnie will make his way to your office, you can use your flashlight to see if he's on the window of your office. Use the mask to make him go away.",
+            "gameover_explain_chica" : "Chica will move to your office as well, use the mask to make she back to the stage.",
+            "gameover_explain_freddy" : "Freddy will move towards your office, use your flashlight on the cameras to make he return, and don't let the power go off.",
+            "gameover_explain_foxy" : "He will appear in front of your office, use your flashlight to check his stage, when he's about to move, check which side he's going and close the door to make him go away.",
+            "gameover_explain_sugar" : "She will make her way to your office at the right vent, close the vent to not let her come to you.",
+            "gameover_explain_kitty" : "She will come to the left vent, close the vent to not let her come.",
+            "gameover_explain_puppet" : "She will move randomly on the cameras, rewind her music box to calm her down.",
+            "gameover_explain_dummy" : "How the fuck did you get killed by the dummy?",
+            "gameover_explain_oxygen" : "Don't let your oxygen go lower, or you will be suffocated."
+        }
+    },
+    "subtitles" : {
+        "call_night1" : [
+            ["0:00:0", ""],
+            ["0:00:2", "*Phone ringing noises...*"],
+            ["0:06:2", "Hello? Hello?"],
+            ["0:09:6", "Hey, if you're listening to this, know that you've chosen a very poor career path."],
+            ["0:18:2", "Mike Smith, right? I hope so, at least."],
+            ["0:24:2", "You know, I really wasn't expecting a guy, like you to volunteer for this work."],
+            ["0:30:4", "Look, let's start with the basics."],
+            ["0:33:5", "First of all, I have to read to you the terms and conditions."],
+            ["0:39:7", "It's mandatory so... I have to, unfortunately."],
+            ["4:55:0", ""],
+            ["4:57:0"]
+        ]
+    }
+}
