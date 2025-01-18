@@ -85,6 +85,35 @@ end
 
 NightState.assets = {}
 
+local function _resize()
+    blurFX = moonshine(moonshine.effects.gaussianblur)
+    blurFX.gaussianblur.sigma = 5
+
+    blurVisionFX = moonshine(moonshine.effects.boxblur)
+    blurVisionFX.boxblur.radius = {0, 0}
+
+    fnt_vhs = fontcache.getFont("vcr", 25)
+    fnt_camfnt = fontcache.getFont("vcr", 16)
+    fnt_timerfnt = fontcache.getFont("vcr", 22)
+    fnt_camError = fontcache.getFont("vcr", 30)
+    fnt_camName = fontcache.getFont("vcr", 42)
+    fnt_boldtnr = fontcache.getFont("tnr_bold", 20)
+    fnt_nightDisplay = fontcache.getFont("tnr", 60)
+
+    fnt_phoneCallName = fontcache.getFont("ocrx", 25)
+    fnt_phoneCallFooter = fontcache.getFont("ocrx", 18)
+
+    shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
+    shd_perspective:send("latitudeVar", 22.5)
+    shd_perspective:send("longitudeVar", 45)
+    shd_perspective:send("fovVar", 0.2630)
+
+    cnv_mainCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
+    cnv_phone = love.graphics.newCanvas(love.graphics.getDimensions())
+    cnv_blurPhone = love.graphics.newCanvas(love.graphics.getDimensions())
+    love.graphics.clear(love.graphics.getBackgroundColor())
+end
+
 -- I had to change the name of the local variables bc the compiler is bitching about it :( --
 function NightState:enter()
     NightState.isCustomNight = false
@@ -115,32 +144,7 @@ function NightState:enter()
         {224, 239, 249, 255}
     )
 
-    blurFX = moonshine(moonshine.effects.gaussianblur)
-    blurFX.gaussianblur.sigma = 5
-
-    blurVisionFX = moonshine(moonshine.effects.boxblur)
-    blurVisionFX.boxblur.radius = {0, 0}
-
-    fnt_vhs = fontcache.getFont("vcr", 25)
-    fnt_camfnt = fontcache.getFont("vcr", 16)
-    fnt_timerfnt = fontcache.getFont("vcr", 22)
-    fnt_camError = fontcache.getFont("vcr", 30)
-    fnt_camName = fontcache.getFont("vcr", 42)
-    fnt_boldtnr = fontcache.getFont("tnr_bold", 20)
-    fnt_nightDisplay = fontcache.getFont("tnr", 60)
-
-    fnt_phoneCallName = fontcache.getFont("ocrx", 25)
-    fnt_phoneCallFooter = fontcache.getFont("ocrx", 18)
-
-    shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
-    shd_perspective:send("latitudeVar", 22.5)
-    shd_perspective:send("longitudeVar", 45)
-    shd_perspective:send("fovVar", 0.2630)
-
-    cnv_mainCanvas = love.graphics.newCanvas(love.graphics.getDimensions())
-    cnv_phone = love.graphics.newCanvas(love.graphics.getDimensions())
-    cnv_blurPhone = love.graphics.newCanvas(love.graphics.getDimensions())
-    love.graphics.clear(love.graphics.getBackgroundColor())
+    _resize()
 
 -----------------------------------------------
 
@@ -525,11 +529,11 @@ function NightState:draw()
     blurVisionFX(function()
         love.graphics.clear(0, 0, 0, 0)
         love.graphics.setShader(shd_perspective)
-            love.graphics.draw(cnv_mainCanvas, 0, 0)
+            love.graphics.draw(cnv_mainCanvas, 0, 0, 0, love.graphics.getWidth() / cnv_mainCanvas:getWidth(), love.graphics.getHeight() / cnv_mainCanvas:getHeight())
         love.graphics.setShader()
         
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.draw(cnv_phone, 0, 0)
+        love.graphics.draw(cnv_phone, 0, 0, 0, love.graphics.getWidth() / cnv_phone:getWidth(), love.graphics.getHeight() / cnv_phone:getHeight())
     
         cnv_blurPhone:renderTo(function()
             love.graphics.clear(0, 0, 0, 0)
@@ -542,7 +546,7 @@ function NightState:draw()
     
         love.graphics.setColor(1, 1, 1, 0.8)
             love.graphics.setBlendMode("add")
-                love.graphics.draw(cnv_blurPhone, 0, 0)
+                love.graphics.draw(cnv_blurPhone, 0, 0, 0, love.graphics.getWidth() / cnv_blurPhone:getWidth(), love.graphics.getHeight() / cnv_blurPhone:getHeight())
             love.graphics.setBlendMode("alpha")
         love.graphics.setColor(1, 1, 1, 1)
     
@@ -1297,6 +1301,10 @@ function NightState:keypressed(key)
             night.time = 290
         end
     end
+end
+
+function NightState:resize(w, h)
+    _resize()
 end
 
 return NightState

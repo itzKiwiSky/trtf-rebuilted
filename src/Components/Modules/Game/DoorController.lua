@@ -35,7 +35,10 @@ function DoorController:draw(x, y)
     x = x or 0
     y = y or 0
     if self.visible then
-        love.graphics.draw(self.frames[self.key .. self.frame], x, y)
+        love.graphics.draw(self.frames[self.key .. self.frame], x, y, 0, 
+            love.graphics.getWidth() / self.frames[self.key .. self.frame]:getWidth(),
+            love.graphics.getHeight() / self.frames[self.key .. self.frame]:getHeight()
+        )
     end
 end
 

@@ -33,7 +33,10 @@ end
 
 function TabletController:draw()
     if self.visible then
-        love.graphics.draw(self.frames[self.key .. self.frame], 0, 0)
+        love.graphics.draw(self.frames[self.key .. self.frame], 0, 0, 0, 
+            love.graphics.getWidth() / self.frames[self.key .. self.frame]:getWidth(),
+            love.graphics.getHeight() / self.frames[self.key .. self.frame]:getHeight()
+        )
     end
 end
 

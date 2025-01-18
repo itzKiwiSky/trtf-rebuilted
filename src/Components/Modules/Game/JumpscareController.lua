@@ -23,7 +23,7 @@ end
 function JumpscareController:draw()
     if self.active then
         if self.frames[self.id]["jmp_" .. self.frame] then
-            love.graphics.draw(self.frames[self.id]["jmp_" .. self.frame], 0, 0)
+            love.graphics.draw(self.frames[self.id]["jmp_" .. self.frame], 0, 0, 0, love.graphics,getWidth() / self.frames[self.id]["jmp_" .. self.frame]:getWidth(), love.graphics.getHeight() / self.frames[self.id]["jmp_" .. self.frame]:getHeight())
         end
     end
 end
