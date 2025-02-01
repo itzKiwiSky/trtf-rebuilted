@@ -3,7 +3,7 @@ local function preloadAudio()
 
     for f = 1, #files, 1 do
         local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
-        loveloader.newSource(AudioSources, filename, files[f], "stream")
+        loveloader.newSource(SoundController.sources, filename, files[f], "stream")
         if FEATURE_FLAGS.debug then
             io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file queue to load with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", filename))
         end
@@ -32,6 +32,7 @@ function SplashState:enter()
     if self.introVideo then
         self.introVideo:play()
     end
+    
     love.mouse.setVisible(false)
 
     self.VIDEO_WIDTH = love.graphics.getWidth() / self.introVideo:getWidth()
@@ -82,9 +83,7 @@ function SplashState:leave()
     self.introVideo:pause()
     self.introVideo:rewind()
     love.mouse.setVisible(true)
-    for k, v in pairs(AudioSources) do
-        v:stop()
-    end
+    SoundController.stopAllChannels()
 end
 
 return SplashState

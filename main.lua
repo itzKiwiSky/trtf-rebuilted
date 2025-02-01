@@ -5,7 +5,13 @@ love.filesystem.load("src/Modules/System/Run.lua")()
 function love.initialize()
     subtitlesController = require 'src.Modules.System.Utils.Subtitles'
     Discord = require 'src.Modules.Game.API.Discord'
-    AudioSources = {}
+    SoundController = require 'src.Modules.System.Utils.Sound'
+
+    SoundController.defaultPanning = 0
+    SoundController.defaultVolume = 45 / 100
+
+    SoundController.newChannel("music")
+    SoundController.newChannel("sfx")
 
     subtitlesController.clear()
 
@@ -38,6 +44,13 @@ function love.initialize()
                 subtitles = true,
                 displayFPS = true,
                 discordRichPresence = true,
+                gamepadSupport = false,
+
+            },
+            progress = {
+                currentNight = 1,
+                nightPassed = 0,
+                stars = 0,
             }
         }
     }
@@ -56,6 +69,9 @@ function love.initialize()
 
     registers = {
         -- register some values that may change during gameplay --
+        system = {
+            fullscreen = false
+        }
     }
 
     -- thread ping to send heartbeats on the gamejolt client to ensure the player is connected --
@@ -99,7 +115,17 @@ function love.keypressed(k, scancode, isrepeat)
         -- Changes are updated dynamically
         --love.resconf.aspectRatio = not love.resconf.aspectRatio
         love.event.quit()
-        return
+        return  
+    end
+
+    if FEATURE_FLAGS.debug then
+        if k == "f11" then      -- debug fullscreen switch --
+            registers.system = not registers.system
+            love.window.setFullscreen(registers.system, "desktop")
+        end
+        if k == "f12" then      -- debug fullscreen switch --
+            love.resconf.aspectRatio = not love.resconf.aspectRatio
+        end
     end
 
     if gamestate.current().keypressed then
@@ -150,6 +176,12 @@ function love.mousemoved(x, y, dx, dy)
 end
 
 function love.quit()
+    -- clear the mess --
+    for s = #SoundController.sources, 1, -1 do
+        SoundController.sources[s]:stop()
+        SoundController.sources[s]:release()
+    end
+
     if gamejolt.isLoggedIn then
         gamejolt.closeSession()
     end

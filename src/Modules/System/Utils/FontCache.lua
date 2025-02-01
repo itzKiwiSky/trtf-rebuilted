@@ -4,10 +4,10 @@ local FontCache = {
 }
 
 function FontCache.init()
-    local fontFiles = love.filesystem.getDirectoryItems("assets/fonts")
+    FontCache.paths = love.filesystem.getDirectoryItems("assets/fonts")
 
-    for f = 1, #fontFiles, 1 do
-        table.insert(FontCache.paths, "assets/fonts/" .. fontFiles[f])
+    for f = 1, #FontCache.paths, 1 do
+        FontCache.paths[f] = "assets/fonts/" .. FontCache.paths[f]
     end
 end
 
