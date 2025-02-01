@@ -39,6 +39,8 @@ After the big incident of Fredbear's Family Diner, in 2005, Vincent, decided to 
 [**json**](https://github.com/actboy168/json.lua)<br>
 [**love-loader**](https://github.com/kikito/love-loader)<br>
 [**lua-discordRPC**](https://github.com/pfirsich/lua-discordRPC/tree/master)<br>
+[**loveframes**](https://github.com/linux-man/LoveFrames)<br>
+[**Termite**](https://github.com/itzKiwiSky/Termite/tree/master)<br>
 **Neuron** (Proprietary save and serialization library, will be open sourced)
 
 #### Other credits

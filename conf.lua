@@ -3,11 +3,11 @@ function love.conf(w)
     w.window.width          =       1280
     w.window.height         =       800
     w.window.icon           =       "icon.png"
-    w.window.title          =       "RebuiltAgain2"
+    w.window.title          =       "RebuiltAgain"
     w.window.x              =       nil
     w.window.y              =       nil
     w.window.borderless     =       false
-    w.window.resizable      =       true
+    w.window.resizable      =       false
     w.window.fullscreen     =       false
     w.window.depth          =       love._version_major >= 12 and true or 16
     w.window.vsync          =       0
@@ -18,7 +18,7 @@ function love.conf(w)
 
     --% Storage %--
     w.externalstorage       =       true
-    w.identity              =       "com.brightsmileteam.trtfrebuiltagain2"
+    w.identity              =       "com.brightsmileteam.trtfrebuiltagain"
 
     --% Modules %--
     w.modules.audio         =       true

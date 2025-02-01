@@ -1,7 +1,6 @@
 fsutil = require 'src.Modules.System.Utils.FSUtil'
 fontcache = require 'src.Modules.System.Utils.FontCache'
 LanguageController = require 'src.Modules.System.Utils.LanguageManager'
-loveconf = require 'conf'
 
 -- copy all the need libraries for game to work --
 local function copyLib()
@@ -28,16 +27,14 @@ local function copyLib()
     end
 end
 
---subtitlesController = require 'src.Components.Modules.Utils.Subtitles'
 function love.run()
     FEATURE_FLAGS = {
         debug = not love.filesystem.isFused(),   -- debug stuff will not appear on compiled games --
+        demo = false,
     }
-    
+
     local sourcePath = love.filesystem.getSaveDirectory() .. "/bin"
     copyLib()
-
-    --subtitlesController.clear()
 
     FazKiwi_LOGBUFFER = {}
     local newCPath = string.format(
@@ -48,6 +45,8 @@ function love.run()
         package.cpath)
         --print(newCPath)
     package.cpath = newCPath
+
+    fontcache.init()
 
     local addons = fsutil.scanFolder("src/Modules/System/Addons")
     for a = 1, #addons, 1 do
@@ -100,7 +99,6 @@ function love.run()
 
         if love.update then 
             love.update(elapsed)
-            --subtitlesController:update(elapsed)
         end
 
         if love.graphics and love.graphics.isActive() then
@@ -112,7 +110,6 @@ function love.run()
                 love.draw()
             end
 
-            --subtitlesController:draw()
 
             if gameslot.save.game.user.settings.displayFPS then
                 love.graphics.print("FPS : " .. love.timer.getFPS(), fpsfont, 5, 5)

@@ -1,3 +1,9 @@
 {
-    "__ENGINE__" : {}
+    "__ENGINE__" : {},
+    "system" : {
+        "system_new_version" : "New version found, please install the latest version to continue playing.\nThanks For Playing :)",
+        "system_buttons" : {
+            "system_buttons_accept" : ""
+        }
+    }
 }

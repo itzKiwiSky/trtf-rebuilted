@@ -5,9 +5,9 @@ function fsutils.scanFolder(folder, includeFolder, ignoreFolder)
     includeFolder = includeFolder or false
     local files = {}
 
-    local function _contains(t, v)
-        for _, v in ipairs(t) do
-            if v == v then
+    local function contains(_table, _value)
+        for _, v in ipairs(_table) do
+            if v == _value then
                 return true
             end
         end
@@ -19,7 +19,7 @@ function fsutils.scanFolder(folder, includeFolder, ignoreFolder)
 
         for _, item in ipairs(items) do
             local iPath = path .. "/" .. item
-            if not _contains(ignoreFolder, iPath) or #ignoreFolder == 0 then
+            if not contains(ignoreFolder, iPath) or #ignoreFolder == 0 then
                 if love.filesystem.getInfo(iPath).type == "file" then
                     table.insert(files, iPath)
                 elseif love.filesystem.getInfo(iPath).type == "directory" then
