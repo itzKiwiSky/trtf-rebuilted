@@ -110,7 +110,6 @@ function love.run()
                 love.draw()
             end
 
-
             if gameslot.save.game.user.settings.displayFPS then
                 love.graphics.print("FPS : " .. love.timer.getFPS(), fpsfont, 5, 5)
             end

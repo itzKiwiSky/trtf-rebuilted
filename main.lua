@@ -6,6 +6,7 @@ function love.initialize()
     subtitlesController = require 'src.Modules.System.Utils.Subtitles'
     Discord = require 'src.Modules.Game.API.Discord'
     SoundController = require 'src.Modules.System.Utils.Sound'
+    kiwires = require 'src.Modules.System.Utils.Resolution'
 
     SoundController.defaultPanning = 0
     SoundController.defaultVolume = 45 / 100
@@ -16,16 +17,14 @@ function love.initialize()
     subtitlesController.clear()
 
     love.resconf = {
-        replace = {},
-        width = love.graphics.getWidth(),
-        height = love.graphics.getHeight(),
+        replace = {"mouse"},
+        width = 1280,
+        height = 800,
         aspectRatio = true,
         centered = true,
         clampMouse = true,
-        clip = true,
+        clip = false,
     }
-
-    resolution.init(love.resconf)
 
     -- save system --
     gameslot = neuron.new("trtfa")
@@ -91,13 +90,17 @@ function love.initialize()
         require("src.Scenes." .. states[s]:gsub(".lua", ""))
     end
 
+    resolution.init(love.resconf)
+
     --gamestate.registerEvents()
     gamestate.switch(SystemCheckState)
 end
 
 function love.draw()
+    resolution.start()
     gamestate.current():draw()
     subtitlesController:draw()
+    resolution.stop()
     loveframes.draw()
 end
 
@@ -120,8 +123,8 @@ function love.keypressed(k, scancode, isrepeat)
 
     if FEATURE_FLAGS.debug then
         if k == "f11" then      -- debug fullscreen switch --
-            registers.system = not registers.system
-            love.window.setFullscreen(registers.system, "desktop")
+            registers.system.fullscreen = not registers.system.fullscreen
+            love.window.setFullscreen(registers.system.fullscreen, "desktop")
         end
         if k == "f12" then      -- debug fullscreen switch --
             love.resconf.aspectRatio = not love.resconf.aspectRatio
@@ -145,6 +148,7 @@ end
 
 function love.mousepressed(x, y, button)
     if gamestate.current().mousepressed then
+        --local mx, my = kiwires.toViewportCoords(x, y)
         gamestate.current():mousepressed(x, y, button)
     end
     loveframes.mousepressed(x, y, button)
@@ -152,6 +156,7 @@ end
 
 function love.mousereleased(x, y, button)
     if gamestate.current().mousereleased then
+        --local mx, my = kiwires.toViewportCoords(x, y)
         gamestate.current():mousereleased(x, y, button)
     end
     loveframes.mousereleased(x, y, button)

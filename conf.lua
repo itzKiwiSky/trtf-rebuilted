@@ -7,8 +7,9 @@ function love.conf(w)
     w.window.x              =       nil
     w.window.y              =       nil
     w.window.borderless     =       false
-    w.window.resizable      =       false
+    w.window.resizable      =       true
     w.window.fullscreen     =       false
+    w.window.fullscreentype =       "desktop"
     w.window.depth          =       love._version_major >= 12 and true or 16
     w.window.vsync          =       0
     w.highdpi               =       true
