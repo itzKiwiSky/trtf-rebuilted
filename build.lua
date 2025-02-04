@@ -10,13 +10,14 @@ return
         "export",
         "project",
         ".gitattributes",
-        ".gitignore"
+        ".gitignore",
+        "gjpromo",
     },
     icon = "resources/icon.png", -- 256x256px PNG icon for game, will be converted for you
     
     identifier = "com.brightsmileteam.trtf", -- macos team identifier, defaults to game.developer.name
     libs = { -- files to place in output directly rather than fuse
-        all = {"./LICENSE"}
+        all = {"./READMEmd"}
     },
     platforms = {"windows"} -- set if you only want to build for a specific platform
     

@@ -74,6 +74,8 @@ Plugins/*/Intermediate/*
 DerivedDataCache/*
 
 #Api shit
-/src/ApiConfig.json
+*ApiConfig.json
 
 .commitid
+
+./build

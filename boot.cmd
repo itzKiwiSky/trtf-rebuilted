@@ -1,4 +1,4 @@
 @echo off
 cls
 echo running...
-love . %*
+love ./trtf/. %*
