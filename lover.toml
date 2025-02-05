@@ -11,6 +11,3 @@ default = ["love", "win64"]
 [directories]
 source = "trtf"
 build = "build"
-
-[software]
-rcedit = "C:/Users/kiwis/AppData/Local/lover/rcedit.exe"

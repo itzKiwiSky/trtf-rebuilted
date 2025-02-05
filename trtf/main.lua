@@ -6,7 +6,6 @@ function love.initialize()
     subtitlesController = require 'src.Modules.System.Utils.Subtitles'
     Discord = require 'src.Modules.Game.API.Discord'
     SoundController = require 'src.Modules.System.Utils.Sound'
-    kiwires = require 'src.Modules.System.Utils.Resolution'
 
     SoundController.defaultPanning = 0
     SoundController.defaultVolume = 45 / 100
@@ -69,7 +68,8 @@ function love.initialize()
     registers = {
         -- register some values that may change during gameplay --
         system = {
-            fullscreen = false
+            fullscreen = false,
+            videoStats = false,
         }
     }
 
@@ -100,8 +100,8 @@ function love.draw()
     resolution.start()
     gamestate.current():draw()
     subtitlesController:draw()
-    resolution.stop()
     loveframes.draw()
+    resolution.stop()
 end
 
 function love.update(elapsed)
@@ -128,6 +128,9 @@ function love.keypressed(k, scancode, isrepeat)
         end
         if k == "f12" then      -- debug fullscreen switch --
             love.resconf.aspectRatio = not love.resconf.aspectRatio
+        end
+        if k == "f10" then      -- debug fullscreen switch --
+            FEATURE_FLAGS.videoStats = not FEATURE_FLAGS.videoStats
         end
     end
 

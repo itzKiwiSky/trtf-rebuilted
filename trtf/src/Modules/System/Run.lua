@@ -2,6 +2,22 @@ fsutil = require 'src.Modules.System.Utils.FSUtil'
 fontcache = require 'src.Modules.System.Utils.FontCache'
 LanguageController = require 'src.Modules.System.Utils.LanguageManager'
 
+FazKiwi_LOGBUFFER = {}
+
+local ogprint = print
+print = function(...)
+    table.insert(_G.FazKiwi_LOGBUFFER, ("[%s] %s"):format(os.date("%Y/%m/%d %H:%M:%S"), table.concat({...}, " ")))
+    ogprint(...)
+end
+
+local function getKeys()
+    local keys = {}
+    for k, v in pairs(love.graphics.getStats()) do
+        table.insert(keys, k)
+    end
+    return keys
+end
+
 -- copy all the need libraries for game to work --
 local function copyLib()
     love.filesystem.createDirectory("bin")
@@ -28,15 +44,13 @@ local function copyLib()
 end
 
 function love.run()
-    FEATURE_FLAGS = {
-        debug = not love.filesystem.isFused(),   -- debug stuff will not appear on compiled games --
-        demo = false,
-    }
+    FEATURE_FLAGS = require 'trtf.src.Modules.System.FeatureFlags'
+
+    love.keys = {}
+    love.keys.videoStats = getKeys()
 
     local sourcePath = love.filesystem.getSaveDirectory() .. "/bin"
     copyLib()
-
-    FazKiwi_LOGBUFFER = {}
     local newCPath = string.format(
         "%s/?.dll;%s/?.so;%s/?.dylib;%s",
         sourcePath,
@@ -112,6 +126,18 @@ function love.run()
 
             if gameslot.save.game.user.settings.displayFPS then
                 love.graphics.print("FPS : " .. love.timer.getFPS(), fpsfont, 5, 5)
+            end
+
+            if FEATURE_FLAGS.videoStats then
+                local strs = {}
+                for k = 1, #love.keys.videoStats, 1 do
+                    local st = love.keys.videoStats[k] .. " = " .. love.graphics.getStats()[love.keys.videoStats[k]]
+                    if love.keys.videoStats[k] == "texturememory" then
+                        st = love.keys.videoStats[k] .. " = " .. string.format("%.2f mb", love.graphics.getStats()["texturememory"] / 1024 / 1024)
+                    end
+                    strs[k] = st
+                end
+                love.graphics.print(table.concat(strs, "\n"), fpsfont, 5, 20)
             end
 
             love.graphics.present()

@@ -80,8 +80,14 @@ function SplashState:mousepressed(x, y, button)
 end
 
 function SplashState:leave()
-    self.introVideo:pause()
-    self.introVideo:rewind()
+    -- release all objects from the scene before leave
+    for k, v in pairs(self) do
+        if type(v) == "userdata" and v.type then
+            if v.release then
+                v:release()
+            end
+        end
+    end
     love.mouse.setVisible(true)
     SoundController.stopAllChannels()
 end
