@@ -6,6 +6,7 @@ function love.initialize()
     subtitlesController = require 'src.Modules.System.Utils.Subtitles'
     Discord = require 'src.Modules.Game.API.Discord'
     SoundController = require 'src.Modules.System.Utils.Sound'
+    ViewManager = require 'trtf.src.Modules.System.Utils.ViewManager'
 
     SoundController.defaultPanning = 0
     SoundController.defaultVolume = 45 * 0.01
@@ -50,6 +51,21 @@ function love.initialize()
                     subtitles = true,
                     discordRichPresence = true,
                     gamepadSupport = false,
+                },
+                controls = {
+                    ["confirm"] = {"key:return"},
+                    ["select_down"] = {"key:down", "key:s"},
+                    ["select_up"] = {"key:up", "ley:w"},
+
+                    -- gameplay --
+
+                    ["close_door_left"] = {"key:a", "key:left"},
+                    ["close_door_right"] = {"key:d", "key:right"},
+                    ["use_flashlight"] = {"key:lctrl"},
+                    ["use_tablet"] = {"key:space"},
+                    ["use_mask"] = {"key:s"},
+                    ["change_cam_plus"] = {"key:right"},
+                    ["change_cam_minus"] = {"key:left"},
                 }
             },
             progress = {
@@ -61,8 +77,11 @@ function love.initialize()
     }
     gameslot:initialize()
 
+    gameslot.save.game.user.settings.video.displayFPS = true
+
     -- volume control --
     love.audio.setVolume(gameslot.save.game.user.settings.audio.masterVolume * 0.01)
+    love.audio.setVolume(0.01)
     SoundController.getChannel("music"):setVolume(gameslot.save.game.user.settings.audio.musicVolume)
     SoundController.getChannel("sfx"):setVolume(gameslot.save.game.user.settings.audio.sfxVolume)
 
@@ -84,6 +103,15 @@ function love.initialize()
             videoStats = false,
         }
     }
+
+    -- setup input --
+    local inputSetup = {}
+    inputSetup.controls = gameslot.save.game.user.settings.controls
+    if gameslot.save.game.user.settings.misc.gamepadSupport then
+        inputSetup.joystick = love.joystick.getJoysticks()[1]
+    end
+
+    gameInput = baton.new(inputSetup)
 
     -- thread ping to send heartbeats on the gamejolt client to ensure the player is connected --
     th_ping = love.thread.newThread("src/Modules/Game/API/GamejoltPingThread.lua")

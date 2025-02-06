@@ -44,7 +44,7 @@ function SplashState:draw()
 end
 
 function SplashState:update(elapsed)
-    if not self.introVideo:isPlaying() and self.AUDIO_LOADED then
+    if FEATURE_FLAGS.debug and (self.introVideo:isPlaying() and self.AUDIO_LOADED) or (not self.introVideo:isPlaying() and self.AUDIO_LOADED) then
         --[[
         if not gameslot.save.game.user.progress.initialCutscene then
             VideoSceneState.path = "assets/videos/lockjaw_cinematic.ogv"
@@ -58,7 +58,6 @@ function SplashState:update(elapsed)
             gamestate.switch(MenuState)
         end
         ]]--
-        love.mouse.setVisible(true)
         gamestate.switch(MenuState)
     else
         loveloader.update()
@@ -67,14 +66,12 @@ end
 
 function SplashState:keypressed(k)
     if self.AUDIO_LOADED then
-        love.mouse.setVisible(true)
         gamestate.switch(MenuState)
     end
 end
 
 function SplashState:mousepressed(x, y, button)
     if self.AUDIO_LOADED then
-        love.mouse.setVisible(true)
         gamestate.switch(MenuState)
     end
 end

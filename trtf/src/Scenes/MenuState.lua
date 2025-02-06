@@ -21,6 +21,8 @@ local function newButtonHitbox(x, y, w, h)
 end
 
 function MenuState:enter()
+    self.settingsSubState = require 'trtf.src.SubScenes.SettingsSubstate'
+
     -- variables --
     self.controllerSelection = 0
     self.canUseMenu = false
@@ -249,6 +251,8 @@ function MenuState:enter()
     SoundController.getChannel("music"):loadSource("menu_theme_again")
     SoundController.getChannel("music"):play()
     SoundController.getChannel("music"):setLooping(true)
+
+    self.settingsSubState:load()
 end
 
 function MenuState:draw()
@@ -297,13 +301,17 @@ function MenuState:draw()
             end
             love.graphics.print(e.text, self.fnt_menu, self.mainMenuButtons.config.x + e.meta.offsetX, e.hitbox.y)
             love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+            --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
         end
 
         love.graphics.setColor(1, 1, 1, 0.7)
         love.graphics.draw(self.crtframe, 0, 0, 0, love.resconf.width / self.crtframe:getWidth(), love.resconf.height / self.crtframe:getHeight())
         love.graphics.setColor(1, 1, 1, 1)
     self.viewShader:stop()
+
+    if self.configMenu then
+        self.settingsSubState:draw()
+    end
 
     --love.graphics.setColor(0, 0, 0, self.journalScreen.alpha)
     --love.graphics.rectangle("fill", 0, 0, love.resconf.width, love.resconf.height)
@@ -327,6 +335,10 @@ function MenuState:update(elapsed)
     self.tmr_randFrame:update(elapsed)
     self.tmr_randPos:update(elapsed)
 
+    if self.configMenu then
+        self.settingsSubState:update(elapsed)
+    end
+
     if not self.canUseMenu then
         flux.update(elapsed)
     end
@@ -349,7 +361,7 @@ function MenuState:update(elapsed)
     -- hover the elements --
     for _, e in ipairs(self.mainMenuButtons.elements) do
         --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
-        if collision.pointRect({ x = mx, y = my }, e.hitbox) and self.canUseMenu then
+        if collision.pointRect({ x = mx, y = my }, e.hitbox) and self.canUseMenu and not self.configMenu then
             e.meta.offsetX = math.lerp(e.meta.offsetX, self.mainMenuButtons.config.offsetX, 0.1)
         else
             e.meta.offsetX = math.lerp(e.meta.offsetX, 0, 0.1)
@@ -378,6 +390,34 @@ function MenuState:mousepressed(x, y, button)
             self.configMenu = not self.configMenu
             self.canUseMenu = not self.configMenu
         end
+    end
+
+    if self.configMenu then
+        self.settingsSubState:mousepressed(x, y, button)
+    end
+end
+
+function MenuState:mousereleased(x, y, button)
+    if self.configMenu then
+        self.settingsSubState:mousereleased(x, y, button)
+    end
+end
+
+function MenuState:keypressed(k, scancode, isrepeat)
+    if self.configMenu then
+        self.settingsSubState:keypressed(k, scancode, isrepeat)
+    end
+end
+
+function MenuState:keyreleased(k)
+    if self.configMenu then
+        self.settingsSubState:keyreleased(k)
+    end
+end
+
+function MenuState:textinput(t)
+    if self.configMenu then
+        self.settingsSubState:textinput(t)
     end
 end
 

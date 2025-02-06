@@ -16,30 +16,10 @@
         },
         "settings" : {
             "menu_settings_title" : "Settings",
-            "menu_settings_shaders" : "Display shaders effects",
-            "menu_settings_fullscreen" : "Fullscreen",
-            "menu_settings_vsync" : "V-Sync",
-            "menu_settings_antialiasing" : "Antialiasing",
-            "menu_settings_display_fps" : "Show FPS",
-            "menu_settings_preserve_assets" : "Cache night assets",
-            "menu_settings_subtitles" : "Subtitles",
-            "menu_settings_reset_settings" : "Reset Settings",
-            "menu_settings_gamejolt" : {
-                "menu_settings_gamejolt_not_connect" : "Login to gamejolt",
-                "menu_settings_gamejolt_connected" : "Already connected (Click to disconnect)"
-            },
-            "menu_settings_language" : "Language",
-            "settings_description" : {
-                "menu_settings_description_shaders" : "Enable or disable special effects with shaders",
-                "menu_settings_description_fullscreen" : "Fullscreen mode",
-                "menu_settings_description_vsync" : "Enable or disable Vertical sync (VSync)",
-                "menu_settings_description_antialiasing" : "Make the textures more smooth and less pixelated",
-                "menu_settings_description_display_fps" : "Show the game FPS on the top-left corner of the screen",
-                "menu_settings_description_preserve_assets" : "Cache all night assets, the loading times for a night will be faster but will consume more device memory.",
-                "menu_settings_description_subtitles" : "Display subtitles for audio calls and cutscenes",
-                "menu_settings_description_gamejolt" : "Connect with gamejolt to allow special stuff",
-                "menu_settings_description_language" : "Change the game current language [Click to switch]",
-                "menu_settings_description_reset_settings" : "Reset all the settings to their default value"
+            "menu_settings_categories" : {
+                "menu_settings_categories_video" : "Video",
+                "menu_settings_categories_audio" : "Audio",
+                "menu_settings_categories_misc" : "Misc"
             }
         },
         "menu_settings_gamejolt" : {

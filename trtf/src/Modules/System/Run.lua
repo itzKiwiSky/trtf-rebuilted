@@ -1,6 +1,8 @@
 fsutil = require 'src.Modules.System.Utils.FSUtil'
 fontcache = require 'src.Modules.System.Utils.FontCache'
 LanguageController = require 'src.Modules.System.Utils.LanguageManager'
+love._FPSCap = 300
+love._unfocusedFPSCap = 15
 
 FazKiwi_LOGBUFFER = {}
 
@@ -107,6 +109,9 @@ function love.run()
             end
         end
 
+        local isFocused = love.window.hasFocus()
+
+        local fpsCap = isFocused and love._FPSCap or love._unfocusedFPSCap
         if love.timer then 
             elapsed = love.timer.step()
         end
@@ -124,7 +129,7 @@ function love.run()
                 love.draw()
             end
 
-            if gameslot.save.game.user.settings.displayFPS then
+            if gameslot.save.game.user.settings.video.displayFPS then
                 love.graphics.print("FPS : " .. love.timer.getFPS(), fpsfont, 5, 5)
             end
 
@@ -145,6 +150,6 @@ function love.run()
 
         collectgarbage("collect")
 
-        if love.timer then love.timer.sleep(0.001) end
+        if love.timer then love.timer.sleep(1 / fpsCap - elapsed) end
     end
 end
