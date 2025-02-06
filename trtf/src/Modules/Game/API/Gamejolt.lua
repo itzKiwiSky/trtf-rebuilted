@@ -7,10 +7,10 @@ return function()
         local data = json.decode(love.filesystem.read("src/ApiConfig.json"))
         if data.gamejolt.gameID~= nil and data.gamejolt.gameKey ~= nil then
             gamejolt.init(data.gamejolt.gameID, data.gamejolt.gameKey)
-            if gameslot.save.game.user.settings.gamejolt.username ~= "" and gameslot.save.game.user.settings.gamejolt.usertoken ~= "" then
+            if gameslot.save.game.user.settings.misc.gamejolt.username ~= "" and gameslot.save.game.user.settings.misc.gamejolt.usertoken ~= "" then
                 gamejolt.authUser(
-                    gameslot.save.game.user.settings.gamejolt.username,
-                    gameslot.save.game.user.settings.gamejolt.usertoken
+                    gameslot.save.game.user.settings.misc.gamejolt.username,
+                    gameslot.save.game.user.settings.misc.gamejolt.usertoken
                 )
                 gamejolt.openSession()
                 io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client connected (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))

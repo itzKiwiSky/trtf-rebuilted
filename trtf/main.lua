@@ -8,7 +8,7 @@ function love.initialize()
     SoundController = require 'src.Modules.System.Utils.Sound'
 
     SoundController.defaultPanning = 0
-    SoundController.defaultVolume = 45 / 100
+    SoundController.defaultVolume = 45 * 0.01
 
     SoundController.newChannel("music")
     SoundController.newChannel("sfx")
@@ -30,20 +30,27 @@ function love.initialize()
     gameslot.save.game = {
         user = {
             settings = {
-                shaders = true,
-                language = "English",
-                gamejolt = {
-                    username = "",
-                    usertoken = ""
+                video = {
+                    fullscreen = false,
+                    vsync = false,
+                    antialiasing = true,
+                    displayFPS = true,
                 },
-                fullscreen = false,
-                vsync = false,
-                antialiasing = true,
-                subtitles = true,
-                displayFPS = true,
-                discordRichPresence = true,
-                gamepadSupport = false,
-
+                audio = {
+                    masterVolume = 75,
+                    musicVolume = 50,
+                    sfxVolume = 50,
+                },
+                misc = {
+                    language = "English",
+                    gamejolt = {
+                        username = "",
+                        usertoken = ""
+                    },
+                    subtitles = true,
+                    discordRichPresence = true,
+                    gamepadSupport = false,
+                }
             },
             progress = {
                 currentNight = 1,
@@ -54,16 +61,21 @@ function love.initialize()
     }
     gameslot:initialize()
 
+    -- volume control --
+    love.audio.setVolume(gameslot.save.game.user.settings.audio.masterVolume * 0.01)
+    SoundController.getChannel("music"):setVolume(gameslot.save.game.user.settings.audio.musicVolume)
+    SoundController.getChannel("sfx"):setVolume(gameslot.save.game.user.settings.audio.sfxVolume)
+
     -- api stuff --
     require('src.Modules.Game.API.Gamejolt')()
     require('src.Modules.Game.API.GitDebug')()
-    if gameslot.save.game.user.settings.discordRichPresence then
+    if gameslot.save.game.user.settings.misc.discordRichPresence then
         Discord.init()
     end
 
     -- language association --
-    languageService = LanguageController:getData(gameslot.save.game.user.settings.language)
-    languageRaw = LanguageController:getRawData(gameslot.save.game.user.settings.language)
+    languageService = LanguageController:getData(gameslot.save.game.user.settings.misc.language)
+    languageRaw = LanguageController:getRawData(gameslot.save.game.user.settings.misc.language)
 
     registers = {
         -- register some values that may change during gameplay --
@@ -92,20 +104,31 @@ function love.initialize()
 
     resolution.init(love.resconf)
 
-    --gamestate.registerEvents()
+    gamestate.registerEvents({
+        "update",
+        "mousepressed",
+        "mousereleased",
+        "wheelmoved",
+        "keyreleased",
+        "keypressed",
+        "textinput",
+        "gamepadpressed",
+        "gamepadreleased",
+        "gamepadaxis",
+        "joystickadded",
+        "joystickremoved",
+    })
     gamestate.switch(SystemCheckState)
 end
 
 function love.draw()
     resolution.start()
-    gamestate.current():draw()
-    subtitlesController:draw()
-    loveframes.draw()
+        gamestate.current():draw()
+        subtitlesController:draw()
     resolution.stop()
 end
 
 function love.update(elapsed)
-    gamestate.current():update(elapsed)
     subtitlesController:update(elapsed)
     if gamejolt.isLoggedIn then
         tmr_gamejoltHeartbeat:update(elapsed)
@@ -115,10 +138,8 @@ end
 
 function love.keypressed(k, scancode, isrepeat)
     if k == "escape" then
-        -- Changes are updated dynamically
-        --love.resconf.aspectRatio = not love.resconf.aspectRatio
         love.event.quit()
-        return  
+        return
     end
 
     if FEATURE_FLAGS.debug then
@@ -132,54 +153,6 @@ function love.keypressed(k, scancode, isrepeat)
         if k == "f10" then      -- debug fullscreen switch --
             FEATURE_FLAGS.videoStats = not FEATURE_FLAGS.videoStats
         end
-    end
-
-    if gamestate.current().keypressed then
-        gamestate.current():keypressed(k)
-    end
-
-    loveframes.keypressed(k, scancode, isrepeat)
-end
-
-function love.keyreleased(k)
-    if gamestate.current().keyreleased then
-        gamestate.current():keyreleased(k)
-    end
-
-    loveframes.keyreleased(k)
-end
-
-function love.mousepressed(x, y, button)
-    if gamestate.current().mousepressed then
-        --local mx, my = kiwires.toViewportCoords(x, y)
-        gamestate.current():mousepressed(x, y, button)
-    end
-    loveframes.mousepressed(x, y, button)
-end
-
-function love.mousereleased(x, y, button)
-    if gamestate.current().mousereleased then
-        --local mx, my = kiwires.toViewportCoords(x, y)
-        gamestate.current():mousereleased(x, y, button)
-    end
-    loveframes.mousereleased(x, y, button)
-end
-
-function love.textinput(t)
-    if gamestate.current().textinput then
-        gamestate.current():textinput(t)
-    end
-    loveframes.textinput(t)
-end
-function love.wheelmoved(x, y)
-    if gamestate.current().wheelmoved then
-        gamestate.current():wheelmoved(x, y)
-    end
-end
-
-function love.mousemoved(x, y, dx, dy)
-    if gamestate.current().mousemoved then
-        gamestate.current():mousemoved(x, y, dx, dy)
     end
 end
 

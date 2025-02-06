@@ -1,0 +1,45 @@
+"textedited"
+"mousemoved"
+"displayrotated"
+"mousepressed"
+"mousereleased"
+"wheelmoved"
+"touchpressed"
+"lowmemory"
+"touchreleased"
+"touchmoved"
+"joystickpressed"
+"joystickreleased"
+"joystickaxis"
+"joystickhat"
+"directorydropped"
+"gamepadpressed"
+"gamepadreleased"
+"gamepadaxis"
+"joystickadded"
+"joystickremoved"
+"focus"
+"quit"
+"mousefocus"
+"visible"
+"keypressed"
+"threaderror"
+"resize"
+"keyreleased"
+"textinput"
+"filedropped"
+
+{
+    "update",
+    "mousepressed",
+    "mousereleased",
+    "wheelmoved",
+    "keyreleased",
+    "keypressed",
+    "textinput"
+    "gamepadpressed",
+    "gamepadreleased",
+    "gamepadaxis",
+    "joystickadded",
+    "joystickremoved",
+}

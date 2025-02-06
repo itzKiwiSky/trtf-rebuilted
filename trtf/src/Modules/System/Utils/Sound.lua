@@ -76,15 +76,21 @@ end
 ---@param vol number
 function SoundChannel:setVolume(vol)
     assertType(vol, "number")
-    self.source:setVolume(clamp(vol, 0, 1))
+    self.volume = clamp(vol, 0, 1)
+    if self.source then
+        self.source:setVolume(clamp(self.volume, 0, 1))
+    end
 end
 
 --- Set audio panning for a channel, only works for mono channel audio only
 ---@param val number
 function SoundChannel:setPanning(val)
     assertType(val, "number")
+    self.panning = clamp(val, -1, 1)
     if self.audioChannels == 1 then
-        self.source:setVolume(clamp(val, -1, 1))
+        if self.source then
+            self.source:setPosition(clamp(self.panning, -1, 1))
+        end
     end
 end
 
@@ -110,6 +116,11 @@ end
 function Sound.newChannel(id)
     assertType(id, "string")
     return Sound.channels[id] or SoundChannel.new(id)
+end
+
+function Sound.getChannel(name)
+    assertType(name, "string")
+    return Sound.channels[name]
 end
 
 --- Set all channels volume

@@ -1,7 +1,5 @@
 MenuState = {}
 
-MenuState.isInWarning = true
-
 local function loadAnimatronic(id)
     local chars = {"bonnie", "chica", "foxy", "freddy", "sugar", "kitty_fazcat", "lockjaw"}
     local anfiles = {}
@@ -23,6 +21,9 @@ local function newButtonHitbox(x, y, w, h)
 end
 
 function MenuState:enter()
+    -- variables --
+    self.controllerSelection = 0
+
     -- shader configuration --
     self.shd_chromafx = love.graphics.newShader("assets/shaders/Chromatic.glsl")
     self.shd_chromafx:send("distortion", 0)
@@ -34,6 +35,9 @@ function MenuState:enter()
     self.shd_vignette:send("radius", 0.95)
     self.shd_vignette:send("softness", 0.7)
     self.shd_vignette:send("opacity", 0.13)
+
+    self.blur = moonshine(moonshine.effects.gaussianblur)
+    self.blur.gaussianblur.sigma = 10
 
     self.viewShader = chainshader(love.resconf.width, love.resconf.height)
 
@@ -65,9 +69,10 @@ function MenuState:enter()
         randFrameValue = 0,
     }
 
-    self.screenFade = {
-        alpha = 1,
-        acc = 0
+    self.journalScreen = {
+        alpha = 0,
+        acc = 0,
+        size = 1,
     }
 
     -- timers --
@@ -103,15 +108,51 @@ function MenuState:enter()
     end)
 
     -- sprites --
-    self.fnt_mainLogo = fontcache.getFont("tnr", 50)
+    self.fnt_mainLogo = fontcache.getFont("tnr", 310)
+    self.fnt_textWarn = fontcache.getFont("ocrx", 35)
+    self.fnt_menu = fontcache.getFont("tnr", 40)
 
     self.menuBackground = loadRandomBackground()
 
     self.crtframe = love.graphics.newImage("assets/images/game/effects/perfect_crt.png")
 
+    self.settingsGear = {
+        x = love.graphics.getWidth() + 128,
+        y = 120,
+        offsetX = 40,
+        offsetY = 40,
+        hitbox = {},
+        hovered = false,
+        angle = 0,
+        alpha = 0,
+        size = 96,
+        ico = love.graphics.newImage("assets/images/game/menu/UI/settings_ico.png"),
+        glow = love.graphics.newImage("assets/images/game/menu/UI/settings_ico_glow.png")
+    }
+
+    self.settingsGear.hitbox = newButtonHitbox(
+        self.settingsGear.x - self.settingsGear.offsetX, 
+        self.settingsGear.y - self.settingsGear.offsetY, 78, 78
+    )
+
     self.spr_logo = love.graphics.newImage("assets/images/game/menu/logo.png")
     self.logoMenu.sprWidth = math.floor(0.15 * self.spr_logo:getWidth())
     self.logoMenu.sprHeight = math.floor(0.15 * self.spr_logo:getHeight())
+
+    self.spr_logo_canvas = love.graphics.newCanvas(self.spr_logo:getWidth() + 256, self.spr_logo:getHeight() + 256)
+    self.blur.resize(self.spr_logo_canvas:getDimensions())
+
+    self.spr_logo_canvas:renderTo(function()
+        love.graphics.clear(0, 0, 0, 0)
+        love.graphics.setBlendMode("alpha", "alphamultiply")
+            self.blur(function()
+                love.graphics.draw(self.spr_logo)
+                love.graphics.printf(string.upper(self.logoMenu.text), self.fnt_mainLogo, 32, 32, math.floor(0.8 * self.spr_logo:getWidth()), "left")
+            end)
+        love.graphics.setBlendMode("alpha")
+        love.graphics.draw(self.spr_logo)
+        love.graphics.printf(string.upper(self.logoMenu.text), self.fnt_mainLogo, 32, 32, math.floor(0.8 * self.spr_logo:getWidth()), "left")
+    end)
 
     self.newGameJournal = gameslot.save.game.user.settings.language == "English" and love.graphics.newImage("assets/images/game/menu/news/en.png") or love.graphics.newImage("assets/images/game/menu/news/es.png")
 
@@ -133,21 +174,12 @@ function MenuState:enter()
     else
         self.animatronicsAnim = loadAnimatronic(gameslot.save.game.user.progress.currentNight)
     end
-    
-    local drawHitboxLine = function(obj)
-        local x = obj:GetX()
-        local y = obj:GetY()
-        local width = obj:GetWidth()
-        local height = obj:GetHeight()
-
-        love.graphics.rectangle("line", x, y, width, height)
-    end
 
     -- buttons menu --
     self.mainMenuButtons = {
         config = {
             startY = love.graphics.getHeight() / 2 + 16,
-            paddingElements = 86,
+            paddingElements = 76,
             x = 64,
             startX = -480
         },
@@ -182,16 +214,16 @@ function MenuState:enter()
     -- hitboxers
 
     for _, e in ipairs(self.mainMenuButtons.elements) do
-        e.hitbox = newButtonHitbox(self.mainMenuButtons.config.x, self.mainMenuButtons.config.startY, 172, 64)
+        e.hitbox = newButtonHitbox(self.mainMenuButtons.config.x, self.mainMenuButtons.config.startY, 172, self.fnt_menu:getHeight() + 8)
         self.mainMenuButtons.config.startY = self.mainMenuButtons.config.startY + self.mainMenuButtons.config.paddingElements
     end
+
+    -- sounds sfx --
+    SoundController.getChannel("music"):loadSource("menu_theme_again")
+    SoundController.getChannel("music"):setLooping(true)
 end
 
 function MenuState:draw()
-    love.graphics.setColor(0, 0, 0, self.screenFade.alpha)
-    love.graphics.rectangle("fill", 0, 0, love.resconf.width, love.resconf.height)
-    love.graphics.setColor(1, 1, 1, 1)
-
     self.viewShader:start()
         love.graphics.draw(self.menuBackground, 0, 0, 0, love.resconf.width / self.menuBackground:getWidth(), love.resconf.height / self.menuBackground:getHeight())
         love.graphics.draw(self.animatronicsAnim[self.menuAnimatronic.frame], 
@@ -199,12 +231,13 @@ function MenuState:draw()
         love.resconf.width / self.animatronicsAnim[self.menuAnimatronic.frame]:getWidth(), 
         love.resconf.height / self.animatronicsAnim[self.menuAnimatronic.frame]:getHeight())
 
+
         love.graphics.setBlendMode("add")
             love.graphics.setShader(self.shd_chromafx)
-                love.graphics.draw(self.spr_logo, self.logoMenu.x, self.logoMenu.y, 0, 0.15, 0.15, self.spr_logo:getWidth() / 2, self.spr_logo:getHeight() / 2)
-                love.graphics.printf(string.upper(self.logoMenu.text), self.fnt_mainLogo, self.logoMenu.x - self.logoMenu.sprWidth / 2, self.logoMenu.y - self.logoMenu.sprHeight / 2, self.logoMenu.sprWidth, "left")
+                love.graphics.draw(self.spr_logo_canvas, self.logoMenu.x, self.logoMenu.y, 0, 0.15, 0.15, self.spr_logo:getWidth() / 2, self.spr_logo:getHeight() / 2)
             love.graphics.setShader()
         love.graphics.setBlendMode("alpha")
+        --love.graphics.setBlendMode("alpha")
 
         -- static overlay --
         love.graphics.setBlendMode("add")
@@ -217,6 +250,7 @@ function MenuState:draw()
         love.graphics.setBlendMode("alpha")
 
         for _, e in ipairs(self.mainMenuButtons.elements) do
+            love.graphics.print(e.text, self.fnt_menu, self.mainMenuButtons.config.startX, e.hitbox.y)
             love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
         end
 
@@ -224,6 +258,10 @@ function MenuState:draw()
         love.graphics.draw(self.crtframe, 0, 0, 0, love.resconf.width / self.crtframe:getWidth(), love.resconf.height / self.crtframe:getHeight())
         love.graphics.setColor(1, 1, 1, 1)
     self.viewShader:stop()
+
+    --love.graphics.setColor(0, 0, 0, self.journalScreen.alpha)
+    --love.graphics.rectangle("fill", 0, 0, love.resconf.width, love.resconf.height)
+    --love.graphics.setColor(1, 1, 1, 1)
 
     --love.graphics.print(("%s, %s"):format(love.mouse.getPosition()), 20, 20)
 end

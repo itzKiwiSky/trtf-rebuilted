@@ -12,7 +12,7 @@ function love.conf(w)
     w.window.fullscreentype =       "desktop"
     w.window.depth          =       love._version_major >= 12 and true or 16
     w.window.vsync          =       0
-    w.highdpi               =       true
+    w.gammacorrect          =       false
 
     --% Debug %--
     w.console               =       not love.filesystem.isFused()
