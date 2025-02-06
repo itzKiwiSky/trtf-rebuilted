@@ -128,13 +128,13 @@ local matchers = {
     -- debug(ctx, 'capture', ']] .. tostring(number) .. [[')
     local cap = ctx.captures[ ]] .. tostring(number) .. [[ ]
     local len = utf8len(cap)
-		local check = utf8sub(ctx.str, ctx.pos, ctx.pos + len - 1)
+        local check = utf8sub(ctx.str, ctx.pos, ctx.pos + len - 1)
     -- debug("capture check:", cap, check)
-		if cap == check then
-			ctx.pos = ctx.pos + len
-			ctx:next_function()
+        if cap == check then
+            ctx.pos = ctx.pos + len
+            ctx:next_function()
       return ctx:get_function()(ctx)
-		end
+        end
   end)
 ]]
   end,

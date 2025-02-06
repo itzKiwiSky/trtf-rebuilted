@@ -41,19 +41,24 @@ After the big incident of Fredbear's Family Diner, in 2005, Vincent, decided to 
 [**lua-discordRPC**](https://github.com/pfirsich/lua-discordRPC/tree/master)<br>
 [**loveframes**](https://github.com/linux-man/LoveFrames)<br>
 [**Termite**](https://github.com/itzKiwiSky/Termite/tree/master)<br>
-**Neuron** (Proprietary save and serialization library, will be open sourced)
+[**baton**](https://github.com/tesselode/baton/tree/master)<br>
+[**grove.resolution**](https://github.com/FloatingBanana/Grove/tree/master)<br>
+[**grove.shaderchain**](https://github.com/FloatingBanana/Grove/tree/master)<br>
+**Neuron** (Proprietary save and serialization library, will be open sourced)<br>
 
 #### Other credits
 
 [**INaS**](https://github.com/FloatingBanana/Insane-Nights-at-Snowball-s) - Some code snippets<br>
-[**Freesound.org**](https://freesound.org/) - Cool free SFX
+[**Freesound.org**](https://freesound.org/) - Cool free SFX<br>
+[**kenney.nl**](https://kenney.nl/) - Free assets for games<br>
 
 ---
 
 # Building
 
-This is the official TRTFR-A source code. Written in lua with the [LÖVE framework](https://love2d.org). There is some messy code here and there, but feel free to use some some parts of the code on your own project (as long as you don't steal all the code and claim that you made it)
+This is the official TRTFR-A source code. Written in lua with the [LÖVE framework](https://love2d.org). There is some messy code here and there, but feel free to use some some parts of the code on your own project (as long as you don't steal all the code and claim that you made it).
+If you want to use any of the renders, please contact the owners [**@El_Eternauta_1957**](https://gamejolt.com/@El_Eternauta_1957) & [@ShotOfRabbetDev](https://gamejolt.com/@ShotOfRabbetDev)
 
-This project come with special batch files (.bat) that can help run the code. To work correctly, these binds expect you to have the [LÖVE](https://love2d.org) and [LOVE-BUILD](https://github.com/ellraiser/love-build/tree/main) in the enviroment path (if you're windows)
+This project come with special batch files (.bat) that can help run the code. To work correctly, these binds expect you to have the [LÖVE](https://love2d.org) and [Lover](https://github.com/Wolfyxon/lover) in the enviroment path (if you're windows)
 
-if you have all of them configured in the path, you can run the `boot.cmd` file to run the game without compiling (which is good to debug and hack stuff). But if you want a real experience with the game, run the `make.cmd` to run the LOVE-BUILD to compile the files.
+if you have all of them configured in the path, you can run the `boot.cmd` file to run the game without compiling (which is good to debug and hack stuff). But if you want a real experience with the game, run the `lover build` to run the **Lover** CLI to compile the files.

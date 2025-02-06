@@ -18,20 +18,20 @@ Integrating this library into existing projects is very simple.
 local Slab = require 'Slab'
 
 function love.load(args)
-	love.graphics.setBackgroundColor(0.4, 0.88, 1.0)
-	Slab.Initialize(args)
+    love.graphics.setBackgroundColor(0.4, 0.88, 1.0)
+    Slab.Initialize(args)
 end
 
 function love.update(dt)
-	Slab.Update(dt)
+    Slab.Update(dt)
   
-	Slab.BeginWindow('MyFirstWindow', {Title = "My First Window"})
-	Slab.Text("Hello World")
-	Slab.EndWindow()
+    Slab.BeginWindow('MyFirstWindow', {Title = "My First Window"})
+    Slab.Text("Hello World")
+    Slab.EndWindow()
 end
 
 function love.draw()
-	Slab.Draw()
+    Slab.Draw()
 end
 ```
 ![](https://github.com/coding-jackalope/Slab/wiki/Images/Slab_HelloWorld.png)

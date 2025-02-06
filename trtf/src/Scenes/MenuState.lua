@@ -23,6 +23,8 @@ end
 function MenuState:enter()
     -- variables --
     self.controllerSelection = 0
+    self.canUseMenu = false
+    self.configMenu = false
 
     -- shader configuration --
     self.shd_chromafx = love.graphics.newShader("assets/shaders/Chromatic.glsl")
@@ -57,10 +59,11 @@ function MenuState:enter()
     }
     
     self.logoMenu = {
-        x = 208,
-        y = 230,
+        x = 200,
+        y = 200,
         update = false,
-        text = "the\nreturn\nto\nfreddy's\nagain"
+        text = "the\nreturn\nto\nfreddy's\nagain",
+        scale = 0.13
     }
     
     self.menuAnimatronic = {
@@ -110,14 +113,14 @@ function MenuState:enter()
     -- sprites --
     self.fnt_mainLogo = fontcache.getFont("tnr", 310)
     self.fnt_textWarn = fontcache.getFont("ocrx", 35)
-    self.fnt_menu = fontcache.getFont("tnr", 40)
+    self.fnt_menu = fontcache.getFont("tnr", 35)
 
     self.menuBackground = loadRandomBackground()
 
     self.crtframe = love.graphics.newImage("assets/images/game/effects/perfect_crt.png")
 
     self.settingsGear = {
-        x = love.graphics.getWidth() + 128,
+        x = love.resconf.width + 128,
         y = 120,
         offsetX = 40,
         offsetY = 40,
@@ -125,7 +128,7 @@ function MenuState:enter()
         hovered = false,
         angle = 0,
         alpha = 0,
-        size = 96,
+        size = 128,
         ico = love.graphics.newImage("assets/images/game/menu/UI/settings_ico.png"),
         glow = love.graphics.newImage("assets/images/game/menu/UI/settings_ico_glow.png")
     }
@@ -136,8 +139,8 @@ function MenuState:enter()
     )
 
     self.spr_logo = love.graphics.newImage("assets/images/game/menu/logo.png")
-    self.logoMenu.sprWidth = math.floor(0.15 * self.spr_logo:getWidth())
-    self.logoMenu.sprHeight = math.floor(0.15 * self.spr_logo:getHeight())
+    self.logoMenu.sprWidth = math.floor(self.logoMenu.scale * self.spr_logo:getWidth())
+    self.logoMenu.sprHeight = math.floor(self.logoMenu.scale * self.spr_logo:getHeight())
 
     self.spr_logo_canvas = love.graphics.newCanvas(self.spr_logo:getWidth() + 256, self.spr_logo:getHeight() + 256)
     self.blur.resize(self.spr_logo_canvas:getDimensions())
@@ -178,35 +181,47 @@ function MenuState:enter()
     -- buttons menu --
     self.mainMenuButtons = {
         config = {
-            startY = love.graphics.getHeight() / 2 + 16,
-            paddingElements = 76,
-            x = 64,
-            startX = -480
+            startY = 370,
+            paddingElements = 69,       -- :smirk: --
+            targetX = 64,
+            startX = -480,
+            x = -480,
+            offsetX = 24
         },
         elements = {
             {
                 text = languageService["menu_button_new_game"],
-                locked = false,
+                locked = true,
                 action = function()
-                    print("novo jgoo")
                 end,
-                meta = {},
             },
             {
-                text = languageService["menu_button_new_game"],
+                text = languageService["menu_button_continue"],
+                locked = true,
+                action = function()
+                    
+                end,
+            },
+            {
+                text = languageService["menu_button_extras"],
+                locked = true,
+                action = function()
+                    
+                end,
+            },
+            {
+                text = languageService["menu_button_custom_night"],
                 locked = false,
                 action = function()
                     
                 end,
-                meta = {},
             },
             {
-                text = languageService["menu_button_new_game"],
+                text = languageService["menu_button_exit"],
                 locked = false,
                 action = function()
-                    
+                    love.event.quit()
                 end,
-                meta = {},
             },
         },
     }
@@ -214,12 +229,25 @@ function MenuState:enter()
     -- hitboxers
 
     for _, e in ipairs(self.mainMenuButtons.elements) do
-        e.hitbox = newButtonHitbox(self.mainMenuButtons.config.x, self.mainMenuButtons.config.startY, 172, self.fnt_menu:getHeight() + 8)
+        e.meta = {}
+        e.meta.offsetX = 0
+        e.hitbox = newButtonHitbox(self.mainMenuButtons.config.targetX, self.mainMenuButtons.config.startY, self.fnt_menu:getWidth(e.text) + 8, self.fnt_menu:getHeight() + 8)
         self.mainMenuButtons.config.startY = self.mainMenuButtons.config.startY + self.mainMenuButtons.config.paddingElements
     end
 
+    -- tweens --
+    self.menuText = flux.to(self.mainMenuButtons.config, 2.3, { x = self.mainMenuButtons.config.targetX })
+    self.menuText:ease("sineout")
+    self.menuText:oncomplete(function()
+        --textItems.tween.itemsVisible = true
+        self.canUseMenu = true
+    end)
+
+    self.settingsIconTween = flux.to(self.settingsGear, 1.5, { x = love.resconf.width - 128 })
+
     -- sounds sfx --
     SoundController.getChannel("music"):loadSource("menu_theme_again")
+    SoundController.getChannel("music"):play()
     SoundController.getChannel("music"):setLooping(true)
 end
 
@@ -234,10 +262,24 @@ function MenuState:draw()
 
         love.graphics.setBlendMode("add")
             love.graphics.setShader(self.shd_chromafx)
-                love.graphics.draw(self.spr_logo_canvas, self.logoMenu.x, self.logoMenu.y, 0, 0.15, 0.15, self.spr_logo:getWidth() / 2, self.spr_logo:getHeight() / 2)
+                love.graphics.draw(self.spr_logo_canvas, self.logoMenu.x, self.logoMenu.y, 0, self.logoMenu.scale, self.logoMenu.scale, self.spr_logo:getWidth() / 2, self.spr_logo:getHeight() / 2)
             love.graphics.setShader()
         love.graphics.setBlendMode("alpha")
         --love.graphics.setBlendMode("alpha")
+
+        love.graphics.setColor(1, 1, 1, self.settingsGear.alpha)
+        love.graphics.draw(
+            self.settingsGear.glow, self.settingsGear.x, self.settingsGear.y, math.rad(self.settingsGear.angle), 
+            self.settingsGear.size / self.settingsGear.glow:getWidth(), self.settingsGear.size / self.settingsGear.glow:getHeight(), 
+            self.settingsGear.glow:getWidth() / 2, self.settingsGear.glow:getHeight() / 2
+        )
+        love.graphics.setColor(1, 1, 1, 1)
+
+        love.graphics.draw(
+            self.settingsGear.ico, self.settingsGear.x, self.settingsGear.y, math.rad(self.settingsGear.angle), 
+            self.settingsGear.size / self.settingsGear.ico:getWidth(), self.settingsGear.size / self.settingsGear.ico:getHeight(), 
+            self.settingsGear.ico:getWidth() / 2, self.settingsGear.ico:getHeight() / 2
+        )
 
         -- static overlay --
         love.graphics.setBlendMode("add")
@@ -250,7 +292,11 @@ function MenuState:draw()
         love.graphics.setBlendMode("alpha")
 
         for _, e in ipairs(self.mainMenuButtons.elements) do
-            love.graphics.print(e.text, self.fnt_menu, self.mainMenuButtons.config.startX, e.hitbox.y)
+            if e.locked then
+                love.graphics.setColor(0.5, 0.5, 0.5, 1)
+            end
+            love.graphics.print(e.text, self.fnt_menu, self.mainMenuButtons.config.x + e.meta.offsetX, e.hitbox.y)
+            love.graphics.setColor(1, 1, 1, 1)
             love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
         end
 
@@ -267,6 +313,7 @@ function MenuState:draw()
 end
 
 function MenuState:update(elapsed)
+    local mx, my = love.mouse.getPosition()
     -- static animation --
     self.staticAnimationFX.config.timer = self.staticAnimationFX.config.timer + elapsed
     if self.staticAnimationFX.config.timer >= self.staticAnimationFX.config.speed then
@@ -279,17 +326,57 @@ function MenuState:update(elapsed)
 
     self.tmr_randFrame:update(elapsed)
     self.tmr_randPos:update(elapsed)
+
+    if not self.canUseMenu then
+        flux.update(elapsed)
+    end
+
+    -- gear effect hover --
+    self.settingsGear.hovered = collision.pointRect({ x = mx, y = my }, self.settingsGear.hitbox)
+    self.settingsGear.hitbox.x = self.settingsGear.x - self.settingsGear.offsetX
+    if self.settingsGear.hovered and self.canUseMenu then
+        self.settingsGear.alpha = math.lerp(self.settingsGear.alpha, 1, 0.05)
+        self.settingsGear.angle = self.settingsGear.angle + 150 * elapsed
+
+        if self.settingsGear.angle >= 360 then
+            self.settingsGear.angle = 0
+        end
+    else
+        self.settingsGear.alpha = math.lerp(self.settingsGear.alpha, 0, 0.05)
+        self.settingsGear.angle = math.lerp(self.settingsGear.angle, 0, 0.05)
+    end
+
+    -- hover the elements --
+    for _, e in ipairs(self.mainMenuButtons.elements) do
+        --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+        if collision.pointRect({ x = mx, y = my }, e.hitbox) and self.canUseMenu then
+            e.meta.offsetX = math.lerp(e.meta.offsetX, self.mainMenuButtons.config.offsetX, 0.1)
+        else
+            e.meta.offsetX = math.lerp(e.meta.offsetX, 0, 0.1)
+        end
+        
+    end
 end
 
 function MenuState:mousepressed(x, y, button)
     local mx, my = love.mouse.getPosition() -- x, y from callback is bugged for some reason, use these instead --
 
-    for _, e in ipairs(self.mainMenuButtons.elements) do
-        --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
-        if collision.pointRect({ x = mx, y = my }, e.hitbox) then
-            if not e.locked then
-                e.action()
+    if self.canUseMenu then
+        for _, e in ipairs(self.mainMenuButtons.elements) do
+            --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+            if button == 1 then
+                if collision.pointRect({ x = mx, y = my }, e.hitbox) then
+                    if not e.locked then
+                        e.action()
+                    end
+                end
             end
+        end
+    end
+    if button == 1 then
+        if collision.pointRect({ x = mx, y = my }, self.settingsGear.hitbox) then
+            self.configMenu = not self.configMenu
+            self.canUseMenu = not self.configMenu
         end
     end
 end
