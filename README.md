@@ -16,7 +16,7 @@ After the big incident of Fredbear's Family Diner, in 2005, Vincent, decided to 
 
 ## Credits
 
-[**@El_Eternauta_1957**](https://gamejolt.com/@El_Eternauta_1957) & [@ShotOfRabbetDev](https://gamejolt.com/@ShotOfRabbetDev) - Main Developers / Designers / Modellers<br>
+[**@El_Eternauta_1957**](https://gamejolt.com/@El_Eternauta_1957) & [**@ShotOfRabbetDev**](https://gamejolt.com/@ShotOfRabbetDev) - Main Developers / Designers / Modellers<br>
 [**@Only_Emiliano_**](https://gamejolt.com/@Only_Emiliano_) - 2D Artist<br>
 [**@ItzKiwiSky**](https://gamejolt.com/@ItzKiwiSky) - Coder (me lol)<br>
 [**@SpoopsVA**](https://gamejolt.com/@SpoopsVA) - Voice actor (English)<br>
@@ -57,7 +57,7 @@ After the big incident of Fredbear's Family Diner, in 2005, Vincent, decided to 
 # Building
 
 This is the official TRTFR-A source code. Written in lua with the [LÖVE framework](https://love2d.org). There is some messy code here and there, but feel free to use some some parts of the code on your own project (as long as you don't steal all the code and claim that you made it).
-If you want to use any of the renders, please contact the owners [**@El_Eternauta_1957**](https://gamejolt.com/@El_Eternauta_1957) & [@ShotOfRabbetDev](https://gamejolt.com/@ShotOfRabbetDev)
+If you want to use any of the renders, please contact the owners [@El_Eternauta_1957](https://gamejolt.com/@El_Eternauta_1957) & [@ShotOfRabbetDev](https://gamejolt.com/@ShotOfRabbetDev)
 
 This project come with special batch files (.bat) that can help run the code. To work correctly, these binds expect you to have the [LÖVE](https://love2d.org) and [Lover](https://github.com/Wolfyxon/lover) in the enviroment path (if you're windows)
 
