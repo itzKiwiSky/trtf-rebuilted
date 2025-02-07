@@ -1,8 +1,16 @@
 fsutil = require 'src.Modules.System.Utils.FSUtil'
 fontcache = require 'src.Modules.System.Utils.FontCache'
 LanguageController = require 'src.Modules.System.Utils.LanguageManager'
-love._FPSCap = 300
+love._FPSCap = 1000
 love._unfocusedFPSCap = 15
+
+local modes = love.window.getFullscreenModes()
+table.sort(modes, function(a, b) return a.width * a.height > b.width * b.height end) -- Ordena da maior para a menor
+love.window.resolutionModes = {}
+
+for i, mode in ipairs(modes) do
+    love.window.resolutionModes[i] = {mode.width, mode.height}
+end
 
 FazKiwi_LOGBUFFER = {}
 

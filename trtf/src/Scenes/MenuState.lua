@@ -384,11 +384,11 @@ function MenuState:mousepressed(x, y, button)
                 end
             end
         end
-    end
-    if button == 1 then
-        if collision.pointRect({ x = mx, y = my }, self.settingsGear.hitbox) then
-            self.configMenu = not self.configMenu
-            self.canUseMenu = not self.configMenu
+        if button == 1 then
+            if collision.pointRect({ x = mx, y = my }, self.settingsGear.hitbox) then
+                self.configMenu = not self.configMenu
+                self.canUseMenu = not self.configMenu
+            end
         end
     end
 

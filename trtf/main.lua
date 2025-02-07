@@ -32,10 +32,12 @@ function love.initialize()
         user = {
             settings = {
                 video = {
+                    resolution = 1,
                     fullscreen = false,
                     vsync = false,
+                    aspectRatio = false,
+                    fpsCap = 200,
                     antialiasing = true,
-                    displayFPS = true,
                 },
                 audio = {
                     masterVolume = 75,
@@ -51,21 +53,7 @@ function love.initialize()
                     subtitles = true,
                     discordRichPresence = true,
                     gamepadSupport = false,
-                },
-                controls = {
-                    ["confirm"] = {"key:return"},
-                    ["select_down"] = {"key:down", "key:s"},
-                    ["select_up"] = {"key:up", "ley:w"},
-
-                    -- gameplay --
-
-                    ["close_door_left"] = {"key:a", "key:left"},
-                    ["close_door_right"] = {"key:d", "key:right"},
-                    ["use_flashlight"] = {"key:lctrl"},
-                    ["use_tablet"] = {"key:space"},
-                    ["use_mask"] = {"key:s"},
-                    ["change_cam_plus"] = {"key:right"},
-                    ["change_cam_minus"] = {"key:left"},
+                    cacheNight = false,
                 }
             },
             progress = {
@@ -101,17 +89,11 @@ function love.initialize()
         system = {
             fullscreen = false,
             videoStats = false,
+        },
+        user = {
+            currentSettingsTab = "video"
         }
     }
-
-    -- setup input --
-    local inputSetup = {}
-    inputSetup.controls = gameslot.save.game.user.settings.controls
-    if gameslot.save.game.user.settings.misc.gamepadSupport then
-        inputSetup.joystick = love.joystick.getJoysticks()[1]
-    end
-
-    gameInput = baton.new(inputSetup)
 
     -- thread ping to send heartbeats on the gamejolt client to ensure the player is connected --
     th_ping = love.thread.newThread("src/Modules/Game/API/GamejoltPingThread.lua")

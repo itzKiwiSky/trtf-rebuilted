@@ -1,17 +1,20 @@
-return function()
-    local settings = {
-        lpadding = 16,
-        blank = function()end,
-        replaces = {
-            button = require 'trtf.src.Modules.Game.Interface.Replaces.Button'
-        },
-        fonts = {
-            title = fontcache.getFont("tnr", 50),
-            btnfont = fontcache.getFont("tnr", 26)
-        },
-        statesName = { "video", "audio", "misc" }
-    }
+local settings = {
+    lpadding = 16,
+    blank = function()end,
+    replaces = {
+        button = require 'trtf.src.Modules.Game.Interface.Replaces.Button'
+    },
+    fonts = {
+        title = fontcache.getFont("tnr", 50),
+        btnfont = fontcache.getFont("tnr", 26),
+        subtitleFont = fontcache.getFont("tnr", 32),
+        optionFont = fontcache.getFont("tnr", 40),
+        mainButtons = fontcache.getFont("tnr", 18)
+    },
+    states = { "video", "audio", "misc" },
+}
 
+return function()
     local lfskin = loveframes.GetActiveSkin()
 
     lfskin.controls = {}
@@ -28,38 +31,182 @@ return function()
     lfskin.controls.color_fore3  = {lume.color("#2c2359")}
     lfskin.controls.color_active = {lume.color("#1c1c56")}
 
+    local panelSkin = function(object)
+        local skin = object:GetSkin()
+        local x = object:GetX()
+        local y = object:GetY()
+        local w = object:GetWidth()
+        local h = object:GetHeight()
+
+        love.graphics.setColor(skin.controls.color_fore2)
+        love.graphics.rectangle("fill", x, y, w, h)
+        
+        love.graphics.setColor(skin.controls.color_fore0)
+        love.graphics.setLineWidth(3)
+        love.graphics.rectangle("line", x, y, w, h)
+        love.graphics.setLineWidth(1)
+    end
 
     local window = loveframes.Create("panel")
     window:SetSize(love.resconf.width, love.resconf.height)
     window.drawfunc = settings.blank
 
+    local optionPanel = loveframes.Create("panel")
+    optionPanel:SetSize(love.resconf.width / 2, love.resconf.height / 2 + 50)
+    optionPanel:CenterX()
+    optionPanel:SetY(love.resconf.height / 2 - 100)
+    optionPanel:SetAlwaysUpdate(true)
+    optionPanel.drawfunc = panelSkin
+
+    local SettingsMenu = {
+        ["video"] = function()
+            --[[
+                [.] - Resolution
+                [.] - Mode [Fullscreen, Windowed]
+                [.] - V-Sync
+                [.] - Aspect ratio
+                [.] - FPSCap
+                [.] - Antialiasing
+            ]]
+
+            local mainList = loveframes.Create("list")
+            mainList:SetParent(optionPanel)
+            mainList.drawfunc = function(object)
+                local skin = object:GetSkin()
+                local x = object:GetX()
+                local y = object:GetY()
+                local w = object:GetWidth()
+                local h = object:GetHeight()
+
+                love.graphics.setColor(0, 0, 0, 0.4)
+                love.graphics.rectangle("fill", x, y, w, h)
+            end
+
+            mainList.drawoverfunc = function(object)
+                local skin = object:GetSkin()
+                local x = object:GetX()
+                local y = object:GetY()
+                local w = object:GetWidth()
+                local h = object:GetHeight()
+
+                love.graphics.setColor(skin.controls.color_fore0)
+                love.graphics.setLineWidth(3)
+                love.graphics.rectangle("line", x, y, w, h)
+                love.graphics.setLineWidth(1)
+            end
+
+            mainList:SetPadding(8)
+            mainList:SetSize(optionPanel:GetWidth() - 16, optionPanel:GetHeight() - 16)
+            mainList:Center()
+            mainList:SetMouseWheelScrollAmount(6)
+
+            local options = {
+                function(grid)
+                    local optionTitle = loveframes.Create("text")
+                    optionTitle:SetFont(settings.fonts.optionFont)
+                    optionTitle:SetText("text")
+
+                    grid:AddItem(optionTitle, 1, 2)
+                end
+            }
+            --local button = loveframes.Create("button")
+
+            for i = 1, #options, 1 do
+                local itemGrid = loveframes.Create("grid")
+                --itemGrid:SetWidth(mainList:GetWidth())
+                itemGrid:SetHeight(32)
+                itemGrid:SetRows(1)
+                itemGrid:SetCellWidth(25)
+                itemGrid:SetColumns(mainList:GetWidth() / itemGrid:GetCellWidth() - 8)
+                itemGrid:SetCellHeight(32)
+                itemGrid:SetItemAutoSize(false)
+
+                options[i](itemGrid)
+
+                mainList:AddItem(itemGrid)
+            end
+        end,
+        ["audio"] = function()
+            local text = loveframes.Create("text")
+            text:SetParent(optionPanel)
+            text:SetFont(settings.fonts.btnfont)
+            text:Center()
+            text:SetText("come meu cu vai2")
+        end,
+        ["misc"] = function()
+            local text = loveframes.Create("text")
+            text:SetParent(optionPanel)
+            text:SetFont(settings.fonts.btnfont)
+            text:Center()
+            text:SetText("come meu cu vai3")
+        end,
+    }
+
+
     local txt = loveframes.Create("text")
     txt:SetDefaultColor(1, 1, 1, 1)
     txt:SetFont(settings.fonts.title)
     txt:SetParent(window)
-    txt:SetPos(20, 20)
+    txt:SetY(20)
     txt:SetText(languageService["menu_settings_title"])
     txt:CenterX()
 
+    local subtxt = loveframes.Create("text")
+    subtxt:SetDefaultColor(1, 1, 1, 1)
+    subtxt:SetFont(settings.fonts.subtitleFont)
+    subtxt:SetParent(window)
+    subtxt:SetY(130)
+    subtxt:SetAlwaysUpdate(true)
+    subtxt:SetText(languageService["menu_settings_categories_subtext_" .. registers.user.currentSettingsTab])
+    subtxt:CenterX()
+
     local buttonCol = loveframes.Create("grid")
     buttonCol:SetParent(window)
-    buttonCol:SetY(120)
+    buttonCol:SetY(180)
     buttonCol:SetWidth(love.resconf.width / 2)
     buttonCol:SetHeight(64)
     buttonCol:SetRows(1)
-    buttonCol:SetColumns(#settings.statesName)
+    buttonCol:SetColumns(#settings.states)
     buttonCol:SetCellWidth(128)
     buttonCol:SetCellHeight(64)
     buttonCol:SetCellPadding(32)
     buttonCol:SetItemAutoSize(true)
     buttonCol:SetX(love.resconf.width / 2 - buttonCol:GetWidth() / 2 + buttonCol:GetCellPadding())
     buttonCol.drawfunc = settings["blank"]
-    
-    for b = 1, #settings.statesName, 1 do
+
+    for b = 1, #settings.states, 1 do
         local btn = loveframes.Create("button")
         buttonCol:AddItem(btn, 1, b, "center")
         btn:SetFont(settings.fonts["btnfont"])
-        btn:SetText(languageService["menu_settings_categories_" .. settings.statesName[b]])
-        --btn.drawfunc = settings.replaces["button"]
+        btn:SetText(languageService["menu_settings_categories_" .. settings.states[b]])
+
+        btn.OnClick = function()
+            local objs = optionPanel:GetChildren()
+            for _, o in ipairs(objs) do
+                o:Remove()
+            end
+            SettingsMenu[settings.states[b]]()
+            registers.user.currentSettingsTab = settings.states[b]
+            subtxt:SetText(languageService["menu_settings_categories_subtext_" .. registers.user.currentSettingsTab])
+        end
+    end
+    SettingsMenu["video"]()
+
+    local exitButton = loveframes.Create("button")
+    exitButton:SetSize(96, 48)
+    exitButton:SetText("Exit")
+    exitButton:SetFont(settings.fonts["mainButtons"])
+    exitButton:SetPos(settings.lpadding, love.resconf.height - (exitButton:GetHeight() + settings.lpadding))
+    exitButton.OnClick = function(obj)
+        MenuState.configMenu = false
+    end
+
+    local saveButton = loveframes.Create("button")
+    saveButton:SetSize(148, 48)
+    saveButton:SetText("Save and Apply")
+    saveButton:SetFont(settings.fonts["mainButtons"])
+    saveButton:SetPos((exitButton:GetX() + exitButton:GetWidth()) + settings.lpadding, love.resconf.height - (saveButton:GetHeight() + settings.lpadding))
+    saveButton.OnClick = function(obj)
+
     end
 end

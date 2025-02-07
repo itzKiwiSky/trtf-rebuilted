@@ -17,7 +17,7 @@ function ViewManager.load(path)
         viewstruct.path = path
         viewstruct.lastmod = fileinfo.modtime
 
-        local sucess, err = pcall(viewfile())
+        local sucess, err = pcall(viewfile(ViewManager.useSettings))
         if not sucess then
             print(err)
         else
@@ -37,7 +37,7 @@ function ViewManager.reloadViews()
 
             local chunk = love.filesystem.load(view.path)
 
-            local sucess, err = pcall(chunk())
+            local sucess, err = pcall(chunk(ViewManager.useSettings))
             if err then
                 print(err)
             else

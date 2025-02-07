@@ -19,7 +19,12 @@
             "menu_settings_categories" : {
                 "menu_settings_categories_video" : "Video",
                 "menu_settings_categories_audio" : "Audio",
-                "menu_settings_categories_misc" : "Misc"
+                "menu_settings_categories_misc" : "Misc",
+                "menu_settings_categories_subtext" : {
+                    "menu_settings_categories_subtext_video" : "Video Settings",
+                    "menu_settings_categories_subtext_audio" : "Audio Settings",
+                    "menu_settings_categories_subtext_misc" : "Miscellaneous Settings"
+                }
             }
         },
         "menu_settings_gamejolt" : {

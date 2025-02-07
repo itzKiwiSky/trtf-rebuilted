@@ -1,18 +1,18 @@
 [Settings]
     [.] - Video
-        [.] - Resolution
-        [.] - Mode [Fullscreen, Windowed]
-        [.] - V-Sync
-        [.] - Aspect ratio
-        [.] - FPSCap
-        [.] - Antialiasing
+        [X] - Resolution
+        [X] - Mode [Fullscreen, Windowed]
+        [X] - V-Sync
+        [X] - Aspect ratio
+        [X] - FPSCap
+        [X] - Antialiasing
     [.] - Audio
-        [.] - Master volume
-        [.] - Music volume
-        [.] - SFX volume
+        [X] - Master volume
+        [X] - Music volume
+        [X] - SFX volume
     [.] - Misc
-        [.] - Subtitles
-        [.] - Cache night assets
-        [.] - DiscordRPC
-        [.] - Gamejolt (button)
-        [.] - Language
+        [X] - Subtitles
+        [X] - Cache night assets
+        [X] - DiscordRPC
+        [X] - Gamejolt (button)
+        [X] - Language
