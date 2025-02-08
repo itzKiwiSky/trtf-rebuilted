@@ -28,9 +28,9 @@ local Common = {}
 
 Common.Event =
 {
-	None = 0,
-	Pressed = 1,
-	Released = 2
+    None = 0,
+    Pressed = 1,
+    Released = 2
 }
 
 return Common

@@ -72,11 +72,15 @@ function love.run()
 
     fontcache.init()
 
+    --[[
     local addons = fsutil.scanFolder("src/Modules/System/Addons")
     for a = 1, #addons, 1 do
         local ad = addons[a]:gsub(".lua", "")
         require(ad:gsub("/", "%."))
     end
+    ]]--
+
+    require("src/Modules/System/Addons")
 
     local libs = love.filesystem.getDirectoryItems("libraries")
     for l = 1, #libs, 1 do

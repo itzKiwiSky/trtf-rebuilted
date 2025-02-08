@@ -7,6 +7,18 @@ function table.contains(_table, _value)
     return false
 end
 
+function table.concatf(tbl, sep, transform)
+    sep = sep or ""
+    transform = transform or function(k, v) return v end -- Função padrão retorna o próprio valor
+    
+    local result = {}
+    for k, v in pairs(tbl) do
+        result[#result + 1] = transform(k, v)
+    end
+    
+    return table.concat(result, sep)
+end
+
 function table.find(t, val, idx)
     idx = idx or 1
     if idx < 0 then idx = #t + idx + 1 end

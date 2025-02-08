@@ -42,68 +42,68 @@ local IGNORE = { Ignore = true }
 local labelColor = {}
 
 function CheckBox.Begin(checked, label, options)
-	local statHandle = Stats.Begin('CheckBox', 'Slab')
+    local statHandle = Stats.Begin('CheckBox', 'Slab')
 
-	label = label or ""
+    label = label or ""
 
-	options = options or EMPTY
-	local id = options.Id or label
-	local rounding = options.Rounding or Style.CheckBoxRounding
-	local size = options.Size or Style.Font:getHeight()
-	local disabled = options.Disabled
+    options = options or EMPTY
+    local id = options.Id or label
+    local rounding = options.Rounding or Style.CheckBoxRounding
+    local size = options.Size or Style.Font:getHeight()
+    local disabled = options.Disabled
 
-	local itemId = Window.GetItemId(id)
-	local boxW, boxH = size, size
-	local textW, textH = Text.GetSize(label)
-	local w = boxW + Cursor.PadX() + 2.0 + textW
-	local h = max(boxH, textH)
-	local radius = size * 0.5
+    local itemId = Window.GetItemId(id)
+    local boxW, boxH = size, size
+    local textW, textH = Text.GetSize(label)
+    local w = boxW + Cursor.PadX() + 2.0 + textW
+    local h = max(boxH, textH)
+    local radius = size * 0.5
 
-	LayoutManager.AddControl(w, h, 'CheckBox')
+    LayoutManager.AddControl(w, h, 'CheckBox')
 
-	local result = false
-	local color = disabled and Style.CheckBoxDisabledColor or Style.ButtonColor
+    local result = false
+    local color = disabled and Style.CheckBoxDisabledColor or Style.ButtonColor
 
-	local x, y = Cursor.GetPosition()
-	local mouseX, mouseY = Window.GetMousePosition()
-	local isObstructed = Window.IsObstructedAtMouse()
-	if not isObstructed and not disabled and x <= mouseX and mouseX <= x + w and y <= mouseY and mouseY <= y + h then
-		color = Style.ButtonHoveredColor
+    local x, y = Cursor.GetPosition()
+    local mouseX, mouseY = Window.GetMousePosition()
+    local isObstructed = Window.IsObstructedAtMouse()
+    if not isObstructed and not disabled and x <= mouseX and mouseX <= x + w and y <= mouseY and mouseY <= y + h then
+        color = Style.ButtonHoveredColor
 
-		if Mouse.IsDown(1) then
-			color = Style.ButtonPressedColor
-		elseif Mouse.IsReleased(1) then
-			result = true
-		end
-	end
+        if Mouse.IsDown(1) then
+            color = Style.ButtonPressedColor
+        elseif Mouse.IsReleased(1) then
+            result = true
+        end
+    end
 
-	DrawCommands.Rectangle('fill', x, y, boxW, boxH, color, rounding)
-	if checked then
-		DrawCommands.Cross(x + radius, y + radius, radius - 1.0, Style.CheckBoxSelectedColor)
-	end
-	if label ~= "" then
-		local cursorY = Cursor.GetY()
-		Cursor.AdvanceX(boxW + 2.0)
-		LayoutManager.Begin('Ignore', IGNORE)
-		labelColor.Color = disabled and Style.TextDisabledColor or nil
-		Text.Begin(label, labelColor)
-		LayoutManager.End()
-		Cursor.SetY(cursorY)
-	end
+    DrawCommands.Rectangle('fill', x, y, boxW, boxH, color, rounding)
+    if checked then
+        DrawCommands.Cross(x + radius, y + radius, radius - 1.0, Style.CheckBoxSelectedColor)
+    end
+    if label ~= "" then
+        local cursorY = Cursor.GetY()
+        Cursor.AdvanceX(boxW + 2.0)
+        LayoutManager.Begin('Ignore', IGNORE)
+        labelColor.Color = disabled and Style.TextDisabledColor or nil
+        Text.Begin(label, labelColor)
+        LayoutManager.End()
+        Cursor.SetY(cursorY)
+    end
 
-	if not isObstructed and x <= mouseX and mouseX <= x + w and y <= mouseY and mouseY <= y + h then
-		Tooltip.Begin(options.Tooltip or "")
-		Window.SetHotItem(itemId)
-	end
+    if not isObstructed and x <= mouseX and mouseX <= x + w and y <= mouseY and mouseY <= y + h then
+        Tooltip.Begin(options.Tooltip or "")
+        Window.SetHotItem(itemId)
+    end
 
-	Cursor.SetItemBounds(x, y, w, h)
-	Cursor.AdvanceY(h)
+    Cursor.SetItemBounds(x, y, w, h)
+    Cursor.AdvanceY(h)
 
-	Window.AddItem(x, y, w, h, itemId)
+    Window.AddItem(x, y, w, h, itemId)
 
-	Stats.End(statHandle)
+    Stats.End(statHandle)
 
-	return result
+    return result
 end
 
 return CheckBox

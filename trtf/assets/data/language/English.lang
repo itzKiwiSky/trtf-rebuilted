@@ -15,6 +15,18 @@
             "menu_button_exit" : "Exit"
         },
         "settings" : {
+            "menu_settings_buttons" : {
+                "menu_settings_buttons_save" : "Save and Apply",
+                "menu_settings_buttons_exit" : "Exit",
+                "menu_settings_buttons_modes" : {
+                    "menu_settings_buttons_modes_fullscreen" : "Fullscreen",
+                    "menu_settings_buttons_modes_windowed" : "Windowed",
+                    "menu_settings_buttons_modes_turn_on" : "Enabled",
+                    "menu_settings_buttons_modes_turn_off" : "Disabled",
+                    "menu_settings_buttons_modes_aspect_proportional" : "Proportional",
+                    "menu_settings_buttons_modes_aspect_streched" : "Stretched"
+                }
+            },
             "menu_settings_title" : "Settings",
             "menu_settings_categories" : {
                 "menu_settings_categories_video" : "Video",
@@ -29,7 +41,7 @@
                     "menu_settings_video" : {
                         "menu_settings_video_resolution" : "Resolution",
                         "menu_settings_video_fullscreen" : "Fullscreen",
-                        "menu_settings_video_vsync" : "VSync",
+                        "menu_settings_video_vsync" : "V-Sync",
                         "menu_settings_video_aspectRatio" : "Aspect ratio",
                         "menu_settings_video_fpsCap" : "FPS Limit",
                         "menu_settings_video_antialiasing" : "Antialiasing"
@@ -65,8 +77,6 @@
             }
         },
         "menu_gamejolt_login_text" : "Welcome back %s",
-        "menu_hold_to_delete_data" : "Hold [DELETE] to erase your data",
-        "menu_hold_to_delete_progress" : "all your data will be erased, relese the key now to cancel or wait.",
         "loading" : {
             "loading_text" : "Loading... %d%%",
             "loading_ready" : "Press any key or click anywhere to continue"

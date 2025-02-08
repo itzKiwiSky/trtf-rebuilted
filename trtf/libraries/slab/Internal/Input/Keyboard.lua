@@ -38,99 +38,99 @@ local Events = {}
 local Keys = {}
 
 local function PushEvent(Type, Key, Scancode, IsRepeat)
-	insert(Events, {
-		Type = Type,
-		Key = Key,
-		Scancode = Scancode,
-		IsRepeat = IsRepeat,
-		Frame = Stats.GetFrameNumber()
-	})
+    insert(Events, {
+        Type = Type,
+        Key = Key,
+        Scancode = Scancode,
+        IsRepeat = IsRepeat,
+        Frame = Stats.GetFrameNumber()
+    })
 end
 
 local function OnKeyPressed(Key, Scancode, IsRepeat)
-	PushEvent(Common.Event.Pressed, Key, Scancode, IsRepeat)
+    PushEvent(Common.Event.Pressed, Key, Scancode, IsRepeat)
 
-	if KeyPressedFn ~= nil then
-		KeyPressedFn(Key, Scancode, IsRepeat)
-	end
+    if KeyPressedFn ~= nil then
+        KeyPressedFn(Key, Scancode, IsRepeat)
+    end
 end
 
 local function OnKeyReleased(Key, Scancode)
-	PushEvent(Common.Event.Released, Key, Scancode, false)
+    PushEvent(Common.Event.Released, Key, Scancode, false)
 
-	if KeyReleasedFn ~= nil then
-		KeyReleasedFn(Key, Scancode)
-	end
+    if KeyReleasedFn ~= nil then
+        KeyReleasedFn(Key, Scancode)
+    end
 end
 
 local function ProcessEvents()
-	Keys = {}
+    Keys = {}
 
-	-- Soft keyboards found on mobile/tablet devices will push keypressed/keyreleased events when the user
-	-- releases from the pressed key. All released events pushed as the same frame as the pressed events will be
-	-- pushed to the events table for the next frame to process.
-	local NextEvents = {}
+    -- Soft keyboards found on mobile/tablet devices will push keypressed/keyreleased events when the user
+    -- releases from the pressed key. All released events pushed as the same frame as the pressed events will be
+    -- pushed to the events table for the next frame to process.
+    local NextEvents = {}
 
-	for I, V in ipairs(Events) do
-		if Keys[V.Scancode] == nil then
-			Keys[V.Scancode] = {}
-		end
+    for I, V in ipairs(Events) do
+        if Keys[V.Scancode] == nil then
+            Keys[V.Scancode] = {}
+        end
 
-		local Key = Keys[V.Scancode]
+        local Key = Keys[V.Scancode]
 
-		if Utility.IsMobile() and V.Type == Common.Event.Released and Key.Frame == V.Frame then
-			V.Frame = V.Frame + 1
-			insert(NextEvents, V)
-		else
-			Key.Type = V.Type
-			Key.Key = V.Key
-			Key.Scancode = V.Scancode
-			Key.IsRepeat = V.IsRepeat
-			Key.Frame = V.Frame
-		end
-	end
+        if Utility.IsMobile() and V.Type == Common.Event.Released and Key.Frame == V.Frame then
+            V.Frame = V.Frame + 1
+            insert(NextEvents, V)
+        else
+            Key.Type = V.Type
+            Key.Key = V.Key
+            Key.Scancode = V.Scancode
+            Key.IsRepeat = V.IsRepeat
+            Key.Frame = V.Frame
+        end
+    end
 
-	Events = NextEvents
+    Events = NextEvents
 end
 
 Keyboard.OnKeyPressed = OnKeyPressed;
 Keyboard.OnKeyReleased = OnKeyReleased;
 
 function Keyboard.Initialize(Args, dontInterceptEventHandlers)
-	if not dontInterceptEventHandlers then
-		KeyPressedFn = love.handlers['keypressed']
-		KeyReleasedFn = love.handlers['keyreleased']
-		love.handlers['keypressed'] = OnKeyPressed
-		love.handlers['keyreleased'] = OnKeyReleased
-	end
+    if not dontInterceptEventHandlers then
+        KeyPressedFn = love.handlers['keypressed']
+        KeyReleasedFn = love.handlers['keyreleased']
+        love.handlers['keypressed'] = OnKeyPressed
+        love.handlers['keyreleased'] = OnKeyReleased
+    end
 end
 
 function Keyboard.Update()
-	ProcessEvents()
+    ProcessEvents()
 end
 
 function Keyboard.IsPressed(Key)
-	local Item = Keys[Key]
+    local Item = Keys[Key]
 
-	if Item == nil then
-		return false
-	end
+    if Item == nil then
+        return false
+    end
 
-	return Item.Type == Common.Event.Pressed
+    return Item.Type == Common.Event.Pressed
 end
 
 function Keyboard.IsReleased(Key)
-	local Item = Keys[Key]
+    local Item = Keys[Key]
 
-	if Item == nil then
-		return false
-	end
+    if Item == nil then
+        return false
+    end
 
-	return Item.Type == Common.Event.Released
+    return Item.Type == Common.Event.Released
 end
 
 function Keyboard.IsDown(Key)
-	return love.keyboard.isScancodeDown(Key)
+    return love.keyboard.isScancodeDown(Key)
 end
 
 return Keyboard

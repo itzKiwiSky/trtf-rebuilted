@@ -35,61 +35,61 @@ local MenuBar = {}
 local Instances = {}
 
 local function GetInstance()
-	local Win = Window.Top()
-	if Instances[Win] == nil then
-		local Instance = {}
-		Instance.Selected = nil
-		Instance.Id = Win.Id .. '_MenuBar'
-		Instances[Win] = Instance
-	end
-	return Instances[Win]
+    local Win = Window.Top()
+    if Instances[Win] == nil then
+        local Instance = {}
+        Instance.Selected = nil
+        Instance.Id = Win.Id .. '_MenuBar'
+        Instances[Win] = Instance
+    end
+    return Instances[Win]
 end
 
 function MenuBar.Begin(IsMainMenuBar)
-	local X, Y = Cursor.GetPosition()
-	local WinX, WinY, WinW, WinH = Window.GetBounds()
-	local Instance = GetInstance()
+    local X, Y = Cursor.GetPosition()
+    local WinX, WinY, WinW, WinH = Window.GetBounds()
+    local Instance = GetInstance()
 
-	if not MenuState.IsOpened then
-		Instance.Selected = nil
-	end
+    if not MenuState.IsOpened then
+        Instance.Selected = nil
+    end
 
-	if IsMainMenuBar then
-		MenuState.MainMenuBarH = Style.Font:getHeight() + Style.MenuPadH
-	end
+    if IsMainMenuBar then
+        MenuState.MainMenuBarH = Style.Font:getHeight() + Style.MenuPadH
+    end
 
-	Window.Begin(Instance.Id,
-	{
-		X = X,
-		Y = Y,
-		W = WinW,
-		H = Style.Font:getHeight() + Style.MenuPadH,
-		AllowResize = false,
-		AllowFocus = false,
-		Border = 0.0,
-		BgColor = Style.MenuColor,
-		NoOutline = true,
-		IsMenuBar = true,
-		AutoSizeWindow = false,
-		AutoSizeContent = false,
-		Layer = IsMainMenuBar and 'MainMenuBar' or nil,
-		Rounding = 0.0,
-		NoSavedSettings = true
-	})
+    Window.Begin(Instance.Id,
+    {
+        X = X,
+        Y = Y,
+        W = WinW,
+        H = Style.Font:getHeight() + Style.MenuPadH,
+        AllowResize = false,
+        AllowFocus = false,
+        Border = 0.0,
+        BgColor = Style.MenuColor,
+        NoOutline = true,
+        IsMenuBar = true,
+        AutoSizeWindow = false,
+        AutoSizeContent = false,
+        Layer = IsMainMenuBar and 'MainMenuBar' or nil,
+        Rounding = 0.0,
+        NoSavedSettings = true
+    })
 
-	Cursor.AdvanceX(4.0)
+    Cursor.AdvanceX(4.0)
 
-	return true
+    return true
 end
 
 function MenuBar.End()
-	Window.End()
+    Window.End()
 end
 
 function MenuBar.Clear()
-	for I, V in ipairs(Instances) do
-		V.Selected = nil
-	end
+    for I, V in ipairs(Instances) do
+        V.Selected = nil
+    end
 end
 
 return MenuBar

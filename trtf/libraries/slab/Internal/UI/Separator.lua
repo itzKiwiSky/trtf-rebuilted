@@ -35,25 +35,25 @@ local Window = require(SLAB_PATH .. '.Internal.UI.Window')
 local Separator = {}
 
 function Separator.Begin(Options)
-	Options = Options == nil and {} or Options
-	Options.IncludeBorders = Options.IncludeBorders == nil and false or Options.IncludeBorders
-	Options.H = Options.H == nil and 4.0 or Options.H
-	Options.Thickness = Options.Thickness == nil and 1.0 or Options.Thickness
+    Options = Options == nil and {} or Options
+    Options.IncludeBorders = Options.IncludeBorders == nil and false or Options.IncludeBorders
+    Options.H = Options.H == nil and 4.0 or Options.H
+    Options.Thickness = Options.Thickness == nil and 1.0 or Options.Thickness
 
-	local W, H = LayoutManager.GetActiveSize()
-	W, H = LayoutManager.ComputeSize(W, max(Options.H, Options.Thickness))
-	LayoutManager.AddControl(W, H, 'Separator')
-	local X, Y = Cursor.GetPosition()
+    local W, H = LayoutManager.GetActiveSize()
+    W, H = LayoutManager.ComputeSize(W, max(Options.H, Options.Thickness))
+    LayoutManager.AddControl(W, H, 'Separator')
+    local X, Y = Cursor.GetPosition()
 
-	if Options.IncludeBorders then
-		W = W + Window.GetBorder() * 2
-		X = X - Window.GetBorder()
-	end
+    if Options.IncludeBorders then
+        W = W + Window.GetBorder() * 2
+        X = X - Window.GetBorder()
+    end
 
-	DrawCommands.Line(X, Y + H * 0.5, X + W, Y + H * 0.5, Options.Thickness, Style.SeparatorColor)
+    DrawCommands.Line(X, Y + H * 0.5, X + W, Y + H * 0.5, Options.Thickness, Style.SeparatorColor)
 
-	Cursor.SetItemBounds(X, Y, W, H)
-	Cursor.AdvanceY(H)
+    Cursor.SetItemBounds(X, Y, W, H)
+    Cursor.AdvanceY(H)
 end
 
 return Separator

@@ -28,23 +28,23 @@ local IdCache = {}
 IdCache.__index = IdCache
 
 function IdCache:get(parentId, id)
-	local pId = self._ids[parentId]
-	local resultId = pId and pId[id]
+    local pId = self._ids[parentId]
+    local resultId = pId and pId[id]
 
-	if resultId then return resultId end
+    if resultId then return resultId end
 
-	resultId = ("%s.%s"):format(parentId, id)
-	if pId then
-		pId[id] = resultId
-	else
-		self._ids[parentId] = { [id] = resultId }
-	end
+    resultId = ("%s.%s"):format(parentId, id)
+    if pId then
+        pId[id] = resultId
+    else
+        self._ids[parentId] = { [id] = resultId }
+    end
 
-	return resultId
+    return resultId
 end
 
 return function()
-	return setmetatable({
-		_ids = {}
-	}, IdCache)
+    return setmetatable({
+        _ids = {}
+    }, IdCache)
 end

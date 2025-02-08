@@ -20,7 +20,7 @@ function love.graphics.getQuads(filename)
     return image, Quads
 end
 
-function love.graphics.getHashedQuads(filename)
+function love.graphics.getQuadFromHash(filename)
     local image = love.graphics.newImage(filename .. ".png")
     local jsonData = love.filesystem.read(filename .. ".json")
     local sparrow = json.decode(jsonData)
@@ -94,21 +94,23 @@ function love.graphics.newGradient(dir, ...)
     return love.graphics.newMesh(meshData, "strip", "static")
 end
 
-local function _normalizeColor(value)
-    if type(value) == "number" then
-        if value >= 0 and value <= 1 then
-            return value
-        elseif value >= 0 and value <= 255 then
-            return value / 255
-        else
-            error("Color value must be between 0 and 1 or between 0 and 255.")
-        end
-    else
-        error("Color value must be a number.")
-    end
-end
-
+--[[
 function love.graphics.setHexColor(_r, _g, _b, _a)
+
+    local function _normalizeColor(value)
+        if type(value) == "number" then
+            if value >= 0 and value <= 1 then
+                return value
+            elseif value >= 0 and value <= 255 then
+                return value / 255
+            else
+                error("Color value must be between 0 and 1 or between 0 and 255.")
+            end
+        else
+            error("Color value must be a number.")
+        end
+    end
+
     if type(_r) == "string" then
         local r, g, b, a = _r:match("#(%x%x)(%x%x)(%x%x)(%x%x)")
         if r then
@@ -122,5 +124,5 @@ function love.graphics.setHexColor(_r, _g, _b, _a)
         lgSetColor(r, g, b, a or 1)
     end
 end
-
+]]--
 return love.graphics

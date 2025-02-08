@@ -1,4 +1,5 @@
-function debug.formattable(tbl, indent)
+function debug.formattable(tbl, indent, crawlTable)
+    crawlTable = crawlTable or false
     indent = indent or 0
 
     local toprint = string.rep(" ", indent) .. "{\r\n"
@@ -15,8 +16,11 @@ function debug.formattable(tbl, indent)
         elseif (type(v) == "string") then
             toprint = toprint .. "\"" .. v .. "\",\r\n"
         elseif (type(v) == "table") then
-            toprint = toprint  .. "{...},\r\n"
-            --toprint = toprint .. debug.formattable(v, indent + 2) .. ",\r\n"
+            if crawlTable then
+                toprint = toprint .. debug.formattable(v, indent + 1, crawlTable) .. ",\r\n"
+            else
+                toprint = toprint  .. "{...},\r\n"
+            end
         else
             toprint = toprint .. "\"" .. tostring(v) .. "\",\r\n"
         end

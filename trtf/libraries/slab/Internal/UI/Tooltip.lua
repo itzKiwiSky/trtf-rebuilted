@@ -47,66 +47,66 @@ local OffsetY = 0.0
 local ResetSize = false
 
 function Tooltip.Begin(Tip)
-	if Tip == nil or Tip == "" then
-		return
-	end
+    if Tip == nil or Tip == "" then
+        return
+    end
 
-	local Elapsed = love.timer.getTime() - LastDisplayTime
-	if Elapsed > TooltipExpireTime then
-		AccumDisplayTime = 0.0
-		Alpha = 0.0
-		ResetSize = true
-	end
+    local Elapsed = love.timer.getTime() - LastDisplayTime
+    if Elapsed > TooltipExpireTime then
+        AccumDisplayTime = 0.0
+        Alpha = 0.0
+        ResetSize = true
+    end
 
-	local DeltaTime = love.timer.getDelta()
-	AccumDisplayTime = AccumDisplayTime + DeltaTime
-	LastDisplayTime = love.timer.getTime()
+    local DeltaTime = love.timer.getDelta()
+    AccumDisplayTime = AccumDisplayTime + DeltaTime
+    LastDisplayTime = love.timer.getTime()
 
-	if AccumDisplayTime > TooltipTime then
-		local X, Y = Mouse.Position()
-		Alpha = min(Alpha + DeltaTime * 4.0, 1.0)
-		local BgColor = Utility.MakeColor(Style.WindowBackgroundColor)
-		local TextColor = Utility.MakeColor(Style.TextColor)
-		BgColor[4] = Alpha
-		TextColor[4] = Alpha
+    if AccumDisplayTime > TooltipTime then
+        local X, Y = Mouse.Position()
+        Alpha = min(Alpha + DeltaTime * 4.0, 1.0)
+        local BgColor = Utility.MakeColor(Style.WindowBackgroundColor)
+        local TextColor = Utility.MakeColor(Style.TextColor)
+        BgColor[4] = Alpha
+        TextColor[4] = Alpha
 
-		local CursorX, CursorY = Cursor.GetPosition()
+        local CursorX, CursorY = Cursor.GetPosition()
 
-		LayoutManager.Begin('Ignore', {Ignore = true})
-		Window.Begin('tooltip',
-		{
-			X = X,
-			Y = Y - OffsetY,
-			W = 0,
-			H = 0,
-			AutoSizeWindow = true,
-			AutoSizeContent = false,
-			AllowResize = false,
-			AllowFocus = false,
-			Layer = 'ContextMenu',
-			ResetWindowSize = ResetSize,
-			CanObstruct = false,
-			NoSavedSettings = true
-		})
-		Text.BeginFormatted(Tip, {Color = TextColor})
-		OffsetY = Window.GetHeight()
-		Window.End()
-		LayoutManager.End()
-		Cursor.SetPosition(CursorX, CursorY)
-		ResetSize = false
-	end
+        LayoutManager.Begin('Ignore', {Ignore = true})
+        Window.Begin('tooltip',
+        {
+            X = X,
+            Y = Y - OffsetY,
+            W = 0,
+            H = 0,
+            AutoSizeWindow = true,
+            AutoSizeContent = false,
+            AllowResize = false,
+            AllowFocus = false,
+            Layer = 'ContextMenu',
+            ResetWindowSize = ResetSize,
+            CanObstruct = false,
+            NoSavedSettings = true
+        })
+        Text.BeginFormatted(Tip, {Color = TextColor})
+        OffsetY = Window.GetHeight()
+        Window.End()
+        LayoutManager.End()
+        Cursor.SetPosition(CursorX, CursorY)
+        ResetSize = false
+    end
 end
 
 function Tooltip.GetDebugInfo()
-	local Info = {}
+    local Info = {}
 
-	local Elapsed = love.timer.getTime() - LastDisplayTime
-	insert(Info, format("Time: %.2f", AccumDisplayTime))
-	insert(Info, format("Is Visible: %s", tostring(AccumDisplayTime > TooltipTime and Elapsed <= TooltipExpireTime)))
-	insert(Info, format("Time to Display: %.2f", TooltipTime))
-	insert(Info, format("Expire Time: %f", TooltipExpireTime))
+    local Elapsed = love.timer.getTime() - LastDisplayTime
+    insert(Info, format("Time: %.2f", AccumDisplayTime))
+    insert(Info, format("Is Visible: %s", tostring(AccumDisplayTime > TooltipTime and Elapsed <= TooltipExpireTime)))
+    insert(Info, format("Time to Display: %.2f", TooltipTime))
+    insert(Info, format("Expire Time: %f", TooltipExpireTime))
 
-	return Info
+    return Info
 end
 
 return Tooltip

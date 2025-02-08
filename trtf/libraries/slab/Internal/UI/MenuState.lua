@@ -26,10 +26,10 @@ SOFTWARE.
 
 local MenuState =
 {
-	IsOpened = false,
-	WasOpened = false,
-	RequestClose = false,
-	MainMenuBarH = 0
+    IsOpened = false,
+    WasOpened = false,
+    RequestClose = false,
+    MainMenuBarH = 0
 }
 
 return MenuState

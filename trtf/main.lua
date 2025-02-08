@@ -69,7 +69,7 @@ function love.initialize()
 
     -- volume control --
     love.audio.setVolume(gameslot.save.game.user.settings.audio.masterVolume * 0.01)
-    love.audio.setVolume(0.01)
+    love.audio.setVolume(0.001)
     SoundController.getChannel("music"):setVolume(gameslot.save.game.user.settings.audio.musicVolume)
     SoundController.getChannel("sfx"):setVolume(gameslot.save.game.user.settings.audio.sfxVolume)
 
@@ -92,7 +92,7 @@ function love.initialize()
         },
         user = {
             currentSettingsTab = "video",
-            virtualSettings = gameslot.save.game.user.settings.misc.gamejolt
+            virtualSettings = gameslot.save.game.user.settings
         }
     }
 
@@ -137,6 +137,7 @@ function love.draw()
         gamestate.current():draw()
         subtitlesController:draw()
     resolution.stop()
+    love.graphics.print(debug.formattable(registers.user.virtualSettings, 1, true), 5, 20)
 end
 
 function love.update(elapsed)
