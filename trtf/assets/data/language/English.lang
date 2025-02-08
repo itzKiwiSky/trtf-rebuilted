@@ -24,6 +24,33 @@
                     "menu_settings_categories_subtext_video" : "Video Settings",
                     "menu_settings_categories_subtext_audio" : "Audio Settings",
                     "menu_settings_categories_subtext_misc" : "Miscellaneous Settings"
+                },
+                "menu_settings" : {
+                    "menu_settings_video" : {
+                        "menu_settings_video_resolution" : "Resolution",
+                        "menu_settings_video_fullscreen" : "Fullscreen",
+                        "menu_settings_video_vsync" : "VSync",
+                        "menu_settings_video_aspectRatio" : "Aspect ratio",
+                        "menu_settings_video_fpsCap" : "FPS Limit",
+                        "menu_settings_video_antialiasing" : "Antialiasing"
+                    },
+                    "menu_settings_audio" : {
+                        "menu_settings_audio_master" : "Master volume",
+                        "menu_settings_audio_music" : "Music volume",
+                        "menu_settings_audio_sfx" : "Sound effects volume"
+                    },
+                    "menu_settings_misc" : {
+                        "menu_settings_misc_language" : "Language",
+                        "menu_settings_misc_gamejolt" : {
+                            "menu_settings_misc_gamejolt_title" : "Gamejolt",
+                            "menu_settings_misc_gamejolt_connected" : "Disconnect",
+                            "menu_settings_misc_gamejolt_not_connected" : "Connect"
+                        },
+                        "menu_settings_misc_subtitkes" : "Subtitles",
+                        "menu_settings_misc_discordrpc" : "Discord Rich Presence",
+                        "menu_settings_misc_gamepad" : "Controller support",
+                        "menu_settings_misc_cache_night" : "Cache night assets"
+                    }
                 }
             }
         },

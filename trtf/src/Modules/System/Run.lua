@@ -2,7 +2,7 @@ fsutil = require 'src.Modules.System.Utils.FSUtil'
 fontcache = require 'src.Modules.System.Utils.FontCache'
 LanguageController = require 'src.Modules.System.Utils.LanguageManager'
 love._FPSCap = 1000
-love._unfocusedFPSCap = 15
+love._unfocusedFPSCap = 20
 
 local modes = love.window.getFullscreenModes()
 table.sort(modes, function(a, b) return a.width * a.height > b.width * b.height end) -- Ordena da maior para a menor
@@ -16,7 +16,7 @@ FazKiwi_LOGBUFFER = {}
 
 local ogprint = print
 print = function(...)
-    table.insert(_G.FazKiwi_LOGBUFFER, ("[%s] %s"):format(os.date("%Y/%m/%d %H:%M:%S"), table.concat({...}, " ")))
+    table.insert(_G.FazKiwi_LOGBUFFER, ("[%s] %s"):format(os.date("%Y/%m/%d %H:%M:%S"), table.concat({ tostring(...) }, " ")))
     ogprint(...)
 end
 

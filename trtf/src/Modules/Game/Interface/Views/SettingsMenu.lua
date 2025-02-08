@@ -9,7 +9,8 @@ local settings = {
         btnfont = fontcache.getFont("tnr", 26),
         subtitleFont = fontcache.getFont("tnr", 32),
         optionFont = fontcache.getFont("tnr", 40),
-        mainButtons = fontcache.getFont("tnr", 18)
+        mainButtons = fontcache.getFont("tnr", 18),
+        multi = fontcache.getFont("tnr", 20)
     },
     states = { "video", "audio", "misc" },
 }
@@ -58,6 +59,10 @@ return function()
     optionPanel:SetAlwaysUpdate(true)
     optionPanel.drawfunc = panelSkin
 
+    local multiselectionSkin = function(obj)
+        
+    end
+
     local SettingsMenu = {
         ["video"] = function()
             --[[
@@ -103,10 +108,26 @@ return function()
             local options = {
                 function(grid)
                     local optionTitle = loveframes.Create("text")
+                    optionTitle:SetDefaultColor(1, 1, 1, 1)
                     optionTitle:SetFont(settings.fonts.optionFont)
-                    optionTitle:SetText("text")
+                    optionTitle:SetText(languageService["menu_settings_video_resolution"])
 
-                    grid:AddItem(optionTitle, 1, 2)
+                    local resmultichoice = loveframes.Create("multichoice")
+                    resmultichoice:SetPadding(5)
+                    local ogMulChDraw = resmultichoice.drawfunc
+                    resmultichoice.drawfunc = function(objx)
+                        objx:GetSkin().controls.smallfont = settings.fonts.multi
+                        ogMulChDraw(objx)
+                    end
+
+                    resmultichoice:SetHeight(38)
+                    resmultichoice:Clear()
+                    for _, res in ipairs(love.window.resolutionModes) do
+                        resmultichoice:AddChoice(string.format("%s x %s", res[1], res[2]))
+                    end
+
+                    grid:AddItem(optionTitle, 1, 1, "left")
+                    grid:AddItem(resmultichoice, 1, 12, "left")
                 end
             }
             --local button = loveframes.Create("button")
@@ -120,7 +141,7 @@ return function()
                 itemGrid:SetColumns(mainList:GetWidth() / itemGrid:GetCellWidth() - 8)
                 itemGrid:SetCellHeight(32)
                 itemGrid:SetItemAutoSize(false)
-
+                itemGrid.drawfunc = settings.blank
                 options[i](itemGrid)
 
                 mainList:AddItem(itemGrid)

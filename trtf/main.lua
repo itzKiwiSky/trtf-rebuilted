@@ -91,7 +91,8 @@ function love.initialize()
             videoStats = false,
         },
         user = {
-            currentSettingsTab = "video"
+            currentSettingsTab = "video",
+            virtualSettings = gameslot.save.game.user.settings.misc.gamejolt
         }
     }
 
@@ -101,8 +102,8 @@ function love.initialize()
     tmr_gamejoltHeartbeat = timer.new()
     tmr_gamejoltHeartbeat:every(20, function()
         th_ping:start(
-            gameslot.save.game.user.settings.gamejolt.username, 
-            gameslot.save.game.user.settings.gamejolt.usertoken
+            gameslot.save.game.user.settings.misc.gamejolt.username, 
+            gameslot.save.game.user.settings.misc.gamejolt.usertoken
         )
     end)
 
