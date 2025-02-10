@@ -113,6 +113,9 @@ function love.initialize()
         require("src.Scenes." .. states[s]:gsub(".lua", ""))
     end
 
+    love.graphics.getWidth = function() return love.resconf.width end
+    love.graphics.getHeight = function() return love.resconf.height end
+    love.graphics.getDimensions = function() return love.resconf.width, love.resconf.height end
     resolution.init(love.resconf)
 
     gamestate.registerEvents({

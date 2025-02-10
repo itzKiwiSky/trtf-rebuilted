@@ -303,166 +303,166 @@ function newobject:CalculateSize()
             self.itemheight = self.itemheight - hbar.height
             self.extraheight = self.itemheight - height
             self.hbar = false
-			self.offsetx = 0
-		end
-	end
-	
+            self.offsetx = 0
+        end
+    end
+    
 end
 
 --[[---------------------------------------------------------
-	- func: RedoLayout()
-	- desc: used to redo the layour of the object
+    - func: RedoLayout()
+    - desc: used to redo the layour of the object
 --]]---------------------------------------------------------
 function newobject:RedoLayout()
-	
-	local starty = 0
-	self.rowcolorindex = 1
-	
-	for k, v in ipairs(self.children) do
-		v:SetWidth(self.parent:GetTotalColumnWidth())
-		v.staticx = 0
-		v.staticy = starty
-		if self.vbar then
-			local vbody = self:GetVerticalScrollBody()
-			vbody.staticx = self.width - vbody.width
-			if self.hbar then
-				vbody.height = self.height - self:GetHorizontalScrollBody().height
-			else
-				vbody.height = self.height
-			end
-		end
-		if self.hbar then
-			local hbody = self:GetHorizontalScrollBody()
-			hbody.staticy = self.height - hbody.height
-			if self.vbar then
-				hbody.width = self.width - self:GetVerticalScrollBody().width
-			else
-				hbody.width = self.width
-			end
-		end
-		starty = starty + v.height
-		v.lastheight = v.height
-		v.colorindex = self.rowcolorindex
-		if self.rowcolorindex == self.rowcolorindexmax then
-			self.rowcolorindex = 1
-		else
-			self.rowcolorindex = self.rowcolorindex + 1
-		end
-	end
-	
+    
+    local starty = 0
+    self.rowcolorindex = 1
+    
+    for k, v in ipairs(self.children) do
+        v:SetWidth(self.parent:GetTotalColumnWidth())
+        v.staticx = 0
+        v.staticy = starty
+        if self.vbar then
+            local vbody = self:GetVerticalScrollBody()
+            vbody.staticx = self.width - vbody.width
+            if self.hbar then
+                vbody.height = self.height - self:GetHorizontalScrollBody().height
+            else
+                vbody.height = self.height
+            end
+        end
+        if self.hbar then
+            local hbody = self:GetHorizontalScrollBody()
+            hbody.staticy = self.height - hbody.height
+            if self.vbar then
+                hbody.width = self.width - self:GetVerticalScrollBody().width
+            else
+                hbody.width = self.width
+            end
+        end
+        starty = starty + v.height
+        v.lastheight = v.height
+        v.colorindex = self.rowcolorindex
+        if self.rowcolorindex == self.rowcolorindexmax then
+            self.rowcolorindex = 1
+        else
+            self.rowcolorindex = self.rowcolorindex + 1
+        end
+    end
+    
 end
 
 --[[---------------------------------------------------------
-	- func: AddRow(data)
-	- desc: adds a row to the object
+    - func: AddRow(data)
+    - desc: adds a row to the object
 --]]---------------------------------------------------------
 function newobject:AddRow(data)
 
-	local colorindex = self.rowcolorindex
-	
-	if colorindex == self.rowcolorindexmax then
-		self.rowcolorindex = 1
-	else
-		self.rowcolorindex = colorindex + 1
-	end
-	
-	table.insert(self.children, loveframes.objects["columnlistrow"]:new(self, data))
-	self:CalculateSize()
-	self:RedoLayout()
-	self.parent:PositionColumns()
-	
+    local colorindex = self.rowcolorindex
+    
+    if colorindex == self.rowcolorindexmax then
+        self.rowcolorindex = 1
+    else
+        self.rowcolorindex = colorindex + 1
+    end
+    
+    table.insert(self.children, loveframes.objects["columnlistrow"]:new(self, data))
+    self:CalculateSize()
+    self:RedoLayout()
+    self.parent:PositionColumns()
+    
 end
 
 --[[---------------------------------------------------------
-	- func: GetScrollBar()
-	- desc: gets the object's scroll bar
+    - func: GetScrollBar()
+    - desc: gets the object's scroll bar
 --]]---------------------------------------------------------
 function newobject:GetScrollBar()
-	
-	if self.bar then
-		return self.internals[1].internals[1].internals[1]
-	else
-		return false
-	end
-	
+    
+    if self.bar then
+        return self.internals[1].internals[1].internals[1]
+    else
+        return false
+    end
+    
 end
 
 --[[---------------------------------------------------------
-	- func: Sort()
-	- desc: sorts the object's children
+    - func: Sort()
+    - desc: sorts the object's children
 --]]---------------------------------------------------------
 function newobject:Sort(column, desc)
-	
-	local children = self.children
-	self.rowcolorindex = 1
-	
-	table.sort(children, function(a, b)
-		if desc then
+    
+    local children = self.children
+    self.rowcolorindex = 1
+    
+    table.sort(children, function(a, b)
+        if desc then
             return (tostring(a.columndata[column]) or a.columndata[column]) < (tostring(b.columndata[column]) or b.columndata[column])
         else
-			return (tostring(a.columndata[column]) or a.columndata[column]) > (tostring(b.columndata[column]) or b.columndata[column])
-		end
-	end)
-	
-	for k, v in ipairs(children) do
-		local colorindex = self.rowcolorindex
-		v.colorindex = colorindex
-		if colorindex == self.rowcolorindexmax then
-			self.rowcolorindex = 1
-		else
-			self.rowcolorindex = colorindex + 1
-		end
-	end
-	
-	self:CalculateSize()
-	self:RedoLayout()
-	
+            return (tostring(a.columndata[column]) or a.columndata[column]) > (tostring(b.columndata[column]) or b.columndata[column])
+        end
+    end)
+    
+    for k, v in ipairs(children) do
+        local colorindex = self.rowcolorindex
+        v.colorindex = colorindex
+        if colorindex == self.rowcolorindexmax then
+            self.rowcolorindex = 1
+        else
+            self.rowcolorindex = colorindex + 1
+        end
+    end
+    
+    self:CalculateSize()
+    self:RedoLayout()
+    
 end
 
 --[[---------------------------------------------------------
-	- func: Clear()
-	- desc: removes all items from the object's list
+    - func: Clear()
+    - desc: removes all items from the object's list
 --]]---------------------------------------------------------
 function newobject:Clear()
 
-	self.children = {}
-	self:CalculateSize()
-	self:RedoLayout()
-	self.parent:PositionColumns()
-	self.rowcolorindex = 1
-	
+    self.children = {}
+    self:CalculateSize()
+    self:RedoLayout()
+    self.parent:PositionColumns()
+    self.rowcolorindex = 1
+    
 end
 
 --[[---------------------------------------------------------
-	- func: GetVerticalScrollBody()
-	- desc: gets the object's vertical scroll body
+    - func: GetVerticalScrollBody()
+    - desc: gets the object's vertical scroll body
 --]]---------------------------------------------------------
 function newobject:GetVerticalScrollBody()
 
-	for k, v in ipairs(self.internals) do
-		if v.bartype == "vertical" then
-			return v
-		end
-	end
-	
-	return false
-	
+    for k, v in ipairs(self.internals) do
+        if v.bartype == "vertical" then
+            return v
+        end
+    end
+    
+    return false
+    
 end
 
 --[[---------------------------------------------------------
-	- func: GetHorizontalScrollBody()
-	- desc: gets the object's horizontal scroll body
+    - func: GetHorizontalScrollBody()
+    - desc: gets the object's horizontal scroll body
 --]]---------------------------------------------------------
 function newobject:GetHorizontalScrollBody()
 
-	for k, v in ipairs(self.internals) do
-		if v.bartype == "horizontal" then
-			return v
-		end
-	end
-	
-	return false
-	
+    for k, v in ipairs(self.internals) do
+        if v.bartype == "horizontal" then
+            return v
+        end
+    end
+    
+    return false
+    
 end
 
 ---------- module end ----------
