@@ -58,7 +58,7 @@
                             "menu_settings_misc_gamejolt_connected" : "Disconnect",
                             "menu_settings_misc_gamejolt_not_connected" : "Connect"
                         },
-                        "menu_settings_misc_subtitkes" : "Subtitles",
+                        "menu_settings_misc_subtitles" : "Subtitles",
                         "menu_settings_misc_discordrpc" : "Discord Rich Presence",
                         "menu_settings_misc_gamepad" : "Controller support",
                         "menu_settings_misc_cache_night" : "Cache night assets"

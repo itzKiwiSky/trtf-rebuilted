@@ -32,6 +32,8 @@ return function()
     lfskin.controls.color_fore3  = {lume.color("#2c2359")}
     lfskin.controls.color_active = {lume.color("#1c1c56")}
 
+    settings.skin = lfskin
+
     local panelSkin = function(object)
         local skin = object:GetSkin()
         local x = object:GetX()
@@ -59,173 +61,70 @@ return function()
     optionPanel:SetAlwaysUpdate(true)
     optionPanel.drawfunc = panelSkin
 
-    local SettingsMenu = {
-        ["video"] = function()
-            local mainList = loveframes.Create("list")
-            mainList:SetParent(optionPanel)
-            mainList.drawfunc = function(object)
-                local skin = object:GetSkin()
-                local x = object:GetX()
-                local y = object:GetY()
-                local w = object:GetWidth()
-                local h = object:GetHeight()
-
-                love.graphics.setColor(0, 0, 0, 0.4)
-                love.graphics.rectangle("fill", x, y, w, h)
-            end
-
-            mainList.drawoverfunc = function(object)
-                local skin = object:GetSkin()
-                local x = object:GetX()
-                local y = object:GetY()
-                local w = object:GetWidth()
-                local h = object:GetHeight()
-
-                love.graphics.setColor(skin.controls.color_fore0)
-                love.graphics.setLineWidth(3)
-                love.graphics.rectangle("line", x, y, w, h)
-                love.graphics.setLineWidth(1)
-            end
-
-            mainList:SetRetainSize(true)
-            mainList:SetSpacing(16)
-            mainList:SetPadding(8)
-            mainList:SetSize(optionPanel:GetWidth() - 16, optionPanel:GetHeight() - 16)
-            mainList:Center()
-            mainList:SetAlwaysUpdate(true)
-            mainList:SetMouseWheelScrollAmount(6)
-
-
-
-            for i = 1, #options, 1 do
-                local itemGrid = loveframes.Create("grid")
-                itemGrid:SetWidth(mainList:GetWidth() - 8)
-                itemGrid:SetHeight(32)
-                itemGrid:SetRows(1)
-                itemGrid:SetCellWidth(26)
-                itemGrid:SetColumns(mainList:GetWidth() / itemGrid:GetCellWidth() - 8)
-                itemGrid:SetCellHeight(32)
-                itemGrid:SetItemAutoSize(false)
-                itemGrid:SetAlwaysUpdate(true)
-                itemGrid.drawfunc = settings.blank
-                options[i](itemGrid)
-
-                mainList:CalculateSize()
-                mainList:RedoLayout()
-                mainList:AddItem(itemGrid)
-            end
-        end,
-        ["audio"] = function()
-            local mainList = loveframes.Create("list")
-            mainList:SetParent(optionPanel)
-            mainList.drawfunc = function(object)
-                local skin = object:GetSkin()
-                local x = object:GetX()
-                local y = object:GetY()
-                local w = object:GetWidth()
-                local h = object:GetHeight()
-
-                love.graphics.setColor(0, 0, 0, 0.4)
-                love.graphics.rectangle("fill", x, y, w, h)
-            end
-
-            mainList.drawoverfunc = function(object)
-                local skin = object:GetSkin()
-                local x = object:GetX()
-                local y = object:GetY()
-                local w = object:GetWidth()
-                local h = object:GetHeight()
-
-                love.graphics.setColor(skin.controls.color_fore0)
-                love.graphics.setLineWidth(3)
-                love.graphics.rectangle("line", x, y, w, h)
-                love.graphics.setLineWidth(1)
-            end
-
-            mainList:SetRetainSize(true)
-            mainList:SetSpacing(16)
-            mainList:SetPadding(8)
-            mainList:SetSize(optionPanel:GetWidth() - 16, optionPanel:GetHeight() - 16)
-            mainList:Center()
-            mainList:SetAlwaysUpdate(true)
-            mainList:SetMouseWheelScrollAmount(6)
-
-            local options = {}
-            
-            for i = 1, #options, 1 do
-                local itemGrid = loveframes.Create("grid")
-                itemGrid:SetWidth(mainList:GetWidth() - 8)
-                itemGrid:SetHeight(32)
-                itemGrid:SetRows(1)
-                itemGrid:SetCellWidth(26)
-                itemGrid:SetColumns(mainList:GetWidth() / itemGrid:GetCellWidth() - 8)
-                itemGrid:SetCellHeight(32)
-                itemGrid:SetItemAutoSize(false)
-                itemGrid:SetAlwaysUpdate(true)
-                itemGrid.drawfunc = settings.blank
-                options[i](itemGrid)
-
-                mainList:CalculateSize()
-                mainList:RedoLayout()
-                mainList:AddItem(itemGrid)
-            end
-        end,
-        ["misc"] = function()
-            local mainList = loveframes.Create("list")
-            mainList:SetParent(optionPanel)
-            mainList.drawfunc = function(object)
-                local skin = object:GetSkin()
-                local x = object:GetX()
-                local y = object:GetY()
-                local w = object:GetWidth()
-                local h = object:GetHeight()
-
-                love.graphics.setColor(0, 0, 0, 0.4)
-                love.graphics.rectangle("fill", x, y, w, h)
-            end
-
-            mainList.drawoverfunc = function(object)
-                local skin = object:GetSkin()
-                local x = object:GetX()
-                local y = object:GetY()
-                local w = object:GetWidth()
-                local h = object:GetHeight()
-
-                love.graphics.setColor(skin.controls.color_fore0)
-                love.graphics.setLineWidth(3)
-                love.graphics.rectangle("line", x, y, w, h)
-                love.graphics.setLineWidth(1)
-            end
-
-            mainList:SetRetainSize(true)
-            mainList:SetSpacing(16)
-            mainList:SetPadding(8)
-            mainList:SetSize(optionPanel:GetWidth() - 16, optionPanel:GetHeight() - 16)
-            mainList:Center()
-            mainList:SetAlwaysUpdate(true)
-            mainList:SetMouseWheelScrollAmount(6)
-
-            local options = {}
-            
-            for i = 1, #options, 1 do
-                local itemGrid = loveframes.Create("grid")
-                itemGrid:SetWidth(mainList:GetWidth() - 8)
-                itemGrid:SetHeight(32)
-                itemGrid:SetRows(1)
-                itemGrid:SetCellWidth(26)
-                itemGrid:SetColumns(mainList:GetWidth() / itemGrid:GetCellWidth() - 8)
-                itemGrid:SetCellHeight(32)
-                itemGrid:SetItemAutoSize(false)
-                itemGrid:SetAlwaysUpdate(true)
-                itemGrid.drawfunc = settings.blank
-                options[i](itemGrid)
-
-                mainList:CalculateSize()
-                mainList:RedoLayout()
-                mainList:AddItem(itemGrid)
-            end
-        end,
+    local statesFunc = {
+        ["video"] = require("trtf.src.Modules.Game.Interface.Views.States.Video"),
+        ["audio"] = require("trtf.src.Modules.Game.Interface.Views.States.Audio"),
+        ["misc"] = require("trtf.src.Modules.Game.Interface.Views.States.Misc"),
     }
+
+    -- generate the options list --
+    local function generateOptions(state)
+        if statesFunc[state] then
+            local mainList = loveframes.Create("list")
+            mainList:SetParent(optionPanel)
+            mainList.drawfunc = function(object)
+                local skin = object:GetSkin()
+                local x = object:GetX()
+                local y = object:GetY()
+                local w = object:GetWidth()
+                local h = object:GetHeight()
+        
+                love.graphics.setColor(0, 0, 0, 0.4)
+                love.graphics.rectangle("fill", x, y, w, h)
+            end
+        
+            mainList.drawoverfunc = function(object)
+                local skin = object:GetSkin()
+                local x = object:GetX()
+                local y = object:GetY()
+                local w = object:GetWidth()
+                local h = object:GetHeight()
+        
+                love.graphics.setColor(skin.controls.color_fore0)
+                love.graphics.setLineWidth(3)
+                love.graphics.rectangle("line", x, y, w, h)
+                love.graphics.setLineWidth(1)
+            end
+    
+            mainList:SetRetainSize(true)
+            mainList:SetSpacing(16)
+            mainList:SetPadding(8)
+            mainList:SetSize(optionPanel:GetWidth() - 16, optionPanel:GetHeight() - 16)
+            mainList:Center()
+            mainList:SetAlwaysUpdate(true)
+            mainList:SetMouseWheelScrollAmount(6)
+    
+            local options = statesFunc[registers.user.currentSettingsTab](settings)
+    
+            for i = 1, #options, 1 do
+                local itemGrid = loveframes.Create("grid")
+                itemGrid:SetWidth(mainList:GetWidth() - 8)
+                itemGrid:SetHeight(32)
+                itemGrid:SetRows(1)
+                itemGrid:SetCellWidth(26)
+                itemGrid:SetColumns(mainList:GetWidth() / itemGrid:GetCellWidth() - 8)
+                itemGrid:SetCellHeight(32)
+                itemGrid:SetItemAutoSize(false)
+                itemGrid:SetAlwaysUpdate(true)
+                itemGrid.drawfunc = settings.blank
+                options[i](itemGrid)
+    
+                mainList:CalculateSize()
+                mainList:RedoLayout()
+                mainList:AddItem(itemGrid)
+            end
+        end
+    end
 
 
     local txt = loveframes.Create("text")
@@ -270,13 +169,16 @@ return function()
             for _, o in ipairs(objs) do
                 o:Remove()
             end
-            SettingsMenu[settings.states[b]]()
+            --SettingsMenu[settings.states[b]]()
             registers.user.currentSettingsTab = settings.states[b]
+            generateOptions(settings.states[b])
+            --print(settings.states[b])
             subtxt:SetText(languageService["menu_settings_categories_subtext_" .. registers.user.currentSettingsTab])
             subtxt:CenterX()
         end
     end
-    SettingsMenu["video"]()
+    --SettingsMenu["video"]()
+    generateOptions("video")
 
     local exitButton = loveframes.Create("button")
     exitButton:SetSize(96, 48)
