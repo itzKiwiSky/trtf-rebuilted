@@ -186,6 +186,8 @@ return function()
     exitButton:SetFont(settings.fonts["mainButtons"])
     exitButton:SetPos(settings.lpadding, love.resconf.height - (exitButton:GetHeight() + settings.lpadding))
     exitButton.OnClick = function(obj)
+        -- rest configs and close menu --
+        registers.user.virtualSettings = gameslot.save.game.user.settings
         MenuState.configMenu = false
     end
 
@@ -195,6 +197,38 @@ return function()
     saveButton:SetFont(settings.fonts["mainButtons"])
     saveButton:SetPos((exitButton:GetX() + exitButton:GetWidth()) + settings.lpadding, love.resconf.height - (saveButton:GetHeight() + settings.lpadding))
     saveButton.OnClick = function(obj)
+        -- commit all changes from virtual settings to the actual settings --
+        gameslot.save.game.user.settings = registers.user.virtualSettings
 
+        -- video first cause why not :) --
+        if registers.user.videoSettingsChanged then
+            love.window.setMode(
+                love.resconf.width, love.resconf.height,
+                { 
+                    fullscreen = gameslot.save.game.user.settings.video.fullscreen, 
+                    vsync = gameslot.save.game.user.settings.video.vsync and 1 or 0,
+                    
+                }
+            )
+        end
+
+        love.resconf.aspectRatio = gameslot.save.game.user.settings.video.aspectRatio
+        love._FPSCap = gameslot.save.game.user.settings.video.fpsCap
+        love.graphics.setDefaultFilter(
+            gameslot.save.game.user.settings.video.antialiasing and "linear" or "nearest",
+            gameslot.save.game.user.settings.video.antialiasing and "linear" or "nearest"
+        )
+
+        -- audio --
+        love.audio.setVolume(gameslot.save.game.user.settings.audio.masterVolume * 0.01)
+        --love.audio.setVolume(0.001)
+        SoundController.getChannel("music"):setVolume(gameslot.save.game.user.settings.audio.musicVolume * 0.01)
+        SoundController.getChannel("sfx"):setVolume(gameslot.save.game.user.settings.audio.sfxVolume * 0.01)
+
+        -- misc stuff --
+        languageService = LanguageController:getData(gameslot.save.game.user.settings.misc.language)
+        languageRaw = LanguageController:getRawData(gameslot.save.game.user.settings.misc.language)
+
+        gameslot:saveSlot()
     end
 end

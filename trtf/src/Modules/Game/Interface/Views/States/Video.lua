@@ -2,6 +2,7 @@ return function(settings)
     local lfskin = settings.skin
     return {
         state = "video",
+        --[[
         function(grid)
             -- resolution controller
             local optionTitle = loveframes.Create("text")
@@ -33,7 +34,7 @@ return function(settings)
     
             grid:AddItem(optionTitle, 1, 1, "left")
             grid:AddItem(resmultichoice, 1, 12, "left")
-        end,
+        end,]]--
         function(grid)
             -- mode --
             local optionTitle = loveframes.Create("text")
@@ -48,6 +49,8 @@ return function(settings)
             choiceButton.OnClick = function(obj)
                 registers.user.virtualSettings.video.fullscreen = not registers.user.virtualSettings.video.fullscreen
                 choiceButton:SetText(registers.user.virtualSettings.video.fullscreen and languageService["menu_settings_buttons_modes_fullscreen"] or languageService["menu_settings_buttons_modes_windowed"])
+                -- change this value to avoid the game to re-create the window even if you change the volume --
+                registers.user.videoSettingsChanged = true
             end
     
             grid:AddItem(optionTitle, 1, 1, "left")
@@ -67,6 +70,9 @@ return function(settings)
             choiceButton.OnClick = function(obj)
                 registers.user.virtualSettings.video.vsync = not registers.user.virtualSettings.video.vsync
                 choiceButton:SetText(registers.user.virtualSettings.video.vsync and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
+
+                -- change this value to avoid the game to re-create the window even if you change the volume --
+                registers.user.videoSettingsChanged = true
             end
     
             grid:AddItem(optionTitle, 1, 1, "left")

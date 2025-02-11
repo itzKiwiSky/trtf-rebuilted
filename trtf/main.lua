@@ -69,9 +69,9 @@ function love.initialize()
 
     -- volume control --
     love.audio.setVolume(gameslot.save.game.user.settings.audio.masterVolume * 0.01)
-    love.audio.setVolume(0.001)
-    SoundController.getChannel("music"):setVolume(gameslot.save.game.user.settings.audio.musicVolume)
-    SoundController.getChannel("sfx"):setVolume(gameslot.save.game.user.settings.audio.sfxVolume)
+    --love.audio.setVolume(0.001)
+    SoundController.getChannel("music"):setVolume(gameslot.save.game.user.settings.audio.musicVolume * 0.01)
+    SoundController.getChannel("sfx"):setVolume(gameslot.save.game.user.settings.audio.sfxVolume * 0.01)
 
     -- api stuff --
     require('src.Modules.Game.API.Gamejolt')()
@@ -92,7 +92,8 @@ function love.initialize()
         },
         user = {
             currentSettingsTab = "video",
-            virtualSettings = gameslot.save.game.user.settings
+            virtualSettings = gameslot.save.game.user.settings,
+            videoSettingsChanged = false,
         }
     }
 
