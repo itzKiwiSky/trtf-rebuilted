@@ -10,7 +10,12 @@ function CustomNightState:enter()
     self.shdFXScreen.pixelate.feedback = 0.1
     self.shdFXScreen.pixelate.size = {1.5, 1.5}
 
-    self.shdFXScreen.chromasep.radius = 1.24
+    self.shdFXScreen.chromasep.radius = 1.25
+
+    SoundController.stopAllChannels()
+    SoundController.getChannel("music"):loadSource("msc_arcade")
+    SoundController.getChannel("music"):play()
+    SoundController.getChannel("music"):setLooping(true)
 
     self.staticTextureFX = {
         config = {
@@ -59,7 +64,7 @@ function CustomNightState:enter()
     self.Y_BOTTOM_FRAME = self.menuCam.y + self.roomSize.height
 
     ViewManager.clear()
-    --ViewManager.load("src/Modules/Game/Interface/Views/SettingsMenu.lua")
+    ViewManager.load("src/Modules/Game/Interface/Views/CustomNight.lua")
     self.UICanvas = love.graphics.newCanvas(love.resconf.width, love.resconf.height, { readable = true })
 
     self.blurBGCanvas = love.graphics.newCanvas(love.resconf.width, love.resconf.height, { readable = true })
@@ -92,9 +97,6 @@ function CustomNightState:update(elapsed)
     -- update canvases --
     love.graphics.setCanvas({ self.UICanvas, stencil = true })
         love.graphics.clear(0, 0, 0, 0)
-        love.graphics.setColor(0, 0, 0, 0.7)
-            love.graphics.rectangle("fill", 0, 0, love.resconf.width, love.resconf.height)
-        love.graphics.setColor(1, 1, 1, 1)
         ViewManager.draw()
     love.graphics.setCanvas()
     ViewManager.reloadViews()
@@ -137,5 +139,17 @@ end
 function CustomNightState:textinput(t)
     ViewManager.textinput(t)
 end
+
+function CustomNightState:leave()
+    -- release all objects from the scene before leave
+    for k, v in pairs(self) do
+        if type(v) == "userdata" and v.type then
+            if v.release then
+                v:release()
+            end
+        end
+    end
+end
+
 
 return CustomNightState
