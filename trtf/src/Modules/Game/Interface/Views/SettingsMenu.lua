@@ -1,9 +1,6 @@
 local settings = {
     lpadding = 16,
     blank = function()end,
-    replaces = {
-        button = require 'trtf.src.Modules.Game.Interface.Replaces.Button'
-    },
     fonts = {
         title = fontcache.getFont("tnr", 50),
         btnfont = fontcache.getFont("tnr", 26),

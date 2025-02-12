@@ -67,11 +67,22 @@ function love.initialize()
 
     gameslot.save.game.user.settings.video.displayFPS = true
 
+    love.window.setMode(
+        love.resconf.width, love.resconf.height,
+        { 
+            fullscreen = gameslot.save.game.user.settings.video.fullscreen, 
+            vsync = gameslot.save.game.user.settings.video.vsync and 1 or 0,
+            
+        }
+    )
+
     -- volume control --
     love.audio.setVolume(gameslot.save.game.user.settings.audio.masterVolume * 0.01)
     --love.audio.setVolume(0.001)
     SoundController.getChannel("music"):setVolume(gameslot.save.game.user.settings.audio.musicVolume * 0.01)
     SoundController.getChannel("sfx"):setVolume(gameslot.save.game.user.settings.audio.sfxVolume * 0.01)
+    
+    --gamepad = love.joystick.getJoysticks()[1]   -- load player  1 if exist
 
     -- api stuff --
     require('src.Modules.Game.API.Gamejolt')()
@@ -141,7 +152,7 @@ function love.draw()
         gamestate.current():draw()
         subtitlesController:draw()
     resolution.stop()
-    love.graphics.print(debug.formattable(registers.user.virtualSettings, 1, true), 5, 20)
+    --love.graphics.print(debug.formattable(registers.user.virtualSettings, 1, true), 5, 20)
 end
 
 function love.update(elapsed)

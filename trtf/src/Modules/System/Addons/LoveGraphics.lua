@@ -20,7 +20,7 @@ function love.graphics.getQuads(filename)
     return image, Quads
 end
 
-function love.graphics.getQuadFromHash(filename)
+function love.graphics.getQuadsFromHash(filename)
     local image = love.graphics.newImage(filename .. ".png")
     local jsonData = love.filesystem.read(filename .. ".json")
     local sparrow = json.decode(jsonData)

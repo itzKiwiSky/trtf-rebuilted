@@ -44,6 +44,7 @@
                         "menu_settings_video_vsync" : "V-Sync",
                         "menu_settings_video_aspectRatio" : "Aspect ratio",
                         "menu_settings_video_fpsCap" : "FPS Limit",
+                        "menu_settings_video_display_fps" : "Display FPS",
                         "menu_settings_video_antialiasing" : "Antialiasing"
                     },
                     "menu_settings_audio" : {

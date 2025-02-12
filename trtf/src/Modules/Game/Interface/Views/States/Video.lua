@@ -110,6 +110,26 @@ return function(settings)
             grid:AddItem(optionTitle, 1, 1, "left")
             grid:AddItem(numberFPS, 1, 14, "left")
         end,
+
+        function(grid)
+            -- FPS Display  --
+            local optionTitle = loveframes.Create("text")
+            optionTitle:SetDefaultColor(1, 1, 1, 1)
+            optionTitle:SetFont(settings.fonts.optionFont)
+            optionTitle:SetText(languageService["menu_settings_video_display_fps"])
+    
+            local choiceButton = loveframes.Create("button")
+            choiceButton:SetSize(128, 38)
+            choiceButton:SetText(registers.user.virtualSettings.video.displayFPS and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
+            choiceButton:SetFont(settings.fonts["mainButtons"])
+            choiceButton.OnClick = function(obj)
+                registers.user.virtualSettings.video.displayFPS = not registers.user.virtualSettings.video.displayFPS
+                choiceButton:SetText(registers.user.virtualSettings.video.displayFPS and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
+            end
+    
+            grid:AddItem(optionTitle, 1, 1, "left")
+            grid:AddItem(choiceButton, 1, 14, "left")
+        end,
     
         function(grid)
             -- aspectRatio --
