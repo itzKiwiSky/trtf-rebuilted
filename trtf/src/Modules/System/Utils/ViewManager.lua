@@ -3,6 +3,10 @@ ViewManager.views = {}
 
 ViewManager.currentActiveView = ""
 
+function ViewManager.clear()
+    loveframes.RemoveAll()
+end
+
 function ViewManager.load(path)
     loveframes.RemoveAll()
     --local f = require(path:gsub(".lua", ""))()

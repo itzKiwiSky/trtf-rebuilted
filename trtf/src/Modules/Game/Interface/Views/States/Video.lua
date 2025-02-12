@@ -151,33 +151,12 @@ return function(settings)
             grid:AddItem(choiceButton, 1, 14, "left")
         end,
     
-        function(grid)
-            -- Antialiasing --
-            local optionTitle = loveframes.Create("text")
-            optionTitle:SetDefaultColor(1, 1, 1, 1)
-            optionTitle:SetFont(settings.fonts.optionFont)
-            optionTitle:SetText(languageService["menu_settings_video_antialiasing"])
-    
-            local choiceButton = loveframes.Create("button")
-            choiceButton:SetSize(128, 38)
-            choiceButton:SetText(registers.user.virtualSettings.video.antialiasing and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
-            choiceButton:SetFont(settings.fonts["mainButtons"])
-            choiceButton.OnClick = function(obj)
-                registers.user.virtualSettings.video.antialiasing = not registers.user.virtualSettings.video.antialiasing
-                choiceButton:SetText(registers.user.virtualSettings.video.antialiasing and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
-            end
-    
-            grid:AddItem(optionTitle, 1, 1, "left")
-            grid:AddItem(choiceButton, 1, 14, "left")
-        end,
-    
     --[[
         [X] - Resolution
         [X] - Mode [Fullscreen, Windowed]
         [X] - V-Sync
         [X] - Aspect ratio
         [X] - FPSCap
-        [X] - Antialiasing
     ]]
     }
 end

@@ -215,7 +215,7 @@ function MenuState:enter()
                 text = languageService["menu_button_custom_night"],
                 locked = false,
                 action = function()
-                    
+                    gamestate.switch(CustomNightState)
                 end,
             },
             {
