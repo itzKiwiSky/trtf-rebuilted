@@ -7,10 +7,33 @@ local settings = {
         subtitleFont = fontcache.getFont("tnr", 32),
         optionFont = fontcache.getFont("tnr", 34),
         mainButtons = fontcache.getFont("tnr", 18),
-        multi = fontcache.getFont("tnr", 20)
+        multi = fontcache.getFont("tnr", 20),
+        vhsFont = fontcache.getFont("vcr", 20),
+        vhsTitle = fontcache.getFont("vcr", 42),
+        vhsNameFont = fontcache.getFont("vcr", 24)
     },
     states = { "video", "audio", "misc" },
 }
+
+local function sortedPairs(t, sort)
+    local function collectKey(t, sort)
+        local nk = {}
+        for k in pairs(t) do
+            nk[#nk + 1] = k 
+        end
+        table.sort(nk, sort)
+        return nk
+    end
+
+    local ks = collectKey(t, sort)
+    local i = 0
+    return function()
+        i = i + 1
+        if ks[i] then
+            return ks[i], t[ks[i]]
+        end
+    end
+end
 
 return function()
     local lfskin = loveframes.GetActiveSkin()
@@ -62,21 +85,67 @@ return function()
 
     settings.skin = lfskin
 
-    local panelSkin = function(object)
+    local buttonSkin = function(object)
         local skin = object:GetSkin()
         local x = object:GetX()
         local y = object:GetY()
-        local w = object:GetWidth()
-        local h = object:GetHeight()
-
-        love.graphics.setColor(skin.controls.color_fore2)
-        love.graphics.rectangle("fill", x, y, w, h)
+        local width = object:GetWidth()
+        local height = object:GetHeight()
+        local hover = object:GetHover()
+        local text = object:GetText()
+        local font = object:GetFont() or skin.controls.smallfont
+        local twidth = font:getWidth(object.text)
+        local theight = font:getHeight(object.text)
+        local down = object:GetDown()
+        local checked = object.checked
+        local enabled = object:GetEnabled()
+        local clickable = object:GetClickable()
+        local back, fore, border
         
-        love.graphics.setColor(skin.controls.color_fore0)
-        love.graphics.setLineWidth(3)
-        love.graphics.rectangle("line", x, y, w, h)
-        love.graphics.setLineWidth(1)
+        love.graphics.setFont(font)
+
+        if down or checked then
+            back = {0.3, 0.3, 0.3, 1}
+            fore = {1, 1, 1, 1}
+            border = {1, 1, 0, 1}
+
+            -- button body
+            love.graphics.setColor(back)
+            love.graphics.rectangle("fill", x + 8, y + 8, width, height)
+            
+            love.graphics.setColor(fore)
+            skin.PrintText(text, (x + width / 2 - twidth / 2) + 8, (y + height / 2 - theight / 2) + 8)
+        elseif hover then
+            back = {0.7, 0.7, 0.7, 1}
+            fore = {0, 0, 0, 1}
+            border = love.timer.getTime() % 1 > 0.5 and {1, 1, 0, 1} or {0, 0, 1, 1}
+
+            -- button body
+            love.graphics.setColor(border)
+            love.graphics.rectangle("fill", x + 8, y + 8, width, height)
+
+            love.graphics.setColor(back)
+            love.graphics.rectangle("fill", x, y, width, height)
+            
+            love.graphics.setColor(fore)
+            skin.PrintText(text, x + width / 2 - twidth / 2, y + height / 2 - theight / 2)
+        else
+            back = {0.7, 0.7, 0.7, 1}
+            fore = {0, 0, 0, 1}
+            border = {0.3, 0.3, 0.3, 1}
+
+            -- button body
+            love.graphics.setColor(border)
+            love.graphics.rectangle("fill", x + 8, y + 8, width, height)
+
+            love.graphics.setColor(back)
+            love.graphics.rectangle("fill", x, y, width, height)
+            
+            love.graphics.setColor(fore)
+            skin.PrintText(text, x + width / 2 - twidth / 2, y + height / 2 - theight / 2)
+        end
     end
+
 
     local window = loveframes.Create("panel")
     window:SetSize(love.resconf.width, love.resconf.height)
@@ -125,7 +194,7 @@ return function()
         local animatronicName = loveframes.Create("text")
         animatronicName:SetParent(portraitPanel)
         animatronicName:SetDefaultColor(portraitIcons[id].color)
-        animatronicName:SetFont(settings.fonts.btnfont)
+        animatronicName:SetFont(settings.fonts.vhsNameFont)
         animatronicName:SetText(tostring(id))
         animatronicName:SetY(portraitPanel:GetHeight() - 40)
         animatronicName:CenterX()
@@ -134,7 +203,7 @@ return function()
         local AIValue = loveframes.Create("text")
         AIValue:SetParent(portraitPanel)
         AIValue:SetDefaultColor(portraitIcons[id].color)
-        AIValue:SetFont(settings.fonts.mainButtons)
+        AIValue:SetFont(settings.fonts.vhsFont)
         AIValue:SetText(tostring(curAILevel))
         AIValue:SetY(portraitPanel:GetHeight() + 4)
         AIValue:CenterX()
@@ -143,8 +212,10 @@ return function()
         decButton:SetParent(portraitPanel)
         decButton:SetText("-")
         decButton:SetSize(32, 32)
+        decButton:SetFont(settings.fonts.vhsFont)
         decButton:SetParent(portraitPanel)
         decButton:SetY(portraitPanel:GetHeight())
+        decButton.drawfunc = buttonSkin
         decButton.OnClick = function(obj)
             if curAILevel > 0 then
                 curAILevel = curAILevel - 1
@@ -156,9 +227,11 @@ return function()
         incButton:SetParent(portraitPanel)
         incButton:SetSize(32, 32)
         incButton:SetText("+")
+        incButton:SetFont(settings.fonts.vhsFont)
         incButton:SetParent(portraitPanel)
         incButton:SetX(portraitPanel:GetWidth() - incButton:GetWidth())
         incButton:SetY(portraitPanel:GetHeight())
+        incButton.drawfunc = buttonSkin
         incButton.OnClick = function(obj)
             if curAILevel < 20 then
                 curAILevel = curAILevel + 1
@@ -166,29 +239,7 @@ return function()
             end
         end
 
-        --portraitPanel:Center()
-
         ptgrid:AddItem(portraitPanel, r, c)
-    end
-
-    local function sortedPairs(t, sort)
-        local function collectKey(t, sort)
-            local nk = {}
-            for k in pairs(t) do
-                nk[#nk + 1] = k 
-            end
-            table.sort(nk, sort)
-            return nk
-        end
-
-        local ks = collectKey(t, sort)
-        local i = 0
-        return function()
-            i = i + 1
-            if ks[i] then
-                return ks[i], t[ks[i]]
-            end
-        end
     end
 
     local r, c = 1, 1
@@ -205,13 +256,86 @@ return function()
     ptgrid:SetY(ptgrid:GetY() - 64)
 
     local exitButton = loveframes.Create("button")
+    exitButton:SetFont(settings.fonts.vhsFont)
     exitButton:SetSize(96, 48)
     exitButton:SetText(languageService["menu_settings_buttons_exit"])
-    exitButton:SetFont(settings.fonts["mainButtons"])
     exitButton:SetPos(settings.lpadding, love.resconf.height - (exitButton:GetHeight() + settings.lpadding))
+    exitButton.drawfunc = buttonSkin
     exitButton.OnClick = function(obj)
-        -- rest configs and close menu --
-        MenuState:enter()
         gamestate.switch(MenuState)
     end
+
+    local readyButton = loveframes.Create("button")
+    readyButton:SetFont(settings.fonts.vhsFont)
+    readyButton:SetSize(96, 48)
+    readyButton:SetText(languageService["custom_night_menu_ready"])
+    readyButton:SetPos((love.resconf.width - (exitButton:GetWidth() + settings.lpadding)) - 8, love.resconf.height - (exitButton:GetHeight() + settings.lpadding))
+    readyButton.drawfunc = buttonSkin
+    readyButton.OnClick = function(obj)
+        --gamestate.switch(MenuState)
+    end
+
+    --print(debug.formattable())
+    
+
+    local function updateValue()
+        local i = 1
+        for _, value in ipairs(CustomNightState.presets[registers.user.currentChallengeID]) do
+            --createPortrait(k, r, c)
+            --CustomNightState.animatronicsAI
+            --print(k, v)
+            --ptgrid.children[i].children[3]:SetText(CustomNightState.animatronicsAI[])
+            --i = i + 1
+        end
+    end
+
+    local challengeGrid = loveframes.Create("grid")
+    challengeGrid:SetRows(1)
+    challengeGrid:SetColumns(3)
+    challengeGrid:SetItemAutoSize(false)
+    challengeGrid:SetCellPadding(128)
+    challengeGrid:Center()
+    challengeGrid:SetY(challengeGrid:GetY() + love.resconf.height / 2 - challengeGrid:GetCellPadding() + settings.lpadding)
+    challengeGrid.drawfunc = settings.blank
+
+    local textChallenge = loveframes.Create("text")
+    textChallenge:SetText(CustomNightState.presets[registers.user.currentChallengeID].displayName or "Custom Challenge")
+    textChallenge:SetDefaultColor(1, 1, 1, 1)
+    textChallenge:SetFont(settings.fonts.vhsTitle)
+    textChallenge:Center()
+
+    local challengeLeftButton = loveframes.Create("button")
+    challengeLeftButton:SetFont(settings.fonts.vhsFont)
+    challengeLeftButton:SetSize(96, 48)
+    challengeLeftButton:SetText("<<")
+    challengeLeftButton:SetY(love.resconf.height - (exitButton:GetHeight() + settings.lpadding))
+    challengeLeftButton.drawfunc = buttonSkin
+    challengeLeftButton.OnClick = function(obj)
+        if registers.user.currentChallengeID > 1 then
+            registers.user.currentChallengeID = registers.user.currentChallengeID - 1
+            textChallenge:SetText(CustomNightState.presets[registers.user.currentChallengeID].displayName)
+            textChallenge:Center()
+            registers.user.isCustomChallenge = false
+            updateValue()
+        end
+    end
+
+    local challengeRightButton = loveframes.Create("button")
+    challengeRightButton:SetFont(settings.fonts.vhsFont)
+    challengeRightButton:SetSize(96, 48)
+    challengeRightButton:SetText(">>")
+    challengeRightButton:SetY(love.resconf.height - (exitButton:GetHeight() + settings.lpadding))
+    challengeRightButton.drawfunc = buttonSkin
+    challengeRightButton.OnClick = function(obj)
+        if registers.user.currentChallengeID < #CustomNightState.presets then
+            registers.user.currentChallengeID = registers.user.currentChallengeID + 1
+            textChallenge:SetText(CustomNightState.presets[registers.user.currentChallengeID].displayName)
+            textChallenge:Center()
+            updateValue()
+        end
+    end
+
+    challengeGrid:AddItem(challengeLeftButton, 1, 1, "right")
+    challengeGrid:AddItem(textChallenge, 1, 2)
+    challengeGrid:AddItem(challengeRightButton, 1, 3, "left")
 end

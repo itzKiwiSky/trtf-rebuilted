@@ -127,21 +127,21 @@ end
 ---@param vol number
 function Sound.setAllChannelsVolume(vol)
     assertType(vol, "number")
-    for _, channel in ipairs(Sound.channels) do
+    for k, channel in pairs(Sound.channels) do
         channel:setVolume(vol)
     end
 end
 
 --- Stop all channels
 function Sound.stopAllChannels()
-    for _, channel in ipairs(Sound.channels) do
+    for k, channel in pairs(Sound.channels) do
         channel:stop()
     end
 end
 
 --- Destroy all classes
 function Sound.destroyAllChannels()
-    for _, channel in ipairs(Sound.channels) do
+    for k, channel in pairs(Sound.channels) do
         channel:destroy()
     end
 end

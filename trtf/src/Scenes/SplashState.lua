@@ -78,15 +78,12 @@ end
 
 function SplashState:leave()
     -- release all objects from the scene before leave
-    for k, v in pairs(self) do
-        if type(v) == "userdata" and v.type then
-            if v.release then
-                v:release()
-            end
-        end
-    end
+    self.introVideo:pause()
+    self.introVideo:rewind()
     love.mouse.setVisible(true)
     SoundController.stopAllChannels()
+    SoundController.getChannel("music"):stop()
+    SoundController.getChannel("sfx"):stop()
 end
 
 return SplashState

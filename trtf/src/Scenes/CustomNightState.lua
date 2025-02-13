@@ -1,5 +1,7 @@
 CustomNightState = {}
 
+CustomNightState.presets = require 'trtf.src.Modules.Game.Utils.CustomNightPresets'
+
 function CustomNightState:enter()
     self.animatronicsAI = {
         bonnie = 0,
@@ -84,7 +86,6 @@ end
 
 function CustomNightState:draw()
     love.graphics.draw(self.blurBGCanvas)
-    love.graphics.draw(self.UICanvas)
 end
 
 function CustomNightState:update(elapsed)
@@ -103,6 +104,8 @@ function CustomNightState:update(elapsed)
                     love.graphics.draw(self.menuBG)
                 self.menuCam:detach()
             end)
+
+            love.graphics.draw(self.UICanvas)
     
             love.graphics.draw(self.crtOverlay, 0, 0, 0, love.resconf.width / self.crtOverlay:getWidth(), love.resconf.height / self.crtOverlay:getHeight())
         end)
@@ -113,6 +116,7 @@ function CustomNightState:update(elapsed)
         love.graphics.clear(0, 0, 0, 0)
         ViewManager.draw()
     love.graphics.setCanvas()
+
     ViewManager.reloadViews()
     ViewManager.update(elapsed)
 
@@ -153,17 +157,5 @@ end
 function CustomNightState:textinput(t)
     ViewManager.textinput(t)
 end
-
-function CustomNightState:leave()
-    -- release all objects from the scene before leave
-    for k, v in pairs(self) do
-        if type(v) == "userdata" and v.type then
-            if v.release then
-                v:release()
-            end
-        end
-    end
-end
-
 
 return CustomNightState

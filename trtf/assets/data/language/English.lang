@@ -83,7 +83,7 @@
             "loading_ready" : "Press any key or click anywhere to continue"
         },
         "custom_night_menu" : {
-            "custom_night_menu_title" : "Custom night",
+            "custom_night_menu_title" : "Custom Night",
             "custom_night_menu_challenges" : "Challenges",
             "custom_night_menu_ready" : "Ready",
             "custom_night_menu_buttons" : {

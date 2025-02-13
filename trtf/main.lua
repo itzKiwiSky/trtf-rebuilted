@@ -60,6 +60,7 @@ function love.initialize()
                 currentNight = 1,
                 nightPassed = 0,
                 stars = 0,
+                challengesCompleted = {}
             }
         }
     }
@@ -105,6 +106,8 @@ function love.initialize()
             currentSettingsTab = "video",
             virtualSettings = gameslot.save.game.user.settings,
             videoSettingsChanged = false,
+            currentChallengeID = 1,
+            isCustomChallenge = false,
         }
     }
 

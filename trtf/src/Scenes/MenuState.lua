@@ -421,15 +421,4 @@ function MenuState:textinput(t)
     end
 end
 
-function MenuState:leave()
-    -- release all objects from the scene before leave
-    for k, v in pairs(self) do
-        if type(v) == "userdata" and v.type then
-            if v.release then
-                v:release()
-            end
-        end
-    end
-end
-
 return MenuState
