@@ -1,6 +1,17 @@
 CustomNightState = {}
 
 function CustomNightState:enter()
+    self.animatronicsAI = {
+        bonnie = 0,
+        chica = 0,
+        foxy = 0,
+        freddy = 0,
+        kitty = 0,
+        puppet = 0,
+        sugar = 0,
+    }
+
+
     self.fxBlurBG = moonshine(moonshine.effects.boxblur)
     self.fxBlurBG.boxblur.radius = {7, 7}
     self.shdFXScreen = moonshine(moonshine.effects.crt)
@@ -13,6 +24,7 @@ function CustomNightState:enter()
     self.shdFXScreen.chromasep.radius = 1.25
 
     SoundController.stopAllChannels()
+    SoundController.getChannel("music"):stop()
     SoundController.getChannel("music"):loadSource("msc_arcade")
     SoundController.getChannel("music"):play()
     SoundController.getChannel("music"):setLooping(true)
@@ -85,13 +97,15 @@ function CustomNightState:update(elapsed)
     love.graphics.setCanvas({ self.blurBGCanvas, stencil = true })
         love.graphics.clear(0, 0, 0, 0)
         love.graphics.setColor(1, 1, 1, 1)
-        self.fxBlurBG(function()
-            self.menuCam:attach()
-                love.graphics.draw(self.menuBG)
-            self.menuCam:detach()
+        self.shdFXScreen(function()
+            self.fxBlurBG(function()
+                self.menuCam:attach()
+                    love.graphics.draw(self.menuBG)
+                self.menuCam:detach()
+            end)
+    
+            love.graphics.draw(self.crtOverlay, 0, 0, 0, love.resconf.width / self.crtOverlay:getWidth(), love.resconf.height / self.crtOverlay:getHeight())
         end)
-
-        love.graphics.draw(self.crtOverlay, 0, 0, 0, love.resconf.width / self.crtOverlay:getWidth(), love.resconf.height / self.crtOverlay:getHeight())
     love.graphics.setCanvas()
 
     -- update canvases --

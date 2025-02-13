@@ -325,7 +325,6 @@ function skin.image(object)
     
     love.graphics.setColor(imagecolor)
     love.graphics.draw(image, x, y, orientation, scalex, scaley, offsetx, offsety, shearx, sheary)
-    
 end
 
 --[[---------------------------------------------------------
