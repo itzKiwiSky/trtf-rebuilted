@@ -86,6 +86,7 @@
             "custom_night_menu_title" : "Custom Night",
             "custom_night_menu_challenges" : "Challenges",
             "custom_night_menu_ready" : "Ready",
+            "custom_night_menu_custom_challenge" : "Custom Challenge",
             "custom_night_menu_buttons" : {
                 "custom_night_menu_buttons_clear" : "Clear all",
                 "custom_night_menu_buttons_add" : "Add 1",

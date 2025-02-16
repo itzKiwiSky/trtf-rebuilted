@@ -167,6 +167,57 @@ return function()
     --ptgrid:ColSpanAt(2, 1, 2)
     --ptgrid:RowSpanAt(2, 2, 3)
 
+    local exitButton = loveframes.Create("button")
+    exitButton:SetFont(settings.fonts.vhsFont)
+    exitButton:SetSize(96, 48)
+    exitButton:SetText(languageService["menu_settings_buttons_exit"])
+    exitButton:SetPos(settings.lpadding, love.resconf.height - (exitButton:GetHeight() + settings.lpadding))
+    exitButton.drawfunc = buttonSkin
+    exitButton.OnClick = function(obj)
+        gamestate.switch(MenuState)
+    end
+
+    local readyButton = loveframes.Create("button")
+    readyButton:SetFont(settings.fonts.vhsFont)
+    readyButton:SetSize(96, 48)
+    readyButton:SetText(languageService["custom_night_menu_ready"])
+    readyButton:SetPos((love.resconf.width - (exitButton:GetWidth() + settings.lpadding)) - 8, love.resconf.height - (exitButton:GetHeight() + settings.lpadding))
+    readyButton.drawfunc = buttonSkin
+    readyButton.OnClick = function(obj)
+        --gamestate.switch(MenuState)
+    end
+
+    local function updateValue()
+        local i = 1
+        if CustomNightState.presets[registers.user.currentChallengeID] then
+            for anim, value in spairs(CustomNightState.presets[registers.user.currentChallengeID].values) do
+                --createPortrait(k, r, c)
+                --CustomNightState.animatronicsAI
+                local animatronic = CustomNightState.presets[registers.user.currentChallengeID].values[anim]
+                local child = ptgrid.children[i].children[3]
+                child:SetText(animatronic)
+                child:CenterX()
+                CustomNightState.animatronicsAI[anim] = CustomNightState.presets[registers.user.currentChallengeID].values[anim]
+                i = i + 1
+            end
+        end
+    end
+
+    local challengeGrid = loveframes.Create("grid")
+    challengeGrid:SetRows(1)
+    challengeGrid:SetColumns(3)
+    challengeGrid:SetItemAutoSize(false)
+    challengeGrid:SetCellPadding(128)
+    challengeGrid:Center()
+    challengeGrid:SetY(challengeGrid:GetY() + love.resconf.height / 2 - challengeGrid:GetCellPadding() + settings.lpadding)
+    challengeGrid.drawfunc = settings.blank
+
+    local textChallenge = loveframes.Create("text")
+    textChallenge:SetText(not registers.user.isCustomChallenge and CustomNightState.presets[registers.user.currentChallengeID].displayName or "Custom Challenge")
+    textChallenge:SetDefaultColor(1, 1, 1, 1)
+    textChallenge:SetFont(settings.fonts.vhsTitle)
+    textChallenge:Center()
+
     local function createPortrait(id, c, r)
         local portraitImg = loveframes.Create("image")
         portraitImg:SetImage(portraitIcons[id].img)
@@ -218,8 +269,19 @@ return function()
         decButton.drawfunc = buttonSkin
         decButton.OnClick = function(obj)
             if curAILevel > 0 then
-                curAILevel = curAILevel - 1
-                AIValue:SetText(tostring(curAILevel))
+                CustomNightState.animatronicsAI[id] = CustomNightState.animatronicsAI[id] - 1
+                AIValue:SetText(tostring(CustomNightState.animatronicsAI[id]))
+                AIValue:CenterX()
+
+                registers.user.isCustomChallenge = true
+            end
+
+            if registers.user.isCustomChallenge then
+                textChallenge:SetText(languageService["custom_night_menu_custom_challenge"])
+                textChallenge:Center()
+            else
+                textChallenge:SetText(CustomNightState.presets[registers.user.currentChallengeID].displayName)
+                textChallenge:Center()
             end
         end
 
@@ -234,8 +296,19 @@ return function()
         incButton.drawfunc = buttonSkin
         incButton.OnClick = function(obj)
             if curAILevel < 20 then
-                curAILevel = curAILevel + 1
-                AIValue:SetText(tostring(curAILevel))
+                CustomNightState.animatronicsAI[id] = CustomNightState.animatronicsAI[id] + 1
+                AIValue:SetText(tostring(CustomNightState.animatronicsAI[id]))
+                AIValue:CenterX()
+
+                registers.user.isCustomChallenge = true
+            end
+
+            if registers.user.isCustomChallenge then
+                textChallenge:SetText(languageService["custom_night_menu_custom_challenge"])
+                textChallenge:Center()
+            else
+                textChallenge:SetText(CustomNightState.presets[registers.user.currentChallengeID].displayName)
+                textChallenge:Center()
             end
         end
 
@@ -255,55 +328,6 @@ return function()
     ptgrid:Center()
     ptgrid:SetY(ptgrid:GetY() - 64)
 
-    local exitButton = loveframes.Create("button")
-    exitButton:SetFont(settings.fonts.vhsFont)
-    exitButton:SetSize(96, 48)
-    exitButton:SetText(languageService["menu_settings_buttons_exit"])
-    exitButton:SetPos(settings.lpadding, love.resconf.height - (exitButton:GetHeight() + settings.lpadding))
-    exitButton.drawfunc = buttonSkin
-    exitButton.OnClick = function(obj)
-        gamestate.switch(MenuState)
-    end
-
-    local readyButton = loveframes.Create("button")
-    readyButton:SetFont(settings.fonts.vhsFont)
-    readyButton:SetSize(96, 48)
-    readyButton:SetText(languageService["custom_night_menu_ready"])
-    readyButton:SetPos((love.resconf.width - (exitButton:GetWidth() + settings.lpadding)) - 8, love.resconf.height - (exitButton:GetHeight() + settings.lpadding))
-    readyButton.drawfunc = buttonSkin
-    readyButton.OnClick = function(obj)
-        --gamestate.switch(MenuState)
-    end
-
-    --print(debug.formattable())
-    
-
-    local function updateValue()
-        local i = 1
-        for _, value in ipairs(CustomNightState.presets[registers.user.currentChallengeID]) do
-            --createPortrait(k, r, c)
-            --CustomNightState.animatronicsAI
-            --print(k, v)
-            --ptgrid.children[i].children[3]:SetText(CustomNightState.animatronicsAI[])
-            --i = i + 1
-        end
-    end
-
-    local challengeGrid = loveframes.Create("grid")
-    challengeGrid:SetRows(1)
-    challengeGrid:SetColumns(3)
-    challengeGrid:SetItemAutoSize(false)
-    challengeGrid:SetCellPadding(128)
-    challengeGrid:Center()
-    challengeGrid:SetY(challengeGrid:GetY() + love.resconf.height / 2 - challengeGrid:GetCellPadding() + settings.lpadding)
-    challengeGrid.drawfunc = settings.blank
-
-    local textChallenge = loveframes.Create("text")
-    textChallenge:SetText(CustomNightState.presets[registers.user.currentChallengeID].displayName or "Custom Challenge")
-    textChallenge:SetDefaultColor(1, 1, 1, 1)
-    textChallenge:SetFont(settings.fonts.vhsTitle)
-    textChallenge:Center()
-
     local challengeLeftButton = loveframes.Create("button")
     challengeLeftButton:SetFont(settings.fonts.vhsFont)
     challengeLeftButton:SetSize(96, 48)
@@ -311,11 +335,16 @@ return function()
     challengeLeftButton:SetY(love.resconf.height - (exitButton:GetHeight() + settings.lpadding))
     challengeLeftButton.drawfunc = buttonSkin
     challengeLeftButton.OnClick = function(obj)
+        registers.user.isCustomChallenge = false
         if registers.user.currentChallengeID > 1 then
             registers.user.currentChallengeID = registers.user.currentChallengeID - 1
-            textChallenge:SetText(CustomNightState.presets[registers.user.currentChallengeID].displayName)
-            textChallenge:Center()
-            registers.user.isCustomChallenge = false
+            if registers.user.isCustomChallenge then
+                textChallenge:SetText(languageService["custom_night_menu_custom_challenge"])
+                textChallenge:Center()
+            else
+                textChallenge:SetText(CustomNightState.presets[registers.user.currentChallengeID].displayName)
+                textChallenge:Center()
+            end
             updateValue()
         end
     end
@@ -327,10 +356,16 @@ return function()
     challengeRightButton:SetY(love.resconf.height - (exitButton:GetHeight() + settings.lpadding))
     challengeRightButton.drawfunc = buttonSkin
     challengeRightButton.OnClick = function(obj)
+        registers.user.isCustomChallenge = false
         if registers.user.currentChallengeID < #CustomNightState.presets then
             registers.user.currentChallengeID = registers.user.currentChallengeID + 1
-            textChallenge:SetText(CustomNightState.presets[registers.user.currentChallengeID].displayName)
-            textChallenge:Center()
+            if registers.user.isCustomChallenge then
+                textChallenge:SetText(languageService["custom_night_menu_custom_challenge"])
+                textChallenge:Center()
+            else
+                textChallenge:SetText(CustomNightState.presets[registers.user.currentChallengeID].displayName)
+                textChallenge:Center()
+            end
             updateValue()
         end
     end

@@ -107,7 +107,7 @@ function love.initialize()
             virtualSettings = gameslot.save.game.user.settings,
             videoSettingsChanged = false,
             currentChallengeID = 1,
-            isCustomChallenge = false,
+            isCustomChallenge = true,
         }
     }
 

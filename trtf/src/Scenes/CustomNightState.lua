@@ -86,6 +86,7 @@ end
 
 function CustomNightState:draw()
     love.graphics.draw(self.blurBGCanvas)
+    love.graphics.print(debug.formattable(CustomNightState.animatronicsAI), 10, 20)
 end
 
 function CustomNightState:update(elapsed)
