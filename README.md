@@ -8,7 +8,7 @@
 
 
 > [!WARNING]
-> *This is an experimental game because it is a practice project*<br>
+> This project will continue in unmaintaned state, the game is getting closer to be released and no need to continue update a parallel version.
 
 ## HISTORY
 
@@ -18,7 +18,8 @@ After the big incident of Fredbear's Family Diner, in 2005, Vincent, decided to 
 
 [**@El_Eternauta_1957**](https://gamejolt.com/@El_Eternauta_1957) & [**@ShotOfRabbetDev**](https://gamejolt.com/@ShotOfRabbetDev) - Main Developers / Designers / Modellers<br>
 [**@Only_Emiliano_**](https://gamejolt.com/@Only_Emiliano_) - 2D Artist<br>
-[**@ItzKiwiSky**](https://gamejolt.com/@ItzKiwiSky) - Coder (me lol)<br>
+[**@ItzKiwiSky**](https://gamejolt.com/@ItzKiwiSky) - Old Coder (me lol)<br>
+[ItsMeNoOne](https://gamejolt.com/@ItsMeNoOne) - Official coder
 [**@SpoopsVA**](https://gamejolt.com/@SpoopsVA) - Voice actor (English)<br>
 [**@El_Eternauta_1957**](https://gamejolt.com/@El_Eternauta_1957) - Voice actor (Spanish)<br>
 [**@ewademar**](https://gamejolt.com/@ewademar) - 2D Artist (For the 3 Drawings of Bonnie,Freddy and Chica)<br>
