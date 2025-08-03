@@ -101,8 +101,8 @@ function PuppetAI.update(elapsed)
             if PuppetAI.patience >= 150 then
                 if not NightState.killed then
                     NightState.killed = true
-                    jumpscareController:init("puppet", 35)
-                    jumpscareController.onComplete = function()
+                    NightState.jumpscareController:init("puppet", 35)
+                    NightState.jumpscareController.onComplete = function()
                         NightState.KilledBy = "puppet"
                         gamestate.switch(DeathState)
                     end

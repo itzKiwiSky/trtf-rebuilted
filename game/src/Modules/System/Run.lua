@@ -124,8 +124,9 @@ function love.run()
     shove.createLayer("DevUI")
     shove.createLayer("fps")
 
+    --Slab.SetStyle("Pinky")
+    Slab.GetStyle().API.SetStyle("Pinky")
     Slab.Initialize({"NoDocks"})
-    Slab.LoadStyle("Pinky")
 
     local fpsfont = love.graphics.newFont(16)
 

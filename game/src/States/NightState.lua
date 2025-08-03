@@ -129,19 +129,27 @@ function NightState:enter()
                             NightState.animatronicsAI[name] = NightState.animatronicsAI[name] - 1
                         end
                     end
-                    Slab.SameLine(1.5)
+                    Slab.SameLine({
+                        Pad = 2
+                    })
                     Slab.Text(tostring(NightState.animatronicsAI[name]))
-                    Slab.SameLine(1.5)
+                    Slab.SameLine({
+                        Pad = 2
+                    })
                     if Slab.Button("+") then
                         if NightState.animatronicsAI[name] < 20 then
                             NightState.animatronicsAI[name] = NightState.animatronicsAI[name] + 1
                         end
                     end
-                    Slab.SameLine(1.5)
+                    Slab.SameLine({
+                        Pad = 2
+                    })
                     if Slab.Button("reset") then
                         NightState.animatronicsAI[name] = 0
                     end
-                    Slab.SameLine(1.5)
+                    Slab.SameLine({
+                        Pad = 2
+                    })
                     if Slab.Button("move foward") then
                         NightState.animatronicsAI[name] = 0
                     end
@@ -664,6 +672,7 @@ function NightState:draw()
         --love.graphics.print(NightState.AnimatronicControllers["puppet"].musicBoxTimer, 20, 20)
         --love.graphics.print(debug.formattable(NightState.animatronicsAI), 10, 10)
         local inside, mx, my = shove.mouseToViewport()
+        mx, my = self.gameCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
         
         if registers.showDebugHitbox then
             self.gameCam:attach()
@@ -679,9 +688,6 @@ function NightState:draw()
 
             self.gameCam:detach()
 
-            love.graphics.setColor(1, 1, 0.6, 0.4)
-                love.graphics.rectangle("fill", self.phoneController.hitbox.x, self.phoneController.hitbox.y, self.phoneController.hitbox.w, self.phoneController.hitbox.h)
-            love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setColor(0.3, 1, 1, 0.4)
                 love.graphics.rectangle("fill", self.camBtn.x, self.camBtn.y, self.camBtn.w, self.camBtn.h)
             love.graphics.setColor(1, 1, 1, 1)
@@ -694,6 +700,8 @@ end
 
 function NightState:update(elapsed)
     local inside, mx, my = shove.mouseToViewport()  -- get the mouse --
+    -- convert mouse position from screen to viewport and than the viewport to the world --
+    mx, my = self.gameCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
 
     if self.officeState._op then
         if self.officeState.fadealpha <= 1 then
@@ -1025,9 +1033,6 @@ function NightState:update(elapsed)
 
     -- jumpscare --
     self.jumpscareController:update(elapsed)
-
-    -- convert mouse position from screen to viewport and than the viewport to the world --
-    local mx, my = self.gameCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
 
     
     if inside then

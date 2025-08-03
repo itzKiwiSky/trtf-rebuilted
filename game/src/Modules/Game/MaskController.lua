@@ -3,7 +3,7 @@ local MaskController = {}
 function MaskController:init(frames, speed, k)
     self.key = k
     self.x = -16
-    self.y = -64
+    self.y = -16
     self.rx = 0
     self.ry = 0
     self.frames = frames
@@ -46,8 +46,8 @@ function MaskController:draw()
     if self.visible then
         --love.graphics.draw(self.frames[self.key .. self.frame], self.x + self.rx, self.y + self.ry)
         love.graphics.draw(self.frames[self.key .. self.frame], self.x + self.rx, self.y + self.ry, 0, 
-            shove.getViewportWidth() / self.frames[self.key .. self.frame]:getWidth(),
-            shove.getViewportHeight() / self.frames[self.key .. self.frame]:getHeight()
+            self.frames[self.key .. self.frame]:getWidth() / shove.getViewportWidth(),
+            self.frames[self.key .. self.frame]:getHeight() / shove.getViewportHeight()
         )
     end
 end

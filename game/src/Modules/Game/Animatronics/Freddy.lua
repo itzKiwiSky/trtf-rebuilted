@@ -93,8 +93,8 @@ function FreddyAI.update(elapsed)
         elseif FreddyAI.currentState >= 6 then
             if not NightState.killed then
                 NightState.killed = true
-                jumpscareController:init("freddy_power_out", 35)
-                jumpscareController.onComplete = function()
+                NightState.jumpscareController:init("freddy_power_out", 35)
+                NightState.jumpscareController.onComplete = function()
                     NightState.KilledBy = "freddy"
                     gamestate.switch(DeathState)
                 end
@@ -168,8 +168,8 @@ function FreddyAI.update(elapsed)
         elseif FreddyAI.currentState >= 6 then
             if not NightState.killed then
                 NightState.killed = true
-                jumpscareController:init("freddy", 35)
-                jumpscareController.onComplete = function()
+                NightState.jumpscareController:init("freddy", 35)
+                NightState.jumpscareController.onComplete = function()
                     NightState.KilledBy = "freddy"
                     gamestate.switch(DeathState)
                 end

@@ -233,14 +233,14 @@ function TabletCameraSubState:draw()
 
         if NightState.officeState.tabletBootProgress < 100 then
             love.graphics.rectangle("line", shove.getViewportWidth() / 2 - 128, 500, 256, 42)
-            drawQueue((shove.getViewportWidth() / 2 - 128), 500, 256, 38, math.floor(officeState.tabletBootProgress * 0.2), 20, 5, 5, {41, 165, 236}, {41, 165, 236})
+            drawQueue((shove.getViewportWidth() / 2 - 128), 500, 256, 38, math.floor(NightState.officeState.tabletBootProgress * 0.2), 20, 5, 5, {41, 165, 236}, {41, 165, 236})
         end
 
         love.graphics.printf("Initializing...", NightState.fnt_vhs, 0, 550, shove.getViewportWidth(), "center")
         love.graphics.printf("v1.4.35 | Fazbear Ent. 1998 - 2005", NightState.fnt_vhs, 0, shove.getViewportHeight() - 32, shove.getViewportWidth(), "center")
     end)
 
-    fxTV(function()
+    self.fxTV(function()
         love.graphics.draw(self.fxCanvas, 0, 0)
         love.graphics.setBlendMode("add")
             love.graphics.setColor(1, 1, 1, 0.14)

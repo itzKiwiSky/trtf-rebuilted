@@ -75,8 +75,8 @@ function ChicaAi.update(elapsed)
             if ChicaAi.patience >= 150 and not NightState.officeState.maskUp then
                 if not NightState.killed then
                     NightState.killed = true
-                    jumpscareController:init("chica", 35)
-                    jumpscareController.onComplete = function()
+                    NightState.jumpscareController:init("chica", 35)
+                    NightState.jumpscareController.onComplete = function()
                         NightState.KilledBy = "chica"
                         gamestate.switch(DeathState)
                     end

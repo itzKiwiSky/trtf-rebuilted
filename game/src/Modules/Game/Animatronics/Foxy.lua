@@ -26,8 +26,8 @@ FoxyAI.path = {
 local function kill()
     if not NightState.killed then
         NightState.killed = true
-        jumpscareController:init("foxy", 35)
-        jumpscareController.onComplete = function()
+        NightState.jumpscareController:init("foxy", 35)
+        NightState.jumpscareController.onComplete = function()
             NightState.KilledBy = "foxy"
             gamestate.switch(DeathState)
         end
