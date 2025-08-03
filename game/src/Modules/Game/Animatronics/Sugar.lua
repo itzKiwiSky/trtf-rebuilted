@@ -1,3 +1,4 @@
+local tabletCameraSubState = require 'src.States.Substates.TabletCameraSubstate'
 local SugarAI = {
     x = 0,
     y = 0,

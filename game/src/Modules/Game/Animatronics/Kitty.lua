@@ -1,3 +1,4 @@
+local tabletCameraSubState = require 'src.States.Substates.TabletCameraSubstate'
 local KittyAI = {
     x = 0,
     y = 0,

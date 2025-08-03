@@ -1,3 +1,4 @@
+local tabletCameraSubState = require 'src.States.Substates.TabletCameraSubstate'
 local PuppetAI = {
     x = 0,
     y = 0,
