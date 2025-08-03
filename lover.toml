@@ -1,0 +1,14 @@
+[package]
+name = "TRTF_Rebuilted"
+display_name = "The Return To Freddys"
+description = "Neonix! game"
+author = "BrightSmileTeam and EclipseTeam"
+version = "0.0.1"
+icon = "game/icon.png"
+
+[build]
+default = ["love", "win64", "linux"]
+
+[directories]
+source = "game"
+build = "build"

@@ -1,0 +1,190 @@
+{
+  "frames": [
+    {
+      "filename": "a_glow.png",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 390
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 390
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 390
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "filename": "b_glow.png",
+      "frame": {
+        "x": 256,
+        "y": 0,
+        "w": 256,
+        "h": 390
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 390
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 390
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "filename": "c_glow.png",
+      "frame": {
+        "x": 0,
+        "y": 390,
+        "w": 256,
+        "h": 390
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 390
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 390
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "filename": "d_glow.png",
+      "frame": {
+        "x": 256,
+        "y": 390,
+        "w": 256,
+        "h": 390
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 390
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 390
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "filename": "e_glow.png",
+      "frame": {
+        "x": 512,
+        "y": 0,
+        "w": 256,
+        "h": 390
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 390
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 390
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "filename": "f_glow.png",
+      "frame": {
+        "x": 512,
+        "y": 390,
+        "w": 256,
+        "h": 390
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 390
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 390
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "filename": "g_glow.png",
+      "frame": {
+        "x": 768,
+        "y": 0,
+        "w": 256,
+        "h": 390
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 390
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 390
+      },
+      "pivot": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  ],
+  "meta": {
+    "app": "http://free-tex-packer.com",
+    "version": "0.6.7",
+    "image": "display_glow.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 1024,
+      "h": 780
+    },
+    "scale": 1
+  }
+}
