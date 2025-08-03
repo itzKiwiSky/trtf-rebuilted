@@ -52,7 +52,7 @@ function TabletCameraSubState:load()
             self.fxTV.disable("vignette", "chromasep", "crt")
         end,
         [1] = function ()
-            
+            self.fxTV.enable("vignette", "chromasep")
         end
     })
 
@@ -161,11 +161,11 @@ function TabletCameraSubState:load()
             visible = false,
             action = function()
                 if not NightState.officeState.vent.requestClose then
-                    if tabletCameraSubState.camID == "vent_kitty" then
+                    if self.camID == "vent_kitty" then
                         NightState.officeState.vent.timerAcc = 0
                         NightState.officeState.vent.direction = "left"
                         NightState.officeState.vent.requestClose = true
-                    elseif tabletCameraSubState.camID == "vent_sugar" then
+                    elseif self.camID == "vent_sugar" then
                         NightState.officeState.vent.timerAcc = 0
                         NightState.officeState.vent.direction = "right"
                         NightState.officeState.vent.requestClose = true
@@ -199,7 +199,7 @@ function TabletCameraSubState:draw()
                 if NightState.officeState.lightCam.state then
                     if not NightState.officeState.lightCam.isFlicking then
                         love.graphics.draw(NightState.assets.cameras[self.camID]["cs_" .. self.cameraMeta[self.camID].frame], 0, 0)
-                        if tabletCameraSubState.camerasID[NightState.AnimatronicControllers["puppet"].metadataCameraID] == tabletCameraSubState.camID and NightState.AnimatronicControllers["puppet"].released then
+                        if self.camerasID[NightState.AnimatronicControllers["puppet"].metadataCameraID] == self.camID and NightState.AnimatronicControllers["puppet"].released then
                             love.graphics.draw(NightState.assets.cameras["puppet"]["cs_" .. NightState.AnimatronicControllers["puppet"].position], 0, 0)
                         end
                     end
@@ -244,7 +244,7 @@ function TabletCameraSubState:draw()
         love.graphics.draw(self.fxCanvas, 0, 0)
         love.graphics.setBlendMode("add")
             love.graphics.setColor(1, 1, 1, 0.14)
-                love.graphics.draw(NightState.assets.staticfx["static_" .. staticfx.frameid], 0, 0)
+                love.graphics.draw(NightState.assets.staticfx["static_" .. NightState.staticfx.frameid], 0, 0)
             love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
 
@@ -287,12 +287,12 @@ function TabletCameraSubState:draw()
             end
 
             love.graphics.setColor(0.5, 0.5, 0.5, 1)
-            love.graphics.printf(string.upper("cam_" .. _), fnt_camfnt, b.btn.x, b.btn.y + 3, b.btn.w - 8, "center")
+            love.graphics.printf(string.upper("cam_" .. _), NightState.fnt_camfnt, b.btn.x, b.btn.y + 3, b.btn.w - 8, "center")
             love.graphics.setColor(1, 1, 1, 1)
         end
 
         -- info --
-        tabletDisplay(self)
+        self.tabletDisplay(self)
 
         for k, b in pairs(self.miscButtons) do
             if b.visible then
@@ -312,7 +312,7 @@ function TabletCameraSubState:draw()
                 love.graphics.setColor(1, 1, 1, 1)
 
                 love.graphics.setColor(0.5, 0.5, 0.5, 1)
-                love.graphics.printf(b.text, fnt_camfnt, b.hitbox.x, b.hitbox.y + 3, b.hitbox.w - 8, "center")
+                love.graphics.printf(b.text, NightState.fnt_camfnt, b.hitbox.x, b.hitbox.y + 3, b.hitbox.w - 8, "center")
                 love.graphics.setColor(1, 1, 1, 1)
             end
         end
@@ -328,8 +328,8 @@ function TabletCameraSubState:draw()
         end
     end)
 
-    if DEBUG_APP then
-        if registers.system.showDebugHitbox then
+    if FEATURE_FLAGS.developerMode then
+        if registers.showDebugHitbox then
             love.graphics.setColor(0.7, 0.2, 1, 0.4)
                 love.graphics.rectangle("fill", self.clickArea.x, self.clickArea.y, self.clickArea.w, self.clickArea.h)
             love.graphics.setColor(1, 1, 1, 1)
@@ -367,12 +367,12 @@ function TabletCameraSubState:update(elapsed)
     NightState.officeState.lightCam.state = Controller:down("game_flashlight") and NightState.officeState.tabletUp
 
     self.miscButtons["reload"].visible = false
-    if tabletCameraSubState.camerasID[NightState.AnimatronicControllers["puppet"].metadataCameraID] == self.tabletCameraSubState.camID and NightState.AnimatronicControllers["puppet"].released then
+    if self.camerasID[NightState.AnimatronicControllers["puppet"].metadataCameraID] == self.camID and NightState.AnimatronicControllers["puppet"].released then
         self.miscButtons["reload"].visible = true
     end
 
     self.miscButtons["seal_vent"].visible = false
-    if tabletCameraSubState.camID == "vent_kitty" or tabletCameraSubState.camID == "vent_sugar" then
+    if self.camID == "vent_kitty" or self.camID == "vent_sugar" then
         self.miscButtons["seal_vent"].visible = true
     end
 
@@ -395,13 +395,25 @@ function TabletCameraSubState:update(elapsed)
     end
 
     -- yay --
-    officeState.lightCam.isFlicking = not (love.timer.getTime() % math.random(2, 5) > 0.6)
+    NightState.officeState.lightCam.isFlicking = not (love.timer.getTime() % math.random(2, 5) > 0.6)
+
+    -- controllers --
+    if Controller:pressed("game_change_cam_left") then
+        self.camButtonID = self.camButtonID - 1
+        self.doInterference(0.3, 70, 100, 1.5)
+        changeCamFX()
+    end
+    if Controller:pressed("game_change_cam_right") then
+        self.camButtonID = self.camButtonID + 1
+        self.doInterference(0.3, 70, 100, 1.5)
+        changeCamFX()
+    end
 
     -- static animation --
     NightState.staticfx.timer = NightState.staticfx.timer + elapsed
     if NightState.staticfx.timer >= NightState.staticfx.speed then
         NightState.staticfx.timer = 0
-        NightState.staticfx.frameid = staticfx.frameid + 1
+        NightState.staticfx.frameid = NightState.staticfx.frameid + 1
         if NightState.staticfx.frameid > NightState.assets.staticfx.frameCount then
             NightState.staticfx.frameid = 1
         end
@@ -415,13 +427,15 @@ function TabletCameraSubState:update(elapsed)
     end
 
     -- render camera --
-    cameraController(self)
+    self.cameraController(self)
 end
 
 function TabletCameraSubState:mousepressed(x, y, button)
+    local inside, mx, my = shove.mouseToViewport()
+
     if button == 1 then
         for _, b in ipairs(self.buttons) do
-            if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, b.btn) then
+            if collision.pointRect({ x = mx, y = my }, b.btn) then
                 self.camButtonID = _
                 changeCamFX()
             end
@@ -430,24 +444,12 @@ function TabletCameraSubState:mousepressed(x, y, button)
         for k, b in pairs(self.miscButtons) do
             self.active = false
             if b.visible and b.type == "click" then
-                if collision.pointRect({x = love.mouse.getX(), y = love.mouse.getY()}, b.hitbox) then
+                if collision.pointRect({ x = mx, y = my }, b.hitbox) then
                     b.active = true
                     b.action()
                 end
             end
         end
-    end
-end
-
-function TabletCameraSubState:keypressed(k)
-    if k == "left" then
-        self.camButtonID = self.camButtonID + 1
-        changeCamFX()
-    end
-    if k == "right" then
-        self.camButtonID = self.camButtonID - 1
-        TabletCameraSubState.doInterference(0.3, 70, 100, 1.5)
-        changeCamFX()
     end
 end
 

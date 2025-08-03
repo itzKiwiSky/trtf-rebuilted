@@ -7,15 +7,13 @@ function JumpscareController:init(id, speed)
     self.acc = 0
     self.speedAnim = speed
     self.active = true
-    self.onComplete = function()
-        
-    end
+    self.onComplete = function()end
 
     for k, v in pairs(AudioSources) do
         v:stop()
     end
 
-    ShakeController:start(4)
+    ShakeController:setShake(10)
     AudioSources["sfx_jumpscare"]:setVolume(1.5)
     AudioSources["sfx_jumpscare"]:play()
 end

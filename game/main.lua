@@ -77,6 +77,8 @@ function love.initialize()
                     ["game_mask"] = { "key:lshift", "key:x", "button:y" },
                     ["game_tablet"] = { "key:space", "key:up", "button:a" },
                     ["game_flashlight"] = { "key:z", "key:lctrl", "button:x" },
+                    ["game_change_cam_left"] = { "key:left", "key:a", "button:leftshoulder", "button:dpleft" },
+                    ["game_change_cam_right"] = { "key:right", "key:d", "button:rightshoulder", "button:dpright" },
                     ["ui_left"] = { "key:left", "key:a", "axis:leftx-" },
                     ["ui_right"] = { "key:right", "key:d", "axis:leftx+" },
                     ["ui_up"] = { "key:left", "key:a", "axis:lefty+" },

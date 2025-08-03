@@ -91,8 +91,9 @@ function NightState:enter()
     self.tabletCameraSubState = require 'src.States.Substates.TabletCameraSubstate'
     self.maskController = require 'src.Modules.Game.MaskController'
     self.phoneController = require 'src.Modules.Game.PhoneController'
-    self.ShakeController = require 'src.Modules.Game.Utils.ShakeController'
+    self.shakeController = require 'src.Modules.Game.Utils.ShakeController'
     self.jumpscareController = require 'src.Modules.Game.JumpscareController'
+    self.ShakeController = require 'src.Modules.Game.Utils.ShakeController'
     self.doorParticle = require 'src.Modules.Game.Utils.ParticleDoor'
     local aicgf = require 'src.Modules.Game.Utils.AIConfig'
 
@@ -119,6 +120,9 @@ function NightState:enter()
                 end
                 if Slab.CheckBox(NightState.modifiers.radarMode, "Show animatronics in camera map") then
                     NightState.modifiers.radarMode = not NightState.modifiers.radarMode
+                end
+                if Slab.Button("End night") then
+                    self.night.time = 298
                 end
                 Slab.Separator()
                 Slab.Text("IA Settings")
@@ -151,7 +155,16 @@ function NightState:enter()
                         Pad = 2
                     })
                     if Slab.Button("move foward") then
-                        NightState.animatronicsAI[name] = 0
+                        --NightState.animatronicsAI[name] = 0
+                        if NightState.AnimatronicControllers[name].currentState < #NightState.AnimatronicControllers[name].path then
+                            NightState.AnimatronicControllers[name].currentState = NightState.AnimatronicControllers[name].currentState + 1
+                        end
+                    end
+                    if Slab.Button("move backwards") then
+                        --NightState.animatronicsAI[name] = 0
+                        if NightState.AnimatronicControllers[name].currentState > 0 then 
+                            NightState.AnimatronicControllers[name].currentState = NightState.AnimatronicControllers[name].currentState - 1
+                        end
                     end
                 end
             Slab.EndWindow()
@@ -192,7 +205,7 @@ function NightState:enter()
     self.isCustomNight = false
     self.nightPassed = false
 
-    self.gameCam = camera()
+    self.gameCam = camera(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
 
     -- radar --
     NightState.assets["radar_icons"] = {}
@@ -261,7 +274,7 @@ function NightState:enter()
         height = 800,
     }
 
-    self.gameCam.factorX = 2.46
+    self.gameCam.factorX = 2.452
     self.gameCam.factorY = 25
     self.cameraObject = {   -- this will allow camera view --
         x = 0,
@@ -284,7 +297,7 @@ function NightState:enter()
     self.Y_TOP_FRAME = self.gameCam.y
     self.Y_BOTTOM_FRAME = self.gameCam.y + self.roomSize.height
 
-    staticfx = {
+    self.staticfx = {
         timer = 0,
         frameid = 1,
         speed = 1 / 43
@@ -471,6 +484,7 @@ function NightState:enter()
 end
 
 function NightState:draw()
+    self.shakeController:prepare()
     self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
         self.cnv_mainCanvas:renderTo(function()
             love.graphics.clear(love.graphics.getBackgroundColor())
@@ -486,8 +500,8 @@ function NightState:draw()
                 end
             end
 
-            self.doorL:draw()
-            self.doorR:draw()
+            self.doorL:draw(0, 0)
+            self.doorR:draw(0, 0)
 
             -- flicking front XD --
             if self.officeState.flashlight.state then
@@ -606,11 +620,6 @@ function NightState:draw()
         end
     end)
 
-    -- screen fade --
-    love.graphics.setColor(0, 0, 0, self.officeState._f)
-        love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
-    love.graphics.setColor(1, 1, 1, 1)
-
     if not self.officeState.isOfficeDisabled then
         if not self.officeState.tabletUp then
             if self.officeState.maskUp then
@@ -638,6 +647,11 @@ function NightState:draw()
         love.graphics.setColor(1, 1, 1, 1)
     end
 
+    -- screen fade --
+    love.graphics.setColor(0, 0, 0, self.officeState._f)
+        love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
+
     love.graphics.setColor(0, 0, 0, self.officeState.fadealpha)
         love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
     love.graphics.setColor(1, 1, 1, 1)
@@ -663,6 +677,7 @@ function NightState:draw()
             love.graphics.print(self.nightEndTextDisplay.text, self.fnt_nightDisplay, shove.getViewportWidth() / 2, shove.getViewportHeight() / 2 - self.fnt_nightDisplay:getHeight() / 2, 0, self.nightEndTextDisplay.scale, self.nightEndTextDisplay.scale, self.fnt_nightDisplay:getWidth(nightEndTextDisplay.text) / 2, self.fnt_nightDisplay:getHeight())
         love.graphics.setColor(1, 1, 1, 1)
     end
+    self.shakeController:clear()
 
     -- debug shit --
     if FEATURE_FLAGS.developerMode then
@@ -675,7 +690,7 @@ function NightState:draw()
         mx, my = self.gameCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
         
         if registers.showDebugHitbox then
-            self.gameCam:attach()
+            self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
                 love.graphics.setColor(0.7, 0, 1, 0.4)
                     love.graphics.rectangle("fill", mx, my, 32, 32)
                 love.graphics.setColor(1, 1, 1, 1)
@@ -700,6 +715,7 @@ end
 
 function NightState:update(elapsed)
     local inside, mx, my = shove.mouseToViewport()  -- get the mouse --
+    local vmx, vmy = mx, my
     -- convert mouse position from screen to viewport and than the viewport to the world --
     mx, my = self.gameCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
 
@@ -725,7 +741,7 @@ function NightState:update(elapsed)
     -- hud buttons --
     -- camera --
     if not self.officeState.isOfficeDisabled then
-        if collision.pointRect({ x = mx, y = my }, self.camBtn) then
+        if collision.pointRect({ x = vmx, y = vmy }, self.camBtn) then
             if not self.officeState.maskUp then
                 if not self.camBtn.isHover then
                     self.camBtn.isHover = true
@@ -753,7 +769,7 @@ function NightState:update(elapsed)
 
     -- mask --
     if self.maskController.acc >= self.maskController.timeout and not self.officeState.isOfficeDisabled then
-        if collision.pointRect({x = mx, y = my}, self.maskBtn) then
+        if collision.pointRect({x = vmx, y = vmy}, self.maskBtn) then
             if not self.officeState.tabletUp then
                 if not self.maskBtn.isHover then
                     self.maskBtn.isHover = true
@@ -920,6 +936,8 @@ function NightState:update(elapsed)
         AudioSources["buzzlight"]:stop()
     end
 
+    self.shakeController:update(elapsed)
+
     -- loigic --
     if self.officeState.flashlight.state then
         self.officeState.flashlight.isFlicking = not (love.timer.getTime() % math.random(2, 5) > 0.6)
@@ -1034,9 +1052,11 @@ function NightState:update(elapsed)
     -- jumpscare --
     self.jumpscareController:update(elapsed)
 
-    
+    local mouseMove = 0
+
     if inside then
-        self.gameCam.x = self.roomSize.width * 0.5 + ((mx - self.roomSize.width * 0.5) / self.gameCam.factorX)
+        mouseMove = self.roomSize.width * 0.5 + ((mx - self.roomSize.width * 0.5) / self.gameCam.factorX)
+        self.gameCam.x = mouseMove
     end
 
     -- camera bounds --
@@ -1118,10 +1138,10 @@ function NightState:update(elapsed)
         AudioSources["office_disable"]:play()
 
         if self.officeState.tabletUp then
-            if AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:isPlaying() then
-                AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:seek(0)
+            if AudioSources[self.officeState.tabletUp and "tab_close" or "tab_up"]:isPlaying() then
+                AudioSources[self.officeState.tabletUp and "tab_close" or "tab_up"]:seek(0)
             end
-            AudioSources[officeState.tabletUp and "tab_close" or "tab_up"]:play()
+            AudioSources[self.officeState.tabletUp and "tab_close" or "tab_up"]:play()
             self.officeState.tabletUp = false
             self.tabletController:setState(false)
         end
@@ -1187,10 +1207,147 @@ function NightState:update(elapsed)
     end
 
     self.officeState.power.powerDisplay = math.floor(self.officeState.power.powerStat / 10)
+
+
+    -- this part is for more controls stuff --
+
+    -- door shit --
+    if not self.officeState.isOfficeDisabled then
+        for k, h in pairs(self.officeState.doors.hitboxes) do
+            if not self.officeState.maskUp and not self.officeState.tabletUp then
+                if Controller:pressed("game_close_door_right") then
+                    if k == "left" and self.officeState.doors.canUseDoorL then
+                        if not self.doorL.animationRunning then
+                            if AudioSources[self.officeState.doors.left and "door_open" or "door_close"]:isPlaying() then
+                                AudioSources[self.officeState.doors.left and "door_open" or "door_close"]:seek(0)
+                            end
+                            AudioSources[self.officeState.doors.left and "door_open" or "door_close"]:play()
+                            self.officeState.doors.left = not self.officeState.doors.left
+                            self.doorL:setState(self.officeState.doors.left)
+                        end
+                    end
+                end
+                if Controller:pressed("game_close_door_left") then
+                    if k == "right" and self.officeState.doors.canUseDoorR then
+                        if not self.doorR.animationRunning then
+                            if AudioSources[self.officeState.doors.right and "door_open" or "door_close"]:isPlaying() then
+                                AudioSources[self.officeState.doors.right and "door_open" or "door_close"]:seek(0)
+                            end
+                            AudioSources[self.officeState.doors.right and "door_open" or "door_close"]:play()
+                            self.officeState.doors.right = not self.officeState.doors.right
+                            self.doorR:setState(self.officeState.doors.right)
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if not self.officeState.isOfficeDisabled then
+        if Controller:pressed("game_tablet") then
+            if not self.officeState.maskUp then
+                if not self.tabletController.animationRunning then
+                    if AudioSources[self.officeState.tabletUp and "tab_close" or "tab_up"]:isPlaying() then
+                        AudioSources[self.officeState.tabletUp and "tab_close" or "tab_up"]:seek(0)
+                    end
+                    AudioSources[self.officeState.tabletUp and "tab_close" or "tab_up"]:play()
+    
+                    if not self.officeState.tabletUp then
+                        AudioSources["amb_cam"]:play()
+                    else
+                        AudioSources["amb_cam"]:pause()
+                    end
+    
+                    self.officeState.tabletUp = not self.officeState.tabletUp
+                    self.tabletController:setState(self.officeState.tabletUp)
+                end
+            end
+        end
+    end
+
+    if Controller:pressed("game_mask") then
+        if not self.officeState.tabletUp then
+            self.maskBtn.isHover = true
+            self.maskController.acc = 0
+            if not self.maskBtn.animationRunning then
+                if AudioSources["mask_off"]:isPlaying() then
+                    AudioSources["mask_off"]:seek(0)
+                end
+                AudioSources["mask_breath"]:setLooping(true)
+                AudioSources["mask_off"]:play()
+
+                if not self.officeState.maskUp then
+                    AudioSources["mask_breath"]:play()
+                else
+                    AudioSources["mask_breath"]:stop()
+                end
+
+                self.officeState.maskUp = not self.officeState.maskUp
+                self.maskController:setState(self.officeState.maskUp)
+            end
+        end
+    end
+
+    -- need adapter
+    --if self.tabletController.tabUp then
+    --    --self.tabletCameraSubState:keypressed(key)
+    --end
 end
 
-function NightState:keypressed(k)
+function NightState:mousepressed(x, y, button)
+    local inside, mx, my = shove.mouseToViewport()  -- get the mouse --
+    -- convert mouse position from screen to viewport and than the viewport to the world --
+    mx, my = self.gameCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
 
+    -- camera substate --
+    if self.tabletController.tabUp then
+        self.tabletCameraSubState:mousepressed(x, y, button)
+    end
+
+    -- door buttons --officeState.maskUp
+    if button == 1 then
+        if not self.officeState.isOfficeDisabled then
+            for k, h in pairs(self.officeState.doors.hitboxes) do
+                if not self.officeState.maskUp and not self.officeState.tabletUp then
+                    if k == "left" and self.officeState.doors.canUseDoorL then
+                        if collision.pointRect({x = mx, y = my}, h) then
+                            if not self.doorL.animationRunning then
+                                if AudioSources[self.officeState.doors.left and "door_open" or "door_close"]:isPlaying() then
+                                    AudioSources[self.officeState.doors.left and "door_open" or "door_close"]:seek(0)
+                                end
+                                AudioSources[self.officeState.doors.left and "door_open" or "door_close"]:play()
+                                self.officeState.doors.left = not self.officeState.doors.left
+                                self.doorL:setState(self.officeState.doors.left)
+                            end
+                        end
+                    end
+                    if k == "right" and self.officeState.doors.canUseDoorR then
+                        if collision.pointRect({x = mx, y = my}, h) then
+                            if not self.doorR.animationRunning then
+                                if AudioSources[self.officeState.doors.right and "door_open" or "door_close"]:isPlaying() then
+                                    AudioSources[self.officeState.doors.right and "door_open" or "door_close"]:seek(0)
+                                end
+                                AudioSources[self.officeState.doors.right and "door_open" or "door_close"]:play()
+                                self.officeState.doors.right = not self.officeState.doors.right
+                                self.doorR:setState(self.officeState.doors.right)
+                            end
+                        end
+                    end
+                end
+            end
+    
+            if self.phoneController.visible and self.officeState.phoneCallNotRefused and not self.nightTextDisplay.displayNightText then
+                if collision.pointRect({x = x, y = y}, self.phoneController.hitbox) then
+                    NightState.assets.calls["call_night" .. self.NightState.nightID]:seek(NightState.assets.calls["call_night" .. self.NightState.nightID]:getDuration("seconds") - 1)
+                    self.phoneController:setState(false)
+                    AudioSources["phone_pickup"]:play()
+                    self.nightTextDisplay.displayNightText = true
+                    self.subtitlesController.clear()
+                    self.officeState.phoneCall = false
+                end
+            end
+        end
+    end
 end
 
 function NightState:leave()

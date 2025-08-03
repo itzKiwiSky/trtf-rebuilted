@@ -1,4 +1,5 @@
 local drawQueue = require 'src.Modules.Game.Utils.DrawQueueBar'
+local tabletCameraSubState = require 'src.States.Substates.TabletCameraSubstate'
 
 local function mapValue(value, inMin, inMax, outMin, outMax)
     return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
