@@ -3,18 +3,6 @@ require('src.Modules.System.Utils.ErrHandler')
 local gitstuff = require 'src.Modules.System.GitStuff'  -- super important stuff --
 local initializeAPI = require 'src.Modules.System.InitializeAPI'
 
-local function preloadAudio(target)
-    local files = fsutil.scanFolder("assets/sounds", false, { "assets/sounds/night/calls" })
-
-    for f = 1, #files, 1 do
-        local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
-        loveloader.newSource(target, filename, files[f], "stream")
-        if FEATURE_FLAGS.debug then
-            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file queue to load with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", filename))
-        end
-    end
-end
-
 function love.initialize()
     SoundManager = require 'src.Modules.System.Utils.Sound'
     AudioSources = {}
@@ -22,8 +10,6 @@ function love.initialize()
 
     love.setDeprecationOutput(false)
 
-    preloadAudio(AudioSources)
-    
     fnt_subtitle = fontcache.getFont("tnr", 24)
     bg_subtitles = love.graphics.newGradient("horizontal", 
         {0, 0, 0, 0}, 
@@ -57,6 +43,8 @@ function love.initialize()
                 },
                 audio = {
                     masterVolume = 75,
+                    sfxVolume = 60,
+                    musicVolume = 60,
                 },
                 misc = {
                     language = "English",
@@ -113,6 +101,13 @@ function love.initialize()
         devWindow = false,
         devWindowContent = function() return end,
         showDebugHitbox = false,
+        user = {
+            currentSettingsTab = "video",
+            virtualSettings = gameSave.save.user.settings,
+            videoSettingsChanged = false,
+            currentChallengeID = 1,
+            isCustomChallenge = true,
+        }
     }
 
     loveloader.start(function()
@@ -151,7 +146,6 @@ function love.initialize()
 
     -- some discord thing callbacks --
     if gameSave.save.user.settings.misc.discordRichPresence then
-        --[[
         function discordRPC.ready(userId, username, discriminator, avatar)
             io.printf(string.format("{bgBlue}{brightBlue}{bold}[Discord]{reset}{brightBlue} : Client connected (%s, %s, %s){reset}\n", userId, username, discriminator))
         end
@@ -163,13 +157,12 @@ function love.initialize()
         function discordRPC.errored(errorCode, message)
             io.printf(string.format("{bgBlue}{brightBlue}{bold}[Discord]{reset}{bgRed}{brightWhite}[Error]{reset}{brightWhite} : (%d, %s){reset}\n", errorCode, message))
         end
-        ]]--
     end
 
     love.filesystem.createDirectory("screenshots")
 
     gamestate.registerEvents()
-    gamestate.switch(LoadingState)
+    gamestate.switch(SplashState)
 end
 
 

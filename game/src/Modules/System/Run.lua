@@ -91,6 +91,7 @@ function love.run()
 
     fontcache.init()
     subtitlesController = require 'src.Modules.System.Utils.Subtitles'
+    loveView = require 'src.Modules.System.Utils.LoveView'
 
     local addons = fsutil.scanFolder("src/Modules/System/Addons")
     for a = 1, #addons, 1 do
