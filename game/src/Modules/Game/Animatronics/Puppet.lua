@@ -68,7 +68,7 @@ function PuppetAI.update(elapsed)
             PuppetAI.musicAcc = PuppetAI.musicAcc + elapsed
             if PuppetAI.musicAcc >= 0.1 then
                 PuppetAI.musicAcc = 0
-                PuppetAI.musicBoxTimer = PuppetAI.musicBoxTimer - math.random(1, 6)
+                PuppetAI.musicBoxTimer = PuppetAI.musicBoxTimer - math.random(1, 5)
             end
             PuppetAI.timer = PuppetAI.timer + elapsed
             if PuppetAI.timer >= 7.3 then

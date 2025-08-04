@@ -13,7 +13,17 @@ local function interpColors(startCol, endCol, maxSteps)
     return c
 end
 
-return function(x, y, areaWidth, areaHeight, count, maxCount, padding, spacing, ...)
+---Draw a queue bar
+---@param x number
+---@param y number
+---@param areaWidth number
+---@param areaHeight number
+---@param count number
+---@param maxCount number
+---@param padding number
+---@param spacing number
+---@param ... table
+local function drawQueue(x, y, areaWidth, areaHeight, count, maxCount, padding, spacing, ...)
     local col = {...}
     local enterColor = col[1] or {0, 255, 0}
     local endColor = col[2] or {255, 0, 0}
@@ -39,3 +49,5 @@ return function(x, y, areaWidth, areaHeight, count, maxCount, padding, spacing, 
         lx = lx + rectWidth + spacing
     end
 end
+
+return drawQueue

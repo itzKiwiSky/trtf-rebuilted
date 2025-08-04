@@ -124,6 +124,21 @@ function NightState:enter()
                 if Slab.Button("End night") then
                     self.night.time = 298
                 end
+                Slab.SameLine()
+                if Slab.Button("Create random challenge") then
+                    --NightState.animatronicsAI[name] = 0
+                    self.night.time = 0
+                    for name in spairs(NightState.animatronicsAI) do
+                        NightState.animatronicsAI[name] = math.random(0, 20)
+                    end
+                end
+                if Slab.Button("Reset All AI") then
+                    --NightState.animatronicsAI[name] = 0
+                    self.night.time = 0
+                    for name in spairs(NightState.animatronicsAI) do
+                        NightState.animatronicsAI[name] = 0
+                    end
+                end
                 Slab.Separator()
                 Slab.Text("IA Settings")
                 for name in spairs(NightState.animatronicsAI) do
@@ -160,6 +175,9 @@ function NightState:enter()
                             NightState.AnimatronicControllers[name].currentState = NightState.AnimatronicControllers[name].currentState + 1
                         end
                     end
+                    Slab.SameLine({
+                        Pad = 2
+                    })
                     if Slab.Button("move backwards") then
                         --NightState.animatronicsAI[name] = 0
                         if NightState.AnimatronicControllers[name].currentState > 0 then 
@@ -198,7 +216,6 @@ function NightState:enter()
     self.cnv_phone = love.graphics.newCanvas(shove.getViewportDimensions())
     self.cnv_blurPhone = love.graphics.newCanvas(shove.getViewportDimensions())
     love.graphics.clear(love.graphics.getBackgroundColor())
-
 
     ------------------------------------------
 
@@ -620,6 +637,11 @@ function NightState:draw()
         end
     end)
 
+        -- screen fade --
+    love.graphics.setColor(0, 0, 0, self.officeState._f)
+        love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
+
     if not self.officeState.isOfficeDisabled then
         if not self.officeState.tabletUp then
             if self.officeState.maskUp then
@@ -641,16 +663,11 @@ function NightState:draw()
         end
     end
 
-    if self.officeState.hasAnimatronicInOffice or self.officeState.power.officeFlick and not self.officeState.officeFlick then
+    if self.officeState.hasAnimatronicInOffice and not self.officeState.officeFlick then
         love.graphics.setColor(0, 0, 0, 1)
             love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
         love.graphics.setColor(1, 1, 1, 1)
     end
-
-    -- screen fade --
-    love.graphics.setColor(0, 0, 0, self.officeState._f)
-        love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
-    love.graphics.setColor(1, 1, 1, 1)
 
     love.graphics.setColor(0, 0, 0, self.officeState.fadealpha)
         love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
@@ -842,7 +859,7 @@ function NightState:update(elapsed)
     -- animatronic in office --
     if self.officeState.hasAnimatronicInOffice then
         self.officeState._t = self.officeState._t + elapsed
-        if self.officeState._t >= 0.02 then
+        if self.officeState._t >= 0.05 then
             self.officeState.officeFlick = not self.officeState.officeFlick
             self.officeState._t = 0
         end

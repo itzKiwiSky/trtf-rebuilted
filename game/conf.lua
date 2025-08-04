@@ -1,7 +1,7 @@
 function love.conf(w)
     --% Window %--
     w.window.width          =       1280
-    w.window.height         =       720
+    w.window.height         =       800
     w.window.icon           =       "icon.png"
     w.window.title          =       "The return to freddy's"
     w.window.x              =       nil

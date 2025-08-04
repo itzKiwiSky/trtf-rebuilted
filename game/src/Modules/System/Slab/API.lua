@@ -2551,6 +2551,10 @@ function Slab.ToLoveFile(Source)
     return FileSystem.ToLove(Source)
 end
 
+function Slab.SetScale(scale)
+    return Scale.SetScale(scale)
+end
+
 function Slab.GetScale()
     return Scale.GetScale()
 end

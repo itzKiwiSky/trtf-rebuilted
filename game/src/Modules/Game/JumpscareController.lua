@@ -13,7 +13,7 @@ function JumpscareController:init(id, speed)
         v:stop()
     end
 
-    ShakeController:setShake(10)
+    NightState.shakeController:setShake(10)
     AudioSources["sfx_jumpscare"]:setVolume(1.5)
     AudioSources["sfx_jumpscare"]:play()
 end

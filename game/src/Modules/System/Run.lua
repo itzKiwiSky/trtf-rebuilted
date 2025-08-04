@@ -116,8 +116,9 @@ function love.run()
 
     -- Initialize Shöve with fixed game resolution and options
     shove.setResolution(1280, 800, { fitMethod = "aspect", renderMode = "layer" })
+    shove.resize(1280, 800)
     -- Set up a resizable window
-    shove.setWindowMode(1280, 800, {resizable = true, vsync = 0})
+    --shove.setWindowMode(1280, 800, {resizable = true, vsync = 0})
 
     shove.createLayer("mainView")
     shove.createLayer("effects")

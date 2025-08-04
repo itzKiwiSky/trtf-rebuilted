@@ -1,21 +1,5 @@
 local MaskController = {}
 
-function MaskController:init(frames, speed, k)
-    self.key = k
-    self.x = -16
-    self.y = -16
-    self.rx = 0
-    self.ry = 0
-    self.frames = frames
-    self.maskUp = false
-    self.animationRunning = false
-    self.acc = 0
-    self.speedAnim = speed or 25
-    self.frame = 1
-    self.visible = true
-    self.reverseAnim = false
-end
-
 local function _circularPath(this, radius, speed, time)
     local angle = speed * time
 
@@ -36,6 +20,22 @@ local function _playAnimation(this, reverse)
     this.animationRunning = true
 end
 
+function MaskController:init(frames, speed, k)
+    self.key = k
+    self.x = 0
+    self.y = 0
+    self.rx = 0
+    self.ry = 0
+    self.frames = frames
+    self.maskUp = false
+    self.animationRunning = false
+    self.acc = 0
+    self.speedAnim = speed or 25
+    self.frame = 1
+    self.visible = true
+    self.reverseAnim = false
+end
+
 function MaskController:setState(closed)
     if not self.animationRunning then
         _playAnimation(self, not closed)
@@ -46,8 +46,8 @@ function MaskController:draw()
     if self.visible then
         --love.graphics.draw(self.frames[self.key .. self.frame], self.x + self.rx, self.y + self.ry)
         love.graphics.draw(self.frames[self.key .. self.frame], self.x + self.rx, self.y + self.ry, 0, 
-            self.frames[self.key .. self.frame]:getWidth() / shove.getViewportWidth(),
-            self.frames[self.key .. self.frame]:getHeight() / shove.getViewportHeight()
+            shove.getViewportWidth() / self.frames[self.key .. self.frame]:getWidth(),
+            shove.getViewportHeight() / self.frames[self.key .. self.frame]:getHeight()
         )
     end
 end
