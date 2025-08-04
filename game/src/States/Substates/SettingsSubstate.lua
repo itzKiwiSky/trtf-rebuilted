@@ -1,7 +1,6 @@
 SettingsSubState = {}
 
 function SettingsSubState:load()
-    --ViewManager.load("src/Modules/Game/Interface/Views/SettingsMenu.lua")
     loveView.loadView("src/Modules/Game/Views/SettingsMenu.lua")
     loveView.registerLoveframesEvents()
     self.UICanvas = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight(), { readable = true })

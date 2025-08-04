@@ -98,7 +98,7 @@ function newobject:update(dt)
 			local yoffset = self.yoffset
 			if followcursor then
 				local height = self.height
-				local mx, my = love.mouse.getPosition()
+				local inside, mx, my = shove.mouseToViewport()
 				self.x = mx + xoffset
 				self.y = my - height + yoffset
 			elseif followobject then

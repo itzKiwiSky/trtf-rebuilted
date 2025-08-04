@@ -56,7 +56,7 @@ function newobject:update(dt)
 	local button = pinternals[2]
 	local bartype = self.bartype
 	local time = love.timer.getTime()
-	local x, y = love.mouse.getPosition()
+	local inside, x, y = shove.mouseToViewport()
 	local listo = parent.parent
 	local down = self.down
 	local scrolldelay = self.scrolldelay

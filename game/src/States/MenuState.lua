@@ -351,7 +351,7 @@ function MenuState:draw()
 end
 
 function MenuState:update(elapsed)
-    local mx, my = love.mouse.getPosition()
+    local inside, mx, my = shove.mouseToViewport()
     -- static animation --
     self.staticAnimationFX.config.timer = self.staticAnimationFX.config.timer + elapsed
     if self.staticAnimationFX.config.timer >= self.staticAnimationFX.config.speed then
@@ -421,7 +421,7 @@ function MenuState:update(elapsed)
 end
 
 function MenuState:mousepressed(x, y, button)
-    local mx, my = love.mouse.getPosition() -- x, y from callback is bugged for some reason, use these instead --
+    local inside, mx, my = shove.mouseToViewport()-- x, y from callback is bugged for some reason, use these instead --
 
     if self.canUseMenu then
         for _, e in ipairs(self.mainMenuButtons.elements) do

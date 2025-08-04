@@ -3,7 +3,40 @@ require('src.Modules.System.Utils.ErrHandler')
 local gitstuff = require 'src.Modules.System.GitStuff'  -- super important stuff --
 local initializeAPI = require 'src.Modules.System.InitializeAPI'
 
+languageService = {}
+languageRaw = {}
+
+local function loadSettings()
+    local languageManager = require 'src.Modules.System.Utils.LanguageManager'
+    -- commit all changes from virtual settings to the actual settings --
+    gameSave.save.user.settings = registers.user.virtualSettings
+
+    local winSize = love.window.resolutionModes[gameSave.save.user.settings.video.winsize]
+    love.window.setMode(winSize.width, winSize.height,
+        { 
+            fullscreen = gameSave.save.user.settings.video.fullscreen, 
+            vsync = gameSave.save.user.settings.video.vsync,
+        }
+    )
+    
+    love.window.setFullscreen(gameSave.save.user.settings.video.fullscreen)
+
+    love._FPSCap = gameSave.save.user.settings.video.fpsCap
+    love.graphics.setDefaultFilter(
+        gameSave.save.user.settings.video.filter and "linear" or "nearest",
+        gameSave.save.user.settings.video.filter and "linear" or "nearest"
+    )
+
+    -- audio --
+    love.audio.setVolume(gameSave.save.user.settings.audio.masterVolume * 0.01)
+
+    -- misc stuff --
+    languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
+    languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
+end
+
 function love.initialize()
+    local languageManager = require 'src.Modules.System.Utils.LanguageManager'
     SoundManager = require 'src.Modules.System.Utils.Sound'
     AudioSources = {}
     local save = require 'src.Modules.System.Utils.Save'
@@ -124,9 +157,10 @@ function love.initialize()
         initializeAPI()
     end
 
-    local languageManager = require 'src.Modules.System.Utils.LanguageManager'
     languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
     languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
+
+    loadSettings()
 
     -- autoload states --
     local states = love.filesystem.getDirectoryItems("src/States")
@@ -134,14 +168,6 @@ function love.initialize()
         if love.filesystem.getInfo("src/States/" .. states[s]).type == "file" then
             require("src.States." .. states[s]:gsub(".lua", ""))
         end
-    end
-
-    -- some shit --
-    oldGetPosition = love.mouse.getPosition
-    --oldGetWidth, oldGetHeight, oldGetDimensions = love.graphics.getWidth, love.graphics.getHeight, love.graphics.getDimensions
-    function love.mouse.getPosition()
-        local inside, mx, my = shove.mouseToViewport()
-        return mx, my
     end
 
     -- some discord thing callbacks --
@@ -159,6 +185,7 @@ function love.initialize()
         end
     end
 
+    
     love.filesystem.createDirectory("screenshots")
 
     gamestate.registerEvents()

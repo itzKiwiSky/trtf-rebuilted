@@ -76,7 +76,7 @@ function newobject:update(dt)
 	
 	local width = shove.getViewportWidth()
 	local height = shove.getViewportHeight()
-	local x, y = love.mouse.getPosition()
+	local inside, x, y = shove.mouseToViewport()
 	local selfcol = loveframes.BoundingBox(x, self.x, y, self.y, 1, self.width, 1, self.height)
 	local parent = self.parent
 	local base = loveframes.base

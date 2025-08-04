@@ -200,20 +200,11 @@ return function()
 
         -- video first cause why not :) --
         if registers.user.videoSettingsChanged then
-            --love.window.setMode(
-            --    shove.getViewportWidth(), shove.getViewportHeight(),
-            --    { 
-            --        fullscreen = gameSave.save.user.settings.video.fullscreen, 
-            --        vsync = gameSave.save.user.settings.video.vsync
-            --    }
-            --)
-
             local winSize = love.window.resolutionModes[gameSave.save.user.settings.video.winsize]
-            love.window.updateMode(winSize.width, winSize.height,
+            love.window.setMode(winSize.width, winSize.height,
                 { 
                     fullscreen = gameSave.save.user.settings.video.fullscreen, 
                     vsync = gameSave.save.user.settings.video.vsync,
-                    msaa = gameSave.save.user.settings.video.msaa,
                 }
             )
             
@@ -222,8 +213,8 @@ return function()
 
         love._FPSCap = gameSave.save.user.settings.video.fpsCap
         love.graphics.setDefaultFilter(
-            gameSave.save.user.settings.video.antialiasing and "linear" or "nearest",
-            gameSave.save.user.settings.video.antialiasing and "linear" or "nearest"
+            gameSave.save.user.settings.video.filter and "linear" or "nearest",
+            gameSave.save.user.settings.video.filter and "linear" or "nearest"
         )
 
         -- audio --

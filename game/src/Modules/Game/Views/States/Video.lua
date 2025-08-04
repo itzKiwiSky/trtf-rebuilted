@@ -149,44 +149,6 @@ return function(settings)
             grid:AddItem(optionTitle, 1, 1, "left")
             grid:AddItem(choiceButton, 1, 14, "left")
         end,
-        function(grid)
-            -- effect controller
-            local optionTitle = loveframes.Create("text")
-            optionTitle:SetDefaultColor(1, 1, 1, 1)
-            optionTitle:SetFont(settings.fonts.optionFont)
-            optionTitle:SetText(languageService["menu_settings_video_effect_density"])
-    
-            local resmultichoice = loveframes.Create("multichoice")
-            resmultichoice:SetPadding(5)
-
-            local ogMulChDraw = resmultichoice.drawfunc
-            resmultichoice.drawfunc = function(objx)
-                objx:GetSkin().controls.smallfont = settings.fonts.multi
-                ogMulChDraw(objx)
-            end
-    
-            resmultichoice:SetHeight(38)
-            resmultichoice:Clear()
-            local c = {
-                REQUIRED_EFFECTS = "menu_settings_buttons_modes_effect_density_max",
-                MIN_EFFECTS = "menu_settings_buttons_modes_effect_density_min",
-                MAX_EFFECTS = "menu_settings_buttons_modes_effect_density_required",
-            }
-            for fx in spairs(EFFECT_DENSITY) do
-                resmultichoice:AddChoice(languageService[c[fx]])
-            end
-    
-            -- set UI to current value state --
-            --local curRes = love.window.resolutionModes[registers.user.virtualSettings.video.resolution]
-            resmultichoice:SetChoice(registers.user.virtualSettings.video.effectDensity)
-    
-            resmultichoice.OnChoiceSelected = function(object, choice)
-                registers.user.virtualSettings.video.effectDensity = resmultichoice:GetChoiceIndex()
-            end
-    
-            grid:AddItem(optionTitle, 1, 1, "left")
-            grid:AddItem(resmultichoice, 1, 12, "left")
-        end,
 
     --[[
         [X] - Resolution

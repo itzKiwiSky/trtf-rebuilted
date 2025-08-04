@@ -67,7 +67,7 @@ function newobject:update(dt)
 	
 	self:CheckHover()
 	
-	local x, y     = love.mouse.getPosition()
+	local inside, x, y = shove.mouseToViewport()
 	local bartype  = self.bartype
 	local cols     = {}
 	local basecols = {}

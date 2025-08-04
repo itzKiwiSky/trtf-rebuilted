@@ -112,7 +112,7 @@ function newobject:update(dt)
 		end
 	end
 	
-	local mx, my = love.mouse.getPosition()
+	local inside, x, y = shove.mouseToViewport()
 	local showclose = self.showclose
 	local close = self.internals[1]
 	local dragging = self.dragging

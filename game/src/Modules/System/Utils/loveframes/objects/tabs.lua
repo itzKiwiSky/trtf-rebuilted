@@ -64,7 +64,7 @@ function newobject:update(dt)
 		end
 	end
 	
-	local x, y = love.mouse.getPosition()
+	local inside, x, y = shove.mouseToViewport()
 	local tabheight = self.tabheight
 	local padding = self.padding
 	local autosize = self.autosize
