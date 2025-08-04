@@ -12,7 +12,7 @@ local function loadSettings()
     gameSave.save.user.settings = registers.user.virtualSettings
 
     local winSize = love.window.resolutionModes[gameSave.save.user.settings.video.winsize]
-    love.window.setMode(winSize.width, winSize.height,
+    love.window.updateMode(winSize.width, winSize.height,
         { 
             fullscreen = gameSave.save.user.settings.video.fullscreen, 
             vsync = gameSave.save.user.settings.video.vsync,
