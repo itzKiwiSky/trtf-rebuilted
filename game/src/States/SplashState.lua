@@ -40,6 +40,8 @@ function SplashState:enter()
 end
 
 function SplashState:draw()
+    self.VIDEO_WIDTH = love.graphics.getWidth() / self.introVideo:getWidth()
+    self.VIDEO_HEIGHT = love.graphics.getHeight() / self.introVideo:getHeight()
     love.graphics.draw(self.introVideo, 0, 0, 0, self.VIDEO_WIDTH, self.VIDEO_HEIGHT)
 end
 
