@@ -414,8 +414,8 @@ function newobject:Center()
 	
 	if self.CalculateSize then self:CalculateSize() end
 	if parent == base then
-		local width = love.graphics.getWidth()
-		local height = love.graphics.getHeight()
+		local width = shove.getViewportWidth()
+		local height = shove.getViewportHeight()
 		self.x = width/2 - self.width * (self.scalex or 1)/2
 		self.y = height/2 - self.height * (self.scaley or 1)/2
 	else
@@ -439,7 +439,7 @@ function newobject:CenterX()
 	local parent = self.parent
 	
 	if parent == base then
-		local width = love.graphics.getWidth()
+		local width = shove.getViewportWidth()
 		self.x = width/2 - self.width * (self.scalex or 1)/2
 	else
 		local width = parent.width
@@ -460,7 +460,7 @@ function newobject:CenterY()
 	local parent = self.parent
 	
 	if parent == base then
-		local height = love.graphics.getHeight()
+		local height = shove.getViewportHeight()
 		self.y = height/2 - self.height * (self.scaley or 1)/2
 	else
 		local height = parent.height

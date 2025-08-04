@@ -226,7 +226,8 @@ function MenuState:enter()
         active = false,
         timer = timer.new(),
         transfade = 0,
-        volSong = 1
+        volSong = 1,
+        blackFade = 0
     }
 
     self.transitionFade = {
@@ -393,7 +394,8 @@ function MenuState:update(elapsed)
         if self.journalConfig.alpha <= 1 then
             self.journalConfig.alpha = self.journalConfig.alpha + 1 * elapsed
         end
-        self.journalConfig.zoom = self.journalConfig.zoom + 0.02 * elapsed
+        self.journalConfig.zoom = self.journalConfig.zoom + 0.005 * elapsed
+        self.journalConfig.angle = self.journalConfig.angle + 0.005 * elapsed
 
         self.journalConfig.timer:update(elapsed)
     end

@@ -318,8 +318,8 @@ function newobject:update(dt)
 	if screenlocked then
 		local width = self.width
 		local height = self.height
-		local screenwidth = love.graphics.getWidth()
-		local screenheight = love.graphics.getHeight()
+		local screenwidth = shove.getViewportWidth()
+		local screenheight = shove.getViewportHeight()
 		local x = self.x
 		local y = self.y
 		if x < 0 then

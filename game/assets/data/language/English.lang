@@ -23,8 +23,8 @@
                     "menu_settings_buttons_modes_windowed" : "Windowed",
                     "menu_settings_buttons_modes_turn_on" : "Enabled",
                     "menu_settings_buttons_modes_turn_off" : "Disabled",
-                    "menu_settings_buttons_modes_aspect_proportional" : "Proportional",
-                    "menu_settings_buttons_modes_aspect_streched" : "Stretched",
+                    "menu_settings_buttons_modes_filter_nearest" : "Nearest",
+                    "menu_settings_buttons_modes_filter_linear" : "Linear",
                     "menu_settings_buttons_modes_effect_density_max" : "All effects",
                     "menu_settings_buttons_modes_effect_density_min" : "Minimum effects",
                     "menu_settings_buttons_modes_effect_density_required" : "Only required effects"
@@ -45,10 +45,10 @@
                         "menu_settings_video_resolution" : "Resolution",
                         "menu_settings_video_fullscreen" : "Fullscreen",
                         "menu_settings_video_vsync" : "V-Sync",
-                        "menu_settings_video_aspectRatio" : "Aspect ratio",
+                        "menu_settings_video_filter" : "Rendering filter",
                         "menu_settings_video_fpsCap" : "FPS Limit",
                         "menu_settings_video_display_fps" : "Display FPS",
-                        "menu_settings_video_antialiasing" : "Antialiasing"
+                        "menu_settings_video_effect_density" : "Effect density"
                     },
                     "menu_settings_audio" : {
                         "menu_settings_audio_master" : "Master volume",

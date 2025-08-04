@@ -67,10 +67,10 @@ function subtitle:draw()
         local paddingX = 120
         local paddingY = 4
     
-        local _, _lines = fnt_subtitle:getWrap(self.text[1].text, love.graphics.getWidth() - offset)
+        local _, _lines = fnt_subtitle:getWrap(self.text[1].text, shove.getViewportWidth() - offset)
         for i = 0, #_lines - 1, 1 do
             local wtxt = fnt_subtitle:getWidth(_lines[i + 1])
-            local tx = ((love.graphics.getWidth() + offset) - wtxt) / 2 - paddingX / 2
+            local tx = ((shove.getViewportWidth() + offset) - wtxt) / 2 - paddingX / 2
             local ty = (startY - fnt_subtitle:getHeight() * #_lines) + (fnt_subtitle:getHeight() + paddingY) * i
             local tw = paddingX + wtxt
             local th = fnt_subtitle:getHeight() + paddingY
@@ -81,7 +81,7 @@ function subtitle:draw()
         end
     
         love.graphics.setColor(1, 1, 1, self.opacity)
-            love.graphics.printf(self.text[1].text, fnt_subtitle, offset, startY - fnt_subtitle:getHeight() * #_lines, love.graphics.getWidth() - offset, "center")
+            love.graphics.printf(self.text[1].text, fnt_subtitle, offset, startY - fnt_subtitle:getHeight() * #_lines, shove.getViewportWidth() - offset, "center")
         love.graphics.setColor(1, 1, 1, 1)
     end
 end

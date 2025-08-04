@@ -75,8 +75,8 @@ function newobject:update(dt)
 				self.activated = false
 			end
 		elseif activated then
-			local screen_width = love.graphics.getWidth()
-			local screen_height = love.graphics.getHeight()
+			local screen_width = shove.getViewportWidth()
+			local screen_height = shove.getViewportHeight()
 			local sx = self.x
 			local sy = self.y
 			local width = self.width

@@ -21,10 +21,10 @@ function love.initialize()
 
     gameSave = save.new("game")
 
-    local effectDensity = {
-        REQUIRED_EFFECTS = 0,
-        MIN_EFFECTS = 1,
-        MAX_EFFECTS = 2,
+    EFFECT_DENSITY = {
+        REQUIRED_EFFECTS = 1,
+        MIN_EFFECTS = 2,
+        MAX_EFFECTS = 3,
     }
 
     gameSave.save = {
@@ -34,12 +34,12 @@ function love.initialize()
                 video = {
                     winsize = 1,
                     fullscreen = false,
-                    vsync = 0,
+                    vsync = false,
                     fpsCap = 200,
                     filter = "nearest",
                     showFPS = false,
                     msaa = 0,
-                    effectDensity = effectDensity.MAX_EFFECTS
+                    effectDensity = EFFECT_DENSITY.MAX_EFFECTS
                 },
                 audio = {
                     masterVolume = 75,

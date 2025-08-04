@@ -2,7 +2,6 @@ return function(settings)
     local lfskin = settings.skin
     return {
         state = "video",
-        --[[
         function(grid)
             -- resolution controller
             local optionTitle = loveframes.Create("text")
@@ -21,20 +20,21 @@ return function(settings)
             resmultichoice:SetHeight(38)
             resmultichoice:Clear()
             for _, res in ipairs(love.window.resolutionModes) do
-                resmultichoice:AddChoice(string.format("%s x %s", res[1], res[2]))
+                resmultichoice:AddChoice(string.format("%s x %s", res.width, res.height))
             end
     
             -- set UI to current value state --
-            local curRes = love.window.resolutionModes[registers.user.virtualSettings.video.resolution]
-            resmultichoice:SetChoice(string.format("%s x %s", curRes[1], curRes[2]))
+            local curRes = love.window.resolutionModes[registers.user.virtualSettings.video.winsize]
+            resmultichoice:SetChoice(string.format("%s x %s", curRes.width, curRes.height))
     
             resmultichoice.OnChoiceSelected = function(object, choice)
-                registers.user.virtualSettings.video.resolution = resmultichoice:GetChoiceIndex()
+                registers.user.virtualSettings.video.winsize = resmultichoice:GetChoiceIndex()
+                registers.user.videoSettingsChanged = true
             end
     
             grid:AddItem(optionTitle, 1, 1, "left")
             grid:AddItem(resmultichoice, 1, 12, "left")
-        end,]]--
+        end,
         function(grid)
             -- mode --
             local optionTitle = loveframes.Create("text")
@@ -130,32 +130,68 @@ return function(settings)
             grid:AddItem(optionTitle, 1, 1, "left")
             grid:AddItem(choiceButton, 1, 14, "left")
         end,
-    
         function(grid)
-            -- aspectRatio --
+            -- filter --
             local optionTitle = loveframes.Create("text")
             optionTitle:SetDefaultColor(1, 1, 1, 1)
             optionTitle:SetFont(settings.fonts.optionFont)
-            optionTitle:SetText(languageService["menu_settings_video_aspectRatio"])
+            optionTitle:SetText(languageService["menu_settings_video_filter"])
     
             local choiceButton = loveframes.Create("button")
             choiceButton:SetSize(128, 38)
-            choiceButton:SetText(registers.user.virtualSettings.video.aspectRatio and languageService["menu_settings_buttons_modes_aspect_streched"] or languageService["menu_settings_buttons_modes_aspect_proportional"])
+            choiceButton:SetText(registers.user.virtualSettings.video.aspectRatio and languageService["menu_settings_buttons_modes_filter_nearest"] or languageService["menu_settings_buttons_modes_filter_linear"])
             choiceButton:SetFont(settings.fonts["mainButtons"])
             choiceButton.OnClick = function(obj)
                 registers.user.virtualSettings.video.aspectRatio = not registers.user.virtualSettings.video.aspectRatio
-                choiceButton:SetText(registers.user.virtualSettings.video.aspectRatio and languageService["menu_settings_buttons_modes_aspect_streched"] or languageService["menu_settings_buttons_modes_aspect_proportional"])
+                choiceButton:SetText(registers.user.virtualSettings.video.aspectRatio and languageService["menu_settings_buttons_modes_filter_nearest"] or languageService["menu_settings_buttons_modes_filter_linear"])
             end
     
             grid:AddItem(optionTitle, 1, 1, "left")
             grid:AddItem(choiceButton, 1, 14, "left")
         end,
+        function(grid)
+            -- effect controller
+            local optionTitle = loveframes.Create("text")
+            optionTitle:SetDefaultColor(1, 1, 1, 1)
+            optionTitle:SetFont(settings.fonts.optionFont)
+            optionTitle:SetText(languageService["menu_settings_video_effect_density"])
     
+            local resmultichoice = loveframes.Create("multichoice")
+            resmultichoice:SetPadding(5)
+
+            local ogMulChDraw = resmultichoice.drawfunc
+            resmultichoice.drawfunc = function(objx)
+                objx:GetSkin().controls.smallfont = settings.fonts.multi
+                ogMulChDraw(objx)
+            end
+    
+            resmultichoice:SetHeight(38)
+            resmultichoice:Clear()
+            local c = {
+                REQUIRED_EFFECTS = "menu_settings_buttons_modes_effect_density_max",
+                MIN_EFFECTS = "menu_settings_buttons_modes_effect_density_min",
+                MAX_EFFECTS = "menu_settings_buttons_modes_effect_density_required",
+            }
+            for fx in spairs(EFFECT_DENSITY) do
+                resmultichoice:AddChoice(languageService[c[fx]])
+            end
+    
+            -- set UI to current value state --
+            --local curRes = love.window.resolutionModes[registers.user.virtualSettings.video.resolution]
+            resmultichoice:SetChoice(registers.user.virtualSettings.video.effectDensity)
+    
+            resmultichoice.OnChoiceSelected = function(object, choice)
+                registers.user.virtualSettings.video.effectDensity = resmultichoice:GetChoiceIndex()
+            end
+    
+            grid:AddItem(optionTitle, 1, 1, "left")
+            grid:AddItem(resmultichoice, 1, 12, "left")
+        end,
+
     --[[
         [X] - Resolution
         [X] - Mode [Fullscreen, Windowed]
         [X] - V-Sync
-        [X] - Aspect ratio
         [X] - FPSCap
     ]]
     }

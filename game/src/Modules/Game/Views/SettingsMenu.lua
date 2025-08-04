@@ -1,3 +1,4 @@
+local languageManager = require 'src.Modules.System.Utils.LanguageManager'
 local settings = {
     lpadding = 16,
     blank = function()end,
@@ -199,16 +200,26 @@ return function()
 
         -- video first cause why not :) --
         if registers.user.videoSettingsChanged then
-            love.window.setMode(
-                shove.getViewportWidth(), shove.getViewportHeight(),
+            --love.window.setMode(
+            --    shove.getViewportWidth(), shove.getViewportHeight(),
+            --    { 
+            --        fullscreen = gameSave.save.user.settings.video.fullscreen, 
+            --        vsync = gameSave.save.user.settings.video.vsync
+            --    }
+            --)
+
+            local winSize = love.window.resolutionModes[gameSave.save.user.settings.video.winsize]
+            love.window.updateMode(winSize.width, winSize.height,
                 { 
                     fullscreen = gameSave.save.user.settings.video.fullscreen, 
-                    vsync = gameSave.save.user.settings.video.vsync and 1 or 0,
+                    vsync = gameSave.save.user.settings.video.vsync,
+                    msaa = gameSave.save.user.settings.video.msaa,
                 }
             )
+            
+            love.window.setFullscreen(gameSave.save.user.settings.video.fullscreen)
         end
 
-        love.resconf.aspectRatio = gameSave.save.user.settings.video.aspectRatio
         love._FPSCap = gameSave.save.user.settings.video.fpsCap
         love.graphics.setDefaultFilter(
             gameSave.save.user.settings.video.antialiasing and "linear" or "nearest",
@@ -218,13 +229,13 @@ return function()
         -- audio --
         love.audio.setVolume(gameSave.save.user.settings.audio.masterVolume * 0.01)
         --love.audio.setVolume(0.001)
-        SoundController.getChannel("music"):setVolume(gameSave.save.user.settings.audio.musicVolume * 0.01)
-        SoundController.getChannel("sfx"):setVolume(gameSave.save.user.settings.audio.sfxVolume * 0.01)
+        --SoundController.getChannel("music"):setVolume(gameSave.save.user.settings.audio.musicVolume * 0.01)
+        --SoundController.getChannel("sfx"):setVolume(gameSave.save.user.settings.audio.sfxVolume * 0.01)
 
         -- misc stuff --
-        languageService = LanguageController:getData(gameSave.save.user.settings.misc.language)
-        languageRaw = LanguageController:getRawData(gameSave.save.user.settings.misc.language)
+        languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
+        languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
 
-        gameslot:saveSlot()
+        gameSave:saveSlot()
     end
 end

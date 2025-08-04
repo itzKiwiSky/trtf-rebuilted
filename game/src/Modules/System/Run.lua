@@ -9,6 +9,7 @@ baton = require 'src.Modules.System.Utils.Baton'
 Slab = require 'src.Modules.System.Slab'
 moonshine = require 'src.Modules.System.Moonshine'
 loveloader = require 'src.Modules.System.Utils.loveloader'
+loveframes = require 'src.Modules.System.Utils.loveframes'
 
 love._FPSCap = 1000
 love._unfocusedFPSCap = 60
@@ -22,7 +23,9 @@ table.sort(modes, function(a, b) return a.width * a.height > b.width * b.height 
 love.window.resolutionModes = {}
 
 for i, mode in ipairs(modes) do
-    love.window.resolutionModes[i] = {mode.width, mode.height}
+    love.window.resolutionModes[i] = {
+        width = mode.width, height = mode.height
+    }
 end
 
 FazKiwi_LOGBUFFER = {}
