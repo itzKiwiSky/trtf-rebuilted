@@ -41,21 +41,6 @@ function TabletCameraSubState:load()
     self.fxTV.pixelate.size = {1.5, 1.5}
     self.fxTV.chromasep.radius = 1
 
-    --if gameslot.save.game.user.settings.shaders then
-    --    fxTV.enable("vignette", "chromasep")
-    --else
-    --    fxTV.disable("vignette", "chromasep")
-    --end
-
-    switch(gameSave.save.user.settings.video.effectDensity, {
-        [0] = function ()
-            self.fxTV.disable("vignette", "chromasep", "crt")
-        end,
-        [1] = function ()
-            self.fxTV.enable("vignette", "chromasep")
-        end
-    })
-
     self.interferenceFX = love.graphics.newShader("assets/shaders/Interference.glsl")
     self.interferenceFX:send("intensity", 0.012)
     self.interferenceFX:send("speed", 100.0)

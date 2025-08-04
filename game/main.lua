@@ -54,12 +54,6 @@ function love.initialize()
 
     gameSave = save.new("game")
 
-    EFFECT_DENSITY = {
-        REQUIRED_EFFECTS = 1,
-        MIN_EFFECTS = 2,
-        MAX_EFFECTS = 3,
-    }
-
     gameSave.save = {
         clientID = stid(),
         user = {
@@ -71,8 +65,6 @@ function love.initialize()
                     fpsCap = 200,
                     filter = "nearest",
                     showFPS = false,
-                    msaa = 0,
-                    effectDensity = EFFECT_DENSITY.MAX_EFFECTS
                 },
                 audio = {
                     masterVolume = 75,
