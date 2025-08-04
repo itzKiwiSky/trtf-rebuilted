@@ -132,12 +132,17 @@ function NightState:enter()
                         NightState.animatronicsAI[name] = math.random(0, 20)
                     end
                 end
+                Slab.SameLine()
                 if Slab.Button("Reset All AI") then
                     --NightState.animatronicsAI[name] = 0
                     self.night.time = 0
                     for name in spairs(NightState.animatronicsAI) do
                         NightState.animatronicsAI[name] = 0
                     end
+                end
+                Slab.SameLine()
+                if Slab.Button("Test death") then
+                    --NightState.animatronicsAI[name] = 0
                 end
                 Slab.Separator()
                 Slab.Text("IA Settings")
@@ -180,7 +185,7 @@ function NightState:enter()
                     })
                     if Slab.Button("move backwards") then
                         --NightState.animatronicsAI[name] = 0
-                        if NightState.AnimatronicControllers[name].currentState > 0 then 
+                        if NightState.AnimatronicControllers[name].currentState > 1 then 
                             NightState.AnimatronicControllers[name].currentState = NightState.AnimatronicControllers[name].currentState - 1
                         end
                     end
@@ -1375,7 +1380,7 @@ function NightState:leave()
                     releaseRecursive(value)
                 else
                     if type(value) == "userdata" then
-                        value:relese()
+                        value:release()
                     end
                 end
             end
