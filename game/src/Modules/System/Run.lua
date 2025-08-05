@@ -125,6 +125,7 @@ function love.run()
     --shove.setWindowMode(1280, 800, {resizable = true, vsync = 0})
 
     shove.createLayer("mainView")
+    shove.createLayer("subtitles")
     shove.createLayer("effects")
     shove.createLayer("DevUI")
     shove.createLayer("fps")

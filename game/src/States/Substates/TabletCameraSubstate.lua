@@ -28,18 +28,20 @@ function TabletCameraSubState:load()
         timer = 0.3
     }
 
-    self.fxTV = moonshine(moonshine.effects.crt)
-    .chain(moonshine.effects.vignette)
-    .chain(moonshine.effects.pixelate)
+    self.fxTV = moonshine(moonshine.effects.pixelate)
     .chain(moonshine.effects.chromasep)
     .chain(moonshine.effects.scanlines)
 
     self.fxTV.scanlines.width = 1.5
-    self.fxTV.scanlines.opacity = 0.65
+    self.fxTV.scanlines.opacity = 0.35
 
     self.fxTV.pixelate.feedback = 0.1
     self.fxTV.pixelate.size = {1.5, 1.5}
     self.fxTV.chromasep.radius = 1
+
+    self.crtEffect = moonshine(moonshine.effects.crt)
+    .chain(moonshine.effects.vignette)
+
 
     self.interferenceFX = love.graphics.newShader("assets/shaders/Interference.glsl")
     self.interferenceFX:send("intensity", 0.012)
@@ -51,6 +53,7 @@ function TabletCameraSubState:load()
 
     self.fxCanvas = love.graphics.newCanvas(shove.getViewportDimensions())
     self.loadingCanvas = love.graphics.newCanvas(shove.getViewportDimensions())
+    self.viewCanvas = love.graphics.newCanvas(shove.getViewportDimensions())
 
     self.cameraMeta = require 'src.Modules.Game.CameraConfig'
 
@@ -210,6 +213,7 @@ function TabletCameraSubState:draw()
     end)
 
     self.loadingCanvas:renderTo(function()
+        love.graphics.clear(0, 0, 0, 0)
         love.graphics.setColor(0, 0, 0, 1)
             love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
         love.graphics.setColor(1, 1, 1, 1)
@@ -225,14 +229,29 @@ function TabletCameraSubState:draw()
         love.graphics.printf("v1.4.35 | Fazbear Ent. 1998 - 2005", NightState.fnt_vhs, 0, shove.getViewportHeight() - 32, shove.getViewportWidth(), "center")
     end)
 
-    self.fxTV(function()
-        love.graphics.draw(self.fxCanvas, 0, 0)
-        love.graphics.setBlendMode("add")
-            love.graphics.setColor(1, 1, 1, 0.14)
-                love.graphics.draw(NightState.assets.staticfx["static_" .. NightState.staticfx.frameid], 0, 0)
-            love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.setBlendMode("alpha")
+    self.viewCanvas:renderTo(function()
+        love.graphics.clear(0, 0, 0, 0)
+        self.fxTV(function()
+            love.graphics.draw(self.fxCanvas, 0, 0)
+            love.graphics.setBlendMode("add")
+                love.graphics.setColor(1, 1, 1, 0.14)
+                    love.graphics.draw(NightState.assets.staticfx["static_" .. NightState.staticfx.frameid], 0, 0)
+                love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.setBlendMode("alpha")
 
+            if NightState.officeState.tabletFirstBoot then
+                love.graphics.setColor(1, 1, 1, NightState.officeState.tabletBootProgressAlpha)
+                    love.graphics.draw(self.loadingCanvas, 0, 0)
+                love.graphics.setColor(1, 1, 1, 1)
+            end
+        end)
+    end)
+
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
+    self.crtEffect(function()
+        love.graphics.draw(self.viewCanvas, 0, 0)
         love.graphics.setLineWidth(2)
         love.graphics.rectangle("line", 32, 32, shove.getViewportWidth() - 64, shove.getViewportHeight() - 64)
         love.graphics.setLineWidth(1)
@@ -292,7 +311,7 @@ function TabletCameraSubState:draw()
                 end
                 love.graphics.rectangle("fill", b.hitbox.x + 8, b.hitbox.y + 8, b.hitbox.w - 8, b.hitbox.h - 8)
                 love.graphics.setColor(0.75, 0.75, 0.75, 1)
-    
+
                 love.graphics.rectangle("fill", b.hitbox.x, b.hitbox.y, b.hitbox.w - 8, b.hitbox.h - 8)
                 love.graphics.setColor(1, 1, 1, 1)
 
@@ -304,12 +323,6 @@ function TabletCameraSubState:draw()
 
         for k, v in pairs(NightState.AnimatronicControllers) do
             v.draw()
-        end
-
-        if NightState.officeState.tabletFirstBoot then
-            love.graphics.setColor(1, 1, 1, NightState.officeState.tabletBootProgressAlpha)
-                love.graphics.draw(self.loadingCanvas, 0, 0)
-            love.graphics.setColor(1, 1, 1, 1)
         end
     end)
 

@@ -30,7 +30,7 @@ local subtitle = setmetatable({
     font = fontcache.getFont("tnr", 24),
 },
 {__call = function(self, text, time)
-    local allowSub = gameslot.save.game.user.settings.misc.subtitles
+    local allowSub = gameSave.save.user.settings.misc.subtitles
     if allowSub then
         toLast(self.text, {text = text, time = time})
     end
@@ -56,7 +56,7 @@ end
 
 function subtitle:draw()
     local allowSub = gameSave.save.user.settings.misc.subtitles
-    if #self.text == 0 and allowSub then return end
+    if #self.text <= 0 or not allowSub then return end
     
     if self.text[1] then
         local offset = 110
@@ -73,20 +73,20 @@ function subtitle:draw()
             local th = self.font:getHeight() + paddingY
     
             love.graphics.setColor(0.1, 0.1, 0.1, self.opacity)
-                --love.graphics.draw(bg_subtitles, tx, ty, 0, tw, th)
-                love.graphics.rectangle("fill", tx, ty, tw, th)
+                love.graphics.draw(bg_subtitles, tx, ty, 0, tw, th)
+                --love.graphics.rectangle("fill", tx, ty, tw, th)
             love.graphics.setColor(1, 1, 1, 1)
         end
     
         love.graphics.setColor(1, 1, 1, self.opacity)
-            love.graphics.printf(self.text[1].text, self.font, offset, startY - self.font:getHeight() * #_lines, shove.getViewportWidth() - offset, "center")
+            love.graphics.printf(self.text[1].text, self.font, offset / 2, startY - self.font:getHeight() * #_lines, shove.getViewportWidth() - offset, "center")
         love.graphics.setColor(1, 1, 1, 1)
     end
 end
 
 function subtitle:update(elapsed)
     local allowSub = gameSave.save.user.settings.misc.subtitles
-    if #self.text <= 0 and allowSub then return end
+    if #self.text <= 0 or not allowSub then return end
 
     if self.text[1] then
         if self.text[1].time > 0.4 then

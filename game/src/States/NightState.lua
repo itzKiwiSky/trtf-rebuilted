@@ -95,6 +95,16 @@ function NightState:enter()
     self.jumpscareController = require 'src.Modules.Game.JumpscareController'
     self.ShakeController = require 'src.Modules.Game.Utils.ShakeController'
     self.doorParticle = require 'src.Modules.Game.Utils.ParticleDoor'
+
+    self.phoneController:init(NightState.assets.phoneModel, 45, "ph")
+    self.phoneController.visible = false
+    self.phoneController.hitbox = {
+        x = 1036, 
+        y = 540, 
+        w = 48, 
+        h = 48
+    }
+
     local aicgf = require 'src.Modules.Game.Utils.AIConfig'
 
     if aicgf[NightState.nightID] then
@@ -314,7 +324,7 @@ function NightState:enter()
     self.maskBtn = self.buttonsUI.new(NightState.assets.maskButton, 96, (shove.getViewportHeight() - NightState.assets.maskButton:getHeight()) - 24)
     self.camBtn = self.buttonsUI.new(NightState.assets.camButton, (shove.getViewportWidth() - NightState.assets.camButton:getWidth()) - 96, (shove.getViewportHeight() - NightState.assets.camButton:getHeight()) - 24)
 
-    self.X_LEFT_FRAME = self.gameCam.x
+    self.X_LEFT_FRAME = self.gameCam.x - 64
     self.X_RIGHT_FRAME = self.gameCam.x + self.roomSize.width
     self.Y_TOP_FRAME = self.gameCam.y
     self.Y_BOTTOM_FRAME = self.gameCam.y + self.roomSize.height
@@ -465,17 +475,17 @@ function NightState:enter()
                 AudioSources["phone_pickup"]:play()
             sleep(0.2)
                 self.assets.calls["call_night" .. self.nightID]:play()
-                subtitlesController.clear()
-                subtitlesController.queue(languageRaw.subtitles["call_night" .. self.nightID])
+                --subtitlesController.clear()
+                --subtitlesController.queue(languageRaw.subtitles["call_night" .. self.nightID])
             sleep(6)
                 self.officeState.phoneCallNotRefused = true
                 self.officeState.phoneCall = true
-                phoneController.hitbox.x = 1090
+                self.phoneController.hitbox.x = 1090
             sleep(self.assets.calls["call_night" .. self.nightID]:getDuration("seconds") - 6)
                 self.phoneController:setState(false)
                 AudioSources["phone_pickup"]:play()
                 self.nightTextDisplay.displayNightText = true
-                subtitlesController.clear()
+                --subtitlesController.clear()
                 self.officeState.phoneCall = false
         elseif self.nightID >= 6 then
             sleep(3)
@@ -1360,11 +1370,11 @@ function NightState:mousepressed(x, y, button)
     
             if self.phoneController.visible and self.officeState.phoneCallNotRefused and not self.nightTextDisplay.displayNightText then
                 if collision.pointRect({x = x, y = y}, self.phoneController.hitbox) then
-                    NightState.assets.calls["call_night" .. self.NightState.nightID]:seek(NightState.assets.calls["call_night" .. self.NightState.nightID]:getDuration("seconds") - 1)
+                    NightState.assets.calls["call_night" .. NightState.nightID]:seek(NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") - 1)
                     self.phoneController:setState(false)
                     AudioSources["phone_pickup"]:play()
                     self.nightTextDisplay.displayNightText = true
-                    self.subtitlesController.clear()
+                    --subtitlesController.clear()
                     self.officeState.phoneCall = false
                 end
             end
