@@ -21,6 +21,35 @@ local function newButtonHitbox(x, y, w, h)
 end
 
 function MenuState:enter()
+    MenuState.saveState = gameSave.save.user.progress
+    if FEATURE_FLAGS.developerMode then
+        registers.devWindowContent = function()
+            Slab.BeginWindow("menuNightDev", { Title = "Development" })
+            Slab.Text("Save editor | progress")
+
+            for key, value in spairs(gameSave.save.user.progress) do
+                switch(type(value), {
+                    ["boolean"] = function()
+                        if Slab.CheckBox(value, tostring(key)) then
+                            gameSave.save.user.progress[key] = not gameSave.save.user.progress[key]
+                        end
+                    end,
+                    ["number"] = function()
+                        if Slab.Input("inputNumberKey_" .. tostring(key), { Text = tostring(value), ReturnOnText = false, NumbersOnly = true }) then
+                            gameSave.save.user.progress[key] = Slab.GetInputNumber()
+                        end
+                    end
+                })
+            end
+
+            if Slab.Button("Save slot") then
+                gameSave:saveSlot()
+            end
+
+            Slab.EndWindow()
+        end
+    end
+
     self.settingsSubState = require 'src.States.Substates.SettingsSubstate'
 
     -- variables --
@@ -31,14 +60,6 @@ function MenuState:enter()
     -- shader configuration --
     self.shd_chromafx = love.graphics.newShader("assets/shaders/Chromatic.glsl")
     self.shd_chromafx:send("distortion", 0)
-
-    self.shd_crt = love.graphics.newShader("assets/shaders/CRT.glsl")
-
-    --self.shd_vignette = love.graphics.newShader("assets/shaders/Vignette.glsl")
-    --self.shd_vignette:send("resolution", { shove.getViewportWidth(), shove.getViewportHeight() })
-    --self.shd_vignette:send("radius", 0.95)
-    --self.shd_vignette:send("softness", 0.7)
-    --self.shd_vignette:send("opacity", 0.13)
 
     self.shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
     self.shd_blur = moonshine(moonshine.effects.boxblur)
@@ -120,8 +141,6 @@ function MenuState:enter()
     self.fnt_menu = fontcache.getFont("tnr", 35)
 
     self.menuBackground = loadRandomBackground()
-
-    self.crtframe = love.graphics.newImage("assets/images/game/effects/perfect_crt.png")
 
     self.settingsGear = {
         x = shove.getViewportWidth() + 128,
@@ -455,6 +474,12 @@ function MenuState:leave()
     for k, v in pairs(AudioSources) do
         v:stop()
     end
+
+    for _, f in ipairs(self.animatronicsAnim) do
+        f:release()
+    end
+
+    self.menuBackground:release()
 end
 
 return MenuState
