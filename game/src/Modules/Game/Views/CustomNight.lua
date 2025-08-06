@@ -164,6 +164,22 @@ return function()
     ptgrid:SetItemAutoSize(false)
     ptgrid:SetCellPadding(96)
     ptgrid.drawfunc = settings.blank
+
+    local topPortraitGrid = loveframes.Create("grid")
+    topPortraitGrid:SetPos(228, 128)
+    topPortraitGrid:SetRows(1)
+    topPortraitGrid:SetColumns(4)
+    topPortraitGrid:SetItemAutoSize(false)
+    topPortraitGrid:SetCellPadding(90)
+    topPortraitGrid.drawfunc = settings.blank
+
+    local bottomPortraitGrid = loveframes.Create("grid")
+    bottomPortraitGrid:CenterWithinArea(180, 100, 450, 300)
+    bottomPortraitGrid:SetRows(1)
+    bottomPortraitGrid:SetColumns(3)
+    bottomPortraitGrid:SetItemAutoSize(false)
+    bottomPortraitGrid:SetCellPadding(86)
+    bottomPortraitGrid.drawfunc = settings.blank
     --ptgrid:ColSpanAt(2, 1, 2)
     --ptgrid:RowSpanAt(2, 2, 3)
 
@@ -314,16 +330,22 @@ return function()
             end
         end
 
-        ptgrid:AddItem(portraitPanel, r, c)
+        --ptgrid:AddItem(portraitPanel, r, c)
+        if r >= 2 then
+            bottomPortraitGrid:AddItem(portraitPanel, r, c)
+        else
+            topPortraitGrid:AddItem(portraitPanel, r, c)
+        end
     end
 
     local r, c = 1, 1
     for k, v in sortedPairs(portraitIcons) do
-        createPortrait(k, r, c)
-        r = r + 1
-        if r % 5 == 0 then
-            c = c + 1
-            r = 1
+        createPortrait(k, c, r)
+
+        c = c + 1
+        if c % 5 == 0 then
+            c = 1
+            r = r + 1
         end
     end
 

@@ -67,9 +67,6 @@ function CustomNightState:enter()
 
     loveView.registerLoveframesEvents()
     loveView.loadView("src/Modules/Game/Views/CustomNight.lua")
-    self.UICanvas = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight(), { readable = true })
-
-    self.blurBGCanvas = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight(), { readable = true })
 end
 
 function CustomNightState:draw()
@@ -78,7 +75,7 @@ function CustomNightState:draw()
     self.shdFXScreen(function()
         self.fxBlurBG(function()
             self.menuCam:attach()
-                love.graphics.draw(self.menuBG)
+                love.graphics.draw(self.menuBG, shove.getViewportWidth() / self.menuBG:getWidth(), shove.getViewportHeight() / self.menuBG:getHeight())
             self.menuCam:detach()
         end)
 
