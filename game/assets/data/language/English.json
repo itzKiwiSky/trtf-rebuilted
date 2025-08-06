@@ -62,7 +62,6 @@
                             "menu_settings_misc_gamejolt_connected" : "Disconnect",
                             "menu_settings_misc_gamejolt_not_connected" : "Connect"
                         },
-                        "menu_settings_misc_subtitles" : "Subtitles",
                         "menu_settings_misc_discordrpc" : "Discord Rich Presence",
                         "menu_settings_misc_gamepad" : "Controller support",
                         "menu_settings_misc_cache_night" : "Cache night assets"
@@ -135,20 +134,5 @@
             "gameover_explain_dummy" : "How the fuck did you get killed by the dummy?",
             "gameover_explain_oxygen" : "Don't let your oxygen go lower, or you will be suffocated."
         }
-    },
-    "subtitles" : {
-        "call_night1" : [
-            ["0:00:0", ""],
-            ["0:00:2", "*Phone ringing noises...*"],
-            ["0:06:2", "Hello? Hello?"],
-            ["0:09:6", "Hey, if you're listening to this, know that you've chosen a very poor career path."],
-            ["0:18:2", "Mike Smith, right? I hope so, at least."],
-            ["0:24:2", "You know, I really wasn't expecting a guy, like you to volunteer for this work."],
-            ["0:30:4", "Look, let's start with the basics."],
-            ["0:33:5", "First of all, I have to read to you the terms and conditions."],
-            ["0:39:7", "It's mandatory so... I have to, unfortunately."],
-            ["4:55:0", ""],
-            ["4:57:0"]
-        ]
     }
 }

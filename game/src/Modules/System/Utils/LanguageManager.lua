@@ -1,5 +1,6 @@
 ---@class LanguageManager
 local LanguageManager = {}
+LanguageManager.extension = "json"
 
 ---@private
 local function _findKey(_tblInput, _tblOutput)
@@ -18,7 +19,7 @@ end
 function LanguageManager.getData(language)
     local data = {}
 
-    local tempdata = json.decode(love.filesystem.read("assets/data/language/" .. language .. ".lang"))
+    local tempdata = json.decode(love.filesystem.read("assets/data/language/" .. language .. "." .. LanguageManager.extension))
     _findKey(tempdata, data)
     return data
 end
@@ -27,7 +28,7 @@ end
 ---@param language string
 ---@return table
 function LanguageManager.getRawData(language)
-    return json.decode(love.filesystem.read("assets/data/language/" .. language .. ".lang"))
+    return json.decode(love.filesystem.read("assets/data/language/" .. language .. "." .. LanguageManager.extension))
 end
 
 return LanguageManager

@@ -229,7 +229,8 @@ function MenuState:enter()
         timer = timer.new(),
         transfade = 0,
         volSong = 1,
-        blackFade = 0
+        blackFade = 0,
+        doTween = false,
     }
 
     self.transitionFade = {
@@ -240,8 +241,9 @@ function MenuState:enter()
         maxTime = 0.12,
     }
 
+    self.fadeTween = {}
     self.journalConfig.timer:after(3.75, function()
-        self.fadeTween = flux.to(self.journalConfig, 2, { transfade = 1, volSong = 0 })
+        self.fadeTween = flux.to(self.journalConfig, 4, { transfade = 1, volSong = 0 })
         self.fadeTween:ease("linear")
         self.fadeTween:oncomplete(function()
             AudioSources["menu_theme_again"]:stop()
@@ -340,6 +342,10 @@ function MenuState:draw()
         love.graphics.draw(self.newGameJournal, shove.getViewportWidth() / 2, shove.getViewportHeight() / 2, math.rad(self.journalConfig.angle), self.journalConfig.zoom, self.journalConfig.zoom, self.newGameJournal:getWidth() / 2, self.newGameJournal:getHeight() / 2)
     love.graphics.setColor(1, 1, 1, 1)
 
+    love.graphics.setColor(0, 0, 0, self.journalConfig.transfade)
+        love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
+
     -- trans fade rectangle --
     love.graphics.setColor(0, 0, 0, self.transitionFade.fade)
         love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
@@ -396,8 +402,8 @@ function MenuState:update(elapsed)
         if self.journalConfig.alpha <= 1 then
             self.journalConfig.alpha = self.journalConfig.alpha + 1 * elapsed
         end
-        self.journalConfig.zoom = self.journalConfig.zoom + 0.005 * elapsed
-        self.journalConfig.angle = self.journalConfig.angle + 0.005 * elapsed
+        self.journalConfig.zoom = self.journalConfig.zoom + 0.0075 * elapsed
+        self.journalConfig.angle = self.journalConfig.angle - 0.2 * elapsed
 
         self.journalConfig.timer:update(elapsed)
     end
@@ -442,6 +448,12 @@ function MenuState:mousepressed(x, y, button)
                 self.canUseMenu = self.configMenu and false or true
             end
         end
+    end
+end
+
+function MenuState:leave()
+    for k, v in pairs(AudioSources) do
+        v:stop()
     end
 end
 

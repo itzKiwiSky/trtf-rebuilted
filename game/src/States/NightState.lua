@@ -213,9 +213,9 @@ function NightState:enter()
 
     self.fnt_vhs = fontcache.getFont("vcr", 25)
     self.fnt_camfnt = fontcache.getFont("vcr", 16)
-    self.fnt_timerfnt = fontcache.getFont("vcr", 22)
+    self.fnt_timerfnt = fontcache.getFont("vcr", 28)
     self.fnt_camError = fontcache.getFont("vcr", 30)
-    self.fnt_camName = fontcache.getFont("vcr", 42)
+    self.fnt_camName = fontcache.getFont("vcr", 24)
     self.fnt_boldtnr = fontcache.getFont("tnr_bold", 20)
     self.fnt_nightDisplay = fontcache.getFont("tnr", 60)
 
@@ -324,7 +324,7 @@ function NightState:enter()
     self.maskBtn = self.buttonsUI.new(NightState.assets.maskButton, 96, (shove.getViewportHeight() - NightState.assets.maskButton:getHeight()) - 24)
     self.camBtn = self.buttonsUI.new(NightState.assets.camButton, (shove.getViewportWidth() - NightState.assets.camButton:getWidth()) - 96, (shove.getViewportHeight() - NightState.assets.camButton:getHeight()) - 24)
 
-    self.X_LEFT_FRAME = self.gameCam.x - 64
+    self.X_LEFT_FRAME = self.gameCam.x - 72
     self.X_RIGHT_FRAME = self.gameCam.x + self.roomSize.width
     self.Y_TOP_FRAME = self.gameCam.y
     self.Y_BOTTOM_FRAME = self.gameCam.y + self.roomSize.height
@@ -473,19 +473,18 @@ function NightState:enter()
             sleep(3)
                 self.phoneController:setState(true)
                 AudioSources["phone_pickup"]:play()
-            sleep(0.2)
+            sleep(0.25)
+                AudioSources["sfx_ringphone"]:play()
+            sleep(AudioSources["sfx_ringphone"]:getDuration("seconds") - 1)
                 self.assets.calls["call_night" .. self.nightID]:play()
-                --subtitlesController.clear()
-                --subtitlesController.queue(languageRaw.subtitles["call_night" .. self.nightID])
-            sleep(6)
                 self.officeState.phoneCallNotRefused = true
                 self.officeState.phoneCall = true
                 self.phoneController.hitbox.x = 1090
-            sleep(self.assets.calls["call_night" .. self.nightID]:getDuration("seconds") - 6)
+            sleep(self.assets.calls["call_night" .. self.nightID]:getDuration("seconds"))
+            sleep(AudioSources["sfx_callend"]:getDuration())
                 self.phoneController:setState(false)
                 AudioSources["phone_pickup"]:play()
                 self.nightTextDisplay.displayNightText = true
-                --subtitlesController.clear()
                 self.officeState.phoneCall = false
         elseif self.nightID >= 6 then
             sleep(3)
@@ -593,7 +592,7 @@ function NightState:draw()
             end
             love.graphics.printf(languageService["game_misc_call_name"], self.fnt_phoneCallName, 1011, 430, 193, "center")
             if self.officeState.phoneCallNotRefused then
-                local tm, ts = convertTime(NightState.assets.calls["call_night" .. NightState.nightID]:tell("seconds"), -6)
+                local tm, ts = convertTime(NightState.assets.calls["call_night" .. NightState.nightID]:tell("seconds"))
                 love.graphics.printf(string.format("%02d:%02d", tm, ts), self.fnt_phoneCallFooter, 1011, 470, 193, "center")
             else
                 love.graphics.printf(languageService["game_misc_call_incoming"], self.fnt_phoneCallFooter, 1011, 470, 193, "center")
@@ -722,6 +721,10 @@ function NightState:draw()
         mx, my = self.gameCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
         
         if registers.showDebugHitbox then
+            love.graphics.setColor(0.54, 0.3, 0.67, 0.4)
+                love.graphics.rectangle("fill", self.phoneController.hitbox.x, self.phoneController.hitbox.y, self.phoneController.hitbox.w, self.phoneController.hitbox.h)
+            love.graphics.setColor(1, 1, 1, 1)
+
             self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
                 love.graphics.setColor(0.7, 0, 1, 0.4)
                     love.graphics.rectangle("fill", mx, my, 32, 32)
@@ -1327,9 +1330,9 @@ function NightState:update(elapsed)
 end
 
 function NightState:mousepressed(x, y, button)
-    local inside, mx, my = shove.mouseToViewport()  -- get the mouse --
+    local inside, vmx, vmy = shove.mouseToViewport()  -- get the mouse --
     -- convert mouse position from screen to viewport and than the viewport to the world --
-    mx, my = self.gameCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
+    mx, my = self.gameCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
 
     -- camera substate --
     if self.tabletController.tabUp then
@@ -1369,8 +1372,9 @@ function NightState:mousepressed(x, y, button)
             end
     
             if self.phoneController.visible and self.officeState.phoneCallNotRefused and not self.nightTextDisplay.displayNightText then
-                if collision.pointRect({x = x, y = y}, self.phoneController.hitbox) then
+                if collision.pointRect({x = vmx, y = vmy}, self.phoneController.hitbox) then
                     NightState.assets.calls["call_night" .. NightState.nightID]:seek(NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") - 1)
+                    AudioSources["sfx_callend"]:play()
                     self.phoneController:setState(false)
                     AudioSources["phone_pickup"]:play()
                     self.nightTextDisplay.displayNightText = true

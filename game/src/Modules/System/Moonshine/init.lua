@@ -39,7 +39,7 @@ end
 moonshine.chain = function(w,h,effect)
   -- called as moonshine.chain(effect)'
   if h == nil then
-    effect, w,h = w, love.window.getMode()
+    effect, w,h = w, shove.getViewportDimensions()
   end
   assert(effect ~= nil, "No effect")
 

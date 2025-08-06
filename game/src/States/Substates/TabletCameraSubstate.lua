@@ -257,15 +257,19 @@ function TabletCameraSubState:draw()
         love.graphics.setLineWidth(1)
         if love.timer.getTime() % 1 > 0.5 then
             love.graphics.setColor(1, 0, 0, 1)
-                love.graphics.circle("fill", 96, 96, 32)
+                love.graphics.circle("fill", shove.getViewportWidth() - 96, 96, 28)
             love.graphics.setColor(1, 1, 1, 1)
         end
 
-        love.graphics.setColor(0.5, 0.5, 0.5, 1)
-        love.graphics.printf(self.camerasName[self.camButtonID], NightState.fnt_camName, 2, 34, shove.getViewportWidth(), "center")
+        --love.graphics.setColor(0.5, 0.5, 0.5, 1)
+        --love.graphics.printf(self.camerasName[self.camButtonID], NightState.fnt_camName, 2, 34, shove.getViewportWidth(), "center")
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(self.camerasName[self.camButtonID], NightState.fnt_camName, 0, 32, shove.getViewportWidth(), "center")
-        love.graphics.print(NightState.night.text, NightState.fnt_timerfnt, 64, 37)
+        love.graphics.printf(self.camerasName[self.camButtonID], 
+            NightState.fnt_camName, shove.getViewportWidth() - 370, 
+            150, NightState.assets.camMap:getWidth(), "center"
+        )
+        love.graphics.printf(NightState.night.text, NightState.fnt_timerfnt, 0, 37, 
+            shove.getViewportWidth(), "center")
 
 
         love.graphics.rectangle("line", 64, shove.getViewportHeight() - 110, 128, 48)
