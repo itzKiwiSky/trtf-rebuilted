@@ -79,9 +79,8 @@ function CustomNightState:draw()
             self.menuCam:detach()
         end)
 
-        loveView.draw()
-
         love.graphics.draw(self.crtOverlay, 0, 0, 0, shove.getViewportWidth() / self.crtOverlay:getWidth(), shove.getViewportHeight() / self.crtOverlay:getHeight())
+        loveView.draw()
     end)
 
     --love.graphics.print(debug.formattable(CustomNightState.animatronicsAI), 10, 20)

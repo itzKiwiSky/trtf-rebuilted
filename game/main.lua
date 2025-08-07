@@ -82,23 +82,6 @@ function love.initialize()
                     discordRichPresence = true,
                     gamepadSupport = false,
                     cacheNight = false,
-                },
-                controls = {
-                    ["game_move_left"] = { "axis:rightx-" },
-                    ["game_move_right"] = { "axis:rightx+" },
-                    ["game_close_door_left"] = { "button:leftshoulder", "key:left", "key:a" },
-                    ["game_close_door_right"] = { "button:rightshoulder", "key:right", "key:d" },
-                    ["game_mask"] = { "key:lshift", "key:x", "button:y" },
-                    ["game_tablet"] = { "key:space", "key:up", "button:a" },
-                    ["game_flashlight"] = { "key:z", "key:lctrl", "button:x" },
-                    ["game_change_cam_left"] = { "key:left", "key:a", "button:leftshoulder", "button:dpleft" },
-                    ["game_change_cam_right"] = { "key:right", "key:d", "button:rightshoulder", "button:dpright" },
-                    ["ui_left"] = { "key:left", "key:a", "axis:leftx-" },
-                    ["ui_right"] = { "key:right", "key:d", "axis:leftx+" },
-                    ["ui_up"] = { "key:left", "key:a", "axis:lefty+" },
-                    ["ui_down"] = { "key:left", "key:a", "axis:lefty-" },
-                    ["ui_accept"] = { "key:return", "button:a", "button:start" },
-                    ["ui_back"] = { "key:escape", "key:backspace", "button:b" }
                 }
             },
             progress = {
@@ -117,8 +100,10 @@ function love.initialize()
     gameSave:initialize()
     love.keyboard.setTextInput( true )
 
+    local Controls = json.decode(love.filesystem.read("Controls.json"))
+    print(inspect(Controls))
     Controller = baton.new({
-        controls = gameSave.save.user.settings.controls,
+        controls = Controls,
         joystick = love.joystick.getJoysticks()[1],
     })
 
@@ -127,6 +112,7 @@ function love.initialize()
         devWindow = false,
         devWindowContent = function() return end,
         showDebugHitbox = false,
+        statesName = {},
         user = {
             currentSettingsTab = "video",
             virtualSettings = gameSave.save.user.settings,
@@ -160,6 +146,7 @@ function love.initialize()
     for s = 1, #states, 1 do
         if love.filesystem.getInfo("src/States/" .. states[s]).type == "file" then
             require("src.States." .. states[s]:gsub(".lua", ""))
+            table.insert(registers.statesName, states[s])
         end
     end
 

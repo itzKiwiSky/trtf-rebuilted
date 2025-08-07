@@ -13,7 +13,19 @@ end
 SplashState = {}
 
 function SplashState:enter()
-    subtitlesController.clear()
+    if FEATURE_FLAGS.developerMode then
+        registers.devWindowContent = function()
+            Slab.BeginWindow("menuNightDev", { Title = "Development" })
+            Slab.Text("State teleport")
+            
+            if Slab.Button("Minigame State") then
+                gamestate.switch(MinigameSceneState)
+            end
+
+            Slab.EndWindow()
+        end
+    end
+
     self.AUDIO_LOADED = false
     preloadAudio()
 

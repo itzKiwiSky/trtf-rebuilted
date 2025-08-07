@@ -10,13 +10,11 @@ Slab = require 'src.Modules.System.Slab'
 moonshine = require 'src.Modules.System.Moonshine'
 loveloader = require 'src.Modules.System.Utils.loveloader'
 loveframes = require 'src.Modules.System.Utils.loveframes'
+bump = require 'src.Modules.System.Utils.BumpPhysics'
 
 love._FPSCap = 1000
 love._unfocusedFPSCap = 60
 local flashOpacity = 0
-
-local oldGraphics = love.graphics
---love.graphics = require 'src.Modules.System.Utils.autobatch'
 
 local modes = love.window.getFullscreenModes()
 table.sort(modes, function(a, b) return a.width * a.height > b.width * b.height end) -- Ordena da maior para a menor
@@ -131,7 +129,9 @@ function love.run()
     shove.createLayer("fps")
 
     --Slab.SetStyle("Pinky")
-    Slab.GetStyle().API.SetStyle("Pinky")
+    local SlabStyle = Slab.GetStyle()
+    SlabStyle.API.Initialize()
+    SlabStyle.API.SetStyle("Pinky")
     Slab.Initialize({"NoDocks"})
 
     local fpsfont = love.graphics.newFont(16)
@@ -159,7 +159,7 @@ function love.run()
                         if a == "f12" then
                             FEATURE_FLAGS.videoStats = not FEATURE_FLAGS.videoStats
                         end
-                        if a == "f6" then
+                        if a == "f5" then
                             registers.devWindow = not registers.devWindow
                         end
                     end

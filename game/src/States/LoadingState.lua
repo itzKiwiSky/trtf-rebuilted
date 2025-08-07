@@ -95,13 +95,6 @@ function LoadingState:keypressed(k)
     if self.ready and not self.pressToGO then
         self.pressToGO = true
     end
-
-    if FEATURE_FLAGS.developerMode then
-        if k == "f5" then
-            NightState.assets = self._tempAssets
-            gamestate.switch(NightState)
-        end
-    end
 end
 
 function LoadingState:mousepressed(x, y, button)

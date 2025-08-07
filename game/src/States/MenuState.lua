@@ -46,6 +46,12 @@ function MenuState:enter()
                 gameSave:saveSlot()
             end
 
+            Slab.Separator()
+            
+            if Slab.Button("Minigame State") then
+                gamestate.switch(MinigameSceneState)
+            end
+
             Slab.EndWindow()
         end
     end
@@ -189,7 +195,7 @@ function MenuState:enter()
     -- buttons menu --
     self.mainMenuButtons = {
         config = {
-            startY = 370,
+            startY = 400,
             paddingElements = 69,       -- :smirk: --
             targetX = 64,
             startX = -480,
@@ -218,16 +224,9 @@ function MenuState:enter()
             },
             {
                 text = languageService["menu_button_extras"],
-                locked = gameSave.save.user.progress.extras,
+                locked = not gameSave.save.user.progress.extras,
                 action = function()
                     
-                end,
-            },
-            {
-                text = languageService["menu_button_custom_night"],
-                locked = false,
-                action = function()
-                    gamestate.switch(CustomNightState)
                 end,
             },
             {

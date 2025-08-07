@@ -1,0 +1,21 @@
+{
+    "game_move_left": ["axis:rightx-"],
+    "game_move_right": ["axis:rightx+"],
+    "game_close_door_left": ["button:leftshoulder", "key:left", "key:a"],
+    "game_close_door_right": ["button:rightshoulder", "key:right", "key:d"],
+    "game_mask": ["key:lshift", "key:x", "button:y"],
+    "game_tablet": ["key:space", "key:up", "button:a"],
+    "game_flashlight": ["key:z", "key:lctrl", "button:x"],
+    "game_change_cam_left": ["key:left", "key:a", "button:leftshoulder", "button:dpleft"],
+    "game_change_cam_right": ["key:right", "key:d", "button:rightshoulder", "button:dpright"],
+    "ui_left": ["key:left", "key:a", "axis:leftx-"],
+    "ui_right": ["key:right", "key:d", "axis:leftx+"],
+    "ui_up": ["key:left", "key:a", "axis:lefty+"],
+    "ui_down": ["key:left", "key:a", "axis:lefty-"],
+    "ui_accept": ["key:return", "button:a", "button:start"],
+    "ui_back": ["key:escape", "key:backspace", "button:b"],
+    "player_move_left" : ["key:left", "key:a", "axis:leftx-"],
+    "player_move_right" : ["key:right", "key:d", "axis:leftx+"],
+    "player_move_up" : ["key:up", "key:w", "axis:lefty-"],
+    "player_move_down" : ["key:down", "key:s", "axis:lefty+"]
+}
