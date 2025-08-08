@@ -1,12 +1,19 @@
 local Player = {}
 
 Player.name = "player"
-Player.x = x
-Player.y = y
+Player.x = 0
+Player.y = 0
 Player.dx = 0
 Player.dy = 0
 Player.w = 24
 Player.h = 30
+Player.hitbox = {
+    x = Player.x,
+    y = Player.y,
+    w = Player.w - 4,
+    h = Player.h - 16,
+}
+Player.lastDoorID = ""
 Player.speed = 900
 
 Player.cooldown = {
@@ -16,12 +23,24 @@ Player.cooldown = {
     down = 0,
 }
 
-Player.maxCooldown = 0.05
+Player.maxCooldown = 0.5
+
+local function drawBox(box, r, g, b)
+    love.graphics.setLineWidth(3)
+    love.graphics.setColor(r / 255, g / 255, b / 255, 0.25)
+    love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
+    love.graphics.setColor(r / 255, g / 255, b / 255, 1)
+    love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setLineWidth(1)
+end
 
 function Player.draw()
-    love.graphics.setColor(1, 1, 0.2, 1)
-    love.graphics.rectangle("fill", Player.x, Player.y, Player.w, Player.h)
+    love.graphics.setColor(1, 1, 0, 0.5)
+    love.graphics.rectangle("line", Player.x, Player.y, Player.w, Player.h)
     love.graphics.setColor(1, 1, 1, 1)
+
+    --drawBox(Player.hitbox, 127, 100, 0)
 end
 
 function Player.update(elapsed)
@@ -52,7 +71,13 @@ function Player.update(elapsed)
     end
     
     if dx ~= 0 or dy ~= 0 then
-        Player.x, Player.y = MinigameSceneState.world:move(Player, Player.x + dx, Player.y + dy)
+        Player.x, Player.y, len, col = MinigameSceneState.world:move(Player.hitbox, Player.hitbox.x + dx, Player.hitbox.y + dy, function(item, other)
+            --if item.kind == "solid" then
+            return other.kind == "solid" and "touch" or "cross"
+        end)
+    
+        Player.hitbox.x = Player.x
+        Player.hitbox.y = Player.y
     end
 end
 

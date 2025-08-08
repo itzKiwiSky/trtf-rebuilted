@@ -10,7 +10,7 @@ return {
   tilewidth = 16,
   tileheight = 16,
   nextlayerid = 14,
-  nextobjectid = 240,
+  nextobjectid = 246,
   backgroundcolor = { 60, 0, 90 },
   properties = {},
   tilesets = {
@@ -81,7 +81,7 @@ return {
       id = 4,
       name = "areas",
       class = "",
-      visible = true,
+      visible = false,
       opacity = 1,
       offsetx = 0,
       offsety = 0,
@@ -339,7 +339,7 @@ return {
       id = 6,
       name = "collision",
       class = "",
-      visible = false,
+      visible = true,
       opacity = 1,
       offsetx = 0,
       offsety = 0,
@@ -584,40 +584,27 @@ return {
           properties = {}
         },
         {
-          id = 69,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 160,
-          y = 16,
-          width = 16,
-          height = 48,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
           id = 70,
           name = "",
           type = "",
           shape = "rectangle",
           x = 160,
           y = 112,
-          width = 16,
+          width = 48,
           height = 48,
           rotation = 0,
           visible = true,
           properties = {}
         },
         {
-          id = 71,
+          id = 240,
           name = "",
           type = "",
           shape = "rectangle",
-          x = 16,
-          y = 160,
-          width = 144,
-          height = 16,
+          x = 160,
+          y = 16,
+          width = 48,
+          height = 48,
           rotation = 0,
           visible = true,
           properties = {}
@@ -636,32 +623,6 @@ return {
           properties = {}
         },
         {
-          id = 72,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 192,
-          y = 112,
-          width = 16,
-          height = 48,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 74,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 208,
-          y = 160,
-          width = 80,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
           id = 75,
           name = "",
           type = "",
@@ -669,7 +630,7 @@ return {
           x = 336,
           y = 160,
           width = 80,
-          height = 16,
+          height = 48,
           rotation = 0,
           visible = true,
           properties = {}
@@ -688,19 +649,6 @@ return {
           properties = {}
         },
         {
-          id = 80,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 192,
-          y = 16,
-          width = 16,
-          height = 48,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
           id = 82,
           name = "",
           type = "",
@@ -714,39 +662,13 @@ return {
           properties = {}
         },
         {
-          id = 83,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 208,
-          y = 192,
-          width = 80,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 84,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 336,
-          y = 192,
-          width = 80,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
           id = 85,
           name = "",
           type = "",
           shape = "rectangle",
           x = 416,
           y = 208,
-          width = 16,
+          width = 48,
           height = 96,
           rotation = 0,
           visible = true,
@@ -759,7 +681,7 @@ return {
           shape = "rectangle",
           x = 416,
           y = 336,
-          width = 16,
+          width = 48,
           height = 16,
           rotation = 0,
           visible = true,
@@ -772,46 +694,7 @@ return {
           shape = "rectangle",
           x = 320,
           y = 352,
-          width = 96,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 91,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 208,
-          y = 352,
-          width = 48,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 92,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 192,
-          y = 304,
-          width = 16,
-          height = 48,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 93,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 192,
-          y = 208,
-          width = 16,
+          width = 192,
           height = 48,
           rotation = 0,
           visible = true,
@@ -850,7 +733,20 @@ return {
           shape = "rectangle",
           x = 160,
           y = 304,
-          width = 16,
+          width = 48,
+          height = 48,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 241,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 208,
+          y = 352,
+          width = 48,
           height = 48,
           rotation = 0,
           visible = true,
@@ -863,7 +759,7 @@ return {
           shape = "rectangle",
           x = 160,
           y = 208,
-          width = 16,
+          width = 48,
           height = 48,
           rotation = 0,
           visible = true,
@@ -875,9 +771,9 @@ return {
           type = "",
           shape = "rectangle",
           x = 16,
-          y = 192,
-          width = 144,
-          height = 16,
+          y = 160,
+          width = 272,
+          height = 48,
           rotation = 0,
           visible = true,
           properties = {}
@@ -896,45 +792,6 @@ return {
           properties = {}
         },
         {
-          id = 103,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 448,
-          y = 208,
-          width = 16,
-          height = 96,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 104,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 448,
-          y = 336,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 105,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 464,
-          y = 352,
-          width = 48,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
           id = 106,
           name = "",
           type = "",
@@ -942,7 +799,7 @@ return {
           x = 576,
           y = 352,
           width = 80,
-          height = 16,
+          height = 48,
           rotation = 0,
           visible = true,
           properties = {}
@@ -961,26 +818,13 @@ return {
           properties = {}
         },
         {
-          id = 110,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 320,
-          y = 384,
-          width = 80,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
           id = 111,
           name = "",
           type = "",
           shape = "rectangle",
           x = 400,
           y = 400,
-          width = 16,
+          width = 48,
           height = 96,
           rotation = 0,
           visible = true,
@@ -993,7 +837,7 @@ return {
           shape = "rectangle",
           x = 400,
           y = 528,
-          width = 16,
+          width = 48,
           height = 16,
           rotation = 0,
           visible = true,
@@ -1007,7 +851,7 @@ return {
           x = 320,
           y = 544,
           width = 80,
-          height = 16,
+          height = 48,
           rotation = 0,
           visible = true,
           properties = {}
@@ -1020,7 +864,7 @@ return {
           x = 208,
           y = 544,
           width = 48,
-          height = 16,
+          height = 48,
           rotation = 0,
           visible = true,
           properties = {}
@@ -1039,71 +883,6 @@ return {
           properties = {}
         },
         {
-          id = 117,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 208,
-          y = 384,
-          width = 48,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 118,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 448,
-          y = 384,
-          width = 64,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 119,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 576,
-          y = 384,
-          width = 64,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 120,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 432,
-          y = 400,
-          width = 16,
-          height = 96,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 121,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 432,
-          y = 528,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
           id = 122,
           name = "",
           type = "",
@@ -1111,7 +890,7 @@ return {
           x = 448,
           y = 544,
           width = 64,
-          height = 16,
+          height = 48,
           rotation = 0,
           visible = true,
           properties = {}
@@ -1124,7 +903,7 @@ return {
           x = 576,
           y = 544,
           width = 64,
-          height = 16,
+          height = 48,
           rotation = 0,
           visible = true,
           properties = {}
@@ -1136,7 +915,7 @@ return {
           shape = "rectangle",
           x = 640,
           y = 400,
-          width = 16,
+          width = 48,
           height = 16,
           rotation = 0,
           visible = true,
@@ -1149,34 +928,8 @@ return {
           shape = "rectangle",
           x = 640,
           y = 464,
-          width = 16,
+          width = 48,
           height = 80,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 128,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 672,
-          y = 400,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 129,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 672,
-          y = 464,
-          width = 16,
-          height = 32,
           rotation = 0,
           visible = true,
           properties = {}
@@ -1273,71 +1026,6 @@ return {
           properties = {}
         },
         {
-          id = 140,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 240,
-          y = 576,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 153,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 496,
-          y = 576,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 141,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 320,
-          y = 576,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 152,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 576,
-          y = 576,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 142,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 224,
-          y = 592,
-          width = 16,
-          height = 192,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
           id = 151,
           name = "",
           type = "",
@@ -1351,14 +1039,14 @@ return {
           properties = {}
         },
         {
-          id = 144,
+          id = 245,
           name = "",
           type = "",
           shape = "rectangle",
-          x = 240,
-          y = 784,
+          x = 224,
+          y = 592,
           width = 16,
-          height = 16,
+          height = 192,
           rotation = 0,
           visible = true,
           properties = {}
@@ -1371,20 +1059,20 @@ return {
           x = 496,
           y = 784,
           width = 16,
-          height = 16,
+          height = 32,
           rotation = 0,
           visible = true,
           properties = {}
         },
         {
-          id = 145,
+          id = 244,
           name = "",
           type = "",
           shape = "rectangle",
-          x = 320,
+          x = 240,
           y = 784,
           width = 16,
-          height = 16,
+          height = 32,
           rotation = 0,
           visible = true,
           properties = {}
@@ -1397,20 +1085,20 @@ return {
           x = 576,
           y = 784,
           width = 16,
-          height = 16,
+          height = 32,
           rotation = 0,
           visible = true,
           properties = {}
         },
         {
-          id = 146,
+          id = 243,
           name = "",
           type = "",
           shape = "rectangle",
-          x = 336,
-          y = 592,
+          x = 320,
+          y = 784,
           width = 16,
-          height = 192,
+          height = 32,
           rotation = 0,
           visible = true,
           properties = {}
@@ -1421,6 +1109,19 @@ return {
           type = "",
           shape = "rectangle",
           x = 592,
+          y = 592,
+          width = 16,
+          height = 192,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 242,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 336,
           y = 592,
           width = 16,
           height = 192,
@@ -1462,7 +1163,7 @@ return {
           x = 192,
           y = 928,
           width = 16,
-          height = 16,
+          height = 48,
           rotation = 0,
           visible = true,
           properties = {}
@@ -1514,7 +1215,7 @@ return {
           x = 240,
           y = 928,
           width = 336,
-          height = 16,
+          height = 48,
           rotation = 0,
           visible = true,
           properties = {}
@@ -1527,111 +1228,7 @@ return {
           x = 608,
           y = 928,
           width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 162,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 560,
-          y = 960,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 180,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 240,
-          y = 960,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 163,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 608,
-          y = 960,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 179,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 192,
-          y = 960,
-          width = 16,
-          height = 16,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 164,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 544,
-          y = 976,
-          width = 16,
           height = 48,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 178,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 256,
-          y = 976,
-          width = 16,
-          height = 48,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 165,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 544,
-          y = 1072,
-          width = 16,
-          height = 32,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 176,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 256,
-          y = 1072,
-          width = 16,
-          height = 32,
           rotation = 0,
           visible = true,
           properties = {}
@@ -1693,9 +1290,9 @@ return {
           name = "",
           type = "",
           shape = "rectangle",
-          x = 288,
+          x = 256,
           y = 976,
-          width = 16,
+          width = 48,
           height = 48,
           rotation = 0,
           visible = true,
@@ -1706,9 +1303,9 @@ return {
           name = "",
           type = "",
           shape = "rectangle",
-          x = 288,
+          x = 256,
           y = 1072,
-          width = 16,
+          width = 48,
           height = 48,
           rotation = 0,
           visible = true,
@@ -1734,7 +1331,7 @@ return {
           shape = "rectangle",
           x = 512,
           y = 1072,
-          width = 16,
+          width = 48,
           height = 48,
           rotation = 0,
           visible = true,
@@ -1747,21 +1344,8 @@ return {
           shape = "rectangle",
           x = 512,
           y = 976,
-          width = 16,
+          width = 48,
           height = 48,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          id = 174,
-          name = "",
-          type = "",
-          shape = "rectangle",
-          x = 304,
-          y = 960,
-          width = 208,
-          height = 16,
           rotation = 0,
           visible = true,
           properties = {}
@@ -1774,7 +1358,7 @@ return {
       id = 9,
       name = "action_zones",
       class = "",
-      visible = true,
+      visible = false,
       opacity = 1,
       offsetx = 0,
       offsety = 0,
@@ -1799,8 +1383,7 @@ return {
             ["direction"] = "right",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "showstage",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "showstage"
           }
         },
         {
@@ -1818,8 +1401,7 @@ return {
             ["direction"] = "left",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "parts_and_service",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "parts_and_service"
           }
         },
         {
@@ -1837,8 +1419,7 @@ return {
             ["direction"] = "down",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "dinning_area",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "dinning_area"
           }
         },
         {
@@ -1856,8 +1437,7 @@ return {
             ["direction"] = "up",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "showstage",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "showstage"
           }
         },
         {
@@ -1875,8 +1455,7 @@ return {
             ["direction"] = "right",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "dinning_area",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "dinning_area"
           }
         },
         {
@@ -1894,8 +1473,7 @@ return {
             ["direction"] = "left",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "pirate_cove",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "pirate_cove"
           }
         },
         {
@@ -1913,8 +1491,7 @@ return {
             ["direction"] = "right",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "prize_corner",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "prize_corner"
           }
         },
         {
@@ -1932,8 +1509,7 @@ return {
             ["direction"] = "down",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "arcade",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "arcade"
           }
         },
         {
@@ -1951,8 +1527,7 @@ return {
             ["direction"] = "down",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "storage",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "storage"
           }
         },
         {
@@ -1970,8 +1545,7 @@ return {
             ["direction"] = "left",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "dinning_area",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "dinning_area"
           }
         },
         {
@@ -1989,8 +1563,7 @@ return {
             ["direction"] = "up",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "prize_corner",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "prize_corner"
           }
         },
         {
@@ -2008,8 +1581,7 @@ return {
             ["direction"] = "left",
             ["increment"] = 0,
             ["locked"] = true,
-            ["on_enter_zone"] = "storage",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "storage"
           }
         },
         {
@@ -2027,8 +1599,7 @@ return {
             ["direction"] = "right",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "kid_hall",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "kid_hall"
           }
         },
         {
@@ -2046,8 +1617,7 @@ return {
             ["direction"] = "down",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "left_hall",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "left_hall"
           }
         },
         {
@@ -2065,8 +1635,7 @@ return {
             ["direction"] = "left",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "arcade",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "arcade"
           }
         },
         {
@@ -2084,8 +1653,7 @@ return {
             ["direction"] = "right",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "storage",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "storage"
           }
         },
         {
@@ -2103,8 +1671,7 @@ return {
             ["direction"] = "up",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "dinning_area",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "dinning_area"
           }
         },
         {
@@ -2122,8 +1689,7 @@ return {
             ["direction"] = "down",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "right_hall",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "right_hall"
           }
         },
         {
@@ -2141,8 +1707,7 @@ return {
             ["direction"] = "up",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "arcade",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "arcade"
           }
         },
         {
@@ -2160,8 +1725,7 @@ return {
             ["direction"] = "down",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "front_office",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "front_office"
           }
         },
         {
@@ -2179,8 +1743,7 @@ return {
             ["direction"] = "down",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "front_office",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "front_office"
           }
         },
         {
@@ -2198,8 +1761,7 @@ return {
             ["direction"] = "up",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "storage",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "storage"
           }
         },
         {
@@ -2217,8 +1779,7 @@ return {
             ["direction"] = "up",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "right_hall",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "right_hall"
           }
         },
         {
@@ -2236,8 +1797,7 @@ return {
             ["direction"] = "up",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "left_hall",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "left_hall"
           }
         },
         {
@@ -2255,8 +1815,7 @@ return {
             ["direction"] = "down",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "office_left_hall",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "office_left_hall"
           }
         },
         {
@@ -2274,8 +1833,7 @@ return {
             ["direction"] = "down",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "office_right_hall",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "office_right_hall"
           }
         },
         {
@@ -2293,8 +1851,7 @@ return {
             ["direction"] = "up",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "front_office",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "front_office"
           }
         },
         {
@@ -2312,8 +1869,7 @@ return {
             ["direction"] = "right",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "office",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "office"
           }
         },
         {
@@ -2331,8 +1887,7 @@ return {
             ["direction"] = "left",
             ["increment"] = 18,
             ["locked"] = false,
-            ["on_enter_zone"] = "office_right_hall",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "office_right_hall"
           }
         },
         {
@@ -2350,8 +1905,7 @@ return {
             ["direction"] = "right",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "office_left_hall",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "office_left_hall"
           }
         },
         {
@@ -2369,8 +1923,7 @@ return {
             ["direction"] = "left",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "office",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "office"
           }
         },
         {
@@ -2388,8 +1941,7 @@ return {
             ["direction"] = "up",
             ["increment"] = 0,
             ["locked"] = false,
-            ["on_enter_zone"] = "front_office",
-            ["on_exit_zone"] = ""
+            ["on_enter_zone"] = "front_office"
           }
         }
       }

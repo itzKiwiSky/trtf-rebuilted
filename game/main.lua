@@ -101,7 +101,6 @@ function love.initialize()
     love.keyboard.setTextInput( true )
 
     local Controls = json.decode(love.filesystem.read("Controls.json"))
-    print(inspect(Controls))
     Controller = baton.new({
         controls = Controls,
         joystick = love.joystick.getJoysticks()[1],

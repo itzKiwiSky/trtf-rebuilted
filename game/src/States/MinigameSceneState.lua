@@ -10,9 +10,9 @@ local function getTableByName(tbl, val)
 end
 
 local function drawBox(box, r, g, b)
-    love.graphics.setColor(r / 255, g / 255, b / 255, 0.25)
+    love.graphics.setColor(r, g, b, 0.25)
     love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
-    love.graphics.setColor(r / 255, g / 255, b / 255)
+    love.graphics.setColor(r, g, b)
     love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
     love.graphics.setColor(1, 1, 1, 1)
 end
@@ -23,29 +23,42 @@ function MinigameSceneState:enter()
 
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
-            Slab.BeginWindow("mainNightDev", { Title = "Night development" })
+            Slab.BeginWindow("mainNightDev", { Title = "Minigame development" })
                 Slab.Text("General settings")
-                if Slab.CheckBox(registers.showDebugHitbox, "Show mouse hitboxes") then
+                if Slab.CheckBox(registers.showDebugHitbox, "Show hitboxes") then
                     registers.showDebugHitbox = not registers.showDebugHitbox
+                end
+                Slab.Text("Player Cooldown")
+                Slab.SameLine()
+                if Slab.Input("playerSpeedCooldownInput", { Text = tostring(self.player.maxCooldown), ReturnOnText = false, NumbersOnly = true, Precision = 0.01 }) then
+                    self.player.maxCooldown = Slab.GetInputNumber()
                 end
             Slab.EndWindow()
         end
     end
 
+    self.interferenceFX = love.graphics.newShader("assets/shaders/Interference.glsl")
+    self.interferenceFX:send("intensity", 0.012)
+    self.interferenceFX:send("speed", 100.0)
+    self.interferenceIntensity = 0.012
+    self.interferenceSpeed = 100.0
+    self.pixelationInterference = 1.5
+    self.interferenceData = {
+        acc = 0,
+        timer = 0.3
+    }
+
     self.minigameCRT = moonshine(moonshine.effects.crt)
     .chain(moonshine.effects.vignette)
     .chain(moonshine.effects.pixelate)
     .chain(moonshine.effects.chromasep)
-    .chain(moonshine.effects.scanlines)
-
-    self.minigameCRT.scanlines.width = 1.5
-    self.minigameCRT.scanlines.opacity = 0.65
 
     self.minigameCRT.pixelate.feedback = 0.1
     self.minigameCRT.pixelate.size = {1.5, 1.5}
     self.minigameCRT.chromasep.radius = 1
     
     self.mainMap = love.graphics.newImage("assets/images/game/minigames/map.png")
+    self.decoCRT = love.graphics.newImage("assets/images/game/effects/perfect_crt.png")
     self.vignetteMask = love.graphics.newImage("assets/images/game/effects/vignette.png")
     self.mapdata = require 'assets.images.game.minigames.minigame_map'
 
@@ -74,7 +87,7 @@ function MinigameSceneState:enter()
     end
 
     for i = 1, #actionZones.objects, 1 do
-        table.insert(self.map.actionAreas, {
+        local actionArea = {
             color = actionZones.properties["debug_color"],
             x = actionZones.objects[i].x,
             y = actionZones.objects[i].y,
@@ -85,13 +98,18 @@ function MinigameSceneState:enter()
             increment = actionZones.objects[i].properties["increment"],
             meta = {
                 enter = false,
-            }
-        })
+            },
+            kind = "portal"
+        }
+
+        self.world:add(actionArea, actionArea.x, actionArea.y, actionArea.w, actionArea.h)
+        table.insert(self.map.actionAreas, actionArea)
     end
 
     for _, col in ipairs(collisions.objects) do
         local wall = {
             name = "wall_" .. _,
+            kind = "solid",
             color = collisions.properties["debug_color"],
             x = col.x,
             y = col.y,
@@ -99,6 +117,7 @@ function MinigameSceneState:enter()
             h = col.height,
         }
         self.world:add(wall, wall.x, wall.y, wall.w, wall.h)
+        table.insert(self.map.collisions, wall)
     end
 
     for i = 1, #spawnAreaMap.objects, 1 do
@@ -107,14 +126,14 @@ function MinigameSceneState:enter()
 
     self.player.x = self.map.spawnAreas["freddy"].x + 8
     self.player.y = self.map.spawnAreas["freddy"].y + 8
-    self.world:add( self.player,  self.player.x,  self.player.y,  self.player.w,  self.player.h)
+    self.player.hitbox.x = self.player.x
+    self.player.hitbox.y = self.player.y
+    self.world:add(self.player.hitbox, self.player.hitbox.x, self.player.hitbox.y, self.player.hitbox.w, self.player.hitbox.h)
 
-    love.graphics.print(inspect(self.player.cooldown), 30, 64)
-    --print(debug.formattable(map.areas))
+    --love.graphics.print(inspect(self.player.cooldown), 30, 64)
 
-    --love.graphics.setBackgroundColor(0.5, 0.1, 0.6, 1)
-
-    self.gameBuffer = love.graphics.newCanvas(shove.getViewportDimensions())
+    self.gameBuffer = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight(), { readable = true })
+    self.interfereceBuffer = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight(), { readable = true })
 
     self.currentArea = "showstage"
 
@@ -129,10 +148,11 @@ function MinigameSceneState:enter()
         width = 2000,
         height = 800,
     }
+
 end
 
 function MinigameSceneState:draw()
-    
+    love.graphics.push("all")
     love.graphics.setCanvas({self.gameBuffer, stencil = true})
         love.graphics.clear(0, 0, 0)
 
@@ -142,56 +162,60 @@ function MinigameSceneState:draw()
 
             love.graphics.stencil(function()
                 for k, areas in pairs(self.map.areas) do
-                    if currentArea == k then
+                    if self.currentArea == k then
                         love.graphics.rectangle("fill", areas.x, areas.y, areas.w, areas.h)
                         --love.graphics.draw(vignetteMask, areas.x, areas.y, vignetteMask:getWidth() / areas.w, vignetteMask:getHeight() / areas.h)
                     end
                 end
             end, "replace")
 
-            love.graphics.setStencilTest("greater", 1)
+            love.graphics.setStencilTest("less", 1)
                 love.graphics.setColor(0, 0, 0, 1)
-                love.graphics.rectangle("fill", 0, 0, self.mainMap:getWidth(), self.mainMap:getHeight())
+                love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
                 love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setStencilTest()
-
-            for k, areas in pairs(self.map.areas) do
-                if currentArea == k then
-                    love.graphics.draw(self.vignetteMask, areas.x, areas.y, 0, areas.w / self.vignetteMask:getWidth() , areas.h / self.vignetteMask:getHeight())
-                end
-            end
+            
 
             -- debug --
             if FEATURE_FLAGS.developerMode and registers.showDebugHitbox then
                 for k, areas in pairs(self.map.areas) do
                     if currentArea == k then
                         local cr, cg, cb = lume.color(areas.color)
-                        love.graphics.setColor(cr, cg, cb, 0.4)
-                        love.graphics.rectangle("fill", areas.x, areas.y, areas.w, areas.h)
-                        love.graphics.setColor(cr, cg, cb, 1)
-                        love.graphics.rectangle("line", areas.x, areas.y, areas.w, areas.h)
-                        love.graphics.setColor(1, 1, 1, 1)
+                        drawBox(area, cr, cg, cb)
                     end
                 end
 
                 for _, areas in ipairs(self.map.actionAreas) do
                     local cr, cg, cb = lume.color(areas.color)
-                    love.graphics.setColor(cr, cg, cb, 0.4)
-                    love.graphics.rectangle("fill", areas.x, areas.y, areas.w, areas.h)
-                    love.graphics.setColor(cr, cg, cb, 1)
-                    love.graphics.rectangle("line", areas.x, areas.y, areas.w, areas.h)
-                    love.graphics.setColor(1, 1, 1, 1)
+                    drawBox(areas, cr, cg, cb)
+                end
+                
+                for _, walls in ipairs(self.map.collisions) do
+                    local cr, cg, cb = lume.color(walls.color)
+                    drawBox(walls, cr, cg, cb)
                 end
             end
-            
             self.player.draw()
-            drawBox(self.player, 200, 32, 10)
+            drawBox(self.player.hitbox, 0.75, 1, 0)
         self.minigameCam:detach()
 
     love.graphics.setCanvas()
+    love.graphics.pop()
+
+    love.graphics.setColor(0.2, 0.2, 0.2)
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
+
+    self.interfereceBuffer:renderTo(function()
+        love.graphics.clear()
+        love.graphics.setShader(self.interferenceFX)
+            love.graphics.draw(self.gameBuffer)
+        love.graphics.setShader()
+    end)
 
     self.minigameCRT(function()
-        love.graphics.draw(self.gameBuffer, 0, 0)
+        love.graphics.draw(self.interfereceBuffer)
+        love.graphics.draw(self.decoCRT, 0, 0, 0, shove.getViewportWidth() / self.decoCRT:getWidth(), shove.getViewportHeight() / self.decoCRT:getHeight())
     end)
 
     --love.graphics.print(inspect(self.map.actionAreas), 30, 30)
@@ -200,54 +224,59 @@ end
 function MinigameSceneState:update(elapsed)
     self.player.update(elapsed)
 
+    self.interferenceFX:send("time", love.timer.getTime())
+    self.interferenceFX:send("intensity", self.interferenceIntensity)
+    self.interferenceFX:send("speed", self.interferenceSpeed)
+    self.minigameCRT.pixelate.size = { self.pixelationInterference, self.pixelationInterference }
+
+    self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer)
+    self.pixelationInterference = math.lerp(self.pixelationInterference, 1.5, self.interferenceData.timer)
+
     -- set room size --
-    self.camView.width = self.map.areas[self.currentArea].w
-    self.camView.height = self.map.areas[self.currentArea].h
-    self.camView.x = math.clamp(self.player.x - self.camView.width / 2, self.map.areas[self.currentArea].x, 
-        self.map.areas[self.currentArea].x + self.map.areas[self.currentArea].w - self.camView.width
-    )
-    self.camView.y = math.clamp(self.player.y - self.camView.height / 2, self.map.areas[self.currentArea].y, 
-        self.map.areas[self.currentArea].y + self.map.areas[self.currentArea].h - self.camView.height
-    )
-    --self.camView.x = self.map.areas[self.currentArea].x + self.camView.width / 2
-    --self.camView.y = self.map.areas[self.currentArea].y + self.camView.height / 2
-    --self.camView.scale =
+    local area = self.map.areas[self.currentArea]
+    self.camView.width = area.w
+    self.camView.height = area.h
+    self.camView.x = area.x + self.camView.width / 2
+    self.camView.y = area.y + self.camView.height / 2
 
-    self.minigameCam.x, self.minigameCam.y = self.camView.x, self.camView.y
+    -- lógica de scroll da câmera considerando escala
+    local windowW = shove.getViewportWidth()
+    local windowH = shove.getViewportHeight()
+    local scale = self.minigameCam.scale or 1
 
-    for k, areas in pairs(self.map.areas) do
-        if collision.rectRect(self.player, areas) then
-            self.currentArea = k
+    local visibleW = windowW / scale
+    local visibleH = windowH / scale
+
+    local minX = area.x + visibleW / 2
+    local maxX = (area.x + area.w) - visibleW / 2
+    local minY = area.y + visibleH / 2
+    local maxY = (area.y + area.h) - visibleH / 2
+
+    local targetX = self.player.x
+    local targetY = self.player.y
+
+    -- se área menor que tela, centraliza
+    if area.w <= visibleW then
+        targetX = area.x + area.w / 2
+    else
+        targetX = math.max(minX, math.min(maxX, targetX))
+    end
+    if area.h <= visibleH then
+        targetY = area.y + area.h / 2
+    else
+        targetY = math.max(minY, math.min(maxY, targetY))
+    end
+
+    self.minigameCam.x = targetX
+    self.minigameCam.y = targetY
+
+    if self.currentArea ~= k then
+        for k, areas in pairs(self.map.areas) do
+            if collision.rectRect(self.player, areas) then
+                self.currentArea = k
+            end
         end
     end
-
-    for i = 1, #self.map.actionAreas, 1 do
-        local zone = self.map.actionAreas[i]
-        zone.enter = false
-    end
-
-    for _, zone in ipairs(self.map.actionAreas) do
-        if collision.rectRect(self.player, zone) and not zone.enter then
-            zone.enter = true
-            switch(zone.direction, {
-                ["up"] = function()
-                    self.player.y = self.player.y - zone.increment
-                end,
-                ["down"] = function()
-                    self.player.y = self.player.y + zone.increment
-                end,
-                ["left"] = function()
-                    self.player.x = self.player.x - zone.increment
-                end,
-                ["right"] = function()
-                    self.player.x = self.player.x + zone.increment
-                end
-            })
-        end
-    end
-
-    -- camera bounds --
-
 end
 
 function MinigameSceneState:keypressed()
