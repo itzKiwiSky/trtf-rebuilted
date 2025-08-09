@@ -56,7 +56,7 @@ function CustomNightState:enter()
 
     self.crtOverlay = love.graphics.newImage("assets/images/game/effects/perfect_crt_noframe.png")
     
-    self.menuCam = camera.new(0, nil)
+    self.menuCam = camera.new(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
     self.menuCam.factorX = 25
     self.menuCam.factorY = 34
 

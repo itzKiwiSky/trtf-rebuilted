@@ -145,7 +145,8 @@ function love.initialize()
     for s = 1, #states, 1 do
         if love.filesystem.getInfo("src/States/" .. states[s]).type == "file" then
             require("src.States." .. states[s]:gsub(".lua", ""))
-            table.insert(registers.statesName, states[s])
+            local strName = states[s]:gsub(".lua", "")
+            table.insert(registers.statesName, strName)
         end
     end
 

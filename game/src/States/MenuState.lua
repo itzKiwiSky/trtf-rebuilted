@@ -52,6 +52,13 @@ function MenuState:enter()
                 gamestate.switch(MinigameSceneState)
             end
 
+            for _, value in ipairs(registers.statesName) do
+                if Slab.Button(value) then
+                    loadstring("gamestate.switch(" .. value .. ")")()
+                    --gamestate.switch(loadstring(value))
+                end
+            end
+
             Slab.EndWindow()
         end
     end

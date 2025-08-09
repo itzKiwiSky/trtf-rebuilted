@@ -157,7 +157,7 @@ function MinigameSceneState:enter()
 
     self.currentArea = "showstage"
 
-    self.minigameCam = camera()
+    self.minigameCam = camera(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
     self.minigameCam:zoomTo(3.5)
 
     self.camView = {
