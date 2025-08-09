@@ -1,6 +1,6 @@
 local lgSetColor = love.graphics.setColor
 
-local function processQuadGroup(mode, image, quads)
+local function processQuadGroup(mode, image, sparrow)
     mode = mode or "array"
     local quads = {}
 
@@ -49,21 +49,18 @@ local function processQuadGroup(mode, image, quads)
     return quads
 end
 
-function love.graphics.getQuadImage(filename)
+---Load a sprite sheet as image and the json map and returns the image and the quad as selected mode
+---@param mode string
+---@param filename string
+---@return love.Image
+---@return table<love.Quad>
+function love.graphics.newQuadFromImage(mode, filename)
+    mode = mode or "array"
     local image = love.graphics.newImage(filename .. ".png")
     local jsonData = love.filesystem.read(filename .. ".json")
     local sparrow = json.decode(jsonData)
 
-    local quads = processQuadGroup("hash", image, sparrow)
-    return image, quads
-end
-
-function love.graphics.getQuadImageFromHash(filename)
-    local image = love.graphics.newImage(filename .. ".png")
-    local jsonData = love.filesystem.read(filename .. ".json")
-    local sparrow = json.decode(jsonData)
-
-    local quads = processQuadGroup("hash", image, sparrow)
+    local quads = processQuadGroup(mode, image, sparrow)
     return image, quads
 end
 
@@ -73,10 +70,10 @@ end
 ---@param mode string
 function love.graphics.getQuads(image, filename, mode)
     mode = mode or "array"
-    local jsonData = love.filesystem.read(filename .. ".json")
+    local jsonData = love.filesystem.read(filename)
     local sparrow = json.decode(jsonData)
 
-    local img, quads = processQuadGroup(mode, image, sparrow)   -- discards the image data --
+    local quads = processQuadGroup(mode, image, sparrow)   -- discards the image data --
     return quads
 end
 

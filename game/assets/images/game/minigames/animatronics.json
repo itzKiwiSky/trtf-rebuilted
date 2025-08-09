@@ -1,6 +1,5 @@
-{ "frames": [
-   {
-    "filename": "0",
+{ "frames": {
+   "freddy_0": {
     "frame": { "x": 0, "y": 0, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -8,8 +7,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "1",
+   "freddy_1": {
     "frame": { "x": 32, "y": 0, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -17,8 +15,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "2",
+   "freddy_2": {
     "frame": { "x": 64, "y": 0, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -26,8 +23,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "3",
+   "freddy_3": {
     "frame": { "x": 96, "y": 0, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -35,8 +31,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "4",
+   "freddy_4": {
     "frame": { "x": 128, "y": 0, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -44,8 +39,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "5",
+   "freddy_5": {
     "frame": { "x": 160, "y": 0, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -53,8 +47,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "6",
+   "freddy_6": {
     "frame": { "x": 192, "y": 0, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -62,8 +55,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "7",
+   "freddy_7": {
     "frame": { "x": 224, "y": 0, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -71,8 +63,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "8",
+   "chica_0": {
     "frame": { "x": 0, "y": 32, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -80,8 +71,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "9",
+   "chica_1": {
     "frame": { "x": 32, "y": 32, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -89,8 +79,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "10",
+   "chica_2": {
     "frame": { "x": 64, "y": 32, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -98,8 +87,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "11",
+   "chica_3": {
     "frame": { "x": 96, "y": 32, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -107,8 +95,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "12",
+   "chica_4": {
     "frame": { "x": 128, "y": 32, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -116,8 +103,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "13",
+   "chica_5": {
     "frame": { "x": 160, "y": 32, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -125,8 +111,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "14",
+   "chica_6": {
     "frame": { "x": 192, "y": 32, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -134,8 +119,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "15",
+   "chica_7": {
     "frame": { "x": 224, "y": 32, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -143,8 +127,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "16",
+   "bonnie_0": {
     "frame": { "x": 0, "y": 64, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -152,8 +135,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "17",
+   "bonnie_1": {
     "frame": { "x": 32, "y": 64, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -161,8 +143,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "18",
+   "bonnie_2": {
     "frame": { "x": 64, "y": 64, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -170,8 +151,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "19",
+   "bonnie_3": {
     "frame": { "x": 96, "y": 64, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -179,8 +159,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "20",
+   "bonnie_4": {
     "frame": { "x": 128, "y": 64, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -188,8 +167,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "21",
+   "bonnie_5": {
     "frame": { "x": 160, "y": 64, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -197,8 +175,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "22",
+   "bonnie_6": {
     "frame": { "x": 192, "y": 64, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -206,8 +183,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "23",
+   "bonnie_7": {
     "frame": { "x": 224, "y": 64, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -215,8 +191,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "24",
+   "foxy_0": {
     "frame": { "x": 0, "y": 96, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -224,8 +199,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "25",
+   "foxy_1": {
     "frame": { "x": 32, "y": 96, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -233,8 +207,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "26",
+   "foxy_2": {
     "frame": { "x": 64, "y": 96, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -242,8 +215,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "27",
+   "foxy_3": {
     "frame": { "x": 96, "y": 96, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -251,8 +223,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "28",
+   "foxy_4": {
     "frame": { "x": 128, "y": 96, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -260,8 +231,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "29",
+   "foxy_5": {
     "frame": { "x": 160, "y": 96, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -269,8 +239,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "30",
+   "foxy_6": {
     "frame": { "x": 192, "y": 96, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -278,8 +247,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "31",
+   "foxy_7": {
     "frame": { "x": 224, "y": 96, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -287,8 +255,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "32",
+   "kitty_0": {
     "frame": { "x": 0, "y": 128, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -296,8 +263,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "33",
+   "kitty_1": {
     "frame": { "x": 32, "y": 128, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -305,8 +271,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "34",
+   "kitty_2": {
     "frame": { "x": 64, "y": 128, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -314,8 +279,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "35",
+   "kitty_3": {
     "frame": { "x": 96, "y": 128, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -323,8 +287,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "36",
+   "kitty_4": {
     "frame": { "x": 128, "y": 128, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -332,8 +295,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "37",
+   "kitty_5": {
     "frame": { "x": 160, "y": 128, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -341,8 +303,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "38",
+   "kitty_6": {
     "frame": { "x": 192, "y": 128, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -350,8 +311,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "39",
+   "kitty_7": {
     "frame": { "x": 224, "y": 128, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -359,8 +319,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "40",
+   "lockjaw_0": {
     "frame": { "x": 0, "y": 160, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -368,8 +327,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "41",
+   "lockjaw_1": {
     "frame": { "x": 32, "y": 160, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -377,8 +335,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "42",
+   "lockjaw_2": {
     "frame": { "x": 64, "y": 160, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -386,8 +343,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "43",
+   "lockjaw_3": {
     "frame": { "x": 96, "y": 160, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -395,8 +351,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "44",
+   "lockjaw_4": {
     "frame": { "x": 128, "y": 160, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -404,8 +359,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "45",
+   "lockjaw_5": {
     "frame": { "x": 160, "y": 160, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -413,8 +367,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "46",
+   "lockjaw_6": {
     "frame": { "x": 192, "y": 160, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -422,8 +375,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   {
-    "filename": "47",
+   "lockjaw_7": {
     "frame": { "x": 224, "y": 160, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -431,7 +383,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    }
- ],
+ },
  "meta": {
   "app": "https://www.aseprite.org/",
   "version": "1.3.14.4-x64",

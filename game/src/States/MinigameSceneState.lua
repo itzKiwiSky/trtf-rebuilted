@@ -38,24 +38,27 @@ function MinigameSceneState:enter()
     end
 
     -- animation and objects --
-    self.gameSprites = love.graphics.newImage("assets/images/game/minigames/game_spritesheet.png")
-    --self.aniamtronicSprites = love.graphics.newImage("assets/images/game/minigames/animatronics.png")
     self.animSets = {
         ["animatronics"] = {},
     }
 
+    self.gameSprites = love.graphics.newImage("assets/images/game/minigames/game_spritesheet.png")
+    self.animatronicSprites = love.graphics.newImage("assets/images/game/minigames/animatronics.png")
+    self.animationsAnimatronics = love.graphics.getQuads(self.animatronicSprites, "assets/images/game/minigames/animatronics.json", "hash")
+--    print(inspect(self.animationsAnimatronics))
 
-
-    self.animations = {
-        ["animatronics"] = {
-            ["freddy"] = animate.newAnimation(self.grids["animatronics"]("1-8", 1), 0.5),
-            ["chica"] = animate.newAnimation(self.grids["animatronics"]("2-8", 1), 0.5),
-            ["bonnie"] = animate.newAnimation(self.grids["animatronics"]("3-8", 1), 0.5),
-            ["foxy"] = animate.newAnimation(self.grids["animatronics"]("4-8", 1), 0.5),
-            ["kitty"] = animate.newAnimation(self.grids["animatronics"]("5-8", 1), 0.5),
-            ["lockjaw"] = animate.newAnimation(self.grids["animatronics"]("6-8", 1), 0.5),
+    -- separation of animations --
+    local availableAnimatronics = { "freddy", "chica", "bonnie", "foxy", "kitty", "lockjaw" }
+    for _, animatronic in ipairs(availableAnimatronics) do
+        local anim = {
+            down = {self.animationsAnimatronics[animatronic .. "_" .. 0], self.animationsAnimatronics[animatronic .. "_" .. 1]},
+            left = {self.animationsAnimatronics[animatronic .. "_" .. 2], self.animationsAnimatronics[animatronic .. "_" .. 3]},
+            right = {self.animationsAnimatronics[animatronic .. "_" .. 4], self.animationsAnimatronics[animatronic .. "_" .. 5]},
+            up = {self.animationsAnimatronics[animatronic .. "_" .. 6], self.animationsAnimatronics[animatronic .. "_" .. 7]},
         }
-    }
+
+        self.animSets[animatronic] = anim
+    end
 
     self.interferenceFX = love.graphics.newShader("assets/shaders/Interference.glsl")
     self.interferenceFX:send("intensity", 0.012)
@@ -65,7 +68,9 @@ function MinigameSceneState:enter()
     self.pixelationInterference = 1.5
     self.interferenceData = {
         acc = 0,
-        timer = 0.3
+        timer = 0.05,
+        interferenceTimerMax = 2,
+        interferenceTimerAcc = 0,
     }
 
     self.minigameCRT = moonshine(moonshine.effects.crt)
@@ -144,8 +149,9 @@ function MinigameSceneState:enter()
         self.map.spawnAreas[spawnAreaMap.objects[i].name] = spawnAreaMap.objects[i]
     end
 
+    self.player.animation.maxFrames = 2
     self.player.x = self.map.spawnAreas["freddy"].x + 8
-    self.player.y = self.map.spawnAreas["freddy"].y + 8
+    self.player.y = self.map.spawnAreas["freddy"].y + 16
     self.player.hitbox.x = self.player.x
     self.player.hitbox.y = self.player.y
     self.world:add(self.player.hitbox, self.player.hitbox.x, self.player.hitbox.y, self.player.hitbox.w, self.player.hitbox.h)
@@ -191,7 +197,7 @@ function MinigameSceneState:draw()
 
             love.graphics.setStencilTest("less", 1)
                 love.graphics.setColor(0, 0, 0, 1)
-                love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+                love.graphics.rectangle("fill", 0, 0, self.mainMap:getDimensions())
                 love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setStencilTest()
             
@@ -216,7 +222,7 @@ function MinigameSceneState:draw()
                 end
             end
             self.player.draw()
-            drawBox(self.player.hitbox, 0.75, 1, 0)
+            --drawBox(self.player.hitbox, 0.75, 1, 0)
         self.minigameCam:detach()
 
     love.graphics.setCanvas()
@@ -238,6 +244,7 @@ function MinigameSceneState:draw()
         love.graphics.draw(self.decoCRT, 0, 0, 0, shove.getViewportWidth() / self.decoCRT:getWidth(), shove.getViewportHeight() / self.decoCRT:getHeight())
     end)
 
+    --love.graphics.print(inspect(self.player.animation), 45, 45)
     --love.graphics.print(inspect(self.map.actionAreas), 30, 30)
 end
 
@@ -251,6 +258,13 @@ function MinigameSceneState:update(elapsed)
 
     self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer)
     self.pixelationInterference = math.lerp(self.pixelationInterference, 1.5, self.interferenceData.timer)
+
+    self.interferenceData.interferenceTimerAcc = self.interferenceData.interferenceTimerAcc + elapsed
+    if self.interferenceData.interferenceTimerAcc >= self.interferenceData.interferenceTimerMax then
+        self.interferenceData.interferenceTimerAcc = 0
+        self.interferenceData.interferenceTimerMax = math.random(4, 7)
+        self.interferenceIntensity = 5
+    end
 
     -- set room size --
     local area = self.map.areas[self.currentArea]
@@ -301,18 +315,6 @@ end
 
 function MinigameSceneState:keypressed()
     
-end
-
-function MinigameSceneState:wheelmoved(x, y)
-    if y < 0 then
-        if self.minigameCam.scale > 0.1 then
-            self.minigameCam.scale = self.minigameCam.scale - 0.05
-        end
-    elseif y > 0 then
-        if self.minigameCam.scale < 3.9 then
-            self.minigameCam.scale = self.minigameCam.scale + 0.05
-        end
-    end
 end
 
 return MinigameSceneState

@@ -10,6 +10,11 @@ local function changeCamFX()
     AudioSources["cam_interference"]:play()
 end
 
+---Create a intereference in the camera
+---@param seconds number
+---@param intensity number
+---@param speed number
+---@param px number
 function TabletCameraSubState:doInterference(seconds, intensity, speed, px)
     self.interferenceData.timer = seconds
     self.interferenceIntensity = intensity

@@ -2,19 +2,23 @@ local Player = {}
 
 Player.sprite = "freddy"
 Player.name = "player"
+Player.drawOffset = {
+    x = 12,
+    y = 16,
+}
 Player.x = 0
 Player.y = 0
 Player.dx = 0
 Player.dy = 0
-Player.w = 24
-Player.h = 30
+Player.w = 32
+Player.h = 32
 Player.hitbox = {
     x = Player.x,
     y = Player.y,
-    w = Player.w - 4,
-    h = Player.h - 16,
+    w = 16,
+    h = 20,
 }
-Player.lastDoorID = ""
+Player.lastDirection = "down"
 Player.speed = 900
 
 Player.cooldown = {
@@ -24,26 +28,23 @@ Player.cooldown = {
     down = 0,
 }
 
-Player.maxCooldown = 0.5
+Player.isMoving = false
+Player.animation = {
+    frame = 1,
+    acc = 0,
+    speed = 1 / 20,
+    loop = true,
+    maxFrames = 2,
+}
 
-local function drawBox(box, r, g, b)
-    love.graphics.setLineWidth(3)
-    love.graphics.setColor(r / 255, g / 255, b / 255, 0.25)
-    love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
-    love.graphics.setColor(r / 255, g / 255, b / 255, 1)
-    love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.setLineWidth(1)
-end
+Player.maxCooldown = 0.13
 
 function Player.draw()
-    love.graphics.setColor(1, 1, 0, 0.5)
-    love.graphics.rectangle("line", Player.x, Player.y, Player.w, Player.h)
-    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(MinigameSceneState.animatronicSprites, 
+        MinigameSceneState.animSets[Player.sprite][Player.lastDirection][Player.animation.frame], 
+        Player.x - Player.drawOffset.x, Player.y - Player.drawOffset.y, 0, 1.2, 1.2
+    )
 
-    MinigameSceneState.animations["animatronics"][Player.sprite]:draw(MinigameSceneState.gameSprites, Player.x, Player.y)
-
-    --drawBox(Player.hitbox, 127, 100, 0)
 end
 
 function Player.update(elapsed)
@@ -51,31 +52,44 @@ function Player.update(elapsed)
         if Player.cooldown[k] > 0 then
             Player.cooldown[k] = Player.cooldown[k] - elapsed
         end
-
-        --Player.cooldown[k] = math.clamp(Player.cooldown[k], 0, 0.05)
     end
 
-    MinigameSceneState.animations["animatronics"][Player.sprite]:update(elapsed)
+    -- animation shit --
+    Player.animation.acc = Player.animation.acc + elapsed
+    if Player.isMoving then
+        if Player.animation.acc >= Player.animation.speed then
+            Player.animation.frame = Player.animation.frame + 1
+            Player.animation.acc = 0
+            if Player.animation.frame > Player.animation.maxFrames then
+                Player.animation.frame = 1
+            end
+        end
+    end
 
     local dx, dy = 0, 0
     if Controller:down("player_move_left") and Player.cooldown.left <= 0 then
         dx = -Player.speed * elapsed
+        Player.lastDirection = "left"
         Player.cooldown.left = Player.maxCooldown
     end
     if Controller:down("player_move_right") and Player.cooldown.right <= 0 then
         dx = Player.speed * elapsed
+        Player.lastDirection = "right"
         Player.cooldown.right = Player.maxCooldown
     end
     if Controller:down("player_move_up") and Player.cooldown.up <= 0 then
         dy = -Player.speed * elapsed
+        Player.lastDirection = "up"
         Player.cooldown.up = Player.maxCooldown
     end
     if Controller:down("player_move_down") and Player.cooldown.down <= 0 then
         dy = Player.speed * elapsed
+        Player.lastDirection = "down"
         Player.cooldown.down = Player.maxCooldown
     end
     
     if dx ~= 0 or dy ~= 0 then
+        Player.isMoving = true
         Player.x, Player.y, len, col = MinigameSceneState.world:move(Player.hitbox, Player.hitbox.x + dx, Player.hitbox.y + dy, function(item, other)
             --if item.kind == "solid" then
             return other.kind == "solid" and "touch" or "cross"
@@ -83,6 +97,8 @@ function Player.update(elapsed)
     
         Player.hitbox.x = Player.x
         Player.hitbox.y = Player.y
+    else
+        Player.isMoving = false
     end
 end
 

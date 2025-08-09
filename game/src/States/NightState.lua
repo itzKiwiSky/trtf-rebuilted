@@ -241,7 +241,7 @@ function NightState:enter()
 
     -- radar --
     NightState.assets["radar_icons"] = {}
-    NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads = love.graphics.getQuads("assets/images/game/night/cameraUI/radar_animatronics")
+    NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads = love.graphics.newQuadFromImage("array", "assets/images/game/night/cameraUI/radar_animatronics")
     NightState.assets["radar_icons"].image:setFilter("nearest", "nearest")
 
     NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {31, 225, 34, 255}, {20, 100, 28, 255})
