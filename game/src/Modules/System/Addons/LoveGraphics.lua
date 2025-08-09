@@ -14,7 +14,7 @@ local function processQuadGroup(mode, image, sparrow)
                 image
             )
 
-            table.insert(Quads, Quad)
+            table.insert(quads, Quad)
         end
     elseif mode == "hash" then
         for key, obj in pairs(sparrow.frames) do

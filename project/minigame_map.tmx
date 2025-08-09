@@ -104,7 +104,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#d9b225" id="6" name="collision">
+ <objectgroup color="#d9b225" id="6" name="collision" visible="0">
   <properties>
    <property name="debug_color" type="color" value="#ffdfb22b"/>
   </properties>
@@ -186,7 +186,7 @@
   <object id="172" x="512" y="1072" width="48" height="48"/>
   <object id="173" x="512" y="976" width="48" height="48"/>
  </objectgroup>
- <objectgroup color="#fe0090" id="9" name="action_zones" visible="0" locked="1">
+ <objectgroup color="#fe0090" id="9" name="action_zones" locked="1">
   <properties>
    <property name="debug_color" type="color" value="#ffff55ff"/>
   </properties>
@@ -447,7 +447,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="8" name="spawn_area" visible="0" locked="1">
+ <objectgroup id="8" name="spawn_area">
   <properties>
    <property name="debug_color" type="color" value="#ff4a1788"/>
   </properties>
@@ -458,7 +458,7 @@
   <object id="226" name="night_guard" x="401.333" y="1071.13" width="16" height="16"/>
   <object id="227" name="shadow_dug" x="405.667" y="875.792" width="16" height="16"/>
   <object id="228" name="child" x="782" y="96.4583" width="16" height="16"/>
-  <object id="235" name="bonnie_child_minigame" x="862" y="128.458" width="16" height="16"/>
+  <object id="235" name="bonnie_child_minigame" x="862" y="118.458" width="16" height="16"/>
   <object id="233" name="child" x="942" y="96.4583" width="16" height="16"/>
   <object id="229" name="child" x="782" y="128.458" width="16" height="16"/>
   <object id="232" name="child" x="942" y="128.458" width="16" height="16"/>

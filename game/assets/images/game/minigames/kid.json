@@ -1,6 +1,5 @@
-{ "frames": [
-   {
-    "filename": "0",
+{ "frames": {
+   "idle0": {
     "frame": { "x": 0, "y": 0, "w": 16, "h": 16 },
     "rotated": false,
     "trimmed": false,
@@ -8,8 +7,7 @@
     "sourceSize": { "w": 16, "h": 16 },
     "duration": 100
    },
-   {
-    "filename": "1",
+   "idle1": {
     "frame": { "x": 16, "y": 0, "w": 16, "h": 16 },
     "rotated": false,
     "trimmed": false,
@@ -17,8 +15,7 @@
     "sourceSize": { "w": 16, "h": 16 },
     "duration": 100
    },
-   {
-    "filename": "2",
+   "midder0": {
     "frame": { "x": 32, "y": 0, "w": 16, "h": 16 },
     "rotated": false,
     "trimmed": false,
@@ -26,8 +23,7 @@
     "sourceSize": { "w": 16, "h": 16 },
     "duration": 100
    },
-   {
-    "filename": "3",
+   "midder1": {
     "frame": { "x": 48, "y": 0, "w": 16, "h": 16 },
     "rotated": false,
     "trimmed": false,
@@ -35,8 +31,7 @@
     "sourceSize": { "w": 16, "h": 16 },
     "duration": 100
    },
-   {
-    "filename": "4",
+   "angry0": {
     "frame": { "x": 64, "y": 0, "w": 16, "h": 16 },
     "rotated": false,
     "trimmed": false,
@@ -44,8 +39,7 @@
     "sourceSize": { "w": 16, "h": 16 },
     "duration": 100
    },
-   {
-    "filename": "5",
+   "angry1": {
     "frame": { "x": 80, "y": 0, "w": 16, "h": 16 },
     "rotated": false,
     "trimmed": false,
@@ -53,7 +47,7 @@
     "sourceSize": { "w": 16, "h": 16 },
     "duration": 100
    }
- ],
+ },
  "meta": {
   "app": "https://www.aseprite.org/",
   "version": "1.3.14.4-x64",

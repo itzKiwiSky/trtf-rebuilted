@@ -28,6 +28,7 @@ Player.cooldown = {
     down = 0,
 }
 
+Player.teleported = false
 Player.isMoving = false
 Player.animation = {
     frame = 1,
@@ -37,7 +38,25 @@ Player.animation = {
     maxFrames = 2,
 }
 
-Player.maxCooldown = 0.13
+Player.maxCooldown = 0.22
+
+---Define the player position
+---@param x number
+---@param y number
+function Player.setPos(x, y)
+    -- destroy the old hitbox and add to the world with the new position --
+    MinigameSceneState.world:update(Player.hitbox, x, y, Player.hitbox.w, Player.hitbox.h)
+    Player.x, Player.y, len, col = MinigameSceneState.world:move(Player.hitbox, x, y, function(item, other)
+        --if item.kind == "solid" then
+        return other.kind == "solid" and "cross" or "cross"
+    end)
+
+    Player.hitbox.x = Player.x
+    Player.hitbox.y = Player.y
+    Player.teleported = true
+    --Player.hitbox.x = Player.x
+    --Player.hitbox.y = Player.y
+end
 
 function Player.draw()
     love.graphics.draw(MinigameSceneState.animatronicSprites, 
@@ -45,6 +64,9 @@ function Player.draw()
         Player.x - Player.drawOffset.x, Player.y - Player.drawOffset.y, 0, 1.2, 1.2
     )
 
+    if registers.showDebugHitbox then
+        love.graphics.print(inspect(Player.hitbox), Player.x, Player.y - 32)
+    end
 end
 
 function Player.update(elapsed)
@@ -88,8 +110,9 @@ function Player.update(elapsed)
         Player.cooldown.down = Player.maxCooldown
     end
     
-    if dx ~= 0 or dy ~= 0 then
+    if dx ~= 0 or dy ~= 0 or Player.teleported then
         Player.isMoving = true
+        Player.teleported = false
         Player.x, Player.y, len, col = MinigameSceneState.world:move(Player.hitbox, Player.hitbox.x + dx, Player.hitbox.y + dy, function(item, other)
             --if item.kind == "solid" then
             return other.kind == "solid" and "touch" or "cross"

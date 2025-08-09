@@ -1,5 +1,8 @@
 MinigameSceneState = {}
 
+MinigameSceneState.currentMinigame = "debug"
+MinigameSceneState.script = nil
+
 local function getTableByName(tbl, val)
     for _, t in ipairs(tbl) do
         if t.name == val then
@@ -20,6 +23,14 @@ end
 function MinigameSceneState:enter()
     self.player = require 'src.Modules.Game.Minigame.Player'
     self.world = bump.newWorld(16)
+
+    local minigames = {
+        ["bonnie"] = require 'src.Modules.Game.Minigame.Events.MinigameBonnie'
+    }
+
+    self.script = minigames[self.currentMinigame] or {}
+    self.displayText = ""
+    self.fnt_text = fontcache.getFont("vcr", 34)
     
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
@@ -32,6 +43,14 @@ function MinigameSceneState:enter()
                 Slab.SameLine()
                 if Slab.Input("playerSpeedCooldownInput", { Text = tostring(self.player.maxCooldown), ReturnOnText = false, NumbersOnly = true, Precision = 0.01 }) then
                     self.player.maxCooldown = Slab.GetInputNumber()
+                end
+                Slab.Separator()
+                for name, script in spairs(minigames) do
+                    if Slab.Button(name) then
+                        self.currentMinigame = name
+                        self.script = minigames[self.currentMinigame]
+                        self.script.init()
+                    end
                 end
             Slab.EndWindow()
         end
@@ -65,7 +84,6 @@ function MinigameSceneState:enter()
     self.interferenceFX:send("speed", 100.0)
     self.interferenceIntensity = 0.012
     self.interferenceSpeed = 100.0
-    self.pixelationInterference = 1.5
     self.interferenceData = {
         acc = 0,
         timer = 0.05,
@@ -78,8 +96,6 @@ function MinigameSceneState:enter()
     .chain(moonshine.effects.pixelate)
     .chain(moonshine.effects.chromasep)
 
-    self.minigameCRT.pixelate.feedback = 0.1
-    self.minigameCRT.pixelate.size = {1.5, 1.5}
     self.minigameCRT.chromasep.radius = 1
     
     self.mainMap = love.graphics.newImage("assets/images/game/minigames/map.png")
@@ -99,6 +115,35 @@ function MinigameSceneState:enter()
     local spawnAreaMap = getTableByName(self.mapdata.layers, "spawn_area")
     local actionZones = getTableByName(self.mapdata.layers, "action_zones")
     local collisions = getTableByName(self.mapdata.layers, "collision")
+
+    self.spawnAreas = {}
+
+    local count = 1
+    for _, obj in ipairs(spawnAreaMap.objects) do
+        if self.spawnAreas[obj.name] == nil then
+            self.spawnAreas[obj.name] = {
+                x = obj.x,
+                y = obj.y,
+                w = obj.width,
+                h = obj.height,
+                centerX = obj.x + obj.width / 2,
+                centerY = obj.y + obj.height / 2,
+            }
+            count = 0
+        else
+            count = count + 1
+            self.spawnAreas[obj.name .. count] = {
+                x = obj.x,
+                y = obj.y,
+                w = obj.width,
+                h = obj.height,
+                centerX = obj.x + obj.width / 2,
+                centerY = obj.y + obj.height / 2,
+            }
+        end
+    end
+
+    print(inspect(self.spawnAreas))
 
     for i = 1, #areasMap.objects, 1 do
         self.map.areas[areasMap.objects[i].properties["zone_name"]] = {
@@ -175,6 +220,10 @@ function MinigameSceneState:enter()
         height = 800,
     }
 
+    -- only execute scripted minigames if is a valid minigame script --
+    if self.script.init then
+        self.script.init()
+    end
 end
 
 function MinigameSceneState:draw()
@@ -201,6 +250,10 @@ function MinigameSceneState:draw()
                 love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setStencilTest()
             
+            if self.script.draw then
+                self.script.draw()
+            end
+
             self.player.draw()
             -- debug --
             if FEATURE_FLAGS.developerMode and registers.showDebugHitbox then
@@ -221,10 +274,20 @@ function MinigameSceneState:draw()
                     drawBox(walls, cr, cg, cb)
                 end
 
+                for _, spawn in pairs(self.spawnAreas) do
+                    drawBox(spawn, 0.75, 0, 1)
+                    love.graphics.print(_, spawn.x, spawn.y - 5, 0, 0.5, 0.5)
+                end
+
                 drawBox(self.player.hitbox, 0.75, 1, 0)
             end
         self.minigameCam:detach()
 
+        local cycleDuration = 0.3
+        local activeThreshold = 0.5
+        if (love.timer.getTime() % cycleDuration) / cycleDuration > activeThreshold == 0 then
+            love.graphics.print(self.displayText, self.fnt_text, 64, shove.getViewportHeight() - 128)
+        end
     love.graphics.setCanvas()
     love.graphics.pop()
 
@@ -243,9 +306,6 @@ function MinigameSceneState:draw()
         love.graphics.draw(self.interfereceBuffer)
         love.graphics.draw(self.decoCRT, 0, 0, 0, shove.getViewportWidth() / self.decoCRT:getWidth(), shove.getViewportHeight() / self.decoCRT:getHeight())
     end)
-
-    --love.graphics.print(inspect(self.player.animation), 45, 45)
-    --love.graphics.print(inspect(self.map.actionAreas), 30, 30)
 end
 
 function MinigameSceneState:update(elapsed)
@@ -257,13 +317,12 @@ function MinigameSceneState:update(elapsed)
     self.minigameCRT.pixelate.size = { self.pixelationInterference, self.pixelationInterference }
 
     self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer)
-    self.pixelationInterference = math.lerp(self.pixelationInterference, 1.5, self.interferenceData.timer)
 
     self.interferenceData.interferenceTimerAcc = self.interferenceData.interferenceTimerAcc + elapsed
     if self.interferenceData.interferenceTimerAcc >= self.interferenceData.interferenceTimerMax then
         self.interferenceData.interferenceTimerAcc = 0
         self.interferenceData.interferenceTimerMax = math.random(4, 7)
-        self.interferenceIntensity = 5
+        self.interferenceIntensity = math.random(1, 3)
     end
 
     -- set room size --
@@ -311,10 +370,31 @@ function MinigameSceneState:update(elapsed)
             end
         end
     end
+
+    if self.script.update then
+        self.script.update(elapsed)
+    end
 end
 
-function MinigameSceneState:keypressed()
-    
+function MinigameSceneState:leave()
+    local function releaseRecursive(tbl)
+        for key, value in pairs(tbl) do
+            if type(value) == "table" then
+                releaseRecursive(value)
+            else
+                if type(value) == "userdata" then
+                    value:release()
+                end
+            end
+        end
+    end
+    for key, value in pairs(self) do
+        if type(value) == "userdata" then
+            value:release()
+        elseif type(value) == "table" then
+            releaseRecursive(value)
+        end
+    end
 end
 
 return MinigameSceneState
