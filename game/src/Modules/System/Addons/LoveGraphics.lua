@@ -1,58 +1,83 @@
 local lgSetColor = love.graphics.setColor
 
-function love.graphics.getQuads(filename)
-    local image = love.graphics.newImage(filename .. ".png")
-    local jsonData = love.filesystem.read(filename .. ".json")
-    local sparrow = json.decode(jsonData)
-
-    local Quads = {}
-    for i = 1, #sparrow.frames, 1 do
-        local Quad = love.graphics.newQuad(
-            sparrow.frames[i].frame.x,
-            sparrow.frames[i].frame.y,
-            sparrow.frames[i].frame.w,
-            sparrow.frames[i].frame.h,
-            image
-        )
-
-        table.insert(Quads, Quad)
-    end
-    return image, Quads
-end
-
-function love.graphics.getQuadsFromHash(filename)
-    local image = love.graphics.newImage(filename .. ".png")
-    local jsonData = love.filesystem.read(filename .. ".json")
-    local sparrow = json.decode(jsonData)
-
+local function processQuadGroup(mode, image, quads)
+    mode = mode or "array"
     local quads = {}
-    for key, obj in pairs(sparrow.frames) do
-        if obj.trimmed then
-            quads[key:gsub("%.[^.]+$", "")] = {
-                quad = love.graphics.newQuad(
+
+    if mode == "array" then
+        for i = 1, #sparrow.frames, 1 do
+            local Quad = love.graphics.newQuad(
+                sparrow.frames[i].frame.x,
+                sparrow.frames[i].frame.y,
+                sparrow.frames[i].frame.w,
+                sparrow.frames[i].frame.h,
+                image
+            )
+
+            table.insert(Quads, Quad)
+        end
+    elseif mode == "hash" then
+        for key, obj in pairs(sparrow.frames) do
+            if obj.trimmed then
+                quads[key:gsub("%.[^.]+$", "")] = {
+                    quad = love.graphics.newQuad(
+                        obj.frame.x,
+                        obj.frame.y,
+                        obj.frame.w,
+                        obj.frame.h,
+                        image
+                    ),
+                    sw = obj.sourceSize.w,
+                    sh = obj.sourceSize.h,
+                    w = obj.spriteSourceSize.w,
+                    h = obj.spriteSourceSize.h,
+                }
+            else
+                quads[key:gsub("%.[^.]+$", "")] = love.graphics.newQuad(
                     obj.frame.x,
                     obj.frame.y,
                     obj.frame.w,
                     obj.frame.h,
                     image
-                ),
-                sw = obj.sourceSize.w,
-                sh = obj.sourceSize.h,
-                w = obj.spriteSourceSize.w,
-                h = obj.spriteSourceSize.h,
-            }
-        else
-            quads[key:gsub("%.[^.]+$", "")] = love.graphics.newQuad(
-                obj.frame.x,
-                obj.frame.y,
-                obj.frame.w,
-                obj.frame.h,
-                image
-            )
+                )
+            end
         end
+    else
+        error(("There is no mode named '%s'"):format(mode))
     end
 
+    return quads
+end
+
+function love.graphics.getQuadImage(filename)
+    local image = love.graphics.newImage(filename .. ".png")
+    local jsonData = love.filesystem.read(filename .. ".json")
+    local sparrow = json.decode(jsonData)
+
+    local quads = processQuadGroup("hash", image, sparrow)
     return image, quads
+end
+
+function love.graphics.getQuadImageFromHash(filename)
+    local image = love.graphics.newImage(filename .. ".png")
+    local jsonData = love.filesystem.read(filename .. ".json")
+    local sparrow = json.decode(jsonData)
+
+    local quads = processQuadGroup("hash", image, sparrow)
+    return image, quads
+end
+
+---Get quads from filename
+---@param image love.Drawable
+---@param filename string
+---@param mode string
+function love.graphics.getQuads(image, filename, mode)
+    mode = mode or "array"
+    local jsonData = love.filesystem.read(filename .. ".json")
+    local sparrow = json.decode(jsonData)
+
+    local img, quads = processQuadGroup(mode, image, sparrow)   -- discards the image data --
+    return quads
 end
 
 function love.graphics.getQuadsFromAtlas(atlas, splitX, splitY)

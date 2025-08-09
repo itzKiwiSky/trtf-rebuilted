@@ -20,7 +20,7 @@ end
 function MinigameSceneState:enter()
     self.player = require 'src.Modules.Game.Minigame.Player'
     self.world = bump.newWorld(16)
-
+    
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
             Slab.BeginWindow("mainNightDev", { Title = "Minigame development" })
@@ -36,6 +36,26 @@ function MinigameSceneState:enter()
             Slab.EndWindow()
         end
     end
+
+    -- animation and objects --
+    self.gameSprites = love.graphics.newImage("assets/images/game/minigames/game_spritesheet.png")
+    --self.aniamtronicSprites = love.graphics.newImage("assets/images/game/minigames/animatronics.png")
+    self.animSets = {
+        ["animatronics"] = {},
+    }
+
+
+
+    self.animations = {
+        ["animatronics"] = {
+            ["freddy"] = animate.newAnimation(self.grids["animatronics"]("1-8", 1), 0.5),
+            ["chica"] = animate.newAnimation(self.grids["animatronics"]("2-8", 1), 0.5),
+            ["bonnie"] = animate.newAnimation(self.grids["animatronics"]("3-8", 1), 0.5),
+            ["foxy"] = animate.newAnimation(self.grids["animatronics"]("4-8", 1), 0.5),
+            ["kitty"] = animate.newAnimation(self.grids["animatronics"]("5-8", 1), 0.5),
+            ["lockjaw"] = animate.newAnimation(self.grids["animatronics"]("6-8", 1), 0.5),
+        }
+    }
 
     self.interferenceFX = love.graphics.newShader("assets/shaders/Interference.glsl")
     self.interferenceFX:send("intensity", 0.012)

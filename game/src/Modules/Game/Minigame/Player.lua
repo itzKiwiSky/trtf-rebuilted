@@ -1,5 +1,6 @@
 local Player = {}
 
+Player.sprite = "freddy"
 Player.name = "player"
 Player.x = 0
 Player.y = 0
@@ -40,6 +41,8 @@ function Player.draw()
     love.graphics.rectangle("line", Player.x, Player.y, Player.w, Player.h)
     love.graphics.setColor(1, 1, 1, 1)
 
+    MinigameSceneState.animations["animatronics"][Player.sprite]:draw(MinigameSceneState.gameSprites, Player.x, Player.y)
+
     --drawBox(Player.hitbox, 127, 100, 0)
 end
 
@@ -51,6 +54,8 @@ function Player.update(elapsed)
 
         --Player.cooldown[k] = math.clamp(Player.cooldown[k], 0, 0.05)
     end
+
+    MinigameSceneState.animations["animatronics"][Player.sprite]:update(elapsed)
 
     local dx, dy = 0, 0
     if Controller:down("player_move_left") and Player.cooldown.left <= 0 then
