@@ -201,7 +201,7 @@ function MinigameSceneState:draw()
                 love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setStencilTest()
             
-
+            self.player.draw()
             -- debug --
             if FEATURE_FLAGS.developerMode and registers.showDebugHitbox then
                 for k, areas in pairs(self.map.areas) do
@@ -220,9 +220,9 @@ function MinigameSceneState:draw()
                     local cr, cg, cb = lume.color(walls.color)
                     drawBox(walls, cr, cg, cb)
                 end
+
+                drawBox(self.player.hitbox, 0.75, 1, 0)
             end
-            self.player.draw()
-            --drawBox(self.player.hitbox, 0.75, 1, 0)
         self.minigameCam:detach()
 
     love.graphics.setCanvas()
