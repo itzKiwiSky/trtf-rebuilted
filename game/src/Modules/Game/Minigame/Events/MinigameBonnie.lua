@@ -23,7 +23,7 @@ function Minigame.init()
         local c = Minigame.Child:new(
             Minigame.assets.child.img, Minigame.assets.child.quads, 
             MinigameSceneState.spawnAreas[i > 1 and "child" .. i - 1 or "child"].centerX,
-            MinigameSceneState.spawnAreas[i > 1 and "child" .. i - 1 or "child"].centerY, i >= 4
+            MinigameSceneState.spawnAreas[i > 1 and "child" .. i - 1 or "child"].centerY, (i % 3 == 0 or i >= 5)
         )
         table.insert(Minigame.childs, c)
     end

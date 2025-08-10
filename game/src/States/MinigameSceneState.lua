@@ -287,11 +287,11 @@ function MinigameSceneState:draw()
             end
         self.minigameCam:detach()
 
-        local cycleDuration = 0.3
-        local activeThreshold = 0.5
-        if (love.timer.getTime() % cycleDuration) / cycleDuration > activeThreshold == 0 then
-            love.graphics.print(self.displayText, self.fnt_text, 64, shove.getViewportHeight() - 128)
-        end
+        --local cycleDuration = 0.3
+        --local activeThreshold = 0.5
+        --if (love.timer.getTime() % cycleDuration) / cycleDuration > activeThreshold == 0 then
+        love.graphics.print(self.displayText, self.fnt_text, 64, shove.getViewportHeight() - 64)
+        --end
     love.graphics.setCanvas()
     love.graphics.pop()
 
