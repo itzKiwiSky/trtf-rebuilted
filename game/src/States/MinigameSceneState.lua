@@ -23,14 +23,111 @@ end
 function MinigameSceneState:enter()
     self.player = require 'src.Modules.Game.Minigame.Player'
     self.world = bump.newWorld(16)
+    
+    AudioSources["sfx_minigame_loop_bg"]:play()
+    AudioSources["sfx_minigame_loop_bg"]:setLooping(true)
+    AudioSources["sfx_minigame_loop_bg"]:setVolume(0.4)
+
+    self.mapdata = require 'assets.images.game.minigames.minigame_map'
+
+    -- map parsing --
+    self.map = {
+        areas = {},
+        collisions = {},
+        spawnAreas = {},
+        actionAreas = {},
+    }
+
+    local areasMap = getTableByName(self.mapdata.layers, "areas")
+    local spawnAreaMap = getTableByName(self.mapdata.layers, "spawn_area")
+    local actionZones = getTableByName(self.mapdata.layers, "action_zones")
+    local collisions = getTableByName(self.mapdata.layers, "collision")
+
+    for i = 1, #areasMap.objects, 1 do
+        self.map.areas[areasMap.objects[i].properties["zone_name"]] = {
+            color = areasMap.properties["debug_color"],
+            x = areasMap.objects[i].x,
+            y = areasMap.objects[i].y,
+            w = areasMap.objects[i].width,
+            h = areasMap.objects[i].height,
+            properties = areasMap.objects[i].properties,
+        }
+    end
+
+    for i = 1, #actionZones.objects, 1 do
+        local actionArea = {
+            color = actionZones.properties["debug_color"],
+            x = actionZones.objects[i].x,
+            y = actionZones.objects[i].y,
+            w = actionZones.objects[i].width,
+            h = actionZones.objects[i].height,
+            direction = actionZones.objects[i].properties["direction"],
+            locked = actionZones.objects[i].properties["locked"],
+            increment = actionZones.objects[i].properties["increment"],
+            meta = {
+                enter = false,
+            },
+            kind = "portal"
+        }
+
+        self.world:add(actionArea, actionArea.x, actionArea.y, actionArea.w, actionArea.h)
+        table.insert(self.map.actionAreas, actionArea)
+    end
+
+    for _, col in ipairs(collisions.objects) do
+        local wall = {
+            name = "wall_" .. _,
+            kind = "solid",
+            color = collisions.properties["debug_color"],
+            x = col.x,
+            y = col.y,
+            w = col.width,
+            h = col.height,
+        }
+        self.world:add(wall, wall.x, wall.y, wall.w, wall.h)
+        table.insert(self.map.collisions, wall)
+    end
+
+    for i = 1, #spawnAreaMap.objects, 1 do
+        self.map.spawnAreas[spawnAreaMap.objects[i].name] = spawnAreaMap.objects[i]
+    end
+
+    self.spawnAreas = {}
+
+    local count = 0
+    for _, obj in ipairs(spawnAreaMap.objects) do
+        if self.spawnAreas[obj.name] == nil then
+            self.spawnAreas[obj.name] = {
+                x = obj.x,
+                y = obj.y,
+                w = obj.width,
+                h = obj.height,
+                centerX = obj.x + obj.width / 2,
+                centerY = obj.y + obj.height / 2,
+            }
+            count = 0
+        else
+            count = count + 1
+            self.spawnAreas[obj.name .. count] = {
+                x = obj.x,
+                y = obj.y,
+                w = obj.width,
+                h = obj.height,
+                centerX = obj.x + obj.width / 2,
+                centerY = obj.y + obj.height / 2,
+            }
+        end
+    end
+
+    print(inspect(self.spawnAreas))
 
     local minigames = {
         ["bonnie"] = require 'src.Modules.Game.Minigame.Events.MinigameBonnie'
     }
 
-    self.script = minigames[self.currentMinigame] or {}
     self.displayText = ""
     self.fnt_text = fontcache.getFont("vcr", 34)
+    self.script = minigames[self.currentMinigame] or {}
     
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
@@ -93,7 +190,6 @@ function MinigameSceneState:enter()
 
     self.minigameCRT = moonshine(moonshine.effects.crt)
     .chain(moonshine.effects.vignette)
-    .chain(moonshine.effects.pixelate)
     .chain(moonshine.effects.chromasep)
 
     self.minigameCRT.chromasep.radius = 1
@@ -101,98 +197,6 @@ function MinigameSceneState:enter()
     self.mainMap = love.graphics.newImage("assets/images/game/minigames/map.png")
     self.decoCRT = love.graphics.newImage("assets/images/game/effects/perfect_crt.png")
     self.vignetteMask = love.graphics.newImage("assets/images/game/effects/vignette.png")
-    self.mapdata = require 'assets.images.game.minigames.minigame_map'
-
-    -- map parsing --
-    self.map = {
-        areas = {},
-        collisions = {},
-        spawnAreas = {},
-        actionAreas = {},
-    }
-
-    local areasMap = getTableByName(self.mapdata.layers, "areas")
-    local spawnAreaMap = getTableByName(self.mapdata.layers, "spawn_area")
-    local actionZones = getTableByName(self.mapdata.layers, "action_zones")
-    local collisions = getTableByName(self.mapdata.layers, "collision")
-
-    self.spawnAreas = {}
-
-    local count = 1
-    for _, obj in ipairs(spawnAreaMap.objects) do
-        if self.spawnAreas[obj.name] == nil then
-            self.spawnAreas[obj.name] = {
-                x = obj.x,
-                y = obj.y,
-                w = obj.width,
-                h = obj.height,
-                centerX = obj.x + obj.width / 2,
-                centerY = obj.y + obj.height / 2,
-            }
-            count = 0
-        else
-            count = count + 1
-            self.spawnAreas[obj.name .. count] = {
-                x = obj.x,
-                y = obj.y,
-                w = obj.width,
-                h = obj.height,
-                centerX = obj.x + obj.width / 2,
-                centerY = obj.y + obj.height / 2,
-            }
-        end
-    end
-
-    print(inspect(self.spawnAreas))
-
-    for i = 1, #areasMap.objects, 1 do
-        self.map.areas[areasMap.objects[i].properties["zone_name"]] = {
-            color = areasMap.properties["debug_color"],
-            x = areasMap.objects[i].x,
-            y = areasMap.objects[i].y,
-            w = areasMap.objects[i].width,
-            h = areasMap.objects[i].height,
-            properties = areasMap.objects[i].properties,
-        }
-    end
-
-    for i = 1, #actionZones.objects, 1 do
-        local actionArea = {
-            color = actionZones.properties["debug_color"],
-            x = actionZones.objects[i].x,
-            y = actionZones.objects[i].y,
-            w = actionZones.objects[i].width,
-            h = actionZones.objects[i].height,
-            direction = actionZones.objects[i].properties["direction"],
-            locked = actionZones.objects[i].properties["locked"],
-            increment = actionZones.objects[i].properties["increment"],
-            meta = {
-                enter = false,
-            },
-            kind = "portal"
-        }
-
-        self.world:add(actionArea, actionArea.x, actionArea.y, actionArea.w, actionArea.h)
-        table.insert(self.map.actionAreas, actionArea)
-    end
-
-    for _, col in ipairs(collisions.objects) do
-        local wall = {
-            name = "wall_" .. _,
-            kind = "solid",
-            color = collisions.properties["debug_color"],
-            x = col.x,
-            y = col.y,
-            w = col.width,
-            h = col.height,
-        }
-        self.world:add(wall, wall.x, wall.y, wall.w, wall.h)
-        table.insert(self.map.collisions, wall)
-    end
-
-    for i = 1, #spawnAreaMap.objects, 1 do
-        self.map.spawnAreas[spawnAreaMap.objects[i].name] = spawnAreaMap.objects[i]
-    end
 
     self.player.animation.maxFrames = 2
     self.player.x = self.map.spawnAreas["freddy"].x + 8
@@ -314,7 +318,6 @@ function MinigameSceneState:update(elapsed)
     self.interferenceFX:send("time", love.timer.getTime())
     self.interferenceFX:send("intensity", self.interferenceIntensity)
     self.interferenceFX:send("speed", self.interferenceSpeed)
-    self.minigameCRT.pixelate.size = { self.pixelationInterference, self.pixelationInterference }
 
     self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer)
 

@@ -1,29 +1,4 @@
-local Child = {}
-
-Child.state = "idle"
-Child.assets = {img = nil, quads = {}}
-Child.hitbox = {
-    x = 0,
-    y = 0,
-    w = 16,
-    h = 16,
-}
-Child.drawOffset = {
-    x = 0,
-    y = 0,
-}
-
-Child.happiness = 100
-Child.hapDecreaseTimer = 0
-Child.hapDecreaseTimerMax = 0.75
-
-Child.animation = {
-    frame = 1,
-    acc = 0,
-    speed = 1 / 20,
-    loop = true,
-    maxFrames = 2,
-}
+local Child = class:extend("Child")
 
 local function drawBox(box, r, g, b)
     love.graphics.setColor(r, g, b, 0.25)
@@ -33,37 +8,71 @@ local function drawBox(box, r, g, b)
     love.graphics.setColor(1, 1, 1, 1)
 end
 
-function Child.draw()
-    if type(Child.assets.img) == nil or #Child.assets.quads <= 0 then return end
-    love.graphics.draw(Child.assets.img, Child.assets.quads[Child.state][Child.frame], Child.hitbox.x - Child.drawOffset.x, Child.hitbox.y - Child.drawOffset.y, 0, 1, 1)
+function Child:__construct(img, quads, x, y, flipped)
+    self.state = "idle"
+    self.flipped = flipped or false
+    self.assets = { img = img, quads = quads or {} }
+    self.hitbox = {
+        x = x,
+        y = y,
+        w = 16,
+        h = 16,
+    }
+    self.drawOffset = {
+        x = 0,
+        y = 0,
+    }
+
+    self.happiness = 100
+    self.hapDecreaseTimer = 0
+    self.hapDecreaseTimerMax = 0.75
+
+    self.animation = {
+        frame = 0,
+        acc = 0,
+        speed = 1 / 5,
+        loop = true,
+        maxFrames = 1,
+    }
+
+    MinigameSceneState.world:add(self.hitbox, self.hitbox.x, self.hitbox.y, self.hitbox.w, self.hitbox.h)
+end
+
+function Child:draw()
+    --if type(self.assets.img) == nil or #self.assets.quads <= 0 then return end
+    --print(self.state .. self.animation.frame)
+    love.graphics.draw(self.assets.img, self.assets.quads[self.state .. self.animation.frame], 
+        self.hitbox.x - self.drawOffset.x, self.hitbox.y - self.drawOffset.y, 0, self.flipped and -1 or 1, 1,
+        8, 8
+    )
 
     if registers.showDebugHitbox then
-        drawBox(Child.hitbox, 0.4, 0.5, 0.1)
+        drawBox(self.hitbox, 0.4, 0.5, 0.1)
     end
 end
 
-function Child.update(elapsed)
-    Child.animation.acc = Child.animation.acc + elapsed
-    if Child.animation.acc >= Child.animation.speed then
-        Child.animation.frame = Child.animation.frame + 1
-        Child.animation.acc = 0
-        if Child.animation.frame > Child.animation.maxFrames then
-            Child.animation.frame = 1
+function Child:update(elapsed)
+    self.animation.acc = self.animation.acc + elapsed
+    if self.animation.acc >= self.animation.speed then
+        self.animation.frame = self.animation.frame + 1
+        self.animation.acc = 0
+        if self.animation.frame > self.animation.maxFrames then
+            self.animation.frame = 0
         end
     end
 
-    Child.hapDecreaseTimer = Child.hapDecreaseTimer + elapsed
-    if Child.hapDecreaseTimer >= Child.hapDecreaseTimerMax then
-        Child.hapDecreaseTimer = 0
-        Child.happiness = Child.happiness - math.random(2, 4)
+    self.hapDecreaseTimer = self.hapDecreaseTimer + elapsed
+    if self.hapDecreaseTimer >= self.hapDecreaseTimerMax then
+        self.hapDecreaseTimer = 0
+        self.happiness = self.happiness - math.random(2, 4)
     end
     
-    if Child.happiness >= 75 then
-        Child.state = "idle"
-    elseif Child.happiness >= 50 then
-        Child.state = "midder"
-    elseif Child.happiness >= 25 then
-        Child.state = "angry"
+    if self.happiness >= 75 then
+        self.state = "idle"
+    elseif self.happiness >= 50 then
+        self.state = "midder"
+    elseif self.happiness >= 25 then
+        self.state = "angry"
     end
 end
 
