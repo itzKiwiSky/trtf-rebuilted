@@ -196,7 +196,9 @@ function MinigameSceneState:enter()
     -- animation and objects --
     self.animSets = {}
 
-    self.gameSprites = love.graphics.newImage("assets/images/game/minigames/game_spritesheet.png")
+    --self.gameSprites = love.graphics.newImage("assets/images/game/minigames/game_spritesheet.png")
+    self.barrierSprites = love.graphics.newImage("assets/images/game/minigames/barriers.png")
+    local barrierQuads = love.graphics.getQuads(self.barrierSprites, "assets/images/game/minigames/barriers.json", "hash")
     self.animatronicSprites = love.graphics.newImage("assets/images/game/minigames/animatronics.png")
     self.animationsAnimatronics = love.graphics.getQuads(self.animatronicSprites, "assets/images/game/minigames/animatronics.json", "hash")
 
@@ -220,6 +222,11 @@ function MinigameSceneState:enter()
 
         self.animSets[animatronic] = anim
     end
+
+    self.animSets["barrier"] = {
+        ["small"] = barrierQuads["small"],
+        ["big"] = barrierQuads["big"]
+    }
 
     self.interferenceFX = love.graphics.newShader("assets/shaders/Interference.glsl")
     self.interferenceFX:send("intensity", 0.012)
@@ -315,11 +322,6 @@ function MinigameSceneState:draw()
                         local cr, cg, cb = lume.color(areas.color)
                         drawBox(area, cr, cg, cb)
                     end
-                end
-
-                for _, areas in ipairs(self.map.actionAreas) do
-                    local cr, cg, cb = lume.color(areas.color)
-                    drawBox(areas, cr, cg, cb)
                 end
                 
                 for _, walls in ipairs(self.map.collisions) do

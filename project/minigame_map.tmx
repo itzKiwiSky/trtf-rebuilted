@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="14" nextobjectid="252">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="14" nextobjectid="253">
  <editorsettings>
   <export target="../game/assets/images/game/minigames/minigame_map.lua" format="lua"/>
  </editorsettings>
@@ -121,7 +121,6 @@
   <object id="60" x="611.25" y="278.375" width="37.625" height="45.5"/>
   <object id="61" x="479.75" y="267.625" width="91.625" height="11.5"/>
   <object id="62" x="625.25" y="217.25" width="21" height="33.375"/>
-  <object id="63" x="496.25" y="660.375" width="45.875" height="52.875"/>
   <object id="64" x="480" y="981.273" width="26.9091" height="30.5455"/>
   <object id="65" x="374.182" y="994.364" width="66.7273" height="23.2727"/>
   <object id="66" x="308" y="981.818" width="29.4545" height="19.6364"/>
@@ -185,8 +184,9 @@
   <object id="171" x="304" y="1120" width="208" height="16"/>
   <object id="172" x="512" y="1072" width="48" height="48"/>
   <object id="173" x="512" y="976" width="48" height="48"/>
+  <object id="252" x="498.292" y="661.875" width="44.75" height="60.25"/>
  </objectgroup>
- <objectgroup color="#fe0090" id="9" name="action_zones">
+ <objectgroup color="#fe0090" id="9" name="action_zones" visible="0" locked="1">
   <properties>
    <property name="debug_color" type="color" value="#ffff55ff"/>
   </properties>
@@ -451,9 +451,9 @@
   <properties>
    <property name="debug_color" type="color" value="#ff4a1788"/>
   </properties>
-  <object id="182" name="freddy" x="304" y="32" width="16" height="16"/>
-  <object id="183" name="bonnie" x="272" y="20" width="16" height="16"/>
-  <object id="184" name="chica" x="336" y="20" width="16" height="16"/>
+  <object id="182" name="freddy" x="307" y="34" width="16" height="16"/>
+  <object id="183" name="bonnie" x="275" y="22" width="16" height="16"/>
+  <object id="184" name="chica" x="339" y="22" width="16" height="16"/>
   <object id="185" name="foxy" x="32" y="282" width="16" height="16"/>
   <object id="226" name="night_guard" x="400.083" y="1072.13" width="16" height="16"/>
   <object id="227" name="shadow_dug" x="416" y="880" width="16" height="16"/>

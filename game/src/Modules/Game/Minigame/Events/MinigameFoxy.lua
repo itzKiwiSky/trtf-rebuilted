@@ -14,16 +14,37 @@ function Minigame.init()
 
     for _, c in ipairs(charsPos) do
         local char = Minigame.statues:new(MinigameSceneState.animatronicSprites, MinigameSceneState.animSets[c]["idle"],
-            MinigameSceneState.spawnAreas[c].centerX, MinigameSceneState.spawnAreas[c].centerY
+            MinigameSceneState.spawnAreas[c].centerX, MinigameSceneState.spawnAreas[c].centerY, false, true
         )
+
+        char.drawOffset.x = -14
+        char.drawOffset.y = -12
+        char.hitbox.w = 28
+        char.hitbox.h = 24
+        char.hitbox.x = MinigameSceneState.spawnAreas[c].centerX - 14
+        char.hitbox.y = MinigameSceneState.spawnAreas[c].centerY - 16
+        MinigameSceneState.world:add(char.hitbox, char.hitbox.x, char.hitbox.y, char.hitbox.w, char.hitbox.h)
         table.insert(Minigame.chars, char)
     end
 
     MinigameSceneState.player.sprite = "foxy"
     MinigameSceneState.player.lastDirection = "right"
     MinigameSceneState.player.setPos(playerPos.x, playerPos.y)
-    -- load this custom state --
-    --Minigame.assets.child.img, Minigame.assets.child.quads = love.graphics.newQuadFromImage("hash", "assets/images/game/minigames/kid")
+
+    -- add the barrier statue --
+    local barrier = Minigame.statues:new(MinigameSceneState.barrierSprites, MinigameSceneState.animSets["barrier"]["big"], 
+        MinigameSceneState.spawnAreas["barrier_big"].centerX, MinigameSceneState.spawnAreas["barrier_big"].centerY, false, false, 1
+    )
+    barrier.drawOffset.x = -8
+    barrier.drawOffset.y = 8
+
+    barrier.hitbox.w = MinigameSceneState.spawnAreas["barrier_big"].w
+    barrier.hitbox.h = MinigameSceneState.spawnAreas["barrier_big"].h
+    print(inspect(barrier.hitbox))
+    MinigameSceneState.world:add(barrier.hitbox, barrier.hitbox.x - 8, barrier.hitbox.y - 24, barrier.hitbox.w, barrier.hitbox.h)
+    table.insert(Minigame.chars, barrier)
+
+    --print(inspect(Minigame.chars))
 end
 
 function Minigame.draw()
