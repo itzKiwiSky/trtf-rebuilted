@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="14" nextobjectid="251">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="14" nextobjectid="252">
  <editorsettings>
   <export target="../game/assets/images/game/minigames/minigame_map.lua" format="lua"/>
  </editorsettings>
@@ -104,7 +104,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#d9b225" id="6" name="collision" visible="0">
+ <objectgroup color="#d9b225" id="6" name="collision">
   <properties>
    <property name="debug_color" type="color" value="#ffdfb22b"/>
   </properties>
@@ -186,7 +186,7 @@
   <object id="172" x="512" y="1072" width="48" height="48"/>
   <object id="173" x="512" y="976" width="48" height="48"/>
  </objectgroup>
- <objectgroup color="#fe0090" id="9" name="action_zones" locked="1">
+ <objectgroup color="#fe0090" id="9" name="action_zones">
   <properties>
    <property name="debug_color" type="color" value="#ffff55ff"/>
   </properties>
@@ -451,17 +451,22 @@
   <properties>
    <property name="debug_color" type="color" value="#ff4a1788"/>
   </properties>
-  <object id="182" name="freddy" x="301.75" y="37.25" width="16" height="16"/>
-  <object id="183" name="bonnie" x="271.625" y="20" width="16" height="16"/>
-  <object id="184" name="chica" x="333.875" y="20.25" width="16" height="16"/>
-  <object id="185" name="foxy" x="32" y="289.458" width="16" height="16"/>
-  <object id="226" name="night_guard" x="401.333" y="1071.13" width="16" height="16"/>
-  <object id="227" name="shadow_dug" x="405.667" y="875.792" width="16" height="16"/>
+  <object id="182" name="freddy" x="304" y="32" width="16" height="16"/>
+  <object id="183" name="bonnie" x="272" y="20" width="16" height="16"/>
+  <object id="184" name="chica" x="336" y="20" width="16" height="16"/>
+  <object id="185" name="foxy" x="32" y="282" width="16" height="16"/>
+  <object id="226" name="night_guard" x="400.083" y="1072.13" width="16" height="16"/>
+  <object id="227" name="shadow_dug" x="416" y="880" width="16" height="16"/>
   <object id="228" name="child" x="784" y="96" width="16" height="16"/>
   <object id="235" name="bonnie_child_minigame" x="862" y="118.458" width="16" height="16"/>
   <object id="246" name="child" x="784" y="128" width="16" height="16"/>
   <object id="247" name="child" x="944" y="96" width="16" height="16"/>
   <object id="248" name="child" x="784" y="160" width="16" height="16"/>
+  <object id="251" name="barrier_big" x="640" y="416" width="16" height="48">
+   <properties>
+    <property name="collision" type="bool" value="true"/>
+   </properties>
+  </object>
   <object id="249" name="child" x="944" y="160" width="16" height="16"/>
   <object id="250" name="child" x="944" y="128" width="16" height="16"/>
  </objectgroup>

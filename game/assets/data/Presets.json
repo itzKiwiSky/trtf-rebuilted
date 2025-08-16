@@ -34,5 +34,14 @@
         "sugar" : 0,
         "kitty" : 0,
         "puppet" : 15
+    },
+    "hide_and_seek" : {
+        "freddy" : 0,
+        "bonnie" : 15,
+        "chica" : 10,
+        "foxy" : 0,
+        "sugar" : 0,
+        "kitty" : 10,
+        "puppet" : 20
     }
 }

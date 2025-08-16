@@ -161,7 +161,8 @@ function MinigameSceneState:enter()
     end
 
     local minigames = {
-        ["bonnie"] = require 'src.Modules.Game.Minigame.Events.MinigameBonnie'
+        ["bonnie"] = require 'src.Modules.Game.Minigame.Events.MinigameBonnie',
+        ["foxy"] = require 'src.Modules.Game.Minigame.Events.MinigameFoxy'
     }
 
     self.displayText = ""
@@ -193,9 +194,7 @@ function MinigameSceneState:enter()
     end
 
     -- animation and objects --
-    self.animSets = {
-        ["animatronics"] = {},
-    }
+    self.animSets = {}
 
     self.gameSprites = love.graphics.newImage("assets/images/game/minigames/game_spritesheet.png")
     self.animatronicSprites = love.graphics.newImage("assets/images/game/minigames/animatronics.png")
@@ -214,6 +213,9 @@ function MinigameSceneState:enter()
 
         if animatronic == "bonnie" then
             anim["misc"] = { self.animationsAnimatronics[animatronic .. "_" .. 8], self.animationsAnimatronics[animatronic .. "_" .. 9] }
+            anim["idle"] = self.animationsAnimatronics[animatronic .. "_" .. 10]
+        else
+            anim["idle"] = self.animationsAnimatronics[animatronic .. "_" .. 8]
         end
 
         self.animSets[animatronic] = anim

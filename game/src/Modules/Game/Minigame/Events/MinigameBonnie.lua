@@ -23,7 +23,6 @@ function Minigame.init()
     -- load this custom state --
     Minigame.assets.child = {}
     Minigame.assets.child.img, Minigame.assets.child.quads = love.graphics.newQuadFromImage("hash", "assets/images/game/minigames/kid")
-    Minigame.assets.bonnieFace = love.graphics.newImage("assets/images/game/minigames/aftergame/bonnie.png")
     
     for i = 1, 6, 1 do
         local c = Minigame.Child:new(
@@ -59,7 +58,7 @@ function Minigame.update(elapsed)
                     MinigameSceneState.player.lockCooldown = MinigameSceneState.player.lockCooldownMax
                     MinigameSceneState.player.animation.speed = 1 / 5
                     MinigameSceneState.player.lastDirection = "down"
-                    
+
                     c.happiness = 100
                 end
             end
