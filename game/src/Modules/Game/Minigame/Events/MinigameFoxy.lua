@@ -7,6 +7,10 @@ function Minigame.init()
     Minigame.statues = require 'src.Modules.Game.Minigame.Statues'
     MinigameSceneState.displayFace.currentFace = "foxy"
 
+    AudioSources["msc_bg_foxy"]:play()
+    AudioSources["msc_bg_foxy"]:setLooping(true)
+    AudioSources["msc_bg_foxy"]:setVolume(0.75)
+
     MinigameSceneState.displayText = languageService["minigame_display_foxy_find_office"]
     local playerPos = MinigameSceneState.spawnAreas["foxy"]
 
