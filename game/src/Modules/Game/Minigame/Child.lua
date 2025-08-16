@@ -23,9 +23,20 @@ function Child:__construct(img, quads, x, y, flipped)
         y = 0,
     }
 
+    self.decrease = {
+        min = 2,
+        max = 4,
+    }
+
+    self.inCooldown = false
+    self.cooldownHappiness = 2
+    self.cooldownHappinessMax = 2
+
+    self.canBeHappy = true
     self.happiness = 100
     self.hapDecreaseTimer = 0
     self.hapDecreaseTimerMax = 0.75
+    self.childAcc = 0
 
     self.animation = {
         frame = 0,
@@ -47,11 +58,14 @@ function Child:draw()
     )
 
     if registers.showDebugHitbox then
+        love.graphics.print(string.format("%.3f", self.happiness), self.hitbox.x, self.hitbox.y - 8, 0, 0.5, 0.5)
         drawBox(self.hitbox, 0.4, 0.5, 0.1)
     end
 end
 
 function Child:update(elapsed)
+    self.childAcc = self.childAcc + 0.0075 * elapsed
+
     self.animation.acc = self.animation.acc + elapsed
     if self.animation.acc >= self.animation.speed then
         self.animation.frame = self.animation.frame + 1
@@ -64,7 +78,19 @@ function Child:update(elapsed)
     self.hapDecreaseTimer = self.hapDecreaseTimer + elapsed
     if self.hapDecreaseTimer >= self.hapDecreaseTimerMax then
         self.hapDecreaseTimer = 0
-        self.happiness = self.happiness - math.random(2, 4)
+        self.happiness = self.happiness - (math.random() + self.childAcc)
+    end
+
+    if self.inCooldown then
+        self.cooldownHappiness = self.cooldownHappiness - elapsed
+        if self.cooldownHappiness <= 0 then
+            self.inCooldown = false
+            self.cooldownHappiness = self.cooldownHappinessMax
+        end
+    end
+
+    if self.happiness <= 0 then
+        self.canBeHappy = false
     end
     
     if self.happiness >= 75 then

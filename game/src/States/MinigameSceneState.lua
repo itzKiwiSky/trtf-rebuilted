@@ -23,10 +23,51 @@ end
 function MinigameSceneState:enter()
     self.player = require 'src.Modules.Game.Minigame.Player'
     self.world = bump.newWorld(16)
+    self.isShuttingDown = false
     
     AudioSources["sfx_minigame_loop_bg"]:play()
     AudioSources["sfx_minigame_loop_bg"]:setLooping(true)
-    AudioSources["sfx_minigame_loop_bg"]:setVolume(0.4)
+    AudioSources["sfx_minigame_loop_bg"]:setVolume(0.5)
+
+    self.faces = {}
+    self.displayFace = {
+        currentFace = "",
+        flash = true,
+        black = false,
+        visible = false,
+        flashCount = 0,
+        flashTimer = timer.new(),
+    }
+
+
+    self.displayFace.flashTimer:script(function(sleep)
+        sleep(3)
+        while self.displayFace.flashCount < 25 do
+            self.displayFace.visible = not self.displayFace.visible
+            sleep(0.075)
+            self.displayFace.flashCount = self.displayFace.flashCount + 1
+        end
+        sleep(0.01)
+        for k, v in pairs(AudioSources) do
+            v:stop()
+        end
+        self.displayFace.visible = true
+        sleep(5)
+        self.displayFace.visible = false
+        self.displayFace.black = true
+        sleep(3)
+        gamestate.switch(MenuState)
+    end)
+
+    --self.displayFace.flashTimer:every(0.075, function ()
+    --    self.displayFace.visible = not self.displayFace.visible
+    --end)
+
+    local files = love.filesystem.getDirectoryItems("assets/images/game/minigames/aftergame")
+    for _, f in ipairs(files) do
+        local filename = (((f:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
+        self.faces[filename] = love.graphics.newImage("assets/images/game/minigames/aftergame/" .. filename .. ".png")
+    end
 
     self.mapdata = require 'assets.images.game.minigames.minigame_map'
 
@@ -119,8 +160,6 @@ function MinigameSceneState:enter()
         end
     end
 
-    print(inspect(self.spawnAreas))
-
     local minigames = {
         ["bonnie"] = require 'src.Modules.Game.Minigame.Events.MinigameBonnie'
     }
@@ -161,10 +200,10 @@ function MinigameSceneState:enter()
     self.gameSprites = love.graphics.newImage("assets/images/game/minigames/game_spritesheet.png")
     self.animatronicSprites = love.graphics.newImage("assets/images/game/minigames/animatronics.png")
     self.animationsAnimatronics = love.graphics.getQuads(self.animatronicSprites, "assets/images/game/minigames/animatronics.json", "hash")
---    print(inspect(self.animationsAnimatronics))
 
     -- separation of animations --
     local availableAnimatronics = { "freddy", "chica", "bonnie", "foxy", "kitty", "lockjaw" }
+
     for _, animatronic in ipairs(availableAnimatronics) do
         local anim = {
             down = {self.animationsAnimatronics[animatronic .. "_" .. 0], self.animationsAnimatronics[animatronic .. "_" .. 1]},
@@ -172,6 +211,10 @@ function MinigameSceneState:enter()
             right = {self.animationsAnimatronics[animatronic .. "_" .. 4], self.animationsAnimatronics[animatronic .. "_" .. 5]},
             up = {self.animationsAnimatronics[animatronic .. "_" .. 6], self.animationsAnimatronics[animatronic .. "_" .. 7]},
         }
+
+        if animatronic == "bonnie" then
+            anim["misc"] = { self.animationsAnimatronics[animatronic .. "_" .. 8], self.animationsAnimatronics[animatronic .. "_" .. 9] }
+        end
 
         self.animSets[animatronic] = anim
     end
@@ -231,6 +274,10 @@ function MinigameSceneState:enter()
 end
 
 function MinigameSceneState:draw()
+    if self.displayFace.black then
+        return
+    end
+
     love.graphics.push("all")
     love.graphics.setCanvas({self.gameBuffer, stencil = true})
         love.graphics.clear(0, 0, 0)
@@ -253,7 +300,7 @@ function MinigameSceneState:draw()
                 love.graphics.rectangle("fill", 0, 0, self.mainMap:getDimensions())
                 love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setStencilTest()
-            
+
             if self.script.draw then
                 self.script.draw()
             end
@@ -278,10 +325,10 @@ function MinigameSceneState:draw()
                     drawBox(walls, cr, cg, cb)
                 end
 
-                for _, spawn in pairs(self.spawnAreas) do
-                    drawBox(spawn, 0.75, 0, 1)
-                    love.graphics.print(_, spawn.x, spawn.y - 5, 0, 0.5, 0.5)
-                end
+                --for _, spawn in pairs(self.spawnAreas) do
+                    --drawBox(spawn, 0.75, 0, 1)
+                    --love.graphics.print(_, spawn.x, spawn.y - 5, 0, 0.5, 0.5)
+                --end
 
                 drawBox(self.player.hitbox, 0.75, 1, 0)
             end
@@ -308,6 +355,9 @@ function MinigameSceneState:draw()
 
     self.minigameCRT(function()
         love.graphics.draw(self.interfereceBuffer)
+        if self.displayFace.visible then
+            love.graphics.draw(self.faces[self.displayFace.currentFace], 0, 0)
+        end
         love.graphics.draw(self.decoCRT, 0, 0, 0, shove.getViewportWidth() / self.decoCRT:getWidth(), shove.getViewportHeight() / self.decoCRT:getHeight())
     end)
 end
@@ -316,17 +366,23 @@ function MinigameSceneState:update(elapsed)
     self.player.update(elapsed)
 
     self.interferenceFX:send("time", love.timer.getTime())
-    self.interferenceFX:send("intensity", self.interferenceIntensity)
-    self.interferenceFX:send("speed", self.interferenceSpeed)
+    if not self.isShuttingDown then
+        self.interferenceFX:send("intensity", self.interferenceIntensity)
+        self.interferenceFX:send("speed", self.interferenceSpeed)
 
-    self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer)
+        self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer)
 
-    self.interferenceData.interferenceTimerAcc = self.interferenceData.interferenceTimerAcc + elapsed
-    if self.interferenceData.interferenceTimerAcc >= self.interferenceData.interferenceTimerMax then
-        self.interferenceData.interferenceTimerAcc = 0
-        self.interferenceData.interferenceTimerMax = math.random(4, 7)
-        self.interferenceIntensity = math.random(1, 3)
+        self.interferenceData.interferenceTimerAcc = self.interferenceData.interferenceTimerAcc + elapsed
+        if self.interferenceData.interferenceTimerAcc >= self.interferenceData.interferenceTimerMax then
+            self.interferenceData.interferenceTimerAcc = 0
+            self.interferenceData.interferenceTimerMax = math.random(4, 7)
+            self.interferenceIntensity = math.random(1, 3)
+        end
     end
+
+    if self.isShuttingDown then
+        self.displayFace.flashTimer:update(elapsed)
+    end 
 
     -- set room size --
     local area = self.map.areas[self.currentArea]
@@ -380,23 +436,8 @@ function MinigameSceneState:update(elapsed)
 end
 
 function MinigameSceneState:leave()
-    local function releaseRecursive(tbl)
-        for key, value in pairs(tbl) do
-            if type(value) == "table" then
-                releaseRecursive(value)
-            else
-                if type(value) == "userdata" then
-                    value:release()
-                end
-            end
-        end
-    end
-    for key, value in pairs(self) do
-        if type(value) == "userdata" then
-            value:release()
-        elseif type(value) == "table" then
-            releaseRecursive(value)
-        end
+    for k, v in pairs(AudioSources) do
+        v:stop()
     end
 end
 
