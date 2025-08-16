@@ -76,13 +76,29 @@ function Minigame.update(elapsed)
     if not MinigameSceneState.isShuttingDown then
         guard:update(elapsed) -- night guard --
 
-        if collision.rectRect(MinigameSceneState.player.hitbox, MinigameSceneState.map.actionAreas["foxy_minigame_guard_action"]) and not Minigame.state.hitAction then
+        if collision.rectRect(
+            MinigameSceneState.player.hitbox, MinigameSceneState.map.actionAreas["foxy_minigame_guard_action_left"]
+        ) and not Minigame.state.hitAction 
+        then
             Minigame.state.guard_view = true
             Minigame.state.hitAction = true
-            MinigameSceneState.player.lockCooldownMax = 0.25
             MinigameSceneState.player.lockCooldown = 0.75
             MinigameSceneState.player.locked = true
             MinigameSceneState.player.lastDirection = "right"
+            guard.state = "scared"
+            AudioSources["msc_bg_foxy"]:stop()
+            AudioSources["sfx_guard_scream"]:play()
+        end
+
+        if collision.rectRect(
+            MinigameSceneState.player.hitbox, MinigameSceneState.map.actionAreas["foxy_minigame_guard_action_right"]
+        ) and not Minigame.state.hitAction 
+        then
+            Minigame.state.guard_view = true
+            Minigame.state.hitAction = true
+            MinigameSceneState.player.lockCooldown = 0.75
+            MinigameSceneState.player.locked = true
+            MinigameSceneState.player.lastDirection = "left"
             guard.state = "scared"
             AudioSources["msc_bg_foxy"]:stop()
             AudioSources["sfx_guard_scream"]:play()
@@ -93,6 +109,14 @@ function Minigame.update(elapsed)
             if MinigameSceneState.player.lockCooldown <= 0 then
                 MinigameSceneState.player.locked = false
                 guard.state = "attack"
+            end
+        end
+
+        if guard.state == "attack" then
+            guard.cooldown = guard.cooldown - elapsed
+            if guard.cooldown <= 0 then
+                guard.cooldown = 0.75
+                guard.flipped = not guard.flipped
             end
         end
 

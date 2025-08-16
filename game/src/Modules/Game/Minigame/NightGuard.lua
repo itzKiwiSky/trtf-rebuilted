@@ -10,6 +10,7 @@ end
 
 function NightGuard:__construct(assets, x, y)
     self.assets = assets
+    self.flipped = false
     self.state = "idle"
     self.spriteScaleFactor = 1.2
     self.centerOffset = false
@@ -21,11 +22,11 @@ function NightGuard:__construct(assets, x, y)
     }
 
     self.drawOffset = {
-        x = 0,
+        x = -10,
         y = 0,
     }
 
-    self.cooldown = 0.25
+    self.cooldown = 0.75
 
 
     self.animation = {
@@ -40,8 +41,8 @@ end
 
 function NightGuard:draw()
     love.graphics.draw(self.assets.img, self.assets.quads[self.state .. self.animation.frame], 
-        self.hitbox.x - self.drawOffset.x, self.hitbox.y - self.drawOffset.y, 0, self.spriteScaleFactor, self.spriteScaleFactor
-    )
+        self.hitbox.x - self.drawOffset.x, self.hitbox.y - self.drawOffset.y, 0, 
+        self.flipped and -self.spriteScaleFactor or self.spriteScaleFactor, self.spriteScaleFactor, 10, 0)
 
     if registers.showDebugHitbox then
         drawBox(self.hitbox, 0.75, 0.5, 0.1)

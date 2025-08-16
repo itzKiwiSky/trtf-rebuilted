@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="14" nextobjectid="253">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="14" nextobjectid="254">
  <editorsettings>
   <export target="../game/assets/images/game/minigames/minigame_map.lua" format="lua"/>
  </editorsettings>
@@ -190,7 +190,8 @@
   <properties>
    <property name="debug_color" type="color" value="#ffff55ff"/>
   </properties>
-  <object id="222" name="foxy_minigame_guard_action" x="330.834" y="975.334" width="7.33333" height="155"/>
+  <object id="222" name="foxy_minigame_guard_action_left" x="329.834" y="970.334" width="7.33333" height="155"/>
+  <object id="253" name="foxy_minigame_guard_action_right" x="477.333" y="972.167" width="7.33333" height="155"/>
  </objectgroup>
  <objectgroup id="8" name="spawn_area">
   <properties>
@@ -200,7 +201,7 @@
   <object id="183" name="bonnie" x="275" y="22" width="16" height="16"/>
   <object id="184" name="chica" x="339" y="22" width="16" height="16"/>
   <object id="185" name="foxy" x="32" y="282" width="16" height="16"/>
-  <object id="226" name="night_guard" x="392" y="1040" width="16" height="16"/>
+  <object id="226" name="night_guard" x="394" y="1040" width="16" height="16"/>
   <object id="227" name="shadow_dug" x="416" y="880" width="16" height="16"/>
   <object id="228" name="child" x="784" y="96" width="16" height="16"/>
   <object id="235" name="bonnie_child_minigame" x="862" y="118.458" width="16" height="16"/>
