@@ -44,7 +44,7 @@ function MinigameSceneState:enter()
         sleep(3)
         while self.displayFace.flashCount < 25 do
             self.displayFace.visible = not self.displayFace.visible
-            sleep(0.075)
+            sleep(0.05)
             self.displayFace.flashCount = self.displayFace.flashCount + 1
         end
         sleep(0.01)
@@ -52,10 +52,10 @@ function MinigameSceneState:enter()
             v:stop()
         end
         self.displayFace.visible = true
-        sleep(5)
+        sleep(3)
         self.displayFace.visible = false
         self.displayFace.black = true
-        sleep(3)
+        sleep(1.55)
         gamestate.switch(MenuState)
     end)
 
@@ -95,24 +95,17 @@ function MinigameSceneState:enter()
         }
     end
 
-    for i = 1, #actionZones.objects, 1 do
-        local actionArea = {
+    for _, zone in ipairs(actionZones.objects) do
+        local area = {
             color = actionZones.properties["debug_color"],
-            x = actionZones.objects[i].x,
-            y = actionZones.objects[i].y,
-            w = actionZones.objects[i].width,
-            h = actionZones.objects[i].height,
-            direction = actionZones.objects[i].properties["direction"],
-            locked = actionZones.objects[i].properties["locked"],
-            increment = actionZones.objects[i].properties["increment"],
-            meta = {
-                enter = false,
-            },
-            kind = "portal"
+            id = zone.name,
+            x = zone.x,
+            y = zone.y,
+            w = zone.width,
+            h = zone.height,
         }
 
-        self.world:add(actionArea, actionArea.x, actionArea.y, actionArea.w, actionArea.h)
-        table.insert(self.map.actionAreas, actionArea)
+        self.map.actionAreas[zone.name] = area
     end
 
     for _, col in ipairs(collisions.objects) do
@@ -327,6 +320,11 @@ function MinigameSceneState:draw()
                 for _, walls in ipairs(self.map.collisions) do
                     local cr, cg, cb = lume.color(walls.color)
                     drawBox(walls, cr, cg, cb)
+                end
+
+                for i, v in pairs(self.map.actionAreas) do
+                    local cr, cg, cb = lume.color(v.color)
+                    drawBox(v, cr, cg, cb)
                 end
 
                 --for _, spawn in pairs(self.spawnAreas) do
