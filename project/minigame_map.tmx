@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="14" nextobjectid="259">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="14" nextobjectid="261">
  <editorsettings>
   <export target="../game/assets/images/game/minigames/minigame_map.lua" format="lua"/>
  </editorsettings>
@@ -9,7 +9,7 @@
  <objectgroup id="12" name="map_img" locked="1">
   <object id="239" gid="1" x="0" y="1136" width="1072" height="1136"/>
  </objectgroup>
- <objectgroup color="#11ffdb" id="4" name="areas" visible="0" locked="1">
+ <objectgroup color="#11ffdb" id="4" name="areas">
   <properties>
    <property name="debug_color" type="color" value="#ff4cc764"/>
   </properties>
@@ -19,19 +19,19 @@
     <property name="zone_name" value="kid_hall"/>
    </properties>
   </object>
-  <object id="15" x="224" y="576" width="128" height="224">
+  <object id="15" x="224" y="569.667" width="128" height="236.667">
    <properties>
     <property name="scroll" type="bool" value="false"/>
     <property name="zone_name" value="right_hall"/>
    </properties>
   </object>
-  <object id="16" x="480" y="576" width="128" height="224">
+  <object id="16" x="480" y="570.667" width="128" height="234.667">
    <properties>
     <property name="scroll" type="bool" value="false"/>
     <property name="zone_name" value="left_hall"/>
    </properties>
   </object>
-  <object id="19" x="176" y="960" width="96" height="160">
+  <object id="19" x="170.6" y="954" width="103.2" height="172">
    <properties>
     <property name="scroll" type="bool" value="false"/>
     <property name="zone_name" value="office_right_hall"/>
@@ -43,7 +43,7 @@
     <property name="zone_name" value="office"/>
    </properties>
   </object>
-  <object id="24" x="544" y="960" width="96" height="160">
+  <object id="24" x="539.2" y="955" width="103.2" height="172">
    <properties>
     <property name="scroll" type="bool" value="false"/>
     <property name="zone_name" value="office_left_hall"/>
@@ -73,7 +73,7 @@
     <property name="zone_name" value="pirate_cove"/>
    </properties>
   </object>
-  <object id="9" x="192" y="192" width="240" height="176">
+  <object id="9" x="192" y="186.567" width="248" height="186.867">
    <properties>
     <property name="scroll" type="bool" value="false"/>
     <property name="zone_name" value="dinning_area"/>
@@ -91,7 +91,7 @@
     <property name="zone_name" value="arcade"/>
    </properties>
   </object>
-  <object id="13" x="432" y="384" width="224" height="176">
+  <object id="13" x="432" y="375.667" width="224" height="186.667">
    <properties>
     <property name="scroll" type="bool" value="false"/>
     <property name="zone_name" value="storage"/>
@@ -192,10 +192,10 @@
   </properties>
   <object id="222" name="foxy_minigame_guard_action_left" x="329.834" y="970.334" width="7.33333" height="155"/>
   <object id="253" name="foxy_minigame_guard_action_right" x="477.333" y="972.167" width="7.33333" height="155"/>
-  <object id="257" name="sugar_minigame_door_unlock" x="625.455" y="412.364" width="18.9697" height="54.2727"/>
-  <object id="258" name="sugar_minigame_vincent_attack" x="850.667" y="369.167" width="7.33333" height="155"/>
+  <object id="257" name="sugar_minigame_door_unlock" x="631.455" y="413.364" width="18.9697" height="54.2727"/>
+  <object id="258" name="sugar_minigame_vincent_attack" x="847.417" y="370.417" width="7.33333" height="155"/>
  </objectgroup>
- <objectgroup id="8" name="spawn_area">
+ <objectgroup id="8" name="spawn_area" visible="0" locked="1">
   <properties>
    <property name="debug_color" type="color" value="#ff4a1788"/>
   </properties>
@@ -204,7 +204,7 @@
   <object id="184" name="chica" x="339" y="22" width="16" height="16"/>
   <object id="185" name="foxy" x="32" y="282" width="16" height="16"/>
   <object id="254" name="sugar" x="64" y="112" width="16" height="16"/>
-  <object id="226" name="night_guard" x="396.182" y="1066.36" width="16" height="16"/>
+  <object id="226" name="spawn_key" x="396.182" y="1066.36" width="16" height="16"/>
   <object id="227" name="shadow_dug" x="416" y="880" width="16" height="16"/>
   <object id="228" name="child" x="784" y="96" width="16" height="16"/>
   <object id="235" name="bonnie_child_minigame" x="862" y="118.458" width="16" height="16"/>
@@ -219,5 +219,11 @@
   <object id="249" name="child" x="944" y="160" width="16" height="16"/>
   <object id="250" name="child" x="944" y="128" width="16" height="16"/>
   <object id="255" name="night_guard" x="398.545" y="1037.27" width="16" height="16"/>
+  <object id="259" name="vincent" x="928" y="414" width="16" height="16"/>
+  <object id="260" name="barrier_big" x="672" y="352" width="16" height="226">
+   <properties>
+    <property name="collision" type="bool" value="true"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

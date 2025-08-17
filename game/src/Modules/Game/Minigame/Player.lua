@@ -90,6 +90,8 @@ function Player.update(elapsed)
                 Player.animation.frame = 1
             end
         end
+        AudioSources["sfx_animatronic_step"]:setVolume(0.25)
+        AudioSources["sfx_animatronic_step"]:play()
     end
 
     if not Player.locked then

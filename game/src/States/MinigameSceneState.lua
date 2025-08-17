@@ -341,8 +341,8 @@ function MinigameSceneState:draw()
         --local cycleDuration = 0.3
         --local activeThreshold = 0.5
         --if (love.timer.getTime() % cycleDuration) / cycleDuration > activeThreshold == 0 then
-        love.graphics.print(self.displayDate, self.fnt_text, 24, 24)
-        love.graphics.print(self.displayText, self.fnt_text, 64, shove.getViewportHeight() - 64)
+        love.graphics.printf(self.displayDate, self.fnt_text, 0, 24, shove.getViewportWidth(), "center")
+        love.graphics.printf(self.displayText, self.fnt_text, 0, shove.getViewportHeight() - 64, shove.getViewportWidth(), "center")
         --end
     love.graphics.setCanvas()
     love.graphics.pop()
