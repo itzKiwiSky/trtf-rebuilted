@@ -148,6 +148,10 @@ function ExtrasState:update(elapsed)
     end
 end
 
+function ExtrasState:wheelmoved(x, y)
+    self.categories[self.currentCategory]:wheelmoved(x, y)
+end
+
 function ExtrasState:leave()
     for k, v in pairs(AudioSources) do
         v:stop()

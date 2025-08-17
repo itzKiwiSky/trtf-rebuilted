@@ -34,7 +34,6 @@ After the big incident of Fredbear's Family Diner, in 2005, Vincent, decided to 
 [**lume**](https://github.com/rxi/lume/tree/master)<br>
 [**json**](https://github.com/actboy168/json.lua)<br>
 [**love-loader**](https://github.com/kikito/love-loader)<br>
-[**lua-discordRPC**](https://github.com/pfirsich/lua-discordRPC/tree/master)<br>
 [**loveframes**](https://github.com/linux-man/LoveFrames)<br>
 [**Termite**](https://github.com/itzKiwiSky/Termite/tree/master)<br>
 [**baton**](https://github.com/tesselode/baton/tree/master)<br>
@@ -50,9 +49,16 @@ After the big incident of Fredbear's Family Diner, in 2005, Vincent, decided to 
 
 # Building
 
-This is the official TRTFR-A source code. Written in lua with the [LÖVE framework](https://love2d.org). There is some messy code here and there, but feel free to use some some parts of the code on your own project (as long as you don't steal all the code and claim that you made it).
+This is the official TRTFR-A source code. Written in lua with the [LÖVE framework](https://love2d.org) and a Internal toolkit called **Eclipsia**. There is some messy code here and there, but feel free to use some some parts of the code on your own project (as long as you don't steal all the code and claim that you made it).
 If you want to use any of the renders, please contact the owners [@El_Eternauta_1957](https://gamejolt.com/@El_Eternauta_1957) & [@ShotOfRabbetDev](https://gamejolt.com/@ShotOfRabbetDev)
 
 This project come with special batch files (.bat) that can help run the code. To work correctly, these binds expect you to have the [LÖVE](https://love2d.org) and [Lover](https://github.com/Wolfyxon/lover) in the enviroment path (if you're windows)
+
+Clone the source code:
+`git clone https://github.com/itzKiwiSky/trtf-rebuilted.git`
+
+after this, go into the source directory and run:
+
+`lover build`
 
 if you have all of them configured in the path, you can run the `boot.cmd` file to run the game without compiling (which is good to debug and hack stuff). But if you want a real experience with the game, run the `lover build` to run the **Lover** CLI to compile the files.

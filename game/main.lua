@@ -156,15 +156,13 @@ function love.initialize()
         gameSave.save.user.settings.misc.gamejolt.usertoken
     )
 
-    if gamejolt.isLoggedIn then
-        heartbeatTimer = timer.new()
-        heartbeatTimer:every(20, function ()
-            GJPing:start(
-                gameSave.save.user.settings.misc.gamejolt.username,
-                gameSave.save.user.settings.misc.gamejolt.usertoken
-            )
-        end)
-    end
+    heartbeatTimer = timer.new()
+    heartbeatTimer:every(20, function ()
+        GJPing:start(
+            gameSave.save.user.settings.misc.gamejolt.username,
+            gameSave.save.user.settings.misc.gamejolt.usertoken
+        )
+    end)
 
     
     love.filesystem.createDirectory("screenshots")
