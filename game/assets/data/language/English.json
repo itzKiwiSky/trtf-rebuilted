@@ -149,6 +149,9 @@
             "extras_options_replay_night" : "Replay Night 8",
             "extras_options_custom_night" : "Custom Night",
             "extras_options_credits": "Credits"
+        },
+        "extras_category_animatronics": {
+            "extras_category_animatronics_click" : "Click on the animatronics to switch to old version"
         }
     }
 }

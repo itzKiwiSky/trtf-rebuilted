@@ -7,12 +7,18 @@ end
 function ExtrasState:enter()
     self.fnt_extras = fontcache.getFont("ocrx", 28)
 
+    self.categories = {
+        ["animatronics"] = require 'src.States.Substates.ExtraSubStates.Animatronics'
+    }
+
     AudioSources["msc_extras_bg"]:play()
     AudioSources["msc_extras_bg"]:setLooping(true)
     AudioSources["msc_extras_bg"]:setVolume(0.6)
 
     self.currentCategory = "animatronics"
     self.bg = love.graphics.newImage("assets/images/game/extras/bg.png")
+
+    self.categories[self.currentCategory]:load()
 
     self.staticAnimationFX = {
         config = {
@@ -23,9 +29,9 @@ function ExtrasState:enter()
         frames = {}
     }
 
-    local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static")
+    local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static3")
     for s = 1, #statics, 1 do
-        table.insert(self.staticAnimationFX.frames, love.graphics.newImage("assets/images/game/effects/static/" .. statics[s]))
+        table.insert(self.staticAnimationFX.frames, love.graphics.newImage("assets/images/game/effects/static3/" .. statics[s]))
     end
 
 
@@ -109,13 +115,17 @@ function ExtrasState:draw()
             end
             love.graphics.print(e.text, self.fnt_extras, self.menuItems.config.x + e.meta.offsetX, e.hitbox.y)
             love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+            --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
         end
+
+        self.categories[self.currentCategory]:draw()
     end)
 end
 
 function ExtrasState:update(elapsed)
     local inside, mx, my = shove.mouseToViewport()
+
+    self.categories[self.currentCategory]:update(elapsed)
 
     -- static animation --
     self.staticAnimationFX.config.timer = self.staticAnimationFX.config.timer + elapsed
