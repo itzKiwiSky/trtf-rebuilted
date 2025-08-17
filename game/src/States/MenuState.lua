@@ -481,6 +481,10 @@ function MenuState:leave()
         f:release()
     end
 
+    for _, f in ipairs(self.staticAnimationFX.frames) do
+        f:release()
+    end
+
     self.menuBackground:release()
 end
 

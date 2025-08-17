@@ -97,7 +97,7 @@ function ExtrasState:draw()
         love.graphics.draw(self.bg, 0, 0, 0, shove.getViewportWidth() / self.bg:getWidth(), shove.getViewportHeight() / self.bg:getHeight())
         
         love.graphics.setBlendMode("add")
-            love.graphics.setColor(1, 1, 1, 0.3)
+            love.graphics.setColor(1, 1, 1, 0.12)
                 love.graphics.draw(self.staticAnimationFX.frames[self.staticAnimationFX.config.frameid], 0, 0)
             love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
@@ -135,6 +135,16 @@ function ExtrasState:update(elapsed)
             e.meta.offsetX = math.lerp(e.meta.offsetX, 0, 0.1)
         end
         
+    end
+end
+
+function ExtrasState:leave()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
+    
+    for _, f in ipairs(self.staticAnimationFX.frames) do
+        f:release()
     end
 end
 
