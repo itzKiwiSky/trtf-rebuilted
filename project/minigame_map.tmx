@@ -195,7 +195,7 @@
   <object id="257" name="sugar_minigame_door_unlock" x="631.455" y="413.364" width="18.9697" height="54.2727"/>
   <object id="258" name="sugar_minigame_vincent_attack" x="847.417" y="370.417" width="7.33333" height="155"/>
  </objectgroup>
- <objectgroup id="8" name="spawn_area" visible="0" locked="1">
+ <objectgroup id="8" name="spawn_area">
   <properties>
    <property name="debug_color" type="color" value="#ff4a1788"/>
   </properties>
@@ -220,7 +220,7 @@
   <object id="250" name="child" x="944" y="128" width="16" height="16"/>
   <object id="255" name="night_guard" x="398.545" y="1037.27" width="16" height="16"/>
   <object id="259" name="vincent" x="928" y="414" width="16" height="16"/>
-  <object id="260" name="barrier_big" x="672" y="352" width="16" height="226">
+  <object id="260" name="sugar_minigame_barrier" x="672" y="352" width="16" height="226">
    <properties>
     <property name="collision" type="bool" value="true"/>
    </properties>

@@ -1428,7 +1428,7 @@ return {
       id = 8,
       name = "spawn_area",
       class = "",
-      visible = false,
+      visible = true,
       opacity = 1,
       offsetx = 0,
       offsety = 0,
@@ -1663,7 +1663,7 @@ return {
         },
         {
           id = 260,
-          name = "barrier_big",
+          name = "sugar_minigame_barrier",
           type = "",
           shape = "rectangle",
           x = 672,
