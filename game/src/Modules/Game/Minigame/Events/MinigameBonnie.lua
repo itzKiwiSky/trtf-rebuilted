@@ -16,6 +16,7 @@ function Minigame.init()
     AudioSources["msc_bg_bonnie"]:setLooping(true)
     AudioSources["msc_bg_bonnie"]:setVolume(0.75)
 
+    MinigameSceneState.displayDate = "08-14-2004"
     MinigameSceneState.displayText = languageService["minigame_display_bonnie_entertain_child"]
     local playerPos = MinigameSceneState.spawnAreas["bonnie_child_minigame"]
     MinigameSceneState.player.sprite = "bonnie"

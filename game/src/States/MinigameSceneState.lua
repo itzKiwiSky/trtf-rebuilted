@@ -39,7 +39,6 @@ function MinigameSceneState:enter()
         flashTimer = timer.new(),
     }
 
-
     self.displayFace.flashTimer:script(function(sleep)
         sleep(3)
         while self.displayFace.flashCount < 25 do
@@ -58,10 +57,6 @@ function MinigameSceneState:enter()
         sleep(1.55)
         gamestate.switch(MenuState)
     end)
-
-    --self.displayFace.flashTimer:every(0.075, function ()
-    --    self.displayFace.visible = not self.displayFace.visible
-    --end)
 
     local files = love.filesystem.getDirectoryItems("assets/images/game/minigames/aftergame")
     for _, f in ipairs(files) do
@@ -128,37 +123,42 @@ function MinigameSceneState:enter()
 
     self.spawnAreas = {}
 
-    local count = 0
+    local nameCount = {}
     for _, obj in ipairs(spawnAreaMap.objects) do
-        if self.spawnAreas[obj.name] == nil then
-            self.spawnAreas[obj.name] = {
-                x = obj.x,
-                y = obj.y,
-                w = obj.width,
-                h = obj.height,
-                centerX = obj.x + obj.width / 2,
-                centerY = obj.y + obj.height / 2,
-            }
-            count = 0
-        else
-            count = count + 1
-            self.spawnAreas[obj.name .. count] = {
-                x = obj.x,
-                y = obj.y,
-                w = obj.width,
-                h = obj.height,
-                centerX = obj.x + obj.width / 2,
-                centerY = obj.y + obj.height / 2,
-            }
+        local baseName = obj.name
+        nameCount[baseName] = (nameCount[baseName] or 0) + 1
+        local entryName = baseName
+        if nameCount[baseName] > 1 then
+            entryName = baseName .. (nameCount[baseName] - 1)
         end
+        self.spawnAreas[entryName] = {
+            x = obj.x,
+            y = obj.y,
+            w = obj.width,
+            h = obj.height,
+            centerX = obj.x + obj.width / 2,
+            centerY = obj.y + obj.height / 2,
+        }
     end
 
-    local minigames = {
-        ["bonnie"] = require 'src.Modules.Game.Minigame.Events.MinigameBonnie',
-        ["foxy"] = require 'src.Modules.Game.Minigame.Events.MinigameFoxy'
-    }
+    --local minigames = {
+    --    ["bonnie"] = require 'src.Modules.Game.Minigame.Events.MinigameBonnie',
+    --    ["foxy"] = require 'src.Modules.Game.Minigame.Events.MinigameFoxy'
+    --}
+
+    local minigames = {}
+    local minigameList = love.filesystem.getDirectoryItems("src/Modules/Game/Minigame/Events")
+
+    for _, m in ipairs(minigameList) do
+        minigames[m:gsub("%.lua", "")] = require("src.Modules.Game.Minigame.Events." .. m:gsub("%.lua", ""))
+    end
+
+    minigameList = nil
+
+    collectgarbage("collect")
 
     self.displayText = ""
+    self.displayDate = ""
     self.fnt_text = fontcache.getFont("vcr", 34)
     self.script = minigames[self.currentMinigame] or {}
     
@@ -196,7 +196,7 @@ function MinigameSceneState:enter()
     self.animationsAnimatronics = love.graphics.getQuads(self.animatronicSprites, "assets/images/game/minigames/animatronics.json", "hash")
 
     -- separation of animations --
-    local availableAnimatronics = { "freddy", "chica", "bonnie", "foxy", "kitty", "lockjaw" }
+    local availableAnimatronics = { "freddy", "chica", "bonnie", "foxy", "sugar", "lockjaw" }
 
     for _, animatronic in ipairs(availableAnimatronics) do
         local anim = {
@@ -218,7 +218,8 @@ function MinigameSceneState:enter()
 
     self.animSets["barrier"] = {
         ["small"] = barrierQuads["small"],
-        ["big"] = barrierQuads["big"]
+        ["big"] = barrierQuads["big"],
+        ["door"] = barrierQuads["door"]
     }
 
     self.interferenceFX = love.graphics.newShader("assets/shaders/Interference.glsl")
@@ -297,15 +298,16 @@ function MinigameSceneState:draw()
                 end
             end, "replace")
 
+            if self.script.draw then
+                self.script.draw()
+            end
+
             love.graphics.setStencilTest("less", 1)
                 love.graphics.setColor(0, 0, 0, 1)
                 love.graphics.rectangle("fill", 0, 0, self.mainMap:getDimensions())
                 love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setStencilTest()
 
-            if self.script.draw then
-                self.script.draw()
-            end
 
             self.player.draw()
             -- debug --
@@ -339,6 +341,7 @@ function MinigameSceneState:draw()
         --local cycleDuration = 0.3
         --local activeThreshold = 0.5
         --if (love.timer.getTime() % cycleDuration) / cycleDuration > activeThreshold == 0 then
+        love.graphics.print(self.displayDate, self.fnt_text, 24, 24)
         love.graphics.print(self.displayText, self.fnt_text, 64, shove.getViewportHeight() - 64)
         --end
     love.graphics.setCanvas()

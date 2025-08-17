@@ -100,6 +100,10 @@ return function(settings)
                         connectGJModal.close()
                         registers.isConnectWindowOpen = false
                     end
+                else
+                    gameSave.save.user.settings.misc.gamejolt.username = ""
+                    gameSave.save.user.settings.misc.gamejolt.usertoken = ""
+                    gameSave:saveSlot()
                 end
             end
     

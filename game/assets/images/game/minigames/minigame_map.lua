@@ -10,7 +10,7 @@ return {
   tilewidth = 16,
   tileheight = 16,
   nextlayerid = 14,
-  nextobjectid = 254,
+  nextobjectid = 259,
   backgroundcolor = { 60, 0, 90 },
   properties = {},
   tilesets = {
@@ -1393,6 +1393,32 @@ return {
           rotation = 0,
           visible = true,
           properties = {}
+        },
+        {
+          id = 257,
+          name = "sugar_minigame_door_unlock",
+          type = "",
+          shape = "rectangle",
+          x = 625.455,
+          y = 412.364,
+          width = 18.9697,
+          height = 54.2727,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 258,
+          name = "sugar_minigame_vincent_attack",
+          type = "",
+          shape = "rectangle",
+          x = 850.667,
+          y = 369.167,
+          width = 7.33333,
+          height = 155,
+          rotation = 0,
+          visible = true,
+          properties = {}
         }
       }
     },
@@ -1465,12 +1491,25 @@ return {
           properties = {}
         },
         {
+          id = 254,
+          name = "sugar",
+          type = "",
+          shape = "rectangle",
+          x = 64,
+          y = 112,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
           id = 226,
           name = "night_guard",
           type = "",
           shape = "rectangle",
-          x = 394,
-          y = 1040,
+          x = 396.182,
+          y = 1066.36,
           width = 16,
           height = 16,
           rotation = 0,
@@ -1590,6 +1629,19 @@ return {
           shape = "rectangle",
           x = 944,
           y = 128,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 255,
+          name = "night_guard",
+          type = "",
+          shape = "rectangle",
+          x = 398.545,
+          y = 1037.27,
           width = 16,
           height = 16,
           rotation = 0,

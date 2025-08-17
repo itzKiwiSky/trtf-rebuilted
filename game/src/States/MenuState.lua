@@ -35,6 +35,8 @@ function MenuState:enter()
                         end
                     end,
                     ["number"] = function()
+                        Slab.Text(key)
+                        Slab.SameLine()
                         if Slab.Input("inputNumberKey_" .. tostring(key), { Text = tostring(value), ReturnOnText = false, NumbersOnly = true }) then
                             gameSave.save.user.progress[key] = Slab.GetInputNumber()
                         end

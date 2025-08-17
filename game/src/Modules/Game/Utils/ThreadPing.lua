@@ -12,25 +12,9 @@ local loggedin = false
 
 if not gamejolt.isLoggedIn then
     local file = love.filesystem.getInfo("src/ApiConfig.json")
-    --[[if file then
-        local data = json.decode(file ~= nil and love.filesystem.read("src/ApiConfig.json") or "{}")
-        local code, body = https.request("https://gamejolt.com/api/game/v1/")
-        if code == 200 then
-            gamejolt.init(data.gamejolt.gameID, data.gamejolt.gameKey)
-            if user ~= "" and token ~= "" then
-                loggedin = gamejolt.authUser(user, token)
-                gamejolt.openSession()
-                io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client connected (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
-            else
-                io.printf("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client failed to connect to gamejolt {reset}")
-            end
-        else
-            io.printf("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Failed to connect to gamejolt, please check your internet connection{reset}\n")
-        end
-    end]]--
 
     if file then
-        local filedata = json.decode(file ~= nil and love.filesystem.read("src/ApiConfig.json") or "{}")
+        local filedata = json.decode(file ~= nil and love.filesystem.read("src/ApiConfig.json") or "{gamejolt={gameID = 0, gameKey=\"\"}}")
         if gamejolt.isLoggedIn then
             gamejolt.pingSession(true)
             io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client heartbeated a session (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))

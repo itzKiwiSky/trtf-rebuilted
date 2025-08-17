@@ -151,7 +151,6 @@ function love.initialize()
     -- create a thread for ping into gamejolt --
     local GJPing = love.thread.newThread("src/Modules/Game/Utils/ThreadPing.lua")
 
-    connectGJ()
     GJPing:start(
         gameSave.save.user.settings.misc.gamejolt.username,
         gameSave.save.user.settings.misc.gamejolt.usertoken

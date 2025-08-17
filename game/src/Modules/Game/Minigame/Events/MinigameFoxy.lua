@@ -18,6 +18,7 @@ function Minigame.init()
     AudioSources["msc_bg_foxy"]:setLooping(true)
     AudioSources["msc_bg_foxy"]:setVolume(0.75)
 
+    MinigameSceneState.displayDate = "11-09-2006"
     MinigameSceneState.displayText = languageService["minigame_display_foxy_find_office"]
     local playerPos = MinigameSceneState.spawnAreas["foxy"]
 
