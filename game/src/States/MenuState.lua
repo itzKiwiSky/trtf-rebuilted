@@ -75,7 +75,6 @@ function MenuState:enter()
     self.shd_blur = moonshine(moonshine.effects.boxblur)
     self.shd_glowEffect = moonshine(moonshine.effects.glow)
     self.shd_glowEffect.glow.strength = 5
-
     self.shd_blur.boxblur.radius = {0, 0}
 
     self.shd_glowEffectText = moonshine(moonshine.effects.glow)

@@ -139,5 +139,16 @@
             "gameover_explain_dummy" : "How the fuck did you get killed by the dummy?",
             "gameover_explain_oxygen" : "Don't let your oxygen go lower, or you will be suffocated."
         }
+    },
+    "extras": {
+        "extras_options" : {
+            "extras_options_animatronics" : "Animatronics",
+            "extras_options_jumpscares" : "Jumpscares",
+            "extras_options_dev_content" : "Behind the scenes",
+            "extras_options_minigames": "Minigames",
+            "extras_options_replay_night" : "Replay Night 8",
+            "extras_options_custom_night" : "Custom Night",
+            "extras_options_credits": "Credits"
+        }
     }
 }
