@@ -154,7 +154,7 @@ function Minigame.update(elapsed)
                     Minigame.chars["vincent"].hitbox.y = Minigame.chars["vincent"].hitbox.y + (dy / dist) * math.min(step, dist)
                 end
                 AudioSources["sfx_guard_run"]:play()
-                Minigame.state.vincentMoveCooldown = 0.3
+                Minigame.state.vincentMoveCooldown = 0.18
             end
 
             if collision.rectRect(MinigameSceneState.player.hitbox, Minigame.chars["vincent"].hitbox) then
