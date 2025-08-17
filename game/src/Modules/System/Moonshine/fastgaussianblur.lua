@@ -39,7 +39,7 @@ local function build_shader(taps, offset, offset_type, sigma)
   local g_offsets = {}
   local g_weights = {}
   for i = 1, steps, 1 do
-		g_offsets[i] = offset * (i - 1)
+        g_offsets[i] = offset * (i - 1)
 
     -- We don't need to include the constant part of the gaussian function as we normalize later.
     -- 1 / math.sqrt(2 * sigma ^ math.pi) * math.exp(-0.5 * ((offset - 0) / sigma) ^ 2 )

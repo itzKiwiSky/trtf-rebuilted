@@ -25,7 +25,7 @@ Copyright (c) 2006-2007, Kyle Smith
 All rights reserved.
 
 Contributors:
-	Alimov Stepan
+    Alimov Stepan
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:

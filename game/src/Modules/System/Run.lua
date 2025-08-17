@@ -87,7 +87,7 @@ function love.run()
     package.cpath = newCPath
     copyLib()
 
-    discordRPC = require 'src.Modules.System.Utils.DiscordRPC'
+    --discordRPC = require 'src.Modules.System.Utils.DiscordRPC'
     https = require 'https'
 
     fontcache.init()

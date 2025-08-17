@@ -1,20 +1,18 @@
 local args = {...}
-local registers = args[1]
-require 'src.Addons.ColoredWrite'
-local user, token = args[2], args[3]
+require 'src.Modules.System.Addons.prinf'
+local user, token = args[1], args[2]
 local jit = require 'jit'
 local https = require 'https'
 local utf8 = require 'utf8'
 local bit = require 'bit'
 local json = require 'libraries.json'
 
-gamejolt = require 'libraries.gamejolt'
-_connectGJ = require 'src.Components.Modules.API.InitializeGJ'
+gamejolt = require 'src.Modules.System.Utils.Gamejolt'
 local loggedin = false
 
 if not gamejolt.isLoggedIn then
     local file = love.filesystem.getInfo("src/ApiConfig.json")
-    if file then
+    --[[if file then
         local data = json.decode(file ~= nil and love.filesystem.read("src/ApiConfig.json") or "{}")
         local code, body = https.request("https://gamejolt.com/api/game/v1/")
         if code == 200 then
@@ -22,16 +20,49 @@ if not gamejolt.isLoggedIn then
             if user ~= "" and token ~= "" then
                 loggedin = gamejolt.authUser(user, token)
                 gamejolt.openSession()
-                print(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client connected (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
+                io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client connected (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
+            else
+                io.printf("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client failed to connect to gamejolt {reset}")
             end
         else
-            print("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Failed to connect to gamejolt, please check your internet connection{reset}\n")
+            io.printf("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Failed to connect to gamejolt, please check your internet connection{reset}\n")
         end
+    end]]--
+
+    if file then
+        local filedata = json.decode(file ~= nil and love.filesystem.read("src/ApiConfig.json") or "{}")
+        if gamejolt.isLoggedIn then
+            gamejolt.pingSession(true)
+            io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client heartbeated a session (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
+            return
+        end
+
+        local code, body = https.request("https://gamejolt.com/api/game/v1/")   -- check internet --
+        -- return if code is different from 200 (or sucess) --
+        if code ~= 200 then 
+            io.printf("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Failed to connect to gamejolt, please check your internet connection{reset}\n")
+            return 
+        end
+
+        gamejolt.init(filedata.gamejolt.gameID, filedata.gamejolt.gameKey)
+        if user == "" and token == "" then return end
+
+        local state = gamejolt.authUser(user, token)
+
+        if not state then
+            io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client failed to connect to gamejolt (%s , %s) {reset}\n", user, token))
+            return
+        end
+
+        gamejolt.openSession()
+        io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client connected (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
+
+        local success = gamejolt.pingSession(true)
     end
 end
 
 
 if loggedin then
     gamejolt.pingSession(true)
-    print(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client heartbeated a session (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
+    io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client heartbeated a session (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
 end

@@ -71,12 +71,11 @@
         },
         "menu_settings_gamejolt" : {
             "menu_settings_gamejolt_username" : "Username",
-            "menu_settings_gamejolt_token" : "Token",
+            "menu_settings_gamejolt_token" : "UserToken",
             "menu_settings_gamejolt_error" : "[FAILURE] An error occurred during authentication.",
             "menu_settings_gamejolt_buttons" : {
                 "menu_settings_gamejolt_button_connect" : "Connect",
-                "menu_settings_gamejolt_button_cancel" : "Cancel",
-                "menu_settings_gamejolt_button_clear" : "Clear"
+                "menu_settings_gamejolt_button_cancel" : "Cancel"
             }
         },
         "menu_gamejolt_login_text" : "Welcome back %s",

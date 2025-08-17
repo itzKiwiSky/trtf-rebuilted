@@ -1,7 +1,7 @@
 require('src.Modules.System.Run')
 require('src.Modules.System.Utils.ErrHandler')
 local gitstuff = require 'src.Modules.System.GitStuff'  -- super important stuff --
-local initializeAPI = require 'src.Modules.System.InitializeAPI'
+local connectGJ = require 'src.Modules.System.InitializeAPI'
 
 languageService = {}
 languageRaw = {}
@@ -107,6 +107,8 @@ function love.initialize()
     })
 
     registers = {
+        isSessionOpen = false,
+        isConnectWindowOpen = false,
         isNightLoaded = false,
         devWindow = false,
         devWindowContent = function() return end,
@@ -131,10 +133,6 @@ function love.initialize()
 
     gitstuff()      -- still super important --
 
-    if gameSave.save.user.settings.misc.discordRichPresence then
-        initializeAPI()
-    end
-
     languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
     languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
 
@@ -150,19 +148,23 @@ function love.initialize()
         end
     end
 
-    -- some discord thing callbacks --
-    if gameSave.save.user.settings.misc.discordRichPresence then
-        function discordRPC.ready(userId, username, discriminator, avatar)
-            io.printf(string.format("{bgBlue}{brightBlue}{bold}[Discord]{reset}{brightBlue} : Client connected (%s, %s, %s){reset}\n", userId, username, discriminator))
-        end
+    -- create a thread for ping into gamejolt --
+    local GJPing = love.thread.newThread("src/Modules/Game/Utils/ThreadPing.lua")
 
-        function discordRPC.disconnected(errorCode, message)
-            io.printf(string.format("{bgBlue}{brightBlue}{bold}[Discord]{reset}{brightBlue} : Client disconnected (%d, %s){reset}\n", errorCode, message))
-        end
+    connectGJ()
+    GJPing:start(
+        gameSave.save.user.settings.misc.gamejolt.username,
+        gameSave.save.user.settings.misc.gamejolt.usertoken
+    )
 
-        function discordRPC.errored(errorCode, message)
-            io.printf(string.format("{bgBlue}{brightBlue}{bold}[Discord]{reset}{bgRed}{brightWhite}[Error]{reset}{brightWhite} : (%d, %s){reset}\n", errorCode, message))
-        end
+    if gamejolt.isLoggedIn then
+        heartbeatTimer = timer.new()
+        heartbeatTimer:every(20, function ()
+            GJPing:start(
+                gameSave.save.user.settings.misc.gamejolt.username,
+                gameSave.save.user.settings.misc.gamejolt.usertoken
+            )
+        end)
     end
 
     
@@ -172,7 +174,14 @@ function love.initialize()
     gamestate.switch(SplashState)
 end
 
+function love.update(elapsed)
+    if gamejolt.isLoggedIn then
+        heartbeatTimer:update(elapsed)
+    end
+end
 
 function love.quit()
-    discordRPC.shutdown()
+    if gamejolt.isLoggedIn then
+        gamejolt.closeSession()
+    end
 end

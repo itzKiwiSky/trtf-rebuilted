@@ -12,10 +12,10 @@ end
 
 local str = "пыщпыщ ололоо я водитель нло"
 print(str:find("(.л.+)н"))
--- 8	26	ололоо я водитель
+-- 8    26    ололоо я водитель
 
 print(str:gsub("ло+", "보라"))
--- пыщпыщ о보라보라 я водитель н보라	3
+-- пыщпыщ о보라보라 я водитель н보라    3
 
 print(str:match("^п[лопыщ ]*я"))
 -- пыщпыщ ололоо я
@@ -29,9 +29,9 @@ This library can be used as drop-in replacement for vanilla string library. It e
 local utf8 = require('.utf8'):init()
 local str = "пыщпыщ ололоо я водитель нло"
 utf8.gsub(str, "ло+", "보라")
--- пыщпыщ о보라보라 я водитель н보라	3
+-- пыщпыщ о보라보라 я водитель н보라    3
 utf8.raw.gsub(str, "ло+", "보라")
--- пыщпыщ о보라보라о я водитель н보라	3
+-- пыщпыщ о보라보라о я водитель н보라    3
 ```
 
 It also provides all functions from Lua 5.3 UTF-8 [module](https://www.lua.org/manual/5.3/manual.html#6.5) except `utf8.len (s [, i [, j]])`. If you need to validate your strings use `utf8.validate(str, byte_pos)` or iterate over with `utf8.validator`.

@@ -1,5 +1,5 @@
 local languageManager = require 'src.Modules.System.Utils.LanguageManager'
-local settings = {
+local settings = {--
     lpadding = 16,
     blank = function()end,
     fonts = {
