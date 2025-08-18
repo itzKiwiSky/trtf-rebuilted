@@ -72,7 +72,9 @@ function KittyAI.update(elapsed)
                 if KittyAI.patience >= 350 and not NightState.officeState.vent.left then
                     if not NightState.killed then
                         NightState.killed = true
-                        NightState.jumpscareController:init("kitty", 35)
+                        NightState.jumpscareController.id = "kitty"
+                        NightState.jumpscareController.speedAnim = 35
+                        NightState.jumpscareController.init()
                         NightState.jumpscareController.onComplete = function()
                             NightState.KilledBy = "kitty"
                             gamestate.switch(DeathState)

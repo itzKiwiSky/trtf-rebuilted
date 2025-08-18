@@ -25,7 +25,7 @@ function LoadingState:enter()
             frame = 1
         }
     }
-    self.lockjawdance.image,self.lockjawdance.quads = love.graphics.getQuads("assets/images/game/loading_lockjaw")
+    self.lockjawdance.image,self.lockjawdance.quads = love.graphics.newQuadFromImage("array", "assets/images/game/loading_lockjaw")
 
     self.ready = false
     self.pressToGO = false

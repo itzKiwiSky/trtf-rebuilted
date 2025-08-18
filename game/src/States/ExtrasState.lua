@@ -8,7 +8,8 @@ function ExtrasState:enter()
     self.fnt_extras = fontcache.getFont("ocrx", 28)
 
     self.categories = {
-        ["animatronics"] = require 'src.States.Substates.ExtraSubStates.Animatronics'
+        ["animatronics"] = require 'src.States.Substates.ExtraSubStates.Animatronics',
+        ["jumpscares"] = require 'src.States.Substates.ExtraSubStates.Jumpscares'
     }
 
     AudioSources["msc_extras_bg"]:play()
@@ -34,7 +35,6 @@ function ExtrasState:enter()
         table.insert(self.staticAnimationFX.frames, love.graphics.newImage("assets/images/game/effects/static3/" .. statics[s]))
     end
 
-
     self.shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
 
     self.menuItems = {
@@ -57,7 +57,10 @@ function ExtrasState:enter()
             {
                 text = languageService["extras_options_jumpscares"],
                 action = function()
+                    if self.currentCategory == "jumpscares" then return end
 
+                    self.currentCategory = "jumpscares"
+                    self.categories[self.currentCategory]:load()
                 end,
             },
             {
@@ -162,10 +165,6 @@ function ExtrasState:mousepressed(x, y, button)
     end
 
     self.categories[self.currentCategory]:mousepressed(x, y, button)
-end
-
-function ExtrasState:wheelmoved(x, y)
-    self.categories[self.currentCategory]:wheelmoved(x, y)
 end
 
 function ExtrasState:leave()

@@ -153,6 +153,11 @@
         "extras_category_animatronics": {
             "extras_category_animatronics_click" : "Click on the animatronics to switch to old version",
             "extras_category_animatronics_author" : "Model by:"
+        },
+        "extras_category_jumpscares": {
+            "extras_category_jumpscares_loading" : "Loading jumpscares",
+            "extras_category_jumpscares_allow_sound" : "Play sound",
+            "extras_category_jumpscares_show_UI" : "Show UI"
         }
     }
 }

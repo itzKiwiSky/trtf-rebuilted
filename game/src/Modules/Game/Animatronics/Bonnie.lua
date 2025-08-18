@@ -75,7 +75,9 @@ function BonnieAI.update(elapsed)
             if BonnieAI.patience >= 150 and not NightState.officeState.maskUp then
                 if not NightState.killed then
                     NightState.killed = true
-                    NightState.jumpscareController:init("bonnie", 35)
+                    NightState.jumpscareController.id = "bonnie"
+                    NightState.jumpscareController.speedAnim = 35
+                    NightState.jumpscareController.init()
                     NightState.jumpscareController.onComplete = function()
                         NightState.KilledBy = "bonnie"
                         gamestate.switch(DeathState)

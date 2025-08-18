@@ -73,7 +73,9 @@ function SugarAI.update(elapsed)
                 if SugarAI.patience >= 350 and not NightState.officeState.vent.left then
                     if not NightState.killed then
                         NightState.killed = true
-                        NightState.jumpscareController:init("sugar", 35)
+                    NightState.jumpscareController.id = "sugar"
+                    NightState.jumpscareController.speedAnim = 35
+                    NightState.jumpscareController.init()
                         NightState.jumpscareController.onComplete = function()
                             NightState.KilledBy = "sugar"
                             gamestate.switch(DeathState)

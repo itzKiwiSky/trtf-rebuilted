@@ -48,7 +48,7 @@ function Animatronics:load()
     self.animatronicsNames = {
         counter = 1,
         oldScale = 0.75,
-        newScale = 0.41,
+        newScale = 0.46,
         old = {
             "freddy",
             "bonnie",
@@ -121,18 +121,18 @@ function Animatronics:draw()
         love.graphics.setColor(1, 1, 1, 1)
         if not self.oldAnimatronics then
             local currentAnimatronic = self.animatronicsNames.new[self.animatronicsNames.counter]
-            love.graphics.draw(self.animatronics.new[currentAnimatronic], shove.getViewportWidth() / 2 + 20, 310, 0, self.animatronicsNames.newScale, self.animatronicsNames.newScale,
+            love.graphics.draw(self.animatronics.new[currentAnimatronic], shove.getViewportWidth() / 2 + 20, 350, 0, self.animatronicsNames.newScale, self.animatronicsNames.newScale,
                 self.animatronics.new[currentAnimatronic]:getWidth() / 2, self.animatronics.new[currentAnimatronic]:getHeight() / 2
             )
 
-            love.graphics.printf(self.names.new[self.animatronicsNames.counter].name, self.fnt_animatronics, (shove.getViewportWidth() / 2 + 20) - 256, 600, 512, "center")
+            love.graphics.printf(self.names.new[self.animatronicsNames.counter].name, self.fnt_animatronics, (shove.getViewportWidth() / 2 + 20) - 256, shove.getViewportHeight() / 2 - 360, 512, "center")
         else
             local currentAnimatronic = self.animatronicsNames.old[self.animatronicsNames.counter]
-            love.graphics.draw(self.animatronics.old[currentAnimatronic], shove.getViewportWidth() / 2 + 20, 310, 0, self.animatronicsNames.oldScale, self.animatronicsNames.oldScale,
+            love.graphics.draw(self.animatronics.old[currentAnimatronic], shove.getViewportWidth() / 2 + 20, 350, 0, self.animatronicsNames.oldScale, self.animatronicsNames.oldScale,
                 self.animatronics.old[currentAnimatronic]:getWidth() / 2, self.animatronics.old[currentAnimatronic]:getHeight() / 2
             )
 
-            love.graphics.printf(self.names.old[self.animatronicsNames.counter].name, self.fnt_animatronics, (shove.getViewportWidth() / 2 + 20) - 256, 600, 512, "center")
+            love.graphics.printf(self.names.old[self.animatronicsNames.counter].name, self.fnt_animatronics, (shove.getViewportWidth() / 2 + 20) - 256, shove.getViewportHeight() / 2 - 360, 512, "center")
         end
 
         local diff = self.buttons["right"].hitbox.x - (self.buttons["left"].hitbox.x + self.buttons["left"].hitbox.w)
@@ -183,10 +183,6 @@ function Animatronics:mousepressed(x, y, button)
             end
         end
     end
-end
-
-function Animatronics:wheelmoved(x, y)
-
 end
 
 return Animatronics

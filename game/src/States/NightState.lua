@@ -693,7 +693,7 @@ function NightState:draw()
             love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
         love.graphics.setColor(1, 1, 1, 1)
     end
-    self.jumpscareController:draw()
+    self.jumpscareController.draw()
 
     -- display --
     if self.nightTextDisplay.displayNightText then
@@ -1085,7 +1085,7 @@ function NightState:update(elapsed)
     self.maskController:update(elapsed)
 
     -- jumpscare --
-    self.jumpscareController:update(elapsed)
+    self.jumpscareController.update(elapsed)
 
     local mouseMove = 0
 

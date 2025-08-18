@@ -91,6 +91,7 @@ function love.initialize()
                 canContinue = false,
                 night = 1,
                 playingMinigame = false,
+                night8 = false,
                 minigameID = 0,
             }
 
@@ -150,6 +151,7 @@ function love.initialize()
 
     -- create a thread for ping into gamejolt --
     local GJPing = love.thread.newThread("src/Modules/Game/Utils/ThreadPing.lua")
+    local channel = love.thread.newChannel()
 
     GJPing:start(
         gameSave.save.user.settings.misc.gamejolt.username,
@@ -169,12 +171,6 @@ function love.initialize()
 
     gamestate.registerEvents()
     gamestate.switch(SplashState)
-end
-
-function love.update(elapsed)
-    if gamejolt.isLoggedIn then
-        heartbeatTimer:update(elapsed)
-    end
 end
 
 function love.quit()

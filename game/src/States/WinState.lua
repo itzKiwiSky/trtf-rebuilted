@@ -12,9 +12,7 @@ local function renderDigit(img, quads, x, y, ...)
     end
 end
 
-function WinState:enter()
-    subtitlesController.clear()
-    
+function WinState:enter()    
     self.ps_confetti = require 'src.Modules.Game.Utils.confettiParticles'
     for k, v in pairs(AudioSources) do
         v:stop()
@@ -31,8 +29,8 @@ function WinState:enter()
     self.digits = {
         glow = {}
     }
-    self.digits.img, self.digits.quads = love.graphics.getQuads("assets/images/game/display")
-    self.digits.glow.img, self.digits.glow.quads = love.graphics.getQuads("assets/images/game/display_glow")
+    self.digits.img, self.digits.quads = love.graphics.newQuadFromImage("array", "assets/images/game/display")
+    self.digits.glow.img, self.digits.glow.quads = love.graphics.newQuadFromImage("array", "assets/images/game/display_glow")
 
     self.curNumbers = {
         {1, 1, 1, 1, 1, 1, 1},

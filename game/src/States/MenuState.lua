@@ -229,7 +229,7 @@ function MenuState:enter()
                 text = languageService["menu_button_extras"],
                 locked = not gameSave.save.user.progress.extras,
                 action = function()
-                    
+                    gamestate.switch(ExtrasState)
                 end,
             },
             {
