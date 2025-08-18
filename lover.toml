@@ -1,7 +1,7 @@
 [package]
 name = "TRTF_Rebuilted"
-display_name = "The Return To Freddys"
-description = "Neonix! game"
+display_name = "RebuiltedAgain"
+description = "TRTF Fangame"
 author = "BrightSmileTeam and EclipseTeam"
 version = "0.0.1"
 icon = "game/icon.png"
