@@ -116,8 +116,6 @@ function ExtrasState:draw()
             love.graphics.draw(self.bg, 0, 0, 0, shove.getViewportWidth() / self.bg:getWidth(), shove.getViewportHeight() / self.bg:getHeight())
         end)
 
-        self.categories[self.currentCategory]:draw()
-
         love.graphics.setBlendMode("add")
             love.graphics.setColor(1, 1, 1, 0.12)
                 love.graphics.draw(self.staticAnimationFX.frames[self.staticAnimationFX.config.frameid], 0, 0)
@@ -125,6 +123,8 @@ function ExtrasState:draw()
         love.graphics.setBlendMode("alpha")
 
         love.graphics.draw(self.crtOverlay, 0, 0, 0, shove.getViewportWidth() / self.crtOverlay:getWidth(), shove.getViewportHeight() / self.crtOverlay:getHeight())
+
+        self.categories[self.currentCategory]:draw()
 
         if self.showExtrasOptions then
             love.graphics.print("Extras", self.fnt_extras_title, 64, 64)
