@@ -23,7 +23,7 @@ function Animatronics:load()
             { locked = false, animatronicID = "puppet", name = "Old Puppet", author = "Marco Antonio", isNew = false },
             { locked = false, animatronicID = "sugar", name = "Old Sugar", author = "Papas", isNew = false },
             { locked = false, animatronicID = "withered_sugar", name = "Old Withered Sugar", author = "Papas", isNew = false },
-            { locked = gameSave.save.user.progress.night8, animatronicID = "frankburt", name = "Old Frankburt", author = "Marco Antonio", isNew = false },
+            { locked = not gameSave.save.user.progress.night8, animatronicID = "frankburt", name = "Old Frankburt", author = "Marco Antonio", isNew = false },
         },
         new = {
             { locked = false, animatronicID = "freddy", name = "Freddy", author = "ElEternaut", isNew = false },
@@ -34,8 +34,8 @@ function Animatronics:load()
             { locked = false, animatronicID = "sugar", name = "Sugar", author = "ShotOfRabbet", isNew = false },
             { locked = false, animatronicID = "withered_sugar", name = "Withered Sugar", author = "ShotOfRabbet", isNew = false },
             { locked = false, animatronicID = "kitty_fazcat", name = "Kitty Fazcat", author = "ShotOfRabbet", isNew = true },
-            { locked = gameSave.save.user.progress.night8, animatronicID = "frankburt", name = "Frankburt", author = "ElEternaut", isNew = false },
-            { locked = gameSave.save.user.progress.night8, animatronicID = "yellow_bear", name = "Yellow Bear", author = "ElEternaut", isNew = true },
+            { locked = not gameSave.save.user.progress.night8, animatronicID = "frankburt", name = "Frankburt", author = "ElEternaut", isNew = false },
+            { locked = not gameSave.save.user.progress.night8, animatronicID = "yellow_bear", name = "Yellow Bear", author = "ElEternaut", isNew = true },
         }
     }
 
@@ -112,36 +112,53 @@ function Animatronics:load()
     self.buttons["animatronic"].hitbox = newButtonHitbox(self.buttons["animatronic"].x, self.buttons["animatronic"].y, 280, 450)
 
     self.shadowGlow = love.graphics.newImage("assets/images/game/effects/light.png")
+    self.lock = love.graphics.newImage("assets/images/game/lock.png")
+    self.light = love.graphics.newImage("assets/images/game/night8/lantern_light.png")
+
+    --print(inspect(self.names))
 end
 
 function Animatronics:draw()
     self.viewCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
+        love.graphics.setBlendMode("add")
+            love.graphics.draw(self.light, 650, 0, math.rad(-90), 0.75, 0.75, self.light:getWidth() / 2, self.light:getHeight() / 2)
+        love.graphics.setBlendMode("alpha")
+
         love.graphics.setColor(1, 1, 1, 0.4)
-            love.graphics.draw(self.shadowGlow, 650, 580, 0, 3.3, 1.2, self.shadowGlow:getWidth() / 2, self.shadowGlow:getHeight() / 2)
+            love.graphics.draw(self.shadowGlow, 650, 580, 0, 480 / self.shadowGlow:getWidth() , 256 / self.shadowGlow:getHeight(), self.shadowGlow:getWidth() / 2, self.shadowGlow:getHeight() / 2)
         love.graphics.setColor(1, 1, 1, 1)
         if not self.oldAnimatronics then
             local currentAnimatronic = self.animatronicsNames.new[self.animatronicsNames.counter]
-            if self.animatronics.new[currentAnimatronic].locked then
+            if self.names.new[self.animatronicsNames.counter].locked then
                 love.graphics.setColor(0, 0, 0, 1)
             end
             love.graphics.draw(self.animatronics.new[currentAnimatronic], shove.getViewportWidth() / 2 + 20, 350, 0, self.animatronicsNames.newScale, self.animatronicsNames.newScale,
                 self.animatronics.new[currentAnimatronic]:getWidth() / 2, self.animatronics.new[currentAnimatronic]:getHeight() / 2
             )
-            love.graphics.setColor(1, 1, 1, 1)
 
-            local name = self.animatronics.new[currentAnimatronic].locked and "??????" or self.names.new[self.animatronicsNames.counter].name
+            love.graphics.setColor(1, 1, 1, 1)
+            if self.names.new[self.animatronicsNames.counter].locked then
+                love.graphics.draw(self.lock, shove.getViewportWidth() / 2 + 20, 470, 0, 0.8, 0.8, self.lock:getWidth() / 2, self.lock:getHeight() / 2)
+            end
+
+
+            local name = self.names.new[self.animatronicsNames.counter].locked and "??????" or self.names.new[self.animatronicsNames.counter].name
             love.graphics.printf(name, self.fnt_animatronics, (shove.getViewportWidth() / 2 + 20) - 256, shove.getViewportHeight() / 2 - 360, 512, "center")
         else
             local currentAnimatronic = self.animatronicsNames.old[self.animatronicsNames.counter]
-            if self.animatronics.old[currentAnimatronic].locked then
+            if self.names.old[self.animatronicsNames.counter].locked then
                 love.graphics.setColor(0, 0, 0, 1)
             end
-            love.graphics.draw(self.animatronics.old[currentAnimatronic], shove.getViewportWidth() / 2 + 20, 350, 0, self.animatronicsNames.oldScale, self.animatronicsNames.oldScale,
+            love.graphics.draw(self.animatronics.old[currentAnimatronic], shove.getViewportWidth() / 2 + 20, 370, 0, self.animatronicsNames.oldScale, self.animatronicsNames.oldScale,
                 self.animatronics.old[currentAnimatronic]:getWidth() / 2, self.animatronics.old[currentAnimatronic]:getHeight() / 2
             )
             love.graphics.setColor(1, 1, 1, 1)
 
-            local name = self.animatronics.old[currentAnimatronic].locked and "??????" or self.names.old[self.animatronicsNames.counter].name
+            if self.names.old[self.animatronicsNames.counter].locked then
+                love.graphics.draw(self.lock, shove.getViewportWidth() / 2 + 20, 470, 0, 0.8, 0.8, self.lock:getWidth() / 2, self.lock:getHeight() / 2)
+            end
+
+            local name = self.names.old[self.animatronicsNames.counter].locked and "??????" or self.names.old[self.animatronicsNames.counter].name
             love.graphics.printf(name, self.fnt_animatronics, (shove.getViewportWidth() / 2 + 20) - 256, shove.getViewportHeight() / 2 - 360, 512, "center")
         end
 

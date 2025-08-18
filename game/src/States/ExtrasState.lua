@@ -5,7 +5,9 @@ local function newButtonHitbox(x, y, w, h)
 end
 
 function ExtrasState:enter()
+    self.showExtrasOptions = true
     self.fnt_extras = fontcache.getFont("ocrx", 28)
+    self.fnt_extras_title = fontcache.getFont("ocrx", 38)
 
     self.categories = {
         ["animatronics"] = require 'src.States.Substates.ExtraSubStates.Animatronics',
@@ -35,7 +37,15 @@ function ExtrasState:enter()
         table.insert(self.staticAnimationFX.frames, love.graphics.newImage("assets/images/game/effects/static3/" .. statics[s]))
     end
 
-    self.shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
+    self.fxBlurBG = moonshine(moonshine.effects.boxblur)
+    self.fxBlurBG.boxblur.radius = { 7, 7 }
+    self.shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.pixelate)
+    .chain(moonshine.effects.chromasep)
+
+    self.shd_effect.pixelate.feedback = 0.1
+    self.shd_effect.pixelate.size = { 1.5, 1.5 }
+
+    self.shd_effect.chromasep.radius = 1.25
 
     self.menuItems = {
         config = {
@@ -76,12 +86,6 @@ function ExtrasState:enter()
                 end,
             },
             {
-                text = languageService["extras_options_replay_night"],
-                action = function()
-
-                end,
-            },
-            {
                 text = languageService["extras_options_custom_night"],
                 action = function()
 
@@ -102,25 +106,33 @@ function ExtrasState:enter()
         e.hitbox = newButtonHitbox(self.menuItems.config.x, self.menuItems.config.startY, self.fnt_extras:getWidth(e.text) + 8, self.fnt_extras:getHeight() + 8)
         self.menuItems.config.startY = self.menuItems.config.startY + self.menuItems.config.paddingElements
     end
+
+    self.crtOverlay = love.graphics.newImage("assets/images/game/effects/perfect_crt_noframe.png")
 end
 
 function ExtrasState:draw()
-    self.shd_effect(function ()
-        love.graphics.draw(self.bg, 0, 0, 0, shove.getViewportWidth() / self.bg:getWidth(), shove.getViewportHeight() / self.bg:getHeight())
-        
+    self.shd_effect(function()
+        self.fxBlurBG(function()
+            love.graphics.draw(self.bg, 0, 0, 0, shove.getViewportWidth() / self.bg:getWidth(), shove.getViewportHeight() / self.bg:getHeight())
+        end)
+
+        self.categories[self.currentCategory]:draw()
+
         love.graphics.setBlendMode("add")
             love.graphics.setColor(1, 1, 1, 0.12)
                 love.graphics.draw(self.staticAnimationFX.frames[self.staticAnimationFX.config.frameid], 0, 0)
             love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
 
-        self.categories[self.currentCategory]:draw()
+        love.graphics.draw(self.crtOverlay, 0, 0, 0, shove.getViewportWidth() / self.crtOverlay:getWidth(), shove.getViewportHeight() / self.crtOverlay:getHeight())
 
-        love.graphics.print("extras", self.fnt_extras, 64, 64)
-        for _, e in ipairs(self.menuItems.elements) do
-            love.graphics.print(e.text, self.fnt_extras, self.menuItems.config.x + e.meta.offsetX, e.hitbox.y)
-            love.graphics.setColor(1, 1, 1, 1)
-            --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+        if self.showExtrasOptions then
+            love.graphics.print("Extras", self.fnt_extras_title, 64, 64)
+            for _, e in ipairs(self.menuItems.elements) do
+                love.graphics.print(e.text, self.fnt_extras, self.menuItems.config.x + e.meta.offsetX, e.hitbox.y)
+                love.graphics.setColor(1, 1, 1, 1)
+                --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+            end
         end
     end)
 end
@@ -140,33 +152,37 @@ function ExtrasState:update(elapsed)
         end
     end
 
-    for _, e in ipairs(self.menuItems.elements) do
-        --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
-        if collision.pointRect({ x = mx, y = my }, e.hitbox) then
-            e.meta.offsetX = math.lerp(e.meta.offsetX, self.menuItems.config.offsetX, 0.1)
-        else
-            e.meta.offsetX = math.lerp(e.meta.offsetX, 0, 0.1)
+    if self.showExtrasOptions then
+        for _, e in ipairs(self.menuItems.elements) do
+            --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+            if collision.pointRect({ x = mx, y = my }, e.hitbox) then
+                e.meta.offsetX = math.lerp(e.meta.offsetX, self.menuItems.config.offsetX, 0.1)
+            else
+                e.meta.offsetX = math.lerp(e.meta.offsetX, 0, 0.1)
+            end
+            
         end
-        
     end
 end
 
 function ExtrasState:mousepressed(x, y, button)
     local inside, mx, my = shove.mouseToViewport()
 
-    if button == 1 then
-        for _, e in ipairs(self.menuItems.elements) do
-            --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
-            if collision.pointRect({ x = mx, y = my }, e.hitbox) then
-                if not AudioSources["msc_extras_bg"]:isPlaying() then
-                    AudioSources["msc_extras_bg"]:play()
-                    AudioSources["msc_extras_bg"]:setLooping(true)
-                end
-                AudioSources["msc_extras_bg"]:setVolume(0.6)
+    if self.showExtrasOptions then
+        if button == 1 then
+            for _, e in ipairs(self.menuItems.elements) do
+                --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+                if collision.pointRect({ x = mx, y = my }, e.hitbox) then
+                    if not AudioSources["msc_extras_bg"]:isPlaying() then
+                        AudioSources["msc_extras_bg"]:play()
+                        AudioSources["msc_extras_bg"]:setLooping(true)
+                    end
+                    AudioSources["msc_extras_bg"]:setVolume(0.6)
 
-                e.action()
+                    e.action()
+                end
+                
             end
-            
         end
     end
 

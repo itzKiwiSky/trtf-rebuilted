@@ -1,5 +1,10 @@
 Jumpscares = {}
 Jumpscares.assets = {}
+Jumpscares.multimedia = {
+    showUI = true,
+    playing = true,
+    playSound = false,
+}
 Jumpscares.loaded = false
 
 local function newButtonHitbox(x, y, w, h)
@@ -88,7 +93,7 @@ function Jumpscares:load()
     self.buttons["left"] = {
         ignore = false,
         text = " << ",
-        x = shove.getViewportWidth() / 2 - 200,
+        x = shove.getViewportWidth() / 2 - 256,
         y = shove.getViewportHeight() / 2 + 270
     }
     self.buttons["left"].hitbox = newButtonHitbox(self.buttons["left"].x - 3, self.buttons["left"].y - 2, self.fnt_UI:getWidth(self.buttons["left"].text) + 8, self.fnt_UI:getHeight() + 8)
@@ -96,12 +101,16 @@ function Jumpscares:load()
     self.buttons["right"] = {
         ignore = false,
         text = " >> ",
-        x = self.buttons["left"].hitbox.x + self.buttons["left"].hitbox.w + 256,
+        x = shove.getViewportWidth() / 2 + 128,
         y = shove.getViewportHeight() / 2 + 270
     }
     self.buttons["right"].hitbox = newButtonHitbox(self.buttons["right"].x - 3, self.buttons["right"].y - 2, self.fnt_UI:getWidth(self.buttons["right"].text) + 8, self.fnt_UI:getHeight() + 8)
 
-    AudioSources["msc_extras_bg"]:setVolume(0.25)
+    AudioSources["msc_extras_bg"]:setVolume(0.1)
+
+    self.assets["multimedia"] = {}
+    self.assets["multimedia"].img = love.graphics.newImage("assets/images/game/multimedia.png")
+    self.assets["multimedia"].quads = love.graphics.getQuads(self.assets["multimedia"].img, "assets/images/game/multimedia.json", "hash")
 
     loveView.loadView("src/Modules/Game/Views/JumpscaresMultimedia.lua")
 end
@@ -142,7 +151,9 @@ function Jumpscares:update(elapsed)
         loveloader.update()
     else
         loveView.update(elapsed)
-        self.jumpscaresController.update(elapsed)
+        if self.multimedia.playing then
+            self.jumpscaresController.update(elapsed)
+        end
     end
 end
 
@@ -157,7 +168,7 @@ function Jumpscares:mousepressed(x, y, button)
                         self.animatronicCurrentID = self.animatronicCurrentID - 1
                         self.jumpscaresController.id = self.animatronicNames[self.animatronicCurrentID]
                         self.jumpscaresController.speedAnim = 36
-                        self.jumpscaresController:init()
+                        self.jumpscaresController.init()
                     end
                 end
                 if k == "right" then
@@ -165,7 +176,7 @@ function Jumpscares:mousepressed(x, y, button)
                         self.animatronicCurrentID = self.animatronicCurrentID + 1
                         self.jumpscaresController.id = self.animatronicNames[self.animatronicCurrentID]
                         self.jumpscaresController.speedAnim = 36
-                        self.jumpscaresController:init()
+                        self.jumpscaresController.init()
                     end
                 end
             end
