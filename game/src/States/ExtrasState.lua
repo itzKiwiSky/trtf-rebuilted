@@ -37,13 +37,13 @@ function ExtrasState:enter()
         table.insert(self.staticAnimationFX.frames, love.graphics.newImage("assets/images/game/effects/static3/" .. statics[s]))
     end
 
-    self.fxBlurBG = moonshine(moonshine.effects.boxblur)
+    self.fxBlurBG = moonshine(moonshine.effects.boxblur).chain(moonshine.effects.pixelate)
     self.fxBlurBG.boxblur.radius = { 7, 7 }
-    self.shd_effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.pixelate)
+    self.shd_effect = moonshine(moonshine.effects.crt)
     .chain(moonshine.effects.chromasep)
 
-    self.shd_effect.pixelate.feedback = 0.1
-    self.shd_effect.pixelate.size = { 1.5, 1.5 }
+    self.fxBlurBG.pixelate.feedback = 0.1
+    self.fxBlurBG.pixelate.size = { 1.5, 1.5 }
 
     self.shd_effect.chromasep.radius = 1.25
 

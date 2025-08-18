@@ -48,7 +48,7 @@ function Animatronics:load()
     self.animatronicsNames = {
         counter = 1,
         oldScale = 0.75,
-        newScale = 0.46,
+        newScale = 0.24,
         old = {
             "freddy",
             "bonnie",
