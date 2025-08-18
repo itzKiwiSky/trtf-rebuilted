@@ -114,14 +114,14 @@ function ExtrasState:draw()
             love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
 
+        self.categories[self.currentCategory]:draw()
+
         love.graphics.print("extras", self.fnt_extras, 64, 64)
         for _, e in ipairs(self.menuItems.elements) do
             love.graphics.print(e.text, self.fnt_extras, self.menuItems.config.x + e.meta.offsetX, e.hitbox.y)
             love.graphics.setColor(1, 1, 1, 1)
             --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
         end
-
-        self.categories[self.currentCategory]:draw()
     end)
 end
 
@@ -158,6 +158,12 @@ function ExtrasState:mousepressed(x, y, button)
         for _, e in ipairs(self.menuItems.elements) do
             --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
             if collision.pointRect({ x = mx, y = my }, e.hitbox) then
+                if not AudioSources["msc_extras_bg"]:isPlaying() then
+                    AudioSources["msc_extras_bg"]:play()
+                    AudioSources["msc_extras_bg"]:setLooping(true)
+                end
+                AudioSources["msc_extras_bg"]:setVolume(0.6)
+
                 e.action()
             end
             

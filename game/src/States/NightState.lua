@@ -96,6 +96,8 @@ function NightState:enter()
     self.ShakeController = require 'src.Modules.Game.Utils.ShakeController'
     self.doorParticle = require 'src.Modules.Game.Utils.ParticleDoor'
 
+    self.jumpscareController.visible = false
+
     self.phoneController:init(NightState.assets.phoneModel, 45, "ph")
     self.phoneController.visible = false
     self.phoneController.hitbox = {

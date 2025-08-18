@@ -195,6 +195,14 @@ function MenuState:enter()
         self.animatronicsAnim = loadAnimatronic(gameSave.save.user.progress.night)
     end
 
+    self.transitionFade = {
+        active = false,
+        target = nil,
+        fade = 0,
+        acc = 0,
+        maxTime = 0.12,
+    }
+
     -- buttons menu --
     self.mainMenuButtons = {
         config = {
@@ -222,14 +230,18 @@ function MenuState:enter()
                 text = languageService["menu_button_continue"],
                 locked = gameSave.save.user.progress.night <= 1,
                 action = function()
-                    
+                    NightState.nightID = gameSave.save.user.progress.night
+                    self.transitionFade.target = LoadingState
+                    self.transitionFade.active = true
                 end,
             },
             {
                 text = languageService["menu_button_extras"],
                 locked = not gameSave.save.user.progress.extras,
                 action = function()
-                    gamestate.switch(ExtrasState)
+                    --gamestate.switch(ExtrasState)
+                    self.transitionFade.target = ExtrasState
+                    self.transitionFade.active = true
                 end,
             },
             {
@@ -252,14 +264,6 @@ function MenuState:enter()
         volSong = 1,
         blackFade = 0,
         doTween = false,
-    }
-
-    self.transitionFade = {
-        active = false,
-        target = nil,
-        fade = 0,
-        acc = 0,
-        maxTime = 0.12,
     }
 
     self.fadeTween = {}

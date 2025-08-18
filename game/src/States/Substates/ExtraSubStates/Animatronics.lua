@@ -16,26 +16,26 @@ function Animatronics:load()
 
     self.names = {
         old = {
-            { animatronicID = "freddy", name = "Old Freddy", author = "Marco Antonio", isNew = false },
-            { animatronicID = "bonnie", name = "Old Bonnie", author = "Marco Antonio", isNew = false },
-            { animatronicID = "chica", name = "Old Chica", author = "Marco Antonio", isNew = false },
-            { animatronicID = "foxy", name = "Old Foxy", author = "Marco Antonio", isNew = false },
-            { animatronicID = "frankburt", name = "Old Frankburt", author = "Marco Antonio", isNew = false },
-            { animatronicID = "puppet", name = "Old Puppet", author = "Marco Antonio", isNew = false },
-            { animatronicID = "sugar", name = "Old Sugar", author = "Papas", isNew = false },
-            { animatronicID = "withered_sugar", name = "Old Withered Sugar", author = "Papas", isNew = false },
+            { locked = false, animatronicID = "freddy", name = "Old Freddy", author = "Marco Antonio", isNew = false },
+            { locked = false, animatronicID = "bonnie", name = "Old Bonnie", author = "Marco Antonio", isNew = false },
+            { locked = false, animatronicID = "chica", name = "Old Chica", author = "Marco Antonio", isNew = false },
+            { locked = false, animatronicID = "foxy", name = "Old Foxy", author = "Marco Antonio", isNew = false },
+            { locked = false, animatronicID = "puppet", name = "Old Puppet", author = "Marco Antonio", isNew = false },
+            { locked = false, animatronicID = "sugar", name = "Old Sugar", author = "Papas", isNew = false },
+            { locked = false, animatronicID = "withered_sugar", name = "Old Withered Sugar", author = "Papas", isNew = false },
+            { locked = gameSave.save.user.progress.night8, animatronicID = "frankburt", name = "Old Frankburt", author = "Marco Antonio", isNew = false },
         },
         new = {
-            { animatronicID = "freddy", name = "Freddy", author = "ElEternaut", isNew = false },
-            { animatronicID = "bonnie", name = "Bonnie", author = "ShotOfRabbet", isNew = false },
-            { animatronicID = "chica", name = "Chica", author = "ElEternaut", isNew = false },
-            { animatronicID = "foxy", name = "Foxy", author = "ElEternaut", isNew = false },
-            { animatronicID = "sugar", name = "Sugar", author = "ShotOfRabbet", isNew = false },
-            { animatronicID = "kitty_fazcat", name = "Kitty Fazcat", author = "ShotOfRabbet", isNew = true },
-            { animatronicID = "frankburt", name = "Frankburt", author = "ElEternaut", isNew = false },
-            { animatronicID = "puppet", name = "Puppet", author = "ElEternaut", isNew = false },
-            { animatronicID = "withered_sugar", name = "Withered Sugar", author = "ShotOfRabbet", isNew = false },
-            { animatronicID = "yellow_bear", name = "Yellow Bear", author = "ElEternaut", isNew = true },
+            { locked = false, animatronicID = "freddy", name = "Freddy", author = "ElEternaut", isNew = false },
+            { locked = false, animatronicID = "bonnie", name = "Bonnie", author = "ShotOfRabbet", isNew = false },
+            { locked = false, animatronicID = "chica", name = "Chica", author = "ElEternaut", isNew = false },
+            { locked = false, animatronicID = "foxy", name = "Foxy", author = "ElEternaut", isNew = false },
+            { locked = false, animatronicID = "puppet", name = "Puppet", author = "ElEternaut", isNew = false },
+            { locked = false, animatronicID = "sugar", name = "Sugar", author = "ShotOfRabbet", isNew = false },
+            { locked = false, animatronicID = "withered_sugar", name = "Withered Sugar", author = "ShotOfRabbet", isNew = false },
+            { locked = false, animatronicID = "kitty_fazcat", name = "Kitty Fazcat", author = "ShotOfRabbet", isNew = true },
+            { locked = gameSave.save.user.progress.night8, animatronicID = "frankburt", name = "Frankburt", author = "ElEternaut", isNew = false },
+            { locked = gameSave.save.user.progress.night8, animatronicID = "yellow_bear", name = "Yellow Bear", author = "ElEternaut", isNew = true },
         }
     }
 
@@ -54,22 +54,22 @@ function Animatronics:load()
             "bonnie",
             "chica",
             "foxy",
-            "frankburt",
             "puppet",
             "sugar",
             "withered_sugar",
+            "frankburt",
         },
         new = {
             "freddy",
             "bonnie",
             "chica",
             "foxy",
+            "puppet",
             "sugar",
+            "withered_sugar",
             "kitty_fazcat",
             "frankburt",
-            "puppet",
-            "withered_sugar",
-            "yellow_bear"
+            "yellow_bear",
         }
     }
 
@@ -121,18 +121,28 @@ function Animatronics:draw()
         love.graphics.setColor(1, 1, 1, 1)
         if not self.oldAnimatronics then
             local currentAnimatronic = self.animatronicsNames.new[self.animatronicsNames.counter]
+            if self.animatronics.new[currentAnimatronic].locked then
+                love.graphics.setColor(0, 0, 0, 1)
+            end
             love.graphics.draw(self.animatronics.new[currentAnimatronic], shove.getViewportWidth() / 2 + 20, 350, 0, self.animatronicsNames.newScale, self.animatronicsNames.newScale,
                 self.animatronics.new[currentAnimatronic]:getWidth() / 2, self.animatronics.new[currentAnimatronic]:getHeight() / 2
             )
+            love.graphics.setColor(1, 1, 1, 1)
 
-            love.graphics.printf(self.names.new[self.animatronicsNames.counter].name, self.fnt_animatronics, (shove.getViewportWidth() / 2 + 20) - 256, shove.getViewportHeight() / 2 - 360, 512, "center")
+            local name = self.animatronics.new[currentAnimatronic].locked and "??????" or self.names.new[self.animatronicsNames.counter].name
+            love.graphics.printf(name, self.fnt_animatronics, (shove.getViewportWidth() / 2 + 20) - 256, shove.getViewportHeight() / 2 - 360, 512, "center")
         else
             local currentAnimatronic = self.animatronicsNames.old[self.animatronicsNames.counter]
+            if self.animatronics.old[currentAnimatronic].locked then
+                love.graphics.setColor(0, 0, 0, 1)
+            end
             love.graphics.draw(self.animatronics.old[currentAnimatronic], shove.getViewportWidth() / 2 + 20, 350, 0, self.animatronicsNames.oldScale, self.animatronicsNames.oldScale,
                 self.animatronics.old[currentAnimatronic]:getWidth() / 2, self.animatronics.old[currentAnimatronic]:getHeight() / 2
             )
+            love.graphics.setColor(1, 1, 1, 1)
 
-            love.graphics.printf(self.names.old[self.animatronicsNames.counter].name, self.fnt_animatronics, (shove.getViewportWidth() / 2 + 20) - 256, shove.getViewportHeight() / 2 - 360, 512, "center")
+            local name = self.animatronics.old[currentAnimatronic].locked and "??????" or self.names.old[self.animatronicsNames.counter].name
+            love.graphics.printf(name, self.fnt_animatronics, (shove.getViewportWidth() / 2 + 20) - 256, shove.getViewportHeight() / 2 - 360, 512, "center")
         end
 
         local diff = self.buttons["right"].hitbox.x - (self.buttons["left"].hitbox.x + self.buttons["left"].hitbox.w)
@@ -172,7 +182,6 @@ function Animatronics:mousepressed(x, y, button)
                 end
                 if k == "right" then
                     local nameCount = self.oldAnimatronics and #self.animatronicsNames.old or #self.animatronicsNames.new
-                    print(nameCount)
                     if self.animatronicsNames.counter < nameCount then
                         self.animatronicsNames.counter = self.animatronicsNames.counter + 1
                     end

@@ -145,20 +145,24 @@ return function()
     loveloader.newImage(assets, "phone_accept", "assets/images/game/night/phone/UI/phone_accept_button.png")
 
     -- jumpscares --
-    assets["jumpscares"] = {}
-    local jmps = fsutil.scanFolder("assets/images/game/night/jumpscares", true)
-    for _, j in ipairs(jmps) do
-        local isFolder = love.filesystem.getInfo(j).type == "directory"
-        local folderName = j:match("[^/]+$")
-        if isFolder then
-            local fls = love.filesystem.getDirectoryItems(j)
-            assets["jumpscares"][folderName] = {}
-            assets["jumpscares"][folderName].frameCount = 0
-            for f = 1, #fls, 1 do
-                loveloader.newImage(assets["jumpscares"][folderName], "jmp_" .. f, j .. "/" .. fls[f])
-                assets["jumpscares"][folderName].frameCount = f
+        local jmps = fsutil.scanFolder("assets/images/game/night/jumpscares", true)
+        for _, j in ipairs(jmps) do
+            local isFolder = love.filesystem.getInfo(j).type == "directory"
+            local folderName = j:match("[^/]+$")
+            if isFolder then
+                local fls = love.filesystem.getDirectoryItems(j)
+                assets[folderName] = {}
+                assets[folderName].frameCount = 0
+                if folderName == "freddy_power_out" then
+                    table.sort(fls, function(a, b)
+                        return tonumber(a:match("^(%d+)")) < tonumber(b:match("^(%d+)"))
+                    end)
+                end
+                for f, v in ipairs(fls) do
+                    loveloader.newImage(assets[folderName], "jmp_" .. f, j .. "/" .. fls[f])
+                    assets[folderName].frameCount = f
+                end
             end
         end
-    end
     return assets
 end

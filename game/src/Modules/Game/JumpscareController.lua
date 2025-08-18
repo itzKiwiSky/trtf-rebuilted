@@ -1,7 +1,7 @@
 local JumpscareController = {}
 
 JumpscareController.frames = NightState.assets.jumpscares
-JumpscareController.selfDisable = true
+JumpscareController.visible = false
 JumpscareController.id = ""
 JumpscareController.frame = 1
 JumpscareController.acc = 0
@@ -9,14 +9,18 @@ JumpscareController.speedAnim = 32
 JumpscareController.active = false
 JumpscareController.playAudio = true
 JumpscareController.audioVolume = 1.5
+JumpscareController.stopAllAudio = true
 JumpscareController.onComplete = function()end
 
 function JumpscareController.init()
     JumpscareController.frame = 1
     JumpscareController.active = true
+    JumpscareController.visible = true
 
-    for k, v in pairs(AudioSources) do
-        v:stop()
+    if JumpscareController.stopAllAudio then
+        for k, v in pairs(AudioSources) do
+            v:stop()
+        end
     end
 
     if JumpscareController.playAudio then
@@ -26,7 +30,7 @@ function JumpscareController.init()
 end
 
 function JumpscareController.draw()
-    if JumpscareController.active then
+    if JumpscareController.visible then
         if JumpscareController.frames[JumpscareController.id]["jmp_" .. JumpscareController.frame] then
             love.graphics.draw(JumpscareController.frames[JumpscareController.id]["jmp_" .. JumpscareController.frame], 0, 0, 0, 
                 shove.getViewportWidth() / JumpscareController.frames[JumpscareController.id]["jmp_" .. JumpscareController.frame]:getWidth(), 
@@ -44,10 +48,8 @@ function JumpscareController.update(elapsed)
             JumpscareController.frame = JumpscareController.frame + 1
             if JumpscareController.frame >= JumpscareController.frames[JumpscareController.id].frameCount - 1 then
                 JumpscareController.frame = JumpscareController.frames[JumpscareController.id].frameCount
+                JumpscareController.active = false
                 JumpscareController.onComplete()
-                if JumpscareController.selfDisable then
-                    JumpscareController.active = false
-                end
             end
         end
     end
