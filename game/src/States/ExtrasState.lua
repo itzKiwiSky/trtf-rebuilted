@@ -48,7 +48,10 @@ function ExtrasState:enter()
             {
                 text = languageService["extras_options_animatronics"],
                 action = function()
+                    if self.currentCategory == "animatronics" then return end
 
+                    self.currentCategory = "animatronics"
+                    self.categories[self.currentCategory]:load()
                 end,
             },
             {
@@ -110,9 +113,6 @@ function ExtrasState:draw()
 
         love.graphics.print("extras", self.fnt_extras, 64, 64)
         for _, e in ipairs(self.menuItems.elements) do
-            if e.locked then
-                love.graphics.setColor(0.5, 0.5, 0.5, 1)
-            end
             love.graphics.print(e.text, self.fnt_extras, self.menuItems.config.x + e.meta.offsetX, e.hitbox.y)
             love.graphics.setColor(1, 1, 1, 1)
             --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
@@ -146,6 +146,22 @@ function ExtrasState:update(elapsed)
         end
         
     end
+end
+
+function ExtrasState:mousepressed(x, y, button)
+    local inside, mx, my = shove.mouseToViewport()
+
+    if button == 1 then
+        for _, e in ipairs(self.menuItems.elements) do
+            --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+            if collision.pointRect({ x = mx, y = my }, e.hitbox) then
+                e.action()
+            end
+            
+        end
+    end
+
+    self.categories[self.currentCategory]:mousepressed(x, y, button)
 end
 
 function ExtrasState:wheelmoved(x, y)
