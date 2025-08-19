@@ -1,4 +1,4 @@
-Jumpscares = {}
+local Jumpscares = {}
 Jumpscares.assets = {}
 Jumpscares.multimedia = {
     showUI = true,

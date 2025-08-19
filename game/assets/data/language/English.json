@@ -1,6 +1,9 @@
 {
     "__ENGINE__" : {
-        "voicelinePath" : "assets/sounds/night/calls/EN"
+        "voicelinePath" : "assets/sounds/night/calls/EN",
+        "creditsPath" : "assets/data/language/en_credits.txt",
+        "classicModePath" : "assets/data/language/classic_mode_english.txt",
+        "freeRoamPath" : "assets/data/language/free_roam_english.txt"
     },
     "warn" : {
         "warn_title" : "[WARNING]",

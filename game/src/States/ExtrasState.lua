@@ -11,7 +11,9 @@ function ExtrasState:enter()
 
     self.categories = {
         ["animatronics"] = require 'src.States.Substates.ExtraSubStates.Animatronics',
-        ["jumpscares"] = require 'src.States.Substates.ExtraSubStates.Jumpscares'
+        ["jumpscares"] = require 'src.States.Substates.ExtraSubStates.Jumpscares',
+        ["bts"] = require 'src.States.Substates.ExtraSubStates.BehindTheScenes',
+        ["minigames"] = require 'src.States.Substates.ExtraSubStates.Minigames'
     }
 
     AudioSources["msc_extras_bg"]:play()
