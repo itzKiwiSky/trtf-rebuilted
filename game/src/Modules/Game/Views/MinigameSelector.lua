@@ -18,7 +18,11 @@ return function()
     local startY = 64
     local padding = 32
     local r, c = 0, 0
-    local minigameList = love.filesystem.getDirectoryItems("src/Modules/Game/Minigame/Events")
+    local m = love.filesystem.getDirectoryItems("src/Modules/Game/Minigame/Events")
+    local minigameList = {}
+    for i, v in ipairs(m) do
+        minigameList[v:gsub("%.lua", "")] = v:gsub("%.lua", "")
+    end
     for key, value in spairs(min.assets) do
         local img = loveframes.Create("image")
         img:SetImage(min.assets[key])
@@ -35,8 +39,9 @@ return function()
         btnhitbox:SetSize(img:GetSize())
         btnhitbox.drawfunc = settings.blank
         btnhitbox.OnClick = function(obj)
+            MinigameSceneState.isExtras = true
+            MinigameSceneState.currentMinigame = key:gsub("%.lua", "")
             gamestate.push(MinigameSceneState)
-            MinigameSceneState:bootMinigame(k:gsub("%.lua", ""))
         end
     end
 end

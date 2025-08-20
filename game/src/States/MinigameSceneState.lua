@@ -2,6 +2,7 @@ MinigameSceneState = {}
 
 MinigameSceneState.currentMinigame = "debug"
 MinigameSceneState.script = nil
+MinigameSceneState.isExtras = true
 
 local function getTableByName(tbl, val)
     for _, t in ipairs(tbl) do
@@ -30,10 +31,8 @@ function MinigameSceneState:enter()
     AudioSources["sfx_minigame_loop_bg"]:setVolume(0.5)
 
     self.faces = {}
-    self.canDisplayFace = false
     self.displayFace = {
         currentFace = "",
-        flash = true,
         black = false,
         visible = false,
         flashCount = 0,
@@ -41,22 +40,29 @@ function MinigameSceneState:enter()
     }
 
     self.displayFace.flashTimer:script(function(sleep)
-        sleep(3)
-        while self.displayFace.flashCount < 25 do
-            self.displayFace.visible = not self.displayFace.visible
-            sleep(0.05)
-            self.displayFace.flashCount = self.displayFace.flashCount + 1
+        if not self.isExtras then
+            sleep(3)
+            while self.displayFace.flashCount < 25 do
+                self.displayFace.visible = not self.displayFace.visible
+                sleep(0.05)
+                self.displayFace.flashCount = self.displayFace.flashCount + 1
+            end
+            sleep(0.01)
+            for k, v in pairs(AudioSources) do
+                v:stop()
+            end
+            self.displayFace.visible = true
+            sleep(3)
         end
-        sleep(0.01)
-        for k, v in pairs(AudioSources) do
-            v:stop()
-        end
-        self.displayFace.visible = true
-        sleep(3)
+        sleep(1)
         self.displayFace.visible = false
         self.displayFace.black = true
         sleep(1.55)
-        gamestate.switch(MenuState)
+        if not self.isExtras then
+            gamestate.switch(MenuState)
+        else
+            gamestate.pop()
+        end
     end)
 
     local files = love.filesystem.getDirectoryItems("assets/images/game/minigames/aftergame")
@@ -275,13 +281,6 @@ function MinigameSceneState:enter()
     if self.script.init then
         self.script.init()
     end
-end
-
-function MinigameSceneState:bootMinigame(id)
-    if self.minigames[id] == nil then return end
-
-    self.script = self.minigames[id]
-    self.script.init()
 end
 
 function MinigameSceneState:draw()

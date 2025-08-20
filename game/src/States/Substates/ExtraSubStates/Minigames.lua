@@ -11,8 +11,6 @@ function Minigames:load()
         self.assets[file:gsub("%.[^.]+$", "")] = love.graphics.newImage("assets/images/game/extras/thumbs/" .. file)
     end
 
-    print(inspect(self.assets))
-
     loveView.loadView("src/Modules/Game/Views/MinigameSelector.lua")
 end
 
