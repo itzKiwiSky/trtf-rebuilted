@@ -30,6 +30,7 @@ function MinigameSceneState:enter()
     AudioSources["sfx_minigame_loop_bg"]:setVolume(0.5)
 
     self.faces = {}
+    self.canDisplayFace = false
     self.displayFace = {
         currentFace = "",
         flash = true,
@@ -150,7 +151,7 @@ function MinigameSceneState:enter()
     local minigameList = love.filesystem.getDirectoryItems("src/Modules/Game/Minigame/Events")
 
     for _, m in ipairs(minigameList) do
-        minigames[m:gsub("%.lua", "")] = require("src.Modules.Game.Minigame.Events." .. m:gsub("%.lua", ""))
+        self.minigames[m:gsub("%.lua", "")] = require("src.Modules.Game.Minigame.Events." .. m:gsub("%.lua", ""))
     end
 
     minigameList = nil

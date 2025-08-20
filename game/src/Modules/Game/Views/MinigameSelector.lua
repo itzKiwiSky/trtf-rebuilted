@@ -35,7 +35,8 @@ return function()
         btnhitbox:SetSize(img:GetSize())
         btnhitbox.drawfunc = settings.blank
         btnhitbox.OnClick = function(obj)
-            
+            gamestate.push(MinigameSceneState)
+            MinigameSceneState:bootMinigame(k:gsub("%.lua", ""))
         end
     end
 end
