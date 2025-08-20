@@ -5,6 +5,7 @@ local function newButtonHitbox(x, y, w, h)
 end
 
 function ExtrasState:enter()
+    self.isJumpcareLoading = false
     self.showExtrasOptions = true
     self.fnt_extras = fontcache.getFont("ocrx", 28)
     self.fnt_extras_title = fontcache.getFont("ocrx", 38)
@@ -84,7 +85,10 @@ function ExtrasState:enter()
             {
                 text = languageService["extras_options_minigames"],
                 action = function()
+                    if self.currentCategory == "minigames" then return end
 
+                    self.currentCategory = "minigames"
+                    self.categories[self.currentCategory]:load()
                 end,
             },
             {
@@ -154,6 +158,10 @@ function ExtrasState:update(elapsed)
         end
     end
 
+    if Controller:pressed("ui_back") then
+        gamestate.switch(MenuState)
+    end
+
     if self.showExtrasOptions then
         for _, e in ipairs(self.menuItems.elements) do
             --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
@@ -170,7 +178,7 @@ end
 function ExtrasState:mousepressed(x, y, button)
     local inside, mx, my = shove.mouseToViewport()
 
-    if self.showExtrasOptions then
+    if self.showExtrasOptions and not self.isJumpcareLoading then
         if button == 1 then
             for _, e in ipairs(self.menuItems.elements) do
                 --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)

@@ -146,7 +146,7 @@ function MinigameSceneState:enter()
     --    ["foxy"] = require 'src.Modules.Game.Minigame.Events.MinigameFoxy'
     --}
 
-    local minigames = {}
+    self.minigames = {}
     local minigameList = love.filesystem.getDirectoryItems("src/Modules/Game/Minigame/Events")
 
     for _, m in ipairs(minigameList) do
@@ -160,7 +160,7 @@ function MinigameSceneState:enter()
     self.displayText = ""
     self.displayDate = ""
     self.fnt_text = fontcache.getFont("vcr", 34)
-    self.script = minigames[self.currentMinigame] or {}
+    self.script = self.minigames[self.currentMinigame] or {}
     
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
@@ -175,10 +175,10 @@ function MinigameSceneState:enter()
                     self.player.maxCooldown = Slab.GetInputNumber()
                 end
                 Slab.Separator()
-                for name, script in spairs(minigames) do
+                for name, script in spairs(self.minigames) do
                     if Slab.Button(name) then
                         self.currentMinigame = name
-                        self.script = minigames[self.currentMinigame]
+                        self.script = self.minigames[self.currentMinigame]
                         self.script.init()
                     end
                 end
@@ -274,6 +274,13 @@ function MinigameSceneState:enter()
     if self.script.init then
         self.script.init()
     end
+end
+
+function MinigameSceneState:bootMinigame(id)
+    if self.minigames[id] == nil then return end
+
+    self.script = self.minigames[id]
+    self.script.init()
 end
 
 function MinigameSceneState:draw()
