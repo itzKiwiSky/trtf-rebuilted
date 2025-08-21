@@ -3,6 +3,7 @@
 local LoveView = {}
 
 LoveView.isEventRegistered = false  ---@type boolean
+LoveView.ignoreRegisteredEvents = false ---@type boolean
 
 LoveView.views = {}     ---@type table<loveView.view>
 
@@ -39,6 +40,8 @@ end
 function LoveView.loadView(path)
     assert(loveframes ~= nil, "[ERROR] : Loveframes not found")
     assert(type(path) == "string", "[ERROR] : Expected type 'string' for path, got: " .. type(path))
+
+    LoveView.ignoreRegisteredEvents = false
 
     -- clear old view --
     loveframes.RemoveAll()
@@ -93,7 +96,7 @@ function LoveView.registerLoveframesEvents()
         ogFuncs[event] = love[event] or blank
         love[event] = function (...)
             ogFuncs[event](...)
-            if loveframes[event] then
+            if loveframes[event] and not loveView.ignoreRegisteredEvents then
                 local sucess, err = pcall(loveframes[event], ...)
                 if err then
                     print(err)

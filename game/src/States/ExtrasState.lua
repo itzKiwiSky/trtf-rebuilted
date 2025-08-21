@@ -207,6 +207,8 @@ function ExtrasState:leave()
     for _, f in ipairs(self.staticAnimationFX.frames) do
         f:release()
     end
+
+    loveView.ignoreRegisteredEvents = true
 end
 
 return ExtrasState

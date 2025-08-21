@@ -21,7 +21,7 @@ return function()
     local m = love.filesystem.getDirectoryItems("src/Modules/Game/Minigame/Events")
     local minigameList = {}
     for i, v in ipairs(m) do
-        minigameList[v:gsub("%.lua", "")] = v:gsub("%.lua", "")
+        minigameList[string.lower(v:gsub("%.lua", ""))] = v:gsub("%.lua", "")
     end
     for key, value in spairs(min.assets) do
         local img = loveframes.Create("image")
@@ -40,8 +40,10 @@ return function()
         btnhitbox.drawfunc = settings.blank
         btnhitbox.OnClick = function(obj)
             MinigameSceneState.isExtras = true
-            MinigameSceneState.currentMinigame = key:gsub("%.lua", "")
-            gamestate.push(MinigameSceneState)
+            print(inspect(minigameList), key, value)
+            MinigameSceneState.currentMinigame = minigameList[key:gsub("%.lua", "")]:gsub("%.lua", "")
+            --MinigameSceneState:bootMinigame(key:gsub("%.lua", ""))
+            gamestate.switch(MinigameSceneState)
         end
     end
 end

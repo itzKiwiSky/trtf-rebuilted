@@ -39,6 +39,19 @@ function MinigameSceneState:enter()
         flashTimer = timer.new(),
     }
 
+    self.minigames = {}
+    local minigameList = love.filesystem.getDirectoryItems("src/Modules/Game/Minigame/Events")
+
+    for _, m in ipairs(minigameList) do
+        self.minigames[m:gsub("%.lua", "")] = require("src.Modules.Game.Minigame.Events." .. m:gsub("%.lua", ""))
+    end
+
+    print(inspect(self.minigames))
+
+    minigameList = nil
+
+    collectgarbage("collect")
+
     self.displayFace.flashTimer:script(function(sleep)
         if not self.isExtras then
             sleep(3)
@@ -61,7 +74,7 @@ function MinigameSceneState:enter()
         if not self.isExtras then
             gamestate.switch(MenuState)
         else
-            gamestate.pop()
+            gamestate.switch(ExtrasState)
         end
     end)
 
@@ -153,21 +166,10 @@ function MinigameSceneState:enter()
     --    ["foxy"] = require 'src.Modules.Game.Minigame.Events.MinigameFoxy'
     --}
 
-    self.minigames = {}
-    local minigameList = love.filesystem.getDirectoryItems("src/Modules/Game/Minigame/Events")
-
-    for _, m in ipairs(minigameList) do
-        self.minigames[m:gsub("%.lua", "")] = require("src.Modules.Game.Minigame.Events." .. m:gsub("%.lua", ""))
-    end
-
-    minigameList = nil
-
-    collectgarbage("collect")
-
     self.displayText = ""
     self.displayDate = ""
     self.fnt_text = fontcache.getFont("vcr", 34)
-    self.script = self.minigames[self.currentMinigame] or {}
+    self.script = self.minigames[self.currentMinigame]
     
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
@@ -278,7 +280,7 @@ function MinigameSceneState:enter()
     }
 
     -- only execute scripted minigames if is a valid minigame script --
-    if self.script.init then
+    if self.script.init ~= nil then
         self.script.init()
     end
 end
