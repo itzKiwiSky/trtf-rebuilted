@@ -218,7 +218,7 @@ function MinigameSceneState:enter()
         if animatronic == "bonnie" then
             anim["misc"] = { self.animationsAnimatronics[animatronic .. "_" .. 8], self.animationsAnimatronics[animatronic .. "_" .. 9] }
             anim["idle"] = self.animationsAnimatronics[animatronic .. "_" .. 10]
-        else
+        elseif animatronic ~= "lockjaw" then
             anim["idle"] = self.animationsAnimatronics[animatronic .. "_" .. 8]
         end
 

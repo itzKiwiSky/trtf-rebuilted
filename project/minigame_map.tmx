@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="14" nextobjectid="261">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="15" nextobjectid="320">
  <editorsettings>
   <export target="../game/assets/images/game/minigames/minigame_map.lua" format="lua"/>
  </editorsettings>
@@ -9,7 +9,7 @@
  <objectgroup id="12" name="map_img" locked="1">
   <object id="239" gid="1" x="0" y="1136" width="1072" height="1136"/>
  </objectgroup>
- <objectgroup color="#11ffdb" id="4" name="areas">
+ <objectgroup color="#11ffdb" id="4" name="areas" visible="0" locked="1">
   <properties>
    <property name="debug_color" type="color" value="#ff4cc764"/>
   </properties>
@@ -104,7 +104,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup color="#d9b225" id="6" name="collision">
+ <objectgroup color="#d9b225" id="6" name="collision" locked="1">
   <properties>
    <property name="debug_color" type="color" value="#ffdfb22b"/>
   </properties>
@@ -204,13 +204,160 @@
   <object id="184" name="chica" x="339" y="22" width="16" height="16"/>
   <object id="185" name="foxy" x="32" y="282" width="16" height="16"/>
   <object id="254" name="sugar" x="64" y="112" width="16" height="16"/>
+  <object id="315" name="spawn_gift" x="100" y="96.5" width="16" height="16"/>
   <object id="226" name="spawn_key" x="396.182" y="1066.36" width="16" height="16"/>
-  <object id="227" name="shadow_dug" x="416" y="880" width="16" height="16"/>
+  <object id="227" name="spawn_big_table" x="420" y="904" width="16" height="16"/>
+  <object id="304" name="spawn_box" x="460.75" y="837.25" width="16" height="16"/>
+  <object id="305" name="spawn_box" x="475.25" y="899.75" width="16" height="16"/>
+  <object id="306" name="spawn_box" x="269.5" y="909.75" width="16" height="16"/>
+  <object id="307" name="spawn_box" x="347.25" y="837.5" width="16" height="16"/>
+  <object id="308" name="spawn_box" x="195" y="911" width="16" height="16"/>
+  <object id="309" name="spawn_box" x="223.5" y="924" width="16" height="16"/>
+  <object id="310" name="spawn_box" x="217" y="897.25" width="16" height="16"/>
+  <object id="311" name="spawn_box" x="237.5" y="907.5" width="16" height="16"/>
+  <object id="312" name="spawn_box" x="288" y="1024" width="16" height="16"/>
+  <object id="313" name="spawn_box" x="287.5" y="1058.5" width="16" height="16"/>
+  <object id="314" name="spawn_box" x="300.5" y="1040.5" width="16" height="16"/>
   <object id="228" name="child" x="784" y="96" width="16" height="16"/>
   <object id="235" name="bonnie_child_minigame" x="862" y="118.458" width="16" height="16"/>
   <object id="246" name="child" x="784" y="128" width="16" height="16"/>
   <object id="247" name="child" x="944" y="96" width="16" height="16"/>
   <object id="248" name="child" x="784" y="160" width="16" height="16"/>
+  <object id="262" name="child_freddy_minigame" x="248.917" y="86.0833" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="273" name="child_freddy_minigame" x="267.417" y="102.833" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="274" name="child_freddy_minigame" x="228.417" y="70.5833" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="275" name="child_freddy_minigame" x="214.167" y="81.0833" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="276" name="child_freddy_minigame" x="226.167" y="102.083" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="277" name="child_freddy_minigame" x="214.167" y="126.333" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="278" name="child_freddy_minigame" x="244.917" y="124.083" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="279" name="child_freddy_minigame" x="276.167" y="138.833" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="285" name="child_freddy_minigame" x="217.75" y="287.5" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="286" name="child_freddy_minigame" x="192.167" y="278.25" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="287" name="child_freddy_minigame" x="210.5" y="258.417" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="288" name="child_freddy_minigame" x="211" y="313.5" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="289" name="child_freddy_minigame" x="381.667" y="255.833" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="290" name="child_freddy_minigame" x="359.167" y="263.833" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="293" name="child_freddy_minigame" x="250.667" y="430.333" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="294" name="child_freddy_minigame" x="251.167" y="468.333" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="295" name="child_freddy_minigame" x="255" y="507.5" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="300" name="child_freddy_minigame" x="349" y="454.5" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="296" name="child_freddy_minigame" x="373.667" y="483.167" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="297" name="child_freddy_minigame" x="352" y="470.5" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="291" name="child_freddy_minigame" x="629.667" y="254.833" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="292" name="child_freddy_minigame" x="585.667" y="322.333" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="false"/>
+   </properties>
+  </object>
+  <object id="280" name="child_freddy_minigame" x="386.167" y="96.8333" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="282" name="child_freddy_minigame" x="360.417" y="115.583" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="283" name="child_freddy_minigame" x="385.167" y="136.333" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="284" name="child_freddy_minigame" x="339.167" y="97.3333" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="281" name="child_freddy_minigame" x="361.917" y="78.3333" width="16" height="16">
+   <properties>
+    <property name="flipped" type="bool" value="true"/>
+   </properties>
+  </object>
   <object id="251" name="barrier_big" x="640" y="416" width="16" height="48">
    <properties>
     <property name="collision" type="bool" value="true"/>
@@ -225,5 +372,9 @@
     <property name="collision" type="bool" value="true"/>
    </properties>
   </object>
+  <object id="316" name="spawn_gift" x="353.5" y="519.5" width="16" height="16"/>
+  <object id="317" name="spawn_gift" x="377.5" y="872.5" width="16" height="16"/>
+  <object id="318" name="spawn_gift" x="511" y="744" width="16" height="16"/>
+  <object id="319" name="spawn_gift" x="397" y="1053" width="16" height="16"/>
  </objectgroup>
 </map>

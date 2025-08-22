@@ -191,7 +191,6 @@ function ExtrasState:mousepressed(x, y, button)
 
                     e.action()
                 end
-                
             end
         end
     end

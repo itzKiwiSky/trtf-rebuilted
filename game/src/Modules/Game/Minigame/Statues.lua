@@ -1,6 +1,6 @@
 local Statue = class:extend("Statue")
 
-local function drawBox(box, r, g, b)
+function Statue.drawBox(box, r, g, b)
     love.graphics.setColor(r, g, b, 0.25)
     love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
     love.graphics.setColor(r, g, b)
@@ -27,7 +27,6 @@ function Statue:__construct(img, quad, x, y, addToWorld, centerOffset, spriteSca
     }
     
     if not addToWorld then return end
-    print("added hitbox")
     MinigameSceneState.world:add(self.hitbox, self.hitbox.x, self.hitbox.y, self.hitbox.w, self.hitbox.h)
 end
 
@@ -39,7 +38,7 @@ function Statue:draw()
 
     if registers.showDebugHitbox then
         --love.graphics.print(string.format("%.3f", self.happiness), self.hitbox.x, self.hitbox.y - 8, 0, 0.5, 0.5)
-        drawBox(self.hitbox, 0.75, 0.5, 0.1)
+        Statue.drawBox(self.hitbox, 0.75, 0.5, 0.1)
     end
 end
 

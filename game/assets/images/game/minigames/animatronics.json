@@ -367,7 +367,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   "lockjaw_0": {
+   "sugar_8": {
     "frame": { "x": 192, "y": 128, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -375,7 +375,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   "lockjaw_1": {
+   "lockjaw_0": {
     "frame": { "x": 224, "y": 128, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -383,7 +383,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   "lockjaw_2": {
+   "lockjaw_1": {
     "frame": { "x": 256, "y": 128, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -391,7 +391,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   "lockjaw_3": {
+   "lockjaw_2": {
     "frame": { "x": 288, "y": 128, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -399,7 +399,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   "lockjaw_4": {
+   "lockjaw_3": {
     "frame": { "x": 0, "y": 160, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -407,7 +407,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   "lockjaw_5": {
+   "lockjaw_4": {
     "frame": { "x": 32, "y": 160, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -415,7 +415,7 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   "lockjaw_6": {
+   "lockjaw_5": {
     "frame": { "x": 64, "y": 160, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -423,8 +423,16 @@
     "sourceSize": { "w": 32, "h": 32 },
     "duration": 100
    },
-   "lockjaw_7": {
+   "lockjaw_6": {
     "frame": { "x": 96, "y": 160, "w": 32, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
+    "sourceSize": { "w": 32, "h": 32 },
+    "duration": 100
+   },
+   "lockjaw_7": {
+    "frame": { "x": 128, "y": 160, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 32, "h": 32 },
