@@ -3,7 +3,8 @@
         "voicelinePath" : "assets/sounds/night/calls/EN",
         "creditsPath" : "assets/data/language/en_credits.txt",
         "classicModePath" : "assets/data/language/classic_mode_english.txt",
-        "freeRoamPath" : "assets/data/language/free_roam_english.txt"
+        "freeRoamPath" : "assets/data/language/free_roam_english.txt",
+        "explainCoderPath" : "assets/data/language/coder_story_en.txt"
     },
     "warn" : {
         "warn_title" : "[WARNING]",
@@ -15,6 +16,7 @@
             "menu_button_continue" : "Continue",
             "menu_button_extras" : "Extras",
             "menu_button_custom_night" : "Custom Night",
+            "menu_button_night_secret" : "Night 8",
             "menu_button_exit" : "Exit"
         },
         "settings" : {

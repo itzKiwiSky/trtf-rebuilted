@@ -1,0 +1,5 @@
+Originalmente planeamos incluir secciones de "parcial free roam" 
+después de cada noche. Posteriormente se descartó y se reutilizó para el final del juego, 
+añadiendo además una cámara de video donde el protagonista grabaría lo que veía. 
+Esto se descartó por falta de tiempo y porque parecía 
+innecesario para un juego de esta magnitud.

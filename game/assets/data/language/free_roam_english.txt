@@ -1,0 +1,5 @@
+We originally planned to include "partial free roam" sections after each night. 
+It was later scrapped, and we later repurposed it for use only in the endgame, 
+while also adding a video camera where the protagonist would record what he sees. 
+This was ultimately scrapped due to time constraints and because 
+it felt unnecessary for a game of this magnitude.

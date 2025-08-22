@@ -254,6 +254,19 @@ function MenuState:enter()
         },
     }
 
+    if gameSave.save.user.progress.showNight8 then
+        --self.mainMenuButtons.elements[#self.mainMenuButtons.elements + 1] = 
+        table.insert(self.mainMenuButtons.elements, #self.mainMenuButtons.elements, {
+            text = languageService["menu_button_night_secret"],
+            locked = false,
+            action = function()
+                LoadingState.mode = "secret"
+                self.transitionFade.target = LoadingState
+                self.transitionFade.active = true
+            end,
+        })
+    end
+
     self.journalConfig = {
         alpha = 0,
         zoom = 1,

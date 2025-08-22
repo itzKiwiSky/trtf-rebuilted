@@ -1,0 +1,6 @@
+This is me, I'm was another coder contacted by ElEternaut to help they create this game.
+The first version has been done in almost 2 months, even when my pc almost exploded due battery leak. 
+The game was working really well and was close to run a closed beta test, until 
+something happen. The old version of the engine didn't have support for screen scale, so on monitor above 1920x1080
+resolution, the game will broke totally. I had to give up the development specially due school stuff.
+But now, secretly called as "Plan K" by Eternaut, we finish this project.

@@ -91,8 +91,9 @@ function love.initialize()
                 canContinue = false,
                 night = 1,
                 playingMinigame = false,
+                showNight8 = false,
                 night8 = false,
-                minigameID = 0,
+                minigameID = "",
             }
 
         }

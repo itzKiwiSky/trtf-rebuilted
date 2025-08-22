@@ -1,4 +1,5 @@
 LoadingState = {}
+LoadingState.mode = "normal"
 
 function LoadingState:enter()
     self.ctrEffect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
@@ -31,7 +32,7 @@ function LoadingState:enter()
     self.pressToGO = false
     self.screen_fade = 0
 
-    self._tempAssets = assetThread()
+    self._tempAssets = assetThread(self.mode)
 
     self.randBG = math.random(1, #self.ldBackgrounds)
     if registers.isNightLoaded then
@@ -40,6 +41,10 @@ function LoadingState:enter()
         loveloader.start(function()
             self.ready = true
             registers.isNightLoaded = true
+
+            if self.mode == "secret" then
+                self.pressToGO = true
+            end
         end, function(k, h, k)
             if FEATURE_FLAGS.debug then
                 io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : File loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", k))
@@ -86,8 +91,13 @@ function LoadingState:update(elapsed)
     end
 
     if self.ready and self.pressToGO and self.screen_fade > 1 then
-        NightState.assets = self._tempAssets
-        gamestate.switch(NightState)
+        if self.mode == "normal" then
+            NightState.assets = self._tempAssets
+            gamestate.switch(NightState)
+        elseif self.mode == "secret" then
+            SecretNightState.assets = self._tempAssets
+            gamestate.switch(SecretNightState)
+        end
     end
 end
 

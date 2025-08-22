@@ -1,0 +1,27 @@
+(ENGLISH)
+Sign on Top of the screen: "Night 8"
+
+Message on the beeper:
+
+1. Burn Vincent's remains. Use the wood on the desk to make the boiler incinerate 
+his body faster.
+
+2. Corrupt the AI of the animatronics in your monitor, you have to decrypt their information
+
+3. The man in the hat will try to find you. Shine your 
+flashlight in his face to make him move away, but not if he's too close. 
+If you see anything other than him, ignore it; that thing is just trying to distract you.
+
+(SPANISH)
+Sign on Top of the screen: "Noche 8"
+
+Message on the beeper:
+
+1. Quema los restos de Vincent. Usa la madera del escritorio para que 
+la caldera incinere su cuerpo más rápido.
+
+2. Corrompe la IA de los animatrónicos en tu monitor; debes desemcriptar su información.
+
+3. El hombre del sombrero intentará encontrarte. Ilumínalo con la linterna en
+la cara para que se aleje, pero no si está demasiado cerca. 
+Si ves algo que no sea él, ignóralo; esa cosa solo intenta distraerte.
