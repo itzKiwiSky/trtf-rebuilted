@@ -181,9 +181,9 @@ return function(night)
         loveloader.newImage(assets.effects["light"], "flashlight", "assets/images/game/night8/flashlight.png")
         loveloader.newImage(assets.effects["light"], "light_beam", "assets/images/game/night8/lantern_light.png")
 
-        loveloader.newImage(assets.office.states["idle"],"front", "assets/images/game/night8/front.png")
-        loveloader.newImage(assets.office.states["idle"],"front_light", "assets/images/game/night8/front_light.png")
-        loveloader.newImage(assets.office.states["idle"],"back", "assets/images/game/night8/back.png")
+        loveloader.newImage(assets.office.states["idle"], "front", "assets/images/game/night8/front.png")
+        loveloader.newImage(assets.office.states["idle"], "front_light", "assets/images/game/night8/front_light.png")
+        loveloader.newImage(assets.office.states["idle"], "back", "assets/images/game/night8/back.png")
 --[[
         assets.effects["staticfx"] = {}
         assets.effects["staticfx"].frameCount = 0

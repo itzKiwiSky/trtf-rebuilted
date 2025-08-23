@@ -35,7 +35,6 @@ function SecretNightState:enter()
             y = 0,
             lightBeam = {
                 angle = 0,
-                
             }
         }
     }
@@ -76,12 +75,6 @@ function SecretNightState:enter()
     self.cnv_mainCanvas = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight())
     self.cnv_invertedRoom = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight())
     self.cnv_flash = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight())
-
-    print(inspect(self.assets))
-
-    --subtitlesController.clear()
-    --subtitlesController.queue(languageRaw.subtitles["call_night" .. NightState.nightID])
-    --love.graphics.setBackgroundColor(0.2, 0, 0, 0)
 end
 
 function SecretNightState:draw()
@@ -102,6 +95,11 @@ function SecretNightState:draw()
             --love.graphics.draw(flashlight, flash.x, flash.y, 0, 1.2, 1.1, flashlight:getWidth() / 2, flashlight:getHeight() / 2)
             local ox, oy = self.assets.effects["light"]["flashlight"]:getWidth() / 2, self.assets.effects["light"]["flashlight"]:getHeight() / 2
             love.graphics.draw(self.assets.effects["light"]["flashlight"], self.officeState.flashlight.x, self.officeState.flashlight.y, 0, 1.15, 1.15, ox, oy)
+
+            love.graphics.draw(self.assets.effects["light"]["light_beam"], 
+                shove.getViewportWidth() / 2, shove.getViewportHeight(), self.officeState.flashlight.lightBeam.angle, 1, 1,
+                self.assets.effects["light"]["light_beam"]:getWidth() / 2, self.assets.effects["light"]["light_beam"]:getHeight()
+            )
         end
     end)
 

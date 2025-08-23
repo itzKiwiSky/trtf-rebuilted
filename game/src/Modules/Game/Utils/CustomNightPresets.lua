@@ -12,7 +12,7 @@ return {
         }
     },
     {
-        displayName = "The Returned Ones",
+        displayName = "Claustrophobia",
         values = {
             bonnie = 20,
             chica = 20,
