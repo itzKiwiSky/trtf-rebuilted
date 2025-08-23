@@ -164,5 +164,12 @@
             "extras_category_jumpscares_allow_sound" : "Play sound",
             "extras_category_jumpscares_show_UI" : "Show UI"
         }
+    },
+    "secret_night" : {
+        "beeper_instructions": [
+            "Burn Vincent's remains. Use the wood on the desk to make the boiler incinerate \nhis body faster.",
+            "Corrupt the AI of the animatronics in your monitor, you have to decrypt their information",
+            "The man in the hat will try to find you. Shine your\nflashlight in his face to make him move away, but not if he's too close.\nIf you see anything other than him, ignore it; that thing is just trying to distract you."
+        ]
     }
 }

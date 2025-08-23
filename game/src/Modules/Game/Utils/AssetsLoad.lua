@@ -170,21 +170,27 @@ return function(night)
             light = {},
             static = {},
         }
+        assets.ui = {}
         assets.office = {
             states = {
                 ["idle"] = {}
             },
-            animated = {
-            }
+            animated = {}
         }
 
         loveloader.newImage(assets.effects["light"], "flashlight", "assets/images/game/night8/flashlight.png")
         loveloader.newImage(assets.effects["light"], "light_beam", "assets/images/game/night8/lantern_light.png")
+        loveloader.newImage(assets.effects["light"], "light_glare", "assets/images/game/night8/light_glare.png")
 
         loveloader.newImage(assets.office.states["idle"], "front", "assets/images/game/night8/front.png")
         loveloader.newImage(assets.office.states["idle"], "front_light", "assets/images/game/night8/front_light.png")
         loveloader.newImage(assets.office.states["idle"], "back", "assets/images/game/night8/back.png")
---[[
+
+        loveloader.newImage(assets.ui, "hover_tablet", "assets/images/game/night8/tablet_hover.png")
+        loveloader.newImage(assets.ui, "hover_look", "assets/images/game/night8/look_hover.png")
+
+        loveloader.newImage(assets.ui, "bg_beeper", "assets/images/game/night8/bg_beeper.png")
+
         assets.effects["staticfx"] = {}
         assets.effects["staticfx"].frameCount = 0
         local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static3")
@@ -192,16 +198,28 @@ return function(night)
             loveloader.newImage(assets.effects["staticfx"], "static_" .. s, "assets/images/game/effects/static3/" .. statics[s])
             assets.effects["staticfx"].frameCount = s
         end
-        statics = {}
+        statics = nil
+        collectgarbage("collect")
 
-        assets.office.animated["look_back"] = {}
-        assets.office.animated["look_back"].frameCount = 0
-        local statics = love.filesystem.getDirectoryItems("assets/images/game/night8/look_back")
-        for s = 1, #statics, 1 do
-            loveloader.newImage(assets.office.animated["look_back"], "lb_" .. s, "assets/images/game/night8/look_back/" .. statics[s])
-            assets.office.animated["look_back"].frameCount = s
+
+        assets.office["look_back"] = {}
+        assets.office["look_back"].frameCount = 0
+        local look = love.filesystem.getDirectoryItems("assets/images/game/night8/look_back")
+        for s = 1, #look, 1 do
+            loveloader.newImage(assets.office["look_back"], "lb_" .. s, "assets/images/game/night8/look_back/" .. look[s])
+            assets.office["look_back"].frameCount = s
         end
-        statics = {}]]--
+        look = nil
+        collectgarbage("collect")
+
+        assets["beeper"] = {}
+        assets["beeper"].frameCount = 0
+        local tab = love.filesystem.getDirectoryItems("assets/images/game/night8/beeper")
+        for t = 1, #tab, 1 do
+            loveloader.newImage(assets["beeper"], "beep_" .. t, "assets/images/game/night8/beeper/" .. tab[t])
+            assets["beeper"].frameCount = t
+        end
+        tab = nil
     end
 
     return assets

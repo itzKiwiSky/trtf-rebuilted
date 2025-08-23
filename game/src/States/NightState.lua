@@ -86,7 +86,7 @@ function NightState:enter()
     end
 
     self.doorController = require 'src.Modules.Game.DoorController'
-    self.tabletController = require 'src..Modules.Game.TabletController'
+    self.tabletController = require 'src.Modules.Game.TabletController'
     self.buttonsUI = require 'src.Modules.Game.Utils.ButtonUI'
     self.tabletCameraSubState = require 'src.States.Substates.TabletCameraSubstate'
     self.maskController = require 'src.Modules.Game.MaskController'

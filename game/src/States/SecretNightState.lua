@@ -28,21 +28,28 @@ function SecretNightState:enter()
         Slab.EndWindow()
     end
 
+    self.beeperController = require 'src.Modules.Game.BeeperController'
+    self.beeperView = require 'src.Modules.Game.SecretNight.BeeperView'
+    self.tabletController = require 'src.Modules.Game.TabletController'
+
     self.officeState = {
+        nightStarted = false,
         flashlight = {
             active = false,
             x = 0,
             y = 0,
+            lightGlare = {
+                x = 749, y = 164,
+                alpha = 0,
+            },
             lightBeam = {
-                angle = 0,
+                alpha = 0,
             }
+        },
+        beeper = {
+            open = false,
         }
     }
-
-    --roomoff = love.graphics.newImage("assets/images/game/test/room_off.png")
-    --roomlight = love.graphics.newImage("assets/images/game/test/room_light.png")
-    --flashlight = love.graphics.newImage("assets/images/game/night8/flashlight.png")
-    --light = love.graphics.newImage("assets/images/game/night8/lantern_light.png")
 
     self.shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
     self.tuneConfig = {
@@ -75,6 +82,17 @@ function SecretNightState:enter()
     self.cnv_mainCanvas = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight())
     self.cnv_invertedRoom = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight())
     self.cnv_flash = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight())
+
+    self.beeperController:init(SecretNightState.assets.beeper, 34, "beep_")
+    self.beeperController.visible = false
+
+    self.beeperView:init()
+
+    self.nightTimer = timer.new()
+    self.nightTimer:script(function(sleep)
+        sleep(2)
+        self.beeperController:setState(true)
+    end)
 end
 
 function SecretNightState:draw()
@@ -96,12 +114,16 @@ function SecretNightState:draw()
             local ox, oy = self.assets.effects["light"]["flashlight"]:getWidth() / 2, self.assets.effects["light"]["flashlight"]:getHeight() / 2
             love.graphics.draw(self.assets.effects["light"]["flashlight"], self.officeState.flashlight.x, self.officeState.flashlight.y, 0, 1.15, 1.15, ox, oy)
 
+            love.graphics.setBlendMode("add", "premultiplied")
             love.graphics.draw(self.assets.effects["light"]["light_beam"], 
-                shove.getViewportWidth() / 2, shove.getViewportHeight(), self.officeState.flashlight.lightBeam.angle, 1, 1,
-                self.assets.effects["light"]["light_beam"]:getWidth() / 2, self.assets.effects["light"]["light_beam"]:getHeight()
+                shove.getViewportWidth() - 300, shove.getViewportHeight(), self.officeState.flashlight.lightBeam.angle - math.pi, 0.5, 1.25,
+                self.assets.effects["light"]["light_beam"]:getWidth(), self.assets.effects["light"]["light_beam"]:getHeight() / 2
             )
+            love.graphics.setBlendMode("alpha")
         end
     end)
+
+    -- 482 175
 
     love.graphics.setShader(self.shd_perspective)
         love.graphics.draw(self.cnv_mainCanvas, 0, 0)
@@ -109,6 +131,13 @@ function SecretNightState:draw()
         love.graphics.draw(self.cnv_flash, 0, 0)
         love.graphics.setBlendMode("alpha")
     love.graphics.setShader()
+
+    self.beeperView:draw()
+    self.beeperController:draw()
+    self.beeperView:postDraw()
+
+
+    love.graphics.print(inspect(self.officeState), 20, 20)
 end
 
 function SecretNightState:update(elapsed)
@@ -123,7 +152,11 @@ function SecretNightState:update(elapsed)
 
     mx, my = self.gameCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
 
-    self.gameCam.x = (self.roomSize.width / 2 + (mx - self.roomSize.width / 2) / self.gameCam.factorX)
+    self.officeState.flashlight.lightBeam.angle = math.atan2(my - shove.getViewportHeight(), mx - shove.getViewportWidth() - 300)
+
+    if not self.beeperController.tabUp then
+        self.gameCam.x = (self.roomSize.width / 2 + (mx - self.roomSize.width / 2) / self.gameCam.factorX)
+    end
 
     -- camera bounds --
     if self.gameCam.x < self.X_LEFT_FRAME then
@@ -142,13 +175,15 @@ function SecretNightState:update(elapsed)
         self.gameCam.y = self.Y_BOTTOM_FRAME
     end
 
-end
+    self.beeperController:update(elapsed)
 
-function SecretNightState:keypressed(k)
-
+    self.nightTimer:update(elapsed)
 end
 
 function SecretNightState:mousepressed(x, y, button)
+    if not self.officeState.nightStarted then return end
+
+    local inside, vmx, vmy = shove.mouseToViewport()
     if button == 1 then
         self.officeState.flashlight.active = not self.officeState.flashlight.active
     end
