@@ -175,7 +175,8 @@ return function(night)
         assets.ui = {}
         assets.office = {
             states = {
-                ["idle"] = {}
+                ["idle"] = {},
+                ["look_back"] = {}
             },
             animated = {}
         }
@@ -188,7 +189,7 @@ return function(night)
         loveloader.newImage(assets.office.states["idle"], "front_light", "assets/images/game/night8/front_light.png")
         loveloader.newImage(assets.office.states["idle"], "back", "assets/images/game/night8/back.png")
 
-        loveloader.newImage(assets.ui, "hover_tablet", "assets/images/game/night8/tablet_hover.png")
+        loveloader.newImage(assets.ui, "hover_panel", "assets/images/game/night8/tablet_hover.png")
         loveloader.newImage(assets.ui, "hover_look", "assets/images/game/night8/look_hover.png")
 
         loveloader.newImage(assets.ui, "bg_beeper", "assets/images/game/night8/bg_beeper.png")
@@ -204,11 +205,10 @@ return function(night)
         collectgarbage("collect")
 
 
-        assets.office["look_back"] = {}
-        assets.office["look_back"].frameCount = 0
+        assets.office.states["look_back"].frameCount = 0
         local look = love.filesystem.getDirectoryItems("assets/images/game/night8/look_back")
         for s = 1, #look, 1 do
-            loveloader.newImage(assets.office["look_back"], "lb_" .. s, "assets/images/game/night8/look_back/" .. look[s])
+            loveloader.newImage(assets.office.states["look_back"], "lb_" .. s, "assets/images/game/night8/look_back/" .. look[s])
             assets.office["look_back"].frameCount = s
         end
         look = nil

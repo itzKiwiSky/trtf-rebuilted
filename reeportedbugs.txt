@@ -1,0 +1,5 @@
+[.] flash plays sound when no animatronic is there
+[.] settings crashing dev mode and not appearing correctly on builded version
+[.] move kitty to a different location
+[.] Disable radar on build
+[.] Check chica behaviour

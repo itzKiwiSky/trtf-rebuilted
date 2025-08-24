@@ -323,8 +323,8 @@ function NightState:enter()
     self.maskController.timeout = 0.2
     self.maskController.acc = 0
 
-    self.maskBtn = self.buttonsUI.new(NightState.assets.maskButton, 96, (shove.getViewportHeight() - NightState.assets.maskButton:getHeight()) - 24)
-    self.camBtn = self.buttonsUI.new(NightState.assets.camButton, (shove.getViewportWidth() - NightState.assets.camButton:getWidth()) - 96, (shove.getViewportHeight() - NightState.assets.camButton:getHeight()) - 24)
+    self.maskBtn = self.buttonsUI:new(NightState.assets.maskButton, 96, (shove.getViewportHeight() - NightState.assets.maskButton:getHeight()) - 24)
+    self.camBtn = self.buttonsUI:new(NightState.assets.camButton, (shove.getViewportWidth() - NightState.assets.camButton:getWidth()) - 96, (shove.getViewportHeight() - NightState.assets.camButton:getHeight()) - 24)
 
     self.X_LEFT_FRAME = self.gameCam.x - 72
     self.X_RIGHT_FRAME = self.gameCam.x + self.roomSize.width

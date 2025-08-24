@@ -5,6 +5,7 @@ function SecretNightState:enter()
     self.beeperController = require 'src.Modules.Game.BeeperController'
     self.beeperView = require 'src.Modules.Game.SecretNight.BeeperView'
     self.tabletController = require 'src.Modules.Game.TabletController'
+    self.buttonsUI = require 'src.Modules.Game.Utils.ButtonUI'
 
     self.fnt_nightDisplay = fontcache.getFont("tnr", 60)
 
@@ -64,7 +65,9 @@ function SecretNightState:enter()
         },
         beeper = {
             open = false,
-        }
+        },
+        ambienceBoilerVolume = 0.25,
+        lookingBack = false,
     }
 
     self.shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
@@ -76,6 +79,8 @@ function SecretNightState:enter()
     self.shd_perspective:send("latitudeVar", self.tuneConfig.latitudeVar)
     self.shd_perspective:send("longitudeVar", self.tuneConfig.longitudeVar)
     self.shd_perspective:send("fovVar", self.tuneConfig.fovVar)
+
+    self.hoverLookButton = self.buttonsUI:new(self.assets["hover_look"], shove.getViewportWidth() - 96, shove.getViewportHeight() / 2)
 
     -- room --
     self.roomSize = {
@@ -108,9 +113,9 @@ function SecretNightState:enter()
         AudioSources["sfx_beeper_use"]:setVolume(0.87)
     end
 
-    AudioSources["msc_lockjaw_theme"]:setLooping(true)
-    AudioSources["msc_lockjaw_theme"]:setVolume(0.45)
-    AudioSources["msc_lockjaw_theme"]:play()
+    AudioSources["sfx_boiler_amb"]:setLooping(true)
+    AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
+    AudioSources["sfx_boiler_amb"]:play()
 
     self.nightTimer = timer.new()
     self.nightTimer:script(function(sleep)
@@ -125,24 +130,21 @@ function SecretNightState:draw()
 
     self.cnv_mainCanvas:renderTo(function()
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
-        --love.graphics.draw(self.roomlight, 0, 0)
             love.graphics.draw(self.assets.office.states["idle"]["front_light"], 0, 0)
         self.gameCam:detach()
     end)
 
     self.cnv_flash:renderTo(function()
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
-            --love.graphics.draw(roomoff, 0, 0)
             love.graphics.draw(self.assets.office.states["idle"]["front"], 0, 0)
         self.gameCam:detach()
         if self.officeState.flashlight.active then
-            --love.graphics.draw(flashlight, flash.x, flash.y, 0, 1.2, 1.1, flashlight:getWidth() / 2, flashlight:getHeight() / 2)
             local ox, oy = self.assets.effects["light"]["flashlight"]:getWidth() / 2, self.assets.effects["light"]["flashlight"]:getHeight() / 2
             love.graphics.draw(self.assets.effects["light"]["flashlight"], self.officeState.flashlight.x, self.officeState.flashlight.y, 0, 1.15, 1.15, ox, oy)
 
             love.graphics.setBlendMode("add", "premultiplied")
             love.graphics.draw(self.assets.effects["light"]["light_beam"], 
-                shove.getViewportWidth() - 300, shove.getViewportHeight(), self.officeState.flashlight.lightBeam.angle - math.pi, 0.5, 1.25,
+                shove.getViewportWidth() - 300, shove.getViewportHeight(), self.officeState.flashlight.lightBeam.angle - math.pi * 0.053, 0.5, 1.25,
                 self.assets.effects["light"]["light_beam"]:getWidth(), self.assets.effects["light"]["light_beam"]:getHeight() / 2
             )
             love.graphics.setBlendMode("alpha")
@@ -161,6 +163,10 @@ function SecretNightState:draw()
     self.beeperView:draw()
     self.beeperController:draw()
     self.beeperView:postDraw()
+
+    if self.officeState.nightStarted then
+        self.hoverLookButton:draw()
+    end
 
 
     if self.nightTextDisplay.displayNightText then
@@ -210,9 +216,6 @@ function SecretNightState:update(elapsed)
     end
 
     if self.nightTextDisplay.displayNightText and not self.nightTextDisplay.invert then
-        if not AudioSources["bells"]:isPlaying() then
-            AudioSources["bells"]:play()
-        end
         self.nightTextDisplay.acc = self.nightTextDisplay.acc + elapsed
         if self.nightTextDisplay.acc >= 0.1 then
             self.nightTextDisplay.acc = 0
@@ -234,6 +237,16 @@ function SecretNightState:update(elapsed)
             if self.nightTextDisplay.fade <= 0 then
                 self.nightTextDisplay.displayNightText = false
             end
+        end
+    end
+    
+
+    self.officeState.ambienceBoilerVolume = math.lerp(self.officeState.ambienceBoilerVolume, self.officeState.lookingBack and 0.75 or 0.2, 0.075)
+    AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
+
+    if self.officeState.nightStarted then
+        if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton) then
+            
         end
     end
 

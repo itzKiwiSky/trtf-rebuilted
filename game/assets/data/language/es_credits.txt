@@ -1,11 +1,11 @@
--Directores -
+-Directores-
 TheEternaut
 ShotOfRabbet
 
--Programacion-
+-ProgramaciÃ³n-
 KiwiSky
 
--Aristisas 3D-
+-Artistas 3D-
 ShotOfRabbet
 TheEternaut
 BairongGAMES
@@ -14,21 +14,21 @@ BairongGAMES
 Only_Emiliano
 Ewademar (Arte viejo)
 
--Actores de Voz -
+-Actores de Voz-
 Spoops (Vincent & Commercial Guy-Eng)
 TheEternaut (Vincent & Commercial Guy-Esp)
- Phantom Eclypse (Mike’s Boss-Eng)
-SillyKat (Mike’s Boss-Esp)
+Phantom Eclypse (Jefe de Mike-Eng)
+SillyKat (Jefe de Mike-Esp)
 
-Algunos SFX susados de:
+Algunos SFX usados de:
 Los juegos de FNAF
-Fredbear’s Fright/Fredbear’s Left to Rot
+Fredbearâ€™s Fright / Fredbearâ€™s Left to Rot
 TRTF Rebuilt 2021
 
 Algunos soundtracks usados de:
 Everywhere at the End of Time
 
--Agradecimientos especiales -
+-Agradecimientos especiales-
 WalteyBeff
 CapitanRoger
 Mortuus
@@ -40,18 +40,17 @@ Walilly13
 HunterDev
 Wester
 Fangamer1254
-Moonie : )
+Rafferty
+Moonie ðŸ™‚
 
-Gracias también a la comunidad de TRTF.
-Gracias a todos por acompañarnos
- en este largo viaje para completar este proyecto.
+Gracias tambiÃ©n a la comunidad de TRTF.
+Gracias a todos por acompaÃ±arnos
+en este largo viaje para completar este proyecto.
 
-¡Gracias también a ti, al jugador!
+Â¡Gracias tambiÃ©n a ti, al jugador!
 Esperamos que hayan disfrutado del juego.
 
-Esperamos verlos en el próximo  Rebuilt Again 
-para más diversión y misterios…
+Esperamos verlos en el prÃ³ximo Rebuilt Again
+para mÃ¡s diversiÃ³n y misteriosâ€¦
 
-¡Gracias por jugar!
-
-
+Â¡Gracias por jugar!

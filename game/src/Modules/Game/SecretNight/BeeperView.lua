@@ -93,6 +93,8 @@ function BeeperView:update(elapsed)
 end
 
 function BeeperView:mousepressed(x, y, button)
+    if not SecretNightState.beeperController.tabUp then return end
+
     for key, box in pairs(self.buttons) do
         if collision.pointRect({ x = x, y = y }, box ) then
             if key == "left" then
@@ -112,6 +114,10 @@ function BeeperView:mousepressed(x, y, button)
                 SecretNightState.beeperController.onComplete = function()
                     SecretNightState.officeState.nightStarted = true
                     SecretNightState.nightTextDisplay.displayNightText = true
+
+                    AudioSources["msc_lockjaw_theme"]:setLooping(true)
+                    AudioSources["msc_lockjaw_theme"]:setVolume(0.45)
+                    AudioSources["msc_lockjaw_theme"]:play()
                 end
                 AudioSources["sfx_beeper_open"]:play()
                 AudioSources["sfx_beeper_open"]:setVolume(0.87)
