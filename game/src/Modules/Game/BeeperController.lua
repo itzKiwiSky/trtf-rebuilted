@@ -10,6 +10,7 @@ function BeeperController:init(frames, speed, k)
     self.frame = 1
     self.visible = true
     self.reverseAnim = false
+    self.onComplete = function()end
 end
 
 local function _playAnimation(this, reverse)
@@ -57,6 +58,7 @@ function BeeperController:update(elapsed)
                 --self.tabUp = false
                 self.animationRunning = false
                 self.visible = false
+                self.onComplete()
             end
         else
             if self.frame > self.frames.frameCount then
@@ -64,6 +66,7 @@ function BeeperController:update(elapsed)
                 self.tabUp = true
                 self.animationRunning = false
                 self.visible = true
+                self.onComplete()
             end
         end
     end

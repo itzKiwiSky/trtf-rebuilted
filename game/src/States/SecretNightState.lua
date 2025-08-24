@@ -2,6 +2,12 @@ SecretNightState = {}
 SecretNightState.assets = {}
 
 function SecretNightState:enter()
+    self.beeperController = require 'src.Modules.Game.BeeperController'
+    self.beeperView = require 'src.Modules.Game.SecretNight.BeeperView'
+    self.tabletController = require 'src.Modules.Game.TabletController'
+
+    self.fnt_nightDisplay = fontcache.getFont("tnr", 60)
+
     registers.devWindowContent = function ()
         Slab.BeginWindow("debugWindow", { Title = "Debug shader"})
             Slab.Text("FOV (fovVar)")
@@ -25,12 +31,22 @@ function SecretNightState:enter()
             if Slab.InputNumberDrag("factorXInput", tostring(self.gameCam.factorX), 0, 20, 0.01) then
                 self.gameCam.factorX = Slab.GetInputNumber()
             end
+
+            if Slab.Button("Re-import beeper") then
+                self.beeperView = love.filesystem.load("src/Modules/Game/SecretNight/BeeperView.lua")()
+                self.beeperView:init()
+            end
         Slab.EndWindow()
     end
 
-    self.beeperController = require 'src.Modules.Game.BeeperController'
-    self.beeperView = require 'src.Modules.Game.SecretNight.BeeperView'
-    self.tabletController = require 'src.Modules.Game.TabletController'
+    self.nightTextDisplay = {
+        text = string.format(languageService["game_night_announce"], 8),
+        fade = 0,
+        scale = 1,
+        acc = 0,
+        displayNightText = false,
+        invert = false
+    }
 
     self.officeState = {
         nightStarted = false,
@@ -87,11 +103,21 @@ function SecretNightState:enter()
     self.beeperController.visible = false
 
     self.beeperView:init()
+    self.beeperController.onComplete = function()
+        AudioSources["sfx_beeper_use"]:play()
+        AudioSources["sfx_beeper_use"]:setVolume(0.87)
+    end
+
+    AudioSources["msc_lockjaw_theme"]:setLooping(true)
+    AudioSources["msc_lockjaw_theme"]:setVolume(0.45)
+    AudioSources["msc_lockjaw_theme"]:play()
 
     self.nightTimer = timer.new()
     self.nightTimer:script(function(sleep)
         sleep(2)
         self.beeperController:setState(true)
+        AudioSources["sfx_beeper_open"]:play()
+        AudioSources["sfx_beeper_open"]:setVolume(0.87)
     end)
 end
 
@@ -137,6 +163,14 @@ function SecretNightState:draw()
     self.beeperView:postDraw()
 
 
+    if self.nightTextDisplay.displayNightText then
+        local txt = languageService["game_night_announce"]:format(8) 
+        love.graphics.setColor(1, 1, 1, self.nightTextDisplay.fade)
+            love.graphics.print(txt, self.fnt_nightDisplay, shove.getViewportWidth() / 2, shove.getViewportHeight() / 2 - self.fnt_nightDisplay:getHeight() / 2, 0, self.nightTextDisplay.scale, self.nightTextDisplay.scale, self.fnt_nightDisplay:getWidth(txt) / 2, self.fnt_nightDisplay:getHeight())
+        love.graphics.setColor(1, 1, 1, 1)
+    end
+
+
     love.graphics.print(inspect(self.officeState), 20, 20)
 end
 
@@ -175,22 +209,57 @@ function SecretNightState:update(elapsed)
         self.gameCam.y = self.Y_BOTTOM_FRAME
     end
 
+    if self.nightTextDisplay.displayNightText and not self.nightTextDisplay.invert then
+        if not AudioSources["bells"]:isPlaying() then
+            AudioSources["bells"]:play()
+        end
+        self.nightTextDisplay.acc = self.nightTextDisplay.acc + elapsed
+        if self.nightTextDisplay.acc >= 0.1 then
+            self.nightTextDisplay.acc = 0
+            self.nightTextDisplay.fade = self.nightTextDisplay.fade + 8.5 * elapsed
+            self.nightTextDisplay.scale = self.nightTextDisplay.scale + 0.4 * elapsed
+
+            if self.nightTextDisplay.fade >= 1.4 then
+                self.nightTextDisplay.invert = true
+            end
+        end
+    elseif self.nightTextDisplay.displayNightText and self.nightTextDisplay.invert then
+        self.officeState.nightRun = true
+        self.nightTextDisplay.acc = self.nightTextDisplay.acc + elapsed
+        if self.nightTextDisplay.acc >= 0.3 then
+            self.nightTextDisplay.acc = 0
+            self.nightTextDisplay.fade = self.nightTextDisplay.fade - 3.2 * elapsed
+            self.nightTextDisplay.scale = self.nightTextDisplay.scale + 0.2 * elapsed
+
+            if self.nightTextDisplay.fade <= 0 then
+                self.nightTextDisplay.displayNightText = false
+            end
+        end
+    end
+
     self.beeperController:update(elapsed)
+    self.beeperView:update(elapsed)
 
     self.nightTimer:update(elapsed)
 end
 
 function SecretNightState:mousepressed(x, y, button)
+    local inside, vmx, vmy = shove.mouseToViewport()
+    self.beeperView:mousepressed(vmx, vmy, button)
+
     if not self.officeState.nightStarted then return end
 
-    local inside, vmx, vmy = shove.mouseToViewport()
     if button == 1 then
         self.officeState.flashlight.active = not self.officeState.flashlight.active
     end
 end
 
 function SecretNightState:leave()
-    if not gameSave.save.user.settings.misc.cacheNight then
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
+
+    if gameSave.save.user.settings.misc.cacheNight then
         local function releaseRecursive(tbl)
             for key, value in pairs(tbl) do
                 if type(value) == "table" then

@@ -1389,6 +1389,10 @@ function NightState:mousepressed(x, y, button)
 end
 
 function NightState:leave()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
+
     if not gameSave.save.user.settings.misc.cacheNight then
         local function releaseRecursive(tbl)
             for key, value in pairs(tbl) do
