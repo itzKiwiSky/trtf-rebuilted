@@ -4,10 +4,10 @@ local drawQueue = require 'src.Modules.Game.Utils.DrawQueueBar'
 
 local function changeCamFX()
     TabletCameraSubState:doInterference(0.3, 70, 100, 1.5)
-    if AudioSources["cam_interference"]:isPlaying() then
-        AudioSources["cam_interference"]:seek(0) 
+    if AudioSources["sfx_cam_switch"]:isPlaying() then
+        AudioSources["sfx_cam_switch"]:seek(0) 
     end
-    AudioSources["cam_interference"]:play()
+    AudioSources["sfx_cam_switch"]:play()
 end
 
 ---Create a intereference in the camera
@@ -238,17 +238,20 @@ function TabletCameraSubState:draw()
         love.graphics.clear(0, 0, 0, 0)
         self.fxTV(function()
             love.graphics.draw(self.fxCanvas, 0, 0)
-            love.graphics.setBlendMode("add")
-                love.graphics.setColor(1, 1, 1, 0.14)
-                    love.graphics.draw(NightState.assets.staticfx["static_" .. NightState.staticfx.frameid], 0, 0)
-                love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.setBlendMode("alpha")
+            --love.graphics.setBlendMode("add")
+            --    love.graphics.setColor(1, 1, 1, 0.14)
+            --        love.graphics.draw(NightState.assets.staticfx["static_" .. NightState.staticfx.frameid], 0, 0)
+            --    love.graphics.setColor(1, 1, 1, 1)
+            --love.graphics.setBlendMode("alpha")
 
             if NightState.officeState.tabletFirstBoot then
                 love.graphics.setColor(1, 1, 1, NightState.officeState.tabletBootProgressAlpha)
                     love.graphics.draw(self.loadingCanvas, 0, 0)
                 love.graphics.setColor(1, 1, 1, 1)
             end
+
+            local crt = NightState.assets["perfect_crt"]
+            love.graphics.draw(crt, 0, 0, 0, shove.getViewportWidth() / crt:getWidth(), shove.getViewportHeight() / crt:getHeight())
         end)
     end)
 
@@ -417,6 +420,7 @@ function TabletCameraSubState:update(elapsed)
     end
 
     -- static animation --
+    --[[
     NightState.staticfx.timer = NightState.staticfx.timer + elapsed
     if NightState.staticfx.timer >= NightState.staticfx.speed then
         NightState.staticfx.timer = 0
@@ -424,7 +428,7 @@ function TabletCameraSubState:update(elapsed)
         if NightState.staticfx.frameid > NightState.assets.staticfx.frameCount then
             NightState.staticfx.frameid = 1
         end
-    end
+    end]]--
 
     if self.camButtonID < 1 then
         self.camButtonID = #self.camerasID

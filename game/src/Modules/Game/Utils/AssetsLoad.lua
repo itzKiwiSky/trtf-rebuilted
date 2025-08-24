@@ -34,6 +34,8 @@ return function(night)
         loveloader.newImage(assets, "door_freddy_attack", "assets/images/game/night/freddy_door/attack.png")
         loveloader.newImage(assets, "door_freddy_idle", "assets/images/game/night/freddy_door/idle.png")
 
+        loveloader.newImage(assets, "perfect_crt",  "assets/images/game/effects/perfect_crt.png")
+
         -- fan --
         assets["fanAnim"] = {}
         assets["fanAnim"].frameCount = 0
