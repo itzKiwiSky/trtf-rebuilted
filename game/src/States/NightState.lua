@@ -97,6 +97,7 @@ function NightState:enter()
     self.doorParticle = require 'src.Modules.Game.Utils.ParticleDoor'
 
     self.jumpscareController.visible = false
+    self.jumpscareController.frames = self.assets
 
     self.phoneController:init(NightState.assets.phoneModel, 45, "ph")
     self.phoneController.visible = false
@@ -324,7 +325,7 @@ function NightState:enter()
     self.maskController.acc = 0
 
     self.maskBtn = self.buttonsUI:new(NightState.assets.maskButton, 96, (shove.getViewportHeight() - NightState.assets.maskButton:getHeight()) - 24)
-    self.camBtn = self.buttonsUI:new(NightState.assets.camButton, (shove.getViewportWidth() - NightState.assets.camButton:getWidth()) - 96, (shove.getViewportHeight() - NightState.assets.camButton:getHeight()) - 24)
+    self.camBtn = self.buttonsUInew(NightState.assets.camButton, (shove.getViewportWidth() - NightState.assets.camButton:getWidth()) - 96, (shove.getViewportHeight() - NightState.assets.camButton:getHeight()) - 24)
 
     self.X_LEFT_FRAME = self.gameCam.x - 72
     self.X_RIGHT_FRAME = self.gameCam.x + self.roomSize.width

@@ -26,7 +26,7 @@ function TabletCameraSubState:load()
     self.tabletDisplay = require 'src.Modules.Game.TabletInfoDisplay'
     self.marker = require 'src.Modules.Game.Utils.Marker'
     self.buttonCamera = require 'src.Modules.Game.Utils.ButtonCamera'
-    self.cameraController = require 'src.Modules.Game.CameraController'
+    self.came3raController = require 'src.Modules.Game.CameraController'
 
     self.interferenceData = {
         acc = 0,
@@ -414,12 +414,12 @@ function TabletCameraSubState:update(elapsed)
     -- controllers --
     if Controller:pressed("game_change_cam_left") then
         self.camButtonID = self.camButtonID - 1
-        self.doInterference(0.3, 70, 100, 1.5)
+        self:doInterference(0.3, 70, 100, 1.5)
         changeCamFX()
     end
     if Controller:pressed("game_change_cam_right") then
         self.camButtonID = self.camButtonID + 1
-        self.doInterference(0.3, 70, 100, 1.5)
+        self:doInterference(0.3, 70, 100, 1.5)
         changeCamFX()
     end
 

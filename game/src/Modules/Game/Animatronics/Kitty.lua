@@ -15,7 +15,7 @@ KittyAI.currentState = 1
 KittyAI.metadataCameraID = 0
 KittyAI.active = false
 KittyAI.path = {
-    {1165, 432, 2},         -- storage
+    {1165, 132, 2},         -- storage
     {1064, 323, 3},         -- dining_area
     {906, 339, 4},
     {1116, 636, 11},        -- left_vent

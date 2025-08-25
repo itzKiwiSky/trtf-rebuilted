@@ -1,5 +1,10 @@
 [.] flash plays sound when no animatronic is there
 [.] settings crashing dev mode and not appearing correctly on builded version
-[.] move kitty to a different location
-[.] Disable radar on build
+[X] move kitty to a different location
+[X] Disable radar on build
+[.] Chica dont render on camera 3
 [.] Check chica behaviour
+[X] camera crash on interference
+[X] crash log dont appear
+[X] jumpscare crashes
+[X] phone

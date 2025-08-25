@@ -20,6 +20,11 @@ local function newButtonHitbox(x, y, w, h)
     return { x = x, y = y, w = w, h = h }
 end
 
+function MenuState:init()
+    self.settingsSubState = require 'src.States.Substates.SettingsSubstate'
+    self.settingsSubState:load()
+end
+
 function MenuState:enter()
     MenuState.saveState = gameSave.save.user.progress
     if FEATURE_FLAGS.developerMode then
@@ -59,8 +64,6 @@ function MenuState:enter()
             Slab.EndWindow()
         end
     end
-
-    self.settingsSubState = require 'src.States.Substates.SettingsSubstate'
 
     -- variables --
     self.controllerSelection = 0
@@ -113,7 +116,6 @@ function MenuState:enter()
     }
 
     -- timers --
-
     self.tmr_randFrame = timer.new()
     self.tmr_randPos = timer.new()
     
@@ -313,15 +315,8 @@ function MenuState:enter()
     AudioSources["amb_rainleak"]:setLooping(true)
     AudioSources["amb_rainleak"]:setVolume(0.3)
     
-    AudioSources["menu_theme_again"]:play()
     AudioSources["menu_theme_again"]:setLooping(true)
-
-    -- sounds sfx --
-    --SoundController.getChannel("music"):loadSource("menu_theme_again")
-    --SoundController.getChannel("music"):play()
-    --SoundController.getChannel("music"):setLooping(true)
-
-    self.settingsSubState:load()
+    AudioSources["menu_theme_again"]:play()
 end
 
 function MenuState:draw()

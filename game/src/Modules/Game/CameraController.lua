@@ -1,186 +1,186 @@
-return function(this)
-    switch(this.camID, {
+return function(self)
+    switch(self.camID, {
         ["arcade"] = function()
-            if collision.rectRect(NightState.AnimatronicControllers["bonnie"], this.areas["arcade"]) and
-            collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["arcade"])
+            if collision.rectRect(NightState.AnimatronicControllers["bonnie"], self.areas["arcade"]) and
+            collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["arcade"])
             then
-                this.cameraMeta["arcade"].frame = 1
-            elseif collision.rectRect(NightState.AnimatronicControllers["bonnie"], this.areas["arcade"]) then
-                this.cameraMeta["arcade"].frame = 2
-            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["arcade"]) then
-                this.cameraMeta["arcade"].frame = 3
+                self.cameraMeta["arcade"].frame = 1
+            elseif collision.rectRect(NightState.AnimatronicControllers["bonnie"], self.areas["arcade"]) then
+                self.cameraMeta["arcade"].frame = 2
+            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["arcade"]) then
+                self.cameraMeta["arcade"].frame = 3
             else
-                this.cameraMeta["arcade"].frame = 4
+                self.cameraMeta["arcade"].frame = 4
             end
         end,
         ["storage"] = function()
-            if collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["storage"]) and
-            collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["storage"]) and
-            collision.rectRect(NightState.AnimatronicControllers["kitty"], this.areas["storage"]) 
+            if collision.rectRect(NightState.AnimatronicControllers["chica"], self.areas["storage"]) and
+            collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["storage"]) and
+            collision.rectRect(NightState.AnimatronicControllers["kitty"], self.areas["storage"]) 
             then
-                this.cameraMeta["storage"].frame = 1
-            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["storage"]) and
-            collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["storage"])
+                self.cameraMeta["storage"].frame = 1
+            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], self.areas["storage"]) and
+            collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["storage"])
             then
-                this.cameraMeta["storage"].frame = 2
-            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["storage"]) and
-            collision.rectRect(NightState.AnimatronicControllers["kitty"], this.areas["storage"])
+                self.cameraMeta["storage"].frame = 2
+            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], self.areas["storage"]) and
+            collision.rectRect(NightState.AnimatronicControllers["kitty"], self.areas["storage"])
             then
-                this.cameraMeta["storage"].frame = 3
-            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["storage"]) and
-            collision.rectRect(NightState.AnimatronicControllers["kitty"], this.areas["storage"])
+                self.cameraMeta["storage"].frame = 3
+            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["storage"]) and
+            collision.rectRect(NightState.AnimatronicControllers["kitty"], self.areas["storage"])
             then
-                this.cameraMeta["storage"].frame = 4
-            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["storage"]) then
-                this.cameraMeta["storage"].frame = 5
-            elseif collision.rectRect(NightState.AnimatronicControllers["kitty"], this.areas["storage"]) then
-                this.cameraMeta["storage"].frame = 6
-            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["storage"]) then
-                this.cameraMeta["storage"].frame = 7
+                self.cameraMeta["storage"].frame = 4
+            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], self.areas["storage"]) then
+                self.cameraMeta["storage"].frame = 5
+            elseif collision.rectRect(NightState.AnimatronicControllers["kitty"], self.areas["storage"]) then
+                self.cameraMeta["storage"].frame = 6
+            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["storage"]) then
+                self.cameraMeta["storage"].frame = 7
             else
-                this.cameraMeta["storage"].frame = 8
+                self.cameraMeta["storage"].frame = 8
             end
         end,
         ["dining_area"] = function()
-            if collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["dining_area"]) and
-            collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["dining_area"]) and
-            collision.rectRect(NightState.AnimatronicControllers["kitty"], this.areas["dining_area"]) 
+            if collision.rectRect(NightState.AnimatronicControllers["chica"], self.areas["dining_area"]) and
+            collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["dining_area"]) and
+            collision.rectRect(NightState.AnimatronicControllers["kitty"], self.areas["dining_area"]) 
             then
                 -- all --
-                this.cameraMeta["dining_area"].frame = 1
-            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["dining_area"]) and
-            collision.rectRect(NightState.AnimatronicControllers["kitty"], this.areas["dining_area"]) 
+                self.cameraMeta["dining_area"].frame = 1
+            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], self.areas["dining_area"]) and
+            collision.rectRect(NightState.AnimatronicControllers["kitty"], self.areas["dining_area"]) 
             then
                 -- all --
-                this.cameraMeta["dining_area"].frame = 2
-            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["dining_area"]) and
-            collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["dining_area"]) 
+                self.cameraMeta["dining_area"].frame = 2
+            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], self.areas["dining_area"]) and
+            collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["dining_area"]) 
             then
                 -- all --
-                this.cameraMeta["dining_area"].frame = 3
-            elseif collision.rectRect(NightState.AnimatronicControllers["kitty"], this.areas["dining_area"]) and
-            collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["dining_area"]) 
+                self.cameraMeta["dining_area"].frame = 3
+            elseif collision.rectRect(NightState.AnimatronicControllers["kitty"], self.areas["dining_area"]) and
+            collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["dining_area"]) 
             then
                 -- all --
-                this.cameraMeta["showstage"].frame = 4
-            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["dining_area"]) then
+                self.cameraMeta["showstage"].frame = 4
+            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], self.areas["dining_area"]) then
                 -- all --
-                this.cameraMeta["dining_area"].frame = 5
-            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["dining_area"]) then
+                self.cameraMeta["dining_area"].frame = 5
+            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["dining_area"]) then
                 -- all --
-                this.cameraMeta["dining_area"].frame = 6
-            elseif collision.rectRect(NightState.AnimatronicControllers["kitty"], this.areas["dining_area"]) then
+                self.cameraMeta["dining_area"].frame = 6
+            elseif collision.rectRect(NightState.AnimatronicControllers["kitty"], self.areas["dining_area"]) then
                 -- all --
-                this.cameraMeta["dining_area"].frame = 7
+                self.cameraMeta["dining_area"].frame = 7
             else
-                this.cameraMeta["dining_area"].frame = 8
+                self.cameraMeta["dining_area"].frame = 8
             end
         end,
         ["pirate_cove"] = function()
-            if collision.rectRect(NightState.AnimatronicControllers["foxy"], this.areas["pirate_cove"]) then
-                this.cameraMeta["pirate_cove"].frame = 1
-            elseif collision.rectRect(NightState.AnimatronicControllers["kitty"], this.areas["pirate_cove"]) then
-                this.cameraMeta["pirate_cove"].frame = 2
-            elseif collision.rectRect(NightState.AnimatronicControllers["sugar"], this.areas["pirate_cove"]) then
-                this.cameraMeta["pirate_cove"].frame = 3
+            if collision.rectRect(NightState.AnimatronicControllers["foxy"], self.areas["pirate_cove"]) then
+                self.cameraMeta["pirate_cove"].frame = 1
+            elseif collision.rectRect(NightState.AnimatronicControllers["kitty"], self.areas["pirate_cove"]) then
+                self.cameraMeta["pirate_cove"].frame = 2
+            elseif collision.rectRect(NightState.AnimatronicControllers["sugar"], self.areas["pirate_cove"]) then
+                self.cameraMeta["pirate_cove"].frame = 3
             else
-                this.cameraMeta["pirate_cove"].frame = 4
+                self.cameraMeta["pirate_cove"].frame = 4
             end
         end,
         ["parts_and_service"] = function()
-            if collision.rectRect(NightState.AnimatronicControllers["sugar"], this.areas["parts_and_service"]) then
-                this.cameraMeta["parts_and_service"].frame = 1
+            if collision.rectRect(NightState.AnimatronicControllers["sugar"], self.areas["parts_and_service"]) then
+                self.cameraMeta["parts_and_service"].frame = 1
             else
-                this.cameraMeta["parts_and_service"].frame = 2
+                self.cameraMeta["parts_and_service"].frame = 2
             end
         end,
         ["showstage"] = function()
-            if collision.rectRect(NightState.AnimatronicControllers["bonnie"], this.areas["showstage"]) and
-            collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["showstage"]) and
-            collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["showstage"]) 
+            if collision.rectRect(NightState.AnimatronicControllers["bonnie"], self.areas["showstage"]) and
+            collision.rectRect(NightState.AnimatronicControllers["chica"], self.areas["showstage"]) and
+            collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["showstage"]) 
             then
                 -- all --
-                this.cameraMeta["showstage"].frame = 1
+                self.cameraMeta["showstage"].frame = 1
             elseif 
-            collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["showstage"]) and
-            collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["showstage"]) 
+            collision.rectRect(NightState.AnimatronicControllers["chica"], self.areas["showstage"]) and
+            collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["showstage"]) 
             then
                 -- feddy chisca --
-                this.cameraMeta["showstage"].frame = 2
+                self.cameraMeta["showstage"].frame = 2
             elseif 
-            collision.rectRect(NightState.AnimatronicControllers["bonnie"], this.areas["showstage"]) and
-            collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["showstage"]) 
+            collision.rectRect(NightState.AnimatronicControllers["bonnie"], self.areas["showstage"]) and
+            collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["showstage"]) 
             then
                 -- bonnie feddy --
-                this.cameraMeta["showstage"].frame = 3
+                self.cameraMeta["showstage"].frame = 3
             elseif 
-            collision.rectRect(NightState.AnimatronicControllers["bonnie"], this.areas["showstage"]) and
-            collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["showstage"]) 
+            collision.rectRect(NightState.AnimatronicControllers["bonnie"], self.areas["showstage"]) and
+            collision.rectRect(NightState.AnimatronicControllers["chica"], self.areas["showstage"]) 
             then
                 -- bonnie chicas --
-                this.cameraMeta["showstage"].frame = 4
-            elseif collision.rectRect(NightState.AnimatronicControllers["bonnie"], this.areas["showstage"]) then
+                self.cameraMeta["showstage"].frame = 4
+            elseif collision.rectRect(NightState.AnimatronicControllers["bonnie"], self.areas["showstage"]) then
                 -- bonnie --
-                this.cameraMeta["showstage"].frame = 5
-            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], this.areas["showstage"]) then
+                self.cameraMeta["showstage"].frame = 5
+            elseif collision.rectRect(NightState.AnimatronicControllers["chica"], self.areas["showstage"]) then
                 --  chicas --
-                this.cameraMeta["showstage"].frame = 6
-            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["showstage"]) then
+                self.cameraMeta["showstage"].frame = 6
+            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["showstage"]) then
                 -- feddy --
-                this.cameraMeta["showstage"].frame = 7
+                self.cameraMeta["showstage"].frame = 7
             else
                 -- empty --
-                this.cameraMeta["showstage"].frame = 8
+                self.cameraMeta["showstage"].frame = 8
             end
         end,
         ["kitchen"] = function()
             return
         end,
         ["prize_corner"] = function()
-            if collision.rectRect(NightState.AnimatronicControllers["puppet"], this.areas["prize_corner"]) then
-                this.cameraMeta["prize_corner"].frame = 1
+            if collision.rectRect(NightState.AnimatronicControllers["puppet"], self.areas["prize_corner"]) then
+                self.cameraMeta["prize_corner"].frame = 1
             elseif not NightState.AnimatronicControllers["puppet"].released then
-                this.cameraMeta["prize_corner"].frame = 2
+                self.cameraMeta["prize_corner"].frame = 2
             end
         end,
         ["left_hall"] = function()
-            if collision.rectRect(NightState.AnimatronicControllers["bonnie"], this.areas["left_hall"]) and
-            collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["left_hall"])
+            if collision.rectRect(NightState.AnimatronicControllers["bonnie"], self.areas["left_hall"]) and
+            collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["left_hall"])
             then
-                this.cameraMeta["left_hall"].frame = 1
-            elseif collision.rectRect(NightState.AnimatronicControllers["bonnie"], this.areas["left_hall"]) then
-                this.cameraMeta["left_hall"].frame = 2
-            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["left_hall"]) then
-                this.cameraMeta["left_hall"].frame = 3
+                self.cameraMeta["left_hall"].frame = 1
+            elseif collision.rectRect(NightState.AnimatronicControllers["bonnie"], self.areas["left_hall"]) then
+                self.cameraMeta["left_hall"].frame = 2
+            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["left_hall"]) then
+                self.cameraMeta["left_hall"].frame = 3
             else
-                this.cameraMeta["left_hall"].frame = 4
+                self.cameraMeta["left_hall"].frame = 4
             end
         end,
         ["right_hall"] = function()
-            if collision.rectRect(NightState.AnimatronicControllers["bonnie"], this.areas["right_hall"]) and
-            collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["right_hall"])
+            if collision.rectRect(NightState.AnimatronicControllers["bonnie"], self.areas["right_hall"]) and
+            collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["right_hall"])
             then
-                this.cameraMeta["right_hall"].frame = 1
-            elseif collision.rectRect(NightState.AnimatronicControllers["bonnie"], this.areas["right_hall"]) then
-                this.cameraMeta["right_hall"].frame = 2
-            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], this.areas["right_hall"]) then
-                this.cameraMeta["right_hall"].frame = 3
+                self.cameraMeta["right_hall"].frame = 1
+            elseif collision.rectRect(NightState.AnimatronicControllers["bonnie"], self.areas["right_hall"]) then
+                self.cameraMeta["right_hall"].frame = 2
+            elseif collision.rectRect(NightState.AnimatronicControllers["freddy"], self.areas["right_hall"]) then
+                self.cameraMeta["right_hall"].frame = 3
             else
-                this.cameraMeta["right_hall"].frame = 4
+                self.cameraMeta["right_hall"].frame = 4
             end
         end,
         ["vent_sugar"] = function()
-            if collision.rectRect(NightState.AnimatronicControllers["sugar"], this.areas["left_vent"]) then
-                this.cameraMeta["vent_sugar"].frame = 1
+            if collision.rectRect(NightState.AnimatronicControllers["sugar"], self.areas["left_vent"]) then
+                self.cameraMeta["vent_sugar"].frame = 1
             else
-                this.cameraMeta["vent_sugar"].frame = 2
+                self.cameraMeta["vent_sugar"].frame = 2
             end
         end,
         ["vent_kitty"] = function()
-            if collision.rectRect(NightState.AnimatronicControllers["kitty"], this.areas["right_vent"]) then
-                this.cameraMeta["vent_kitty"].frame = 1
+            if collision.rectRect(NightState.AnimatronicControllers["kitty"], self.areas["right_vent"]) then
+                self.cameraMeta["vent_kitty"].frame = 1
             else
-                this.cameraMeta["vent_kitty"].frame = 2
+                self.cameraMeta["vent_kitty"].frame = 2
             end
         end,
     })

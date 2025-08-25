@@ -90,22 +90,20 @@ function love.errorhandler(msg)
     p = p:gsub("%[string \"(.-)\"%]", "%1")
 
     -- generate log file --
-    local pt = love.filesystem.isFused() and love.filesystem.getSourceBaseDirectory() or love.filesystem.getSaveDirectory()
-    pt = pt:gsub("\\", "/") .. "/crashes"
-    if love.filesystem.isFused() then
-        nfs.createDirectory(pt)
-    else
-        love.filesystem.createDirectory("crashes")
-    end
+    --local pt = love.filesystem.isFused() and love.filesystem.getSourceBaseDirectory() or love.filesystem.getSaveDirectory()
 
-    local fdcrash = pt .. "/session_" .. tostring(os.date("%Y_%m_%d%H.%M.%S"))
+    love.filesystem.createDirectory("crashes")
+    local fdcrash = "session_" .. tostring(os.date("%Y_%m_%d%H.%M.%S"))
 
-    nfs.createDirectory(fdcrash)
+    --nfs.createDirectory(fdcrash)
+    love.filesystem.createDirectory(fdcrash)
 
-    local err, f = nfs.write(string.format("%s/traceback.txt", fdcrash), tostring(p))
-    if FEATURE_FLAGS.debug then
-        local err, f = nfs.write(string.format("%s/outputlog.txt", fdcrash), tostring(table.concat(_G.FazKiwi_LOGBUFFER, "")))
-    end
+    local err, f = love.filesystem.write(string.format("%s/traceback.txt", fdcrash), tostring(p))
+    --if FEATURE_FLAGS.debug then
+    local err, f = love.filesystem.write(string.format("%s/outputlog.txt", fdcrash), tostring(table.concat(_G.FazKiwi_LOGBUFFER, "")))
+    --end
+
+    
     local dskWidth, dskHeight = love.window.getDesktopDimensions(1)
     local winW, winH = love.graphics.getDimensions()
     local stats = love.graphics.getStats()
