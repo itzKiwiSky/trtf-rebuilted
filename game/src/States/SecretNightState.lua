@@ -80,7 +80,7 @@ function SecretNightState:enter()
     self.shd_perspective:send("longitudeVar", self.tuneConfig.longitudeVar)
     self.shd_perspective:send("fovVar", self.tuneConfig.fovVar)
 
-    self.hoverLookButton = self.buttonsUI:new(self.assets["hover_look"], shove.getViewportWidth() - 96, shove.getViewportHeight() / 2)
+    self.hoverLookButton = self.buttonsUI:new(self.assets.ui["hover_look"], shove.getViewportWidth() - 96, shove.getViewportHeight() / 2, 0, 0.75, 0.75, true)
 
     -- room --
     self.roomSize = {
@@ -246,6 +246,7 @@ function SecretNightState:update(elapsed)
 
     if self.officeState.nightStarted then
         if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton) then
+            self.officeState.lookingBack = true
             
         end
     end

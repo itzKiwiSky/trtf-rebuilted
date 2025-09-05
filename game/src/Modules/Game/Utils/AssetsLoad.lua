@@ -209,7 +209,7 @@ return function(night)
         local look = love.filesystem.getDirectoryItems("assets/images/game/night8/look_back")
         for s = 1, #look, 1 do
             loveloader.newImage(assets.office.states["look_back"], "lb_" .. s, "assets/images/game/night8/look_back/" .. look[s])
-            assets.office["look_back"].frameCount = s
+            assets.office.states["look_back"].frameCount = s
         end
         look = nil
         collectgarbage("collect")
