@@ -37,7 +37,7 @@ function Animatronic:kill()
     if not NightState.killed then
         NightState.killed = true
         NightState.jumpscareController.id = self.id
-        NightState.jumpscareController.speedAnim = 35
+        NightState.jumpscareController.speedAnim = 24
         NightState.jumpscareController.init()
         NightState.jumpscareController.onComplete = function()
             NightState.KilledBy = self.id

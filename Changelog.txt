@@ -86,3 +86,16 @@ Changelog for The return to freddy's Rebuilt Again
     
     Removed:
         - DiscordRPC integration
+
+[0.4.1]
+    Core loop rework
+
+    Added:
+        - AI of the animatronics revamped
+
+    Changed:
+        - Mask now take 15 seconds to kill
+        - Bonnie is 5% faster when staring at you on the office
+        - Bonnie and chica will not enter the office if both doors are closed, this is not a permanent solution 
+            for they, but will allow you to have more time to think what to do, 
+            at cost of energy.

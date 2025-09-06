@@ -3,7 +3,7 @@ local TabletCameraSubState = {}
 local drawQueue = require 'src.Modules.Game.Utils.DrawQueueBar'
 
 local function changeCamFX()
-    TabletCameraSubState:doInterference(0.3, 70, 100, 1.5)
+    TabletCameraSubState:doInterference(0.09, 120, 100, 1.5)
     if AudioSources["sfx_cam_switch"]:isPlaying() then
         AudioSources["sfx_cam_switch"]:seek(0) 
     end
@@ -417,12 +417,10 @@ function TabletCameraSubState:update(elapsed)
     -- controllers --
     if Controller:pressed("game_change_cam_left") then
         self.camButtonID = self.camButtonID - 1
-        self:doInterference(0.3, 70, 100, 1.5)
         changeCamFX()
     end
     if Controller:pressed("game_change_cam_right") then
         self.camButtonID = self.camButtonID + 1
-        self:doInterference(0.3, 70, 100, 1.5)
         changeCamFX()
     end
 

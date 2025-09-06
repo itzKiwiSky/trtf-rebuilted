@@ -41,9 +41,13 @@ function DeathState:enter()
     end
 
     self.bg = love.graphics.newImage("assets/images/game/night/gameover.png")
-    self.bgfade = 0
-    self.startAngle = -30
-    self.startZoom = 5
+
+    self.bgOption = {
+        bgfade = 0,
+        startAngle = -30,
+        startZoom = 5,
+    }
+
     AudioSources["boom_death"]:play()
 
     self.gameOptions = {
@@ -95,6 +99,8 @@ function DeathState:enter()
 
     self.twn_death = flux.group()
 
+    self.twn_openAnim = flux.to(self.bgOption, 2, { startAngle = 0, startZoom = 1 }):ease("sineout")
+
     self.tmr_deathbegin = timer.new()
     self.tmr_deathbegin:after(3.5, function()
         self.gameOptions.canDisplay = true
@@ -111,10 +117,10 @@ end
 
 function DeathState:draw()
     self.screen_effect(function()
-        love.graphics.setColor(0, 0, 0, self.bgfade)
+        love.graphics.setColor(0, 0, 0, self.bgOption.bgfade)
             love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.draw(self.bg, shove.getViewportWidth() / 2, shove.getViewportHeight() / 2, math.rad(self.startAngle), self.startZoom, self.startZoom, self.bg:getWidth() / 2, self.bg:getHeight() / 2)
+        love.graphics.draw(self.bg, shove.getViewportWidth() / 2, shove.getViewportHeight() / 2, math.rad(self.bgOption.startAngle), self.bgOption.startZoom, self.bgOption.startZoom, self.bg:getWidth() / 2, self.bg:getHeight() / 2)
 
         love.graphics.setBlendMode("add")
             love.graphics.setColor(1, 1, 1, 0.2)
@@ -185,8 +191,8 @@ function DeathState:draw()
 end
 
 function DeathState:update(elapsed)
-    self.startAngle = math.lerp(self.startAngle, 0, 0.039)
-    self.startZoom = math.lerp(self.startZoom, 1, 0.039)
+    --self.bgOption.startAngle = math.lerp(self.bgOption.startAngle, 0, 0.039)
+    --self.bgOption.startZoom = math.lerp(self.bgOption.startZoom, 1, 0.039)
 
     if self.gameOptions.canDisplay then
         self.gameOptions.textDisplay = self.gameOptions.textDisplay + 0.5 * elapsed
@@ -217,6 +223,8 @@ function DeathState:update(elapsed)
 
     self.tmr_deathbegin:update(elapsed)
     self.twn_death:update(elapsed)
+
+    flux.update(elapsed)
 end
 
 function DeathState:mousepressed(x, y, button)

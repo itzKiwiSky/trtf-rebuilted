@@ -193,6 +193,8 @@ function NightState:enter()
                             NightState.AnimatronicControllers[name].currentState = NightState.AnimatronicControllers[name].currentState - 1
                         end
                     end
+                    Slab.SameLine()
+                    Slab.Text("  State: " .. NightState.AnimatronicControllers[name].currentState)
                 end
             Slab.EndWindow()
         end
@@ -334,7 +336,6 @@ function NightState:enter()
         fid = 1,
         speed = 1 / 35
     }
-
 
     self.night = {
         time = 0,   -- accumulator --
@@ -502,6 +503,10 @@ function NightState:enter()
                 self.officeState.phoneCall = true
                 self.phoneController.hitbox.x = 1090
             sleep(self.assets.calls["call_night" .. self.nightID]:getDuration("seconds") - 0.015)
+        elseif self.nightID >= 6 then
+            sleep(3)
+                self.nightTextDisplay.displayNightText = true
+                self.officeState.phoneCall = false
         end
     end)
 
@@ -1152,8 +1157,8 @@ function NightState:update(elapsed)
         self.nightTextDisplay.acc = self.nightTextDisplay.acc + elapsed
         if self.nightTextDisplay.acc >= 0.3 then
             self.nightTextDisplay.acc = 0
-            self.nightTextDisplay.fade = self.nightTextDisplay.fade - 3.2 * elapsed
-            self.nightTextDisplay.scale = self.nightTextDisplay.scale + 0.2 * elapsed
+            self.nightTextDisplay.fade = self.nightTextDisplay.fade - 9.75 * elapsed
+            self.nightTextDisplay.scale = self.nightTextDisplay.scale + 0.37 * elapsed
 
             if self.nightTextDisplay.fade <= 0 then
                 self.nightTextDisplay.displayNightText = false
