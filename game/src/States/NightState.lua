@@ -17,13 +17,6 @@ NightState.animatronicsAI = {
 
 NightState.AnimatronicControllers = {}
 
-function NightState.playWalk()
-    local r = math.random(1, 3)
-    if not AudioSources["metalwalk" .. r]:isPlaying() then
-        AudioSources["metalwalk" .. r]:play()
-    end
-end
-
 local function mapToRange(input, min, max, step)
     local clampedInput = math.max(min, math.min(max, input))
     
@@ -81,10 +74,6 @@ NightState.modifiers = {
 }
 
 function NightState:enter()
-    for k, v in pairs(AudioSources) do
-        v:stop()
-    end
-
     self.doorController = require 'src.Modules.Game.DoorController'
     self.tabletController = require 'src.Modules.Game.TabletController'
     self.buttonsUI = require 'src.Modules.Game.Utils.ButtonUI'
@@ -116,9 +105,11 @@ function NightState:enter()
 
     -- import AI --
     local aif = love.filesystem.getDirectoryItems("src/Modules/Game/Animatronics")
-    for a = 1, #aif, 1 do
-        local filename = aif[a]:gsub("%.[^.]+$", "")
-        self.AnimatronicControllers[filename:lower()] = require("src.Modules.Game.Animatronics." .. filename)
+    for _, a in ipairs(aif) do
+        local filename = a:gsub("%.[^.]+$", "")
+        if love.filesystem.getInfo("src/Modules/Game/Animatronics/" .. a).type ~= "directory" then 
+            self.AnimatronicControllers[filename:lower()] = require("src.Modules.Game.Animatronics." .. filename):new()
+         end
     end
     aif = nil
     collectgarbage("collect")
@@ -240,25 +231,25 @@ function NightState:enter()
     self.isCustomNight = false
     self.nightPassed = false
 
-    self.gameCam = camera(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
+    self.mainCam = camera(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
 
     -- radar --
     NightState.assets["radar_icons"] = {}
-    NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads = love.graphics.newQuadFromImage("array", "assets/images/game/night/cameraUI/radar_animatronics")
+    NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads = love.graphics.newQuadFromImage("hash", "assets/images/game/night/cameraUI/radar_animatronics")
     NightState.assets["radar_icons"].image:setFilter("nearest", "nearest")
 
     NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {31, 225, 34, 255}, {20, 100, 28, 255})
     NightState.assets.grd_toxicmeter = love.graphics.newGradient("vertical", 
-        {130, 129, 158, 255},
-        {191, 198, 227, 255},
-        {130, 129, 158, 255}
+        { 130, 129, 158, 255 },
+        { 191, 198, 227, 255 },
+        { 130, 129, 158, 255 }
     )
     NightState.assets.grd_bars = love.graphics.newGradient("vertical", 
-        {242, 246, 248, 255}, 
-        {216, 225, 231, 255},
-        {181, 198, 208, 255},
-        {193, 211, 222, 255},
-        {224, 239, 249, 255}
+        { 242, 246, 248, 255 }, 
+        { 216, 225, 231, 255 },
+        { 181, 198, 208, 255 },
+        { 193, 211, 222, 255 },
+        { 224, 239, 249, 255 }
     )
 
     -----------------------------------------------
@@ -309,8 +300,8 @@ function NightState:enter()
         height = 800,
     }
 
-    self.gameCam.factorX = 2.452
-    self.gameCam.factorY = 25
+    self.mainCam.factorX = 2.452
+    self.mainCam.factorY = 25
     self.cameraObject = {   -- this will allow camera view --
         x = 0,
         y = 0,
@@ -325,12 +316,12 @@ function NightState:enter()
     self.maskController.acc = 0
 
     self.maskBtn = self.buttonsUI:new(NightState.assets.maskButton, 96, (shove.getViewportHeight() - NightState.assets.maskButton:getHeight()) - 24)
-    self.camBtn = self.buttonsUInew(NightState.assets.camButton, (shove.getViewportWidth() - NightState.assets.camButton:getWidth()) - 96, (shove.getViewportHeight() - NightState.assets.camButton:getHeight()) - 24)
+    self.camBtn = self.buttonsUI:new(NightState.assets.camButton, (shove.getViewportWidth() - NightState.assets.camButton:getWidth()) - 96, (shove.getViewportHeight() - NightState.assets.camButton:getHeight()) - 24)
 
-    self.X_LEFT_FRAME = self.gameCam.x - 72
-    self.X_RIGHT_FRAME = self.gameCam.x + self.roomSize.width
-    self.Y_TOP_FRAME = self.gameCam.y
-    self.Y_BOTTOM_FRAME = self.gameCam.y + self.roomSize.height
+    self.X_LEFT_FRAME = self.mainCam.x - 72
+    self.X_RIGHT_FRAME = self.mainCam.x + self.roomSize.width
+    self.Y_TOP_FRAME = self.mainCam.y
+    self.Y_BOTTOM_FRAME = self.mainCam.y + self.roomSize.height
 
     self.staticfx = {
         timer = 0,
@@ -428,6 +419,7 @@ function NightState:enter()
         },
         toxicmeter = 100,
         hasAnimatronicInOffice = false,
+        hasAnimatronicInFrontOffice = false,
         officeFlick = false,
         isOfficeDisabled = false,
         doors = {
@@ -471,7 +463,8 @@ function NightState:enter()
     self.officeState.doors.lDoorTimer = self.officeState.doors.maxDoorTime
     self.officeState.doors.rDoorTimer = self.officeState.doors.maxDoorTime
 
-    self.tmr_nightStartPhone:script(function(sleep)
+
+    --[[self.tmr_nightStartPhone:script(function(sleep)
         if self.nightID >= 1 and self.nightID <= 5 then
             sleep(3)
                 self.phoneController:setState(true)
@@ -494,7 +487,24 @@ function NightState:enter()
                 self.nightTextDisplay.displayNightText = true
                 self.officeState.phoneCall = false
         end
+    end)]]--
+
+    self.tmr_nightStartPhone:script(function(sleep)
+        if self.nightID >= 1 and self.nightID <= 5 then
+            sleep(3)
+                self.phoneController:setState(true)
+                AudioSources["phone_pickup"]:play()
+            sleep(0.25)
+                AudioSources["sfx_ringphone"]:play()
+            sleep(AudioSources["sfx_ringphone"]:getDuration("seconds") - 1.2)
+                self.assets.calls["call_night" .. self.nightID]:play()
+                self.officeState.phoneCallNotRefused = true
+                self.officeState.phoneCall = true
+                self.phoneController.hitbox.x = 1090
+            sleep(self.assets.calls["call_night" .. self.nightID]:getDuration("seconds") - 0.015)
+        end
     end)
+
 
     self.tmr_nightEnd:script(function(sleep)
         sleep(0.5)
@@ -503,29 +513,29 @@ function NightState:enter()
         for k, v in pairs(AudioSources) do
             v:stop()
         end
-        if not FEATURE_FLAGS.isDemo then
-            gameSave.save.user.progress.night = gameSave.save.user.progress.night + 1
-            gameSave.save.user.progress.newgame = false
-            gameSave.save.user.progress.canContinue = true
-        end
+
+        gameSave.save.user.progress.night = gameSave.save.user.progress.night + 1
+        gameSave.save.user.progress.newgame = false
+        gameSave.save.user.progress.canContinue = gameSave.save.user.progress.night > 1
         gameSave:saveSlot()
         gamestate.switch(WinState)
     end)
 
     for k, v in pairs(NightState.AnimatronicControllers) do
-        if v.init then v.init() end
+        --NightState.AnimatronicControllers[k] = v:new()
+        --if v.init then v.init() end
     end
 end
 
 function NightState:draw()
     self.shakeController:prepare()
-    self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
+    self.mainCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
         self.cnv_mainCanvas:renderTo(function()
             love.graphics.clear(love.graphics.getBackgroundColor())
             love.graphics.draw(self.doorLFX, 1700, 178)
             love.graphics.draw(self.doorRFX, 140, 178)
             if self.officeState.isOfficeDisabled then
-                if self.AnimatronicControllers["freddy"].currentState == 5 then
+                if self.AnimatronicControllers["freddy"] ~= nil and self.AnimatronicControllers["freddy"].currentState == 5 then
                     if self.AnimatronicControllers["freddy"].animState then
                         love.graphics.draw(NightState.assets["door_freddy_attack"], 0, 0)
                     else
@@ -539,7 +549,7 @@ function NightState:draw()
 
             -- flicking front XD --
             if self.officeState.flashlight.state then
-                if not self.officeState.flashlight.isFlicking then
+                if not self.officeState.flashlight.isFlicking and self.AnimatronicControllers["foxy"] ~= nil then
                     if collision.rectRect(self.AnimatronicControllers["foxy"], self.tabletCameraSubState.areas["front_office"]) then
                         love.graphics.draw(NightState.assets.front_office["foxy" .. self.AnimatronicControllers["foxy"].position], 0, 0)
                     else
@@ -556,12 +566,16 @@ function NightState:draw()
 
             love.graphics.draw(NightState.assets.office[self.officeState.isOfficeDisabled and "off" or "idle"], 0, 0)
             love.graphics.draw(NightState.assets.fanAnim["fan_" .. self.deskFan.fid], 0, 0)
-
-            if collision.rectRect(self.AnimatronicControllers["bonnie"], self.tabletCameraSubState.areas["office"]) then
-                love.graphics.draw(NightState.assets["in_office_bonnie"], 0, 0)
+            
+            if self.AnimatronicControllers["bonnie"] ~= nil then
+                if collision.rectRect(self.AnimatronicControllers["bonnie"], self.tabletCameraSubState.areas["office"]) then
+                    love.graphics.draw(NightState.assets["in_office_bonnie"], 0, 0)
+                end
             end
-            if collision.rectRect(self.AnimatronicControllers["chica"], self.tabletCameraSubState.areas["office"]) then
-                love.graphics.draw(NightState.assets["in_office_chica"], 0, 0)
+            if self.AnimatronicControllers["chica"] ~= nil then
+                if collision.rectRect(self.AnimatronicControllers["chica"], self.tabletCameraSubState.areas["office"]) then
+                    love.graphics.draw(NightState.assets["in_office_chica"], 0, 0)
+                end
             end
 
             if not self.officeState.isOfficeDisabled then
@@ -578,7 +592,7 @@ function NightState:draw()
                 end
             end
         end)
-    self.gameCam:detach()
+    self.mainCam:detach()
 
     -- phone shit --
     self.cnv_phone:renderTo(function()
@@ -721,14 +735,14 @@ function NightState:draw()
         --love.graphics.print(NightState.AnimatronicControllers["puppet"].musicBoxTimer, 20, 20)
         --love.graphics.print(debug.formattable(NightState.animatronicsAI), 10, 10)
         local inside, mx, my = shove.mouseToViewport()
-        mx, my = self.gameCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
+        mx, my = self.mainCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
         
         if registers.showDebugHitbox then
             love.graphics.setColor(0.54, 0.3, 0.67, 0.4)
                 love.graphics.rectangle("fill", self.phoneController.hitbox.x, self.phoneController.hitbox.y, self.phoneController.hitbox.w, self.phoneController.hitbox.h)
             love.graphics.setColor(1, 1, 1, 1)
 
-            self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
+            self.mainCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
                 love.graphics.setColor(0.7, 0, 1, 0.4)
                     love.graphics.rectangle("fill", mx, my, 32, 32)
                 love.graphics.setColor(1, 1, 1, 1)
@@ -739,7 +753,7 @@ function NightState:draw()
                     love.graphics.setColor(1, 1, 1, 1)
                 end
 
-            self.gameCam:detach()
+            self.mainCam:detach()
 
             love.graphics.setColor(0.3, 1, 1, 0.4)
                 love.graphics.rectangle("fill", self.camBtn.x, self.camBtn.y, self.camBtn.w, self.camBtn.h)
@@ -755,7 +769,9 @@ function NightState:update(elapsed)
     local inside, mx, my = shove.mouseToViewport()  -- get the mouse --
     local vmx, vmy = mx, my
     -- convert mouse position from screen to viewport and than the viewport to the world --
-    mx, my = self.gameCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
+    --mx, my = self.mainCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
+
+    mx, my = self.mainCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
 
     if self.officeState._op then
         if self.officeState.fadealpha <= 1 then
@@ -848,7 +864,7 @@ function NightState:update(elapsed)
             gamestate.switch(DeathState)
         end
     else
-        self.officeState.toxicmeter = self.officeState.toxicmeter + 15 * elapsed
+        self.officeState.toxicmeter = self.officeState.toxicmeter + 12 * elapsed
 
         if self.officeState.toxicmeter >= 100 then
             self.officeState.toxicmeter = 100
@@ -866,12 +882,12 @@ function NightState:update(elapsed)
 
     -- animatronic --
     if self.officeState.nightRun and not NightState.killed then
-        for k, v in pairs(NightState.AnimatronicControllers) do
+        for k, animatronic in pairs(NightState.AnimatronicControllers) do
             if not self.officeState.isOfficeDisabled and not NightState.nightPassed then
-                v.update(elapsed)
+                animatronic:update(elapsed)
             else
                 if k == "freddy" then
-                    v.update(elapsed)
+                    animatronic:update(elapsed)
                 end
             end
         end
@@ -961,9 +977,9 @@ function NightState:update(elapsed)
     if self.officeState.flashlight.state then
         AudioSources["buzzlight"]:setLooping(true)
         AudioSources["buzzlight"]:play()
-        for k, v in pairs(NightState.AnimatronicControllers) do
-            if v.stared ~= nil and not v.stared then
-                v.stared = true
+        for k, animatronic in pairs(NightState.AnimatronicControllers) do
+            if animatronic.stared ~= nil and not animatronic.stared then
+                animatronic.stared = true
                 if not AudioSources["window_stare"]:isPlaying() then
                     AudioSources["window_stare"]:play()
                 end
@@ -1093,26 +1109,27 @@ function NightState:update(elapsed)
     local mouseMove = 0
 
     if inside then
-        mouseMove = self.roomSize.width * 0.5 + ((mx - self.roomSize.width * 0.5) / self.gameCam.factorX)
-        self.gameCam.x = mouseMove
+        mouseMove = self.roomSize.width * 0.5 + ((mx - self.roomSize.width * 0.5) / self.mainCam.factorX)
+        self.mainCam.x = mouseMove
     end
 
     -- camera bounds --
-    if self.gameCam.x < self.X_LEFT_FRAME then
-        self.gameCam.x = self.X_LEFT_FRAME
+    if self.mainCam.x < self.X_LEFT_FRAME then
+        self.mainCam.x = self.X_LEFT_FRAME
     end
 
-    if self.gameCam.y < self.Y_TOP_FRAME then
-        self.gameCam.y = self.Y_TOP_FRAME
+    if self.mainCam.y < self.Y_TOP_FRAME then
+        self.mainCam.y = self.Y_TOP_FRAME
     end
 
-    if self.gameCam.x > self.X_RIGHT_FRAME then
-        self.gameCam.x = self.X_RIGHT_FRAME
+    if self.mainCam.x > self.X_RIGHT_FRAME then
+        self.mainCam.x = self.X_RIGHT_FRAME
     end
 
-    if self.gameCam.y > self.Y_BOTTOM_FRAME then
-        self.gameCam.y = self.Y_BOTTOM_FRAME
+    if self.mainCam.y > self.Y_BOTTOM_FRAME then
+        self.mainCam.y = self.Y_BOTTOM_FRAME
     end
+
 
     self.tmr_nightStartPhone:update(elapsed)
 
@@ -1335,7 +1352,7 @@ end
 function NightState:mousepressed(x, y, button)
     local inside, vmx, vmy = shove.mouseToViewport()  -- get the mouse --
     -- convert mouse position from screen to viewport and than the viewport to the world --
-    mx, my = self.gameCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
+    mx, my = self.mainCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
 
     -- camera substate --
     if self.tabletController.tabUp then
@@ -1376,13 +1393,13 @@ function NightState:mousepressed(x, y, button)
     
             if self.phoneController.visible and self.officeState.phoneCallNotRefused and not self.nightTextDisplay.displayNightText then
                 if collision.pointRect({x = vmx, y = vmy}, self.phoneController.hitbox) then
-                    NightState.assets.calls["call_night" .. NightState.nightID]:seek(NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") - 1)
-                    AudioSources["sfx_callend"]:play()
+                    --NightState.assets.calls["call_night" .. NightState.nightID]:seek(NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") - 0.015)
+                    NightState.assets.calls["call_night" .. NightState.nightID]:stop()
                     self.phoneController:setState(false)
                     AudioSources["phone_pickup"]:play()
                     self.nightTextDisplay.displayNightText = true
-                    --subtitlesController.clear()
                     self.officeState.phoneCall = false
+                    timer.cancel(self.tmr_nightStartPhone)
                 end
             end
         end

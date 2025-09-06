@@ -104,11 +104,11 @@ function love.errorhandler(msg)
     --end
 
     
-    local dskWidth, dskHeight = love.window.getDesktopDimensions(1)
+    local dskWidth, dskHeight = love.window.getDesktopDimensions()
     local winW, winH = love.graphics.getDimensions()
     local stats = love.graphics.getStats()
     local s, p, sc = love.system.getPowerInfo()
-    local err, f = nfs.write(string.format("%s/system.txt", fdcrash), tostring(table.concat({
+    local err, f = love.filesystem.write(string.format("%s/system.txt", fdcrash), tostring(table.concat({
         "Operating system: " .. love.system.getOS(),
         "Processor Count: " .. love.system.getProcessorCount(),
         ("Power: {\n    State: %s\n    Percent: %s\n    Seconds: %s\n}"):format(s, p, sc),

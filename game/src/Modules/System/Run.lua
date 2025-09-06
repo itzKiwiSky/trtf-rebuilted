@@ -45,7 +45,7 @@ end
 -- copy all the need libraries for game to work --
 local function copyLib()
     love.filesystem.createDirectory("bin")
-    if type(love.filesystem.getInfo("bin")) ~= nil then return end
+    if love.filesystem.getInfo("bin") == nil then return end
 
     print("[ENGINE] : Libraries copied with sucess")
 

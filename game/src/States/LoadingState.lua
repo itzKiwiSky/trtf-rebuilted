@@ -5,6 +5,8 @@ function LoadingState:enter()
     self.ctrEffect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
     self.glowTextEffect = moonshine(moonshine.effects.glow)
 
+    print("why")
+
     subtitlesController.clear()
 
     local assetThread = require 'src.Modules.Game.Utils.AssetsLoad'
@@ -114,6 +116,9 @@ function LoadingState:mousepressed(x, y, button)
 end
 
 function LoadingState:leave()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
     for _, b in ipairs(self.ldBackgrounds) do
         b:release()
     end

@@ -208,6 +208,7 @@ function ExtrasState:leave()
     end
 
     loveView.ignoreRegisteredEvents = true
+    loveView.unloadView()
 end
 
 return ExtrasState

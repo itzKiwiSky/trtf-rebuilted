@@ -16,6 +16,7 @@ function table.push(t, ...)
 end
 
 function table.pop(t)
+    if #t <= 0 then return end
     return table.remove(t)
 end
 

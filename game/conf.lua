@@ -14,7 +14,7 @@ function love.conf(w)
     w.highdpi               =       true
 
     --% Debug %--
-    w.console               =       not love.filesystem.isFused()
+    w.console               =       true --not love.filesystem.isFused()
 
     --% Storage %--
     w.externalstorage       =       true

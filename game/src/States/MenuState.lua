@@ -20,13 +20,11 @@ local function newButtonHitbox(x, y, w, h)
     return { x = x, y = y, w = w, h = h }
 end
 
-function MenuState:init()
-    self.settingsSubState = require 'src.States.Substates.SettingsSubstate'
-    self.settingsSubState:load()
-end
-
 function MenuState:enter()
     MenuState.saveState = gameSave.save.user.progress
+    self.settingsSubState = require 'src.States.Substates.SettingsSubstate'
+    self.settingsSubState:load()
+
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
             Slab.BeginWindow("menuNightDev", { Title = "Development" })
@@ -293,10 +291,10 @@ function MenuState:enter()
 
 
     -- hitboxers
-
     for _, e in ipairs(self.mainMenuButtons.elements) do
         e.meta = {}
         e.meta.offsetX = 0
+        e.hovered = false
         e.hitbox = newButtonHitbox(self.mainMenuButtons.config.targetX, self.mainMenuButtons.config.startY, self.fnt_menu:getWidth(e.text) + 8, self.fnt_menu:getHeight() + 8)
         self.mainMenuButtons.config.startY = self.mainMenuButtons.config.startY + self.mainMenuButtons.config.paddingElements
     end
@@ -454,8 +452,10 @@ function MenuState:update(elapsed)
         --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
         if collision.pointRect({ x = mx, y = my }, e.hitbox) and self.canUseMenu and not self.configMenu then
             e.meta.offsetX = math.lerp(e.meta.offsetX, self.mainMenuButtons.config.offsetX, 0.1)
+            e.meta.hovered = true
         else
             e.meta.offsetX = math.lerp(e.meta.offsetX, 0, 0.1)
+            e.meta.hovered = false
         end
         
     end

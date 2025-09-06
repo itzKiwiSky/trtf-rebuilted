@@ -26,7 +26,7 @@ function TabletCameraSubState:load()
     self.tabletDisplay = require 'src.Modules.Game.TabletInfoDisplay'
     self.marker = require 'src.Modules.Game.Utils.Marker'
     self.buttonCamera = require 'src.Modules.Game.Utils.ButtonCamera'
-    self.came3raController = require 'src.Modules.Game.CameraController'
+    self.cameraController = require 'src.Modules.Game.CameraController'
 
     self.interferenceData = {
         acc = 0,
@@ -138,6 +138,7 @@ function TabletCameraSubState:load()
             hitbox = self.buttonCamera(546, shove.getViewportHeight() - 110, 128, 48),
             visible = false,
             action = function()
+                if NightState.AnimatronicControllers["puppet"] == nil then return end
                 self.reloadTimer = self.reloadTimer + love.timer.getDelta()
                 if self.reloadTimer >= 0.05 then
                     if NightState.AnimatronicControllers["puppet"].musicBoxTimer <= NightState.AnimatronicControllers["puppet"].maxRewind - 1 then
@@ -155,10 +156,12 @@ function TabletCameraSubState:load()
             action = function()
                 if not NightState.officeState.vent.requestClose then
                     if self.camID == "vent_kitty" then
+                        if NightState.AnimatronicControllers["kitty"] == nil then return end
                         NightState.officeState.vent.timerAcc = 0
                         NightState.officeState.vent.direction = "left"
                         NightState.officeState.vent.requestClose = true
                     elseif self.camID == "vent_sugar" then
+                        if NightState.AnimatronicControllers["sugar"] == nil then return end
                         NightState.officeState.vent.timerAcc = 0
                         NightState.officeState.vent.direction = "right"
                         NightState.officeState.vent.requestClose = true
@@ -298,8 +301,8 @@ function TabletCameraSubState:draw()
             love.graphics.rectangle("fill", b.btn.x, b.btn.y, b.btn.w - 8, b.btn.h - 8)
             love.graphics.setColor(1, 1, 1, 1)
 
-            for k, v in pairs(NightState.AnimatronicControllers) do
-                v.draw()
+            for k, animatronic in pairs(NightState.AnimatronicControllers) do
+                animatronic:draw()
             end
 
             love.graphics.setColor(0.5, 0.5, 0.5, 1)
@@ -331,10 +334,6 @@ function TabletCameraSubState:draw()
                 love.graphics.printf(b.text, NightState.fnt_camfnt, b.hitbox.x, b.hitbox.y + 3, b.hitbox.w - 8, "center")
                 love.graphics.setColor(1, 1, 1, 1)
             end
-        end
-
-        for k, v in pairs(NightState.AnimatronicControllers) do
-            v.draw()
         end
     end)
 
@@ -376,14 +375,18 @@ function TabletCameraSubState:update(elapsed)
     -- keyboard --
     NightState.officeState.lightCam.state = Controller:down("game_flashlight") and NightState.officeState.tabletUp
 
-    self.miscButtons["reload"].visible = false
-    if self.camerasID[NightState.AnimatronicControllers["puppet"].metadataCameraID] == self.camID and NightState.AnimatronicControllers["puppet"].released then
-        self.miscButtons["reload"].visible = true
+    if NightState.AnimatronicControllers["puppet"] ~= nil then 
+        self.miscButtons["reload"].visible = false
+        if self.camerasID[NightState.AnimatronicControllers["puppet"].metadataCameraID] == self.camID and NightState.AnimatronicControllers["puppet"].released then
+            self.miscButtons["reload"].visible = true
+        end
     end
 
-    self.miscButtons["seal_vent"].visible = false
-    if self.camID == "vent_kitty" or self.camID == "vent_sugar" then
-        self.miscButtons["seal_vent"].visible = true
+    if NightState.AnimatronicControllers["kitty"] ~= nil or NightState.AnimatronicControllers["sugar"] ~= nil then 
+        self.miscButtons["seal_vent"].visible = false
+        if self.camID == "vent_kitty" or self.camID == "vent_sugar" then
+            self.miscButtons["seal_vent"].visible = true
+        end
     end
 
     if love.mouse.isDown(1) then
@@ -422,17 +425,6 @@ function TabletCameraSubState:update(elapsed)
         self:doInterference(0.3, 70, 100, 1.5)
         changeCamFX()
     end
-
-    -- static animation --
-    --[[
-    NightState.staticfx.timer = NightState.staticfx.timer + elapsed
-    if NightState.staticfx.timer >= NightState.staticfx.speed then
-        NightState.staticfx.timer = 0
-        NightState.staticfx.frameid = NightState.staticfx.frameid + 1
-        if NightState.staticfx.frameid > NightState.assets.staticfx.frameCount then
-            NightState.staticfx.frameid = 1
-        end
-    end]]--
 
     if self.camButtonID < 1 then
         self.camButtonID = #self.camerasID

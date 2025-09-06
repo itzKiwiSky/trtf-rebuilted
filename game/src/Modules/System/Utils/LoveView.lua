@@ -37,6 +37,11 @@ local function reloadView(path)
     end
 end
 
+function LoveView.unloadView()
+    loveframes.RemoveAll()
+    table.pop(LoveView.views)
+end
+
 function LoveView.loadView(path)
     assert(loveframes ~= nil, "[ERROR] : Loveframes not found")
     assert(type(path) == "string", "[ERROR] : Expected type 'string' for path, got: " .. type(path))

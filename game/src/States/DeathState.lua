@@ -156,7 +156,7 @@ function DeathState:draw()
             love.graphics.setBlendMode("alpha")
             love.graphics.printf(languageService["gameover_explain_dummy"], self.fnt_gameoverExplain, 120, self.explaindeath.y, shove.getViewportWidth() - 260, "left")
         elseif self.dicons[NightState.KilledBy] then
-            love.graphics.draw(self.dicons[NightState.KilledBy], 24, explaindeath.y, 0, 72 / self.dicons[NightState.KilledBy]:getWidth(), 72 / self.dicons[NightState.KilledBy]:getHeight())
+            love.graphics.draw(self.dicons[NightState.KilledBy], 24, self.explaindeath.y, 0, 72 / self.dicons[NightState.KilledBy]:getWidth(), 72 / self.dicons[NightState.KilledBy]:getHeight())
             love.graphics.setBlendMode("add")
                 self.blurFX(function()
                     love.graphics.clear(0, 0, 0, 0)
