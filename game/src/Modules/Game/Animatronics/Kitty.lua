@@ -5,9 +5,9 @@ local Kitty = animatronic:extend("Kitty")
 function Kitty:__construct()
     Kitty.super.__construct(self, "kitty", 0, 0)  -- wtf outside the map XDDD
 
-    self.id = "kitty"
+    --self.id = "kitty"
 
-    self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
+    self:setupIconPosition()
 end
 
 function Kitty:draw()

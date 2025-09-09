@@ -107,6 +107,18 @@ function Freddy:update(elapsed)
                             end
                         end
                     end
+                elseif self.currentState == 5 then
+                    self.onMove = function()
+                        if NightState.officeState.tabletUp then
+                            if self.pathID == 1 and not NightState.officeState.doors.left then
+                                self.currentState = self.currentState + 1
+                            elseif self.pathID == 2 and not NightState.officeState.doors.right then
+                                self.currentState = self.currentState + 1
+                            end
+                        end
+                    end
+                elseif self.currentState == 6 then
+                    self:kill()
                 end
             end
         end

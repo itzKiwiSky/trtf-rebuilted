@@ -41,6 +41,12 @@ function Animatronic:draw()
     end
 end
 
+function Animatronic:setupIconPositions()
+    if #self.path > 0 then
+        self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
+    end
+end
+
 ---runs the kill animation and ends the night on fail state
 function Animatronic:kill()
     if not NightState.killed then

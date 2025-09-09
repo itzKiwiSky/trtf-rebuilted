@@ -7,7 +7,7 @@ function Puppet:__construct()
 
     self.id = "puppet"
 
-    self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
+    self:setupIconPosition()
 end
 
 function Puppet:draw()
