@@ -20,6 +20,7 @@ function Animatronic:__construct(id, x, y)
     self.metadataCameraID = 0
     self.moveTime = 0
     self.updateMoveTimer = true
+    self.autoUpdatePos = true
     self.animatronicOnSameCamera = false
 
     self.onMove = function()end
@@ -97,7 +98,7 @@ function Animatronic:update(elapsed)
         end
     end
     
-    if #self.path > 0 then
+    if #self.path > 0 and self.autoUpdatePos then
         self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
     end
 end

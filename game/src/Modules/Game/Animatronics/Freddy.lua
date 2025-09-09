@@ -31,7 +31,7 @@ function Freddy:__construct()
     self.animState = false
     self.maxPatience = math.random(120, 230)
 
-    self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
+    --self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
 end
 
 local function playLaugh()
@@ -121,6 +121,8 @@ function Freddy:update(elapsed)
                     self:kill()
                 end
             end
+
+            self.x, self.y, self.metadataCameraID = self.path[self.pathID][self.currentState].x + 26, self.path[self.pathID][self.currentState].y + 26, self.path[self.pathID][self.currentState].camera
         end
     end
 end
