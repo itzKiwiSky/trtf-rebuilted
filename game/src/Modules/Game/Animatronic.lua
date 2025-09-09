@@ -41,7 +41,7 @@ function Animatronic:draw()
     end
 end
 
-function Animatronic:setupIconPositions()
+function Animatronic:setupIconPosition()
     if #self.path > 0 then
         self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
     end
