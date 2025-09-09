@@ -6,22 +6,23 @@ function Freddy:__construct()
     Freddy.super.__construct(self, "freddy", 0, 0)  -- wtf outside the map XDDD
 
     self.id = "freddy"
+    self.currentState = 1
     self.path = {
         {
-            {1064, 256, 6},        -- showstage
-            {1064, 323, 3},         -- dining_area
-            {950, 431, 1},         -- arcade 
-            {999, 490, 9},         -- left_hall
-            {1154, 569, nil},         -- freddy_hall
-            {1079, 592, nil},        -- office
+            {x = 1064, y = 256, camera = 6},        -- showstage
+            {x = 1064, y = 323, camera = 3},         -- dining_area
+            {x = 950, y = 431, camera = 1},         -- arcade 
+            {x = 999, y = 490, camera = 9},         -- left_hall
+            {x = 1154, y = 569, camera = nil},         -- freddy_hall
+            {x = 1079, y = 592, camera = nil},        -- office
         },
         {
-            {1064, 256, 6},        -- showstage
-            {1064, 323, 3},         -- dining_area
-            {1165, 432, 2},         -- storage 
-            {1127, 490, 10},         -- right_hall
-            {1154, 569, nil},         -- freddy_hall
-            {1079, 592, nil},        -- office
+            {x = 1064, y = 256, camera = 6},        -- showstage
+            {x = 1064, y = 323, camera = 3},         -- dining_area
+            {x = 1165, y = 432, camera = 2},         -- storage 
+            {x = 1127, y = 490, camera = 10},         -- right_hall
+            {x = 1154, y = 569, camera = nil},         -- freddy_hall
+            {x = 1079, y = 592, camera = nil},        -- office
         }
     }
     self.pathID = 1
@@ -30,6 +31,9 @@ function Freddy:__construct()
     self.flash = 0
     self.animState = false
     self.maxPatience = math.random(120, 230)
+    self.autoUpdatePos = false
+
+    self.x, self.y, self.metadataCameraID = self.path[self.pathID][self.currentState].x + 26, self.path[self.pathID][self.currentState].y + 26, self.path[self.pathID][self.currentState].camera
 
     --self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
 end
@@ -78,6 +82,7 @@ function Freddy:update(elapsed)
                     end
                 end
             elseif self.currentState == 6 then
+                self.id = "freddy_power_out"
                 self:kill()
             end
         end
