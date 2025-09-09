@@ -1,5 +1,9 @@
 local Animatronic = class:extend("Animatronic")
 
+---@class Animatronic
+---@id string the animatronic id
+---@x number the X coordinate in the camera map
+---@y number the Y coordinate in the camera map
 function Animatronic:__construct(id, x, y)
     self.id = id
     self.x = x or 0
@@ -15,10 +19,13 @@ function Animatronic:__construct(id, x, y)
     self.stared = false
     self.metadataCameraID = 0
     self.moveTime = 0
+    self.updateMoveTimer = true
+    self.animatronicOnSameCamera = false
 
     self.onMove = function()end
 end
 
+---Plays a random walk sound
 function Animatronic.playWalk()
     local r = math.random(1, 3)
     if not AudioSources["metalwalk" .. r]:isPlaying() then
@@ -26,6 +33,7 @@ function Animatronic.playWalk()
     end
 end
 
+---renders the animatronic sprite on the camera map
 function Animatronic:draw()
     local scale = 2
     if NightState.modifiers.radarMode then
@@ -33,6 +41,7 @@ function Animatronic:draw()
     end
 end
 
+---runs the kill animation and ends the night on fail state
 function Animatronic:kill()
     if not NightState.killed then
         NightState.killed = true
@@ -46,6 +55,7 @@ function Animatronic:kill()
     end
 end
 
+---makes a interference on the camera you are looking when animatronic is moving
 function Animatronic:interference()
     if NightState.tabletCameraSubState.camerasID[self.metadataCameraID] then
         if NightState.tabletCameraSubState.camerasID[self.metadataCameraID] == NightState.tabletCameraSubState.camID then
@@ -56,14 +66,29 @@ function Animatronic:interference()
     end
 end
 
+---Abstracts the playWalk and interference functions into one
+function Animatronic:moveAnimatronic()
+    self:playWalk()
+    self:interference()
+end
+
+---the update
+---@param elapsed love.timer.getDelta
 function Animatronic:update(elapsed)
-    self.timer = self.timer + elapsed
-    if self.timer >= self.moveTime then
-        self.move = math.random(0, 20)
-        if self.move <= NightState.animatronicsAI[self.id] and NightState.animatronicsAI[self.id] > 0 and not NightState.officeState.hasAnimatronicInOffice then
-            self.onMove()
+    
+    if NightState.tabletCameraSubState.camerasID[self.metadataCameraID] then
+        self.animatronicOnSameCamera = NightState.tabletCameraSubState.camerasID[self.metadataCameraID] == NightState.tabletCameraSubState.camID
+    end
+    
+    if self.updateMoveTimer then
+        self.timer = self.timer + elapsed
+        if self.timer >= self.moveTime then
+            self.move = math.random(0, 20)
+            if self.move <= NightState.animatronicsAI[self.id] and NightState.animatronicsAI[self.id] > 0 and not NightState.officeState.hasAnimatronicInOffice then
+                self.onMove()
+            end
+            self.timer = 0
         end
-        self.timer = 0
     end
     
     if #self.path > 0 then
@@ -71,4 +96,4 @@ function Animatronic:update(elapsed)
     end
 end
 
-return Animatronic
+return Animatronic  ---@type Animatronic

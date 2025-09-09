@@ -7,7 +7,6 @@ function Chica:__construct()
 
 
     self.id = "chica"
-    self.metadataCameraID = 0
     self.path = {
         { x = 1124, y = 256, camera = 6 },        -- showstage
         { x = 1064, y = 323, camera = 3 },         -- dining_area

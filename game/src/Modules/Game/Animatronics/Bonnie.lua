@@ -1,12 +1,11 @@
 local animatronic = require 'src.Modules.Game.Animatronic'
 
-local Bonnie = animatronic:extend("Bonnie")
+local Bonnie = animatronic:extend("Bonnie") ---@type Animatronic
 
 function Bonnie:__construct()
     Bonnie.super.__construct(self, "bonnie", 0, 0)  -- wtf outside the map XDDD
 
     self.id = "bonnie"
-    self.metadataCameraID = 0
     self.path = {
         { x = 1064, y = 256, camera = 6 },        -- showstage
         { x = 950, y = 431, camera = 1 },         -- arcade
@@ -29,8 +28,7 @@ function Bonnie:update(elapsed)
         Bonnie.super.update(self, elapsed)
         self.onMove = function()
             if NightState.officeState.tabletUp then
-                self:playWalk()
-                self:interference()
+                self:moveAnimatronic()
             end
 
             self.currentState = self.currentState + 1
