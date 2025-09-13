@@ -96,7 +96,7 @@ function Freddy:update(elapsed)
                 NightState.jumpscareController.speedAnim = 24
                 NightState.jumpscareController.init()
                 NightState.jumpscareController.onComplete = function()
-                    NightState.KilledBy = self.id
+                    NightState.KilledBy = "freddy"
                     gamestate.switch(DeathState)
                 end
             end
