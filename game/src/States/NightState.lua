@@ -145,8 +145,8 @@ function NightState:enter()
                     end
                 end
                 Slab.SameLine()
-                if Slab.Button("Test death") then
-                    --NightState.animatronicsAI[name] = 0
+                if Slab.Button("Disable office") then
+                    self.officeState.power.powerStat = 1
                 end
                 Slab.Separator()
                 Slab.Text("IA Settings")
