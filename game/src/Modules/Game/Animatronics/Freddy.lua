@@ -127,7 +127,6 @@ function Freddy:update(elapsed)
         self.onMove = function()
             if not NightState.officeState.hasAnimatronicInFrontOffice then
                 if self.currentState <= 4 then
-                    print("moved")
                     if self.currentState == 1 or self.currentState == 2 then
                         self.pathID = math.random(1, 2)
                     end

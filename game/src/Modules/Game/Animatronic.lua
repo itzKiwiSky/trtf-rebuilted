@@ -17,7 +17,7 @@ function Animatronic:__construct(id, x, y)
     self.move = 0
     self.patience = 0
     self.stared = false
-    self.metadataCameraID = 0
+    self.metadataCameraID = 1
     self.moveTime = 0
     self.updateMoveTimer = true
     self.autoUpdatePos = true
