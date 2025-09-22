@@ -149,6 +149,10 @@ function NightState:enter()
                     self.officeState.power.powerStat = 1
                 end
                 Slab.Separator()
+                Slab.Text("Debug")
+                Slab.Text("interferenceIntensity: "..  self.tabletCameraSubState.interferenceIntensity)
+                Slab.Text("interferenceISpeed: " ..  self.tabletCameraSubState.interferenceSpeed)
+                Slab.Separator()
                 Slab.Text("IA Settings")
                 for name in spairs(NightState.animatronicsAI) do
                     Slab.Text(name)

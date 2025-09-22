@@ -2,6 +2,12 @@ local TabletCameraSubState = {}
 
 local drawQueue = require 'src.Modules.Game.Utils.DrawQueueBar'
 
+local function normalizedLerp(a, b, speed, dt)
+    -- speed é "quantas vezes por segundo" vai aproximar de b
+    local t = 1 - math.exp(-speed * dt)
+    return a + (b - a) * t
+end
+
 local function changeCamFX()
     TabletCameraSubState:doInterference(0.09, 120, 100, 1.5)
     if AudioSources["sfx_cam_switch"]:isPlaying() then
@@ -30,7 +36,7 @@ function TabletCameraSubState:load()
 
     self.interferenceData = {
         acc = 0,
-        timer = 0.3
+        timer = 0.076
     }
 
     self.fxTV = moonshine(moonshine.effects.pixelate)
@@ -354,13 +360,13 @@ function TabletCameraSubState:update(elapsed)
     self.interferenceFX:send("speed", self.interferenceSpeed)
     self.fxTV.pixelate.size = { self.pixelationInterference, self.pixelationInterference }
 
-    self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer * elapsed)
-    self.pixelationInterference = math.lerp(self.pixelationInterference, 1.5, self.interferenceData.timer * elapsed)
+    self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer)
+    self.pixelationInterference = math.lerp(self.pixelationInterference, 1.5, self.interferenceData.timer)
 
     self.camID = self.camerasID[self.camButtonID]
 
     if NightState.officeState.tabletFirstBoot then
-        NightState.officeState.tabletBootProgress = NightState.officeState.tabletBootProgress + 100 * elapsed
+        NightState.officeState.tabletBootProgress = NightState.officeState.tabletBootProgress + 80 * elapsed
         if NightState.officeState.tabletBootProgress >= 100 then
             NightState.officeState.tabletBootProgressAlpha = NightState.officeState.tabletBootProgressAlpha - 0.6 * elapsed
         end
