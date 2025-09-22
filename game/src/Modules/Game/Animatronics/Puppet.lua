@@ -91,13 +91,15 @@ function Puppet:update(elapsed)
             end
         end
     else
-        self.timer = self.timer + elapsed
-        if self.timer >= self.releaseTimer then
-            self.released = true
-            self.timer = 0
-            self.currentState = 8
-            self.position = math.random(1, 3)
-            self:moveAnimatronic()
+        if NightState.animatronicsAI[self.id] > 0 then
+            self.timer = self.timer + elapsed
+            if self.timer >= self.releaseTimer then
+                self.released = true
+                self.timer = 0
+                self.currentState = 8
+                self.position = math.random(1, 3)
+                self:moveAnimatronic()
+            end
         end
     end
 

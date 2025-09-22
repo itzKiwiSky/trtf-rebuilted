@@ -354,8 +354,8 @@ function TabletCameraSubState:update(elapsed)
     self.interferenceFX:send("speed", self.interferenceSpeed)
     self.fxTV.pixelate.size = { self.pixelationInterference, self.pixelationInterference }
 
-    self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer)
-    self.pixelationInterference = math.lerp(self.pixelationInterference, 1.5, self.interferenceData.timer)
+    self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer * elapsed)
+    self.pixelationInterference = math.lerp(self.pixelationInterference, 1.5, self.interferenceData.timer * elapsed)
 
     self.camID = self.camerasID[self.camButtonID]
 
