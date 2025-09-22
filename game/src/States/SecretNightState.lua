@@ -241,7 +241,7 @@ function SecretNightState:update(elapsed)
     end
     
 
-    self.officeState.ambienceBoilerVolume = math.lerp(self.officeState.ambienceBoilerVolume, self.officeState.lookingBack and 0.75 or 0.2, 0.075)
+    self.officeState.ambienceBoilerVolume = math.lerp(self.officeState.ambienceBoilerVolume, self.officeState.lookingBack and 0.75 or 0.2, 0.075, 1 * elapsed)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
 
     if self.officeState.nightStarted then

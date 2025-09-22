@@ -384,7 +384,7 @@ function MinigameSceneState:update(elapsed)
         self.interferenceFX:send("intensity", self.interferenceIntensity)
         self.interferenceFX:send("speed", self.interferenceSpeed)
 
-        self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer)
+        self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer * elapsed)
 
         self.interferenceData.interferenceTimerAcc = self.interferenceData.interferenceTimerAcc + elapsed
         if self.interferenceData.interferenceTimerAcc >= self.interferenceData.interferenceTimerMax then
