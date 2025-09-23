@@ -987,7 +987,7 @@ function NightState:update(elapsed)
         AudioSources["buzzlight"]:setLooping(true)
         AudioSources["buzzlight"]:play()
         for k, animatronic in pairs(NightState.AnimatronicControllers) do
-            if animatronic.stared ~= nil and not animatronic.stared then
+            if animatronic.stared ~= nil and not animatronic.stared and self.officeState.hasAnimatronicInFrontOffice then
                 animatronic.stared = true
                 if not AudioSources["window_stare"]:isPlaying() then
                     AudioSources["window_stare"]:play()
@@ -1003,7 +1003,7 @@ function NightState:update(elapsed)
 
     -- loigic --
     if self.officeState.flashlight.state then
-        self.officeState.flashlight.isFlicking = not (love.timer.getTime() % math.random(2, 5) > 0.6)
+        self.officeState.flashlight.isFlicking = not (love.timer.getTime() % math.random(2, 6) > 0.6)
     end
 
     -- door animation controllers --

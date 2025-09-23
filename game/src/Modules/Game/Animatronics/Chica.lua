@@ -41,6 +41,8 @@ function Chica:update(elapsed)
                 end
             end
         end
+
+        NightState.officeState.hasAnimatronicInFrontOffice = self.currentState == 4
     else
         if not AudioSources["stare"]:isPlaying() then
             AudioSources["stare"]:play()
