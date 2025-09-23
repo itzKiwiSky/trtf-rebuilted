@@ -98,7 +98,7 @@ function Animatronic:update(elapsed)
         end
     end
     
-    if #self.path > 0 and self.autoUpdatePos then
+    if #self.path > 0 and self.autoUpdatePos and self.currentState > 0 then
         self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
     end
 end

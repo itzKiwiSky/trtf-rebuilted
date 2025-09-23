@@ -1346,16 +1346,13 @@ function NightState:update(elapsed)
                     AudioSources["mask_breath"]:stop()
                 end
 
-                self.officeState.maskUp = not self.officeState.maskUp
-                self.maskController:setState(self.officeState.maskUp)
+                if not self.maskController.animationRunning then
+                    self.officeState.maskUp = not self.officeState.maskUp
+                    self.maskController:setState(self.officeState.maskUp)
+                end
             end
         end
     end
-
-    -- need adapter
-    --if self.tabletController.tabUp then
-    --    --self.tabletCameraSubState:keypressed(key)
-    --end
 end
 
 function NightState:mousepressed(x, y, button)

@@ -3,13 +3,14 @@ local animatronic = require 'src.Modules.Game.Animatronic'
 local Kitty = animatronic:extend("Kitty")
 
 function Kitty:__construct()
-    Kitty.super.__construct(self, "kitty", 0, 0)  -- wtf outside the map XDDD
+    Kitty.super.__construct(self, "kitty", -128, -128)  -- wtf outside the map XDDD
 
     self.id = "kitty"
 
+    self.currentState = 0
     self.active = false
     self.path = {
-        { x = 1165, y = 132, camera = 2 },         -- storage
+        { x = 1165, y = 440, camera = 2 },         -- storage
         { x = 1064, y = 323, camera = 3 },         -- dining_area
         { x = 906, y = 339, camera = 4 },
         { x = 1116, y = 636, camera = 11 },        -- left_vent
@@ -21,7 +22,7 @@ function Kitty:__construct()
     self.patienceTimer = 0
     self.patience = 0
 
-    self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
+    --self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
 end
 
 function Kitty:draw()
@@ -30,7 +31,7 @@ end
 
 function Kitty:update(elapsed)
     if self.active then
-        Kitty.super.update(self. update)
+        Kitty.super.update(self, elapsed)
         self.onMove = function()
             if self.currentState <= 3 then
                 self.currentState = self.currentState + 1
@@ -63,11 +64,12 @@ function Kitty:update(elapsed)
             end
         end
     else
+        Kitty.super.update(self, elapsed)
         self.onMove = function()
             self:moveAnimatronic()
             self.moveTime = 7.35
             self.active = true
-            KittyAI.timer = 0
+            self.timer = 0
         end
     end
 end
