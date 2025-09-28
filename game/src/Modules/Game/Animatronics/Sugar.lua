@@ -29,7 +29,7 @@ end
 
 function Sugar:update(elapsed)
     if self.active then
-        Kitty.super.update(self, elapsed)
+        Sugar.super.update(self, elapsed)
         self.onMove = function()
             if self.currentState <= 3 then
                 self.currentState = self.currentState + 1
@@ -62,7 +62,7 @@ function Sugar:update(elapsed)
             end
         end
     else
-        Kitty.super.update(self, elapsed)
+        Sugar.super.update(self, elapsed)
         self.onMove = function()
             self:moveAnimatronic()
             self.moveTime = 9.52
