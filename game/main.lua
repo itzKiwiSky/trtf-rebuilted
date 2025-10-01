@@ -129,7 +129,7 @@ function love.initialize()
         AUDIO_LOADED = true
     end, function(k, h, n)
         if FEATURE_FLAGS.debug then
-            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", n))
+            io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Audio file loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}", n))
         end
     end)
 

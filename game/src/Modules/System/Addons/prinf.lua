@@ -51,7 +51,7 @@ function io.printf(_str)
     for t, c in pairs(termColors) do
         _str = _str:gsub("{" .. t .. "}", c)
     end
-    io.write(_str)
+    io.write(_str .. "\n")
 end
 
 return io.printf

@@ -84,7 +84,7 @@ function Jumpscares:load()
             self.jumpscaresController:init()
         end, function(k, h, f)
             if FEATURE_FLAGS.debug then
-                io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : File loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}\n", f))
+                io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : File loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}", f))
             end
         end)
     end

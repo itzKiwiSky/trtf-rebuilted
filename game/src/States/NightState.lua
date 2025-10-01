@@ -179,6 +179,10 @@ function NightState:enter()
                     if Slab.Button("reset") then
                         NightState.animatronicsAI[name] = 0
                     end
+                    if Slab.Button("max AI") then
+                        --NightState.animatronicsAI[name] = 0
+                        NightState.animatronicsAI[name] = 20
+                    end
                     Slab.SameLine({
                         Pad = 2
                     })

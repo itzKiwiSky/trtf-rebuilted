@@ -8,12 +8,12 @@ return function()
             if gameSave.save.user.settings.misc.gamejolt.username ~= "" and gameSave.save.user.settings.misc.gamejolt.usertoken ~= "" then
                 loggedin = gamejolt.authUser(gameSave.save.user.settings.misc.gamejolt.username, gameSave.save.user.settings.misc.gamejolt.usertoken)
                 gamejolt.openSession()
-                io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client connected (%s, %s){reset}\n", gamejolt.username, gamejolt.userToken))
+                io.printf(string.format("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client connected (%s, %s){reset}", gamejolt.username, gamejolt.userToken))
             else
                 io.printf("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Client failed to connect to gamejolt {reset}")
             end
         else
-            io.printf("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Failed to connect to gamejolt, please check your internet connection{reset}\n")
+            io.printf("{bgGreen}{brightWhite}{bold}[Gamejolt]{reset}{brightWhite} : Failed to connect to gamejolt, please check your internet connection{reset}")
         end
     end
 end
