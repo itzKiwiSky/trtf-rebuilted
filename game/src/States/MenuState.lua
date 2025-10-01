@@ -309,12 +309,16 @@ function MenuState:enter()
 
     self.settingsIconTween = flux.to(self.settingsGear, 1.5, { x = shove.getViewportWidth() - 128 })
 
-    AudioSources["amb_rainleak"]:play()
-    AudioSources["amb_rainleak"]:setLooping(true)
-    AudioSources["amb_rainleak"]:setVolume(0.3)
-    
-    AudioSources["menu_theme_again"]:setLooping(true)
-    AudioSources["menu_theme_again"]:play()
+    if not AudioSources["amb_rainleak"]:isPlaying() then
+        AudioSources["amb_rainleak"]:play()
+        AudioSources["amb_rainleak"]:setLooping(true)
+        AudioSources["amb_rainleak"]:setVolume(0.3)
+    end
+
+    if not AudioSources["menu_theme_again"]:isPlaying() then
+        AudioSources["menu_theme_again"]:setLooping(true)
+        AudioSources["menu_theme_again"]:play()
+    end
 end
 
 function MenuState:draw()

@@ -84,10 +84,10 @@ function love.errorhandler(msg)
         end
     end
 
-    local p = table.concat(err, "\n")
+    local perr = table.concat(err, "\n")
 
-    p = p:gsub("\t", "")
-    p = p:gsub("%[string \"(.-)\"%]", "%1")
+    perr = perr:gsub("\t", "")
+    perr = perr:gsub("%[string \"(.-)\"%]", "%1")
 
     -- generate log file --
     --local pt = love.filesystem.isFused() and love.filesystem.getSourceBaseDirectory() or love.filesystem.getSaveDirectory()
@@ -160,7 +160,7 @@ function love.errorhandler(msg)
         love.graphics.printf(txt, fnt_error, 0, 250, love.graphics.getWidth(), "center")
 
         if disp then
-            love.graphics.printf(p, fnt_errdisp, 80, 500, love.graphics.getWidth() - 80)
+            love.graphics.printf(perr, fnt_errdisp, 80, 500, love.graphics.getWidth() - 80)
         end
 
         love.graphics.present()

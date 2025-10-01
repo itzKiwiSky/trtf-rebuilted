@@ -34,7 +34,7 @@ function Freddy:__construct()
     self.updateMoveTimer = true
     self.autoUpdatePos = false
     self.moveTime = 8.5
-    self.flashMax = 1200
+    self.flashMax = 1.2
 
     self.x, self.y, self.metadataCameraID = self.path[self.pathID][self.currentState].x + 26, self.path[self.pathID][self.currentState].y + 26, self.path[self.pathID][self.currentState].camera
 
@@ -107,7 +107,7 @@ function Freddy:update(elapsed)
             if self.currentState > 2 then
                 if self.animatronicOnSameCamera then
                     if NightState.officeState.lightCam.state then
-                        self.flash = self.flash + 1
+                        self.flash = self.flash + elapsed
                         if self.flash >= self.flashMax then
                             self.laughRand = math.random(1, 5)
                             if self.laughRand == 2 then
