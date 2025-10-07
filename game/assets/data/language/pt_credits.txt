@@ -1,16 +1,16 @@
--Directors-
+-Diretores-
 TheEternaut
 ShotOfRabbet
 
--Coding-
+-Programação-
 NimbusEclipse
 
--3D Artists-
+-Artistas 3D-
 ShotOfRabbet
 TheEternaut
 BairongGAMES
 
--2D Artists-
+-Artistas 2D-
 Only_Emiliano
 Ewademar (Old art)
 
@@ -28,7 +28,7 @@ TRTF Rebuilt 2021
 Some of the soundtracks are from:
 Everywhere at the End of Time
 
--Special Thanks-
+-Agradecimentos especiais-
 WalteyBeff
 CapitanRoger
 Mortuus
@@ -43,14 +43,14 @@ Fangamer1254
 Rafferty
 Moonie 🙂
 
-Also, thanks to the TRTF community.
-Thank you all for joining us on this long
-journey to complete this project.
+E tambem, Obrigado a comunidade TRTF.
+Obrigado a todos que se juntaram por tanto tempo 
+nesta jornada ate o fim do projeto.
 
-Thank you too, the player!
-We hope you enjoyed this game.
+Obrigado a você tambem jogador!
+Esperamos que você tenha gostado do jogo.
 
-We hope to see you in the next Rebuilt Again
-for more fun and mysteries...
+Esperamos te ver no proximo Rebuilt Again
+para mais diversão e misterios...
 
-Thanks for playing!
+Obrigado por jogar!!

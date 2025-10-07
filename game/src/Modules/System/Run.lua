@@ -17,6 +17,10 @@ love._unfocusedFPSCap = 60
 local flashOpacity = 0
 
 local modes = love.window.getFullscreenModes()
+table.insert(modes, {
+    width = 1280,
+    height = 800,
+})
 table.sort(modes, function(a, b) return a.width * a.height > b.width * b.height end) -- Ordena da maior para a menor
 love.window.resolutionModes = {}
 
@@ -25,6 +29,8 @@ for i, mode in ipairs(modes) do
         width = mode.width, height = mode.height
     }
 end
+
+modes = nil
 
 FazKiwi_LOGBUFFER = {}
 
@@ -83,7 +89,6 @@ function love.run()
         sourcePath,
         sourcePath,
         package.cpath)
-        --print(newCPath)
     package.cpath = newCPath
     copyLib()
 

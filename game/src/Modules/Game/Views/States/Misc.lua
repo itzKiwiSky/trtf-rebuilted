@@ -23,7 +23,9 @@ return function(settings)
             resmultichoice:Clear()
             local langFiles = love.filesystem.getDirectoryItems("assets/data/language")
             for _, lang in ipairs(langFiles) do
-                resmultichoice:AddChoice(lang:gsub("%.[^.]+$", ""))
+                if lang:match("%.json$") then
+                    resmultichoice:AddChoice(lang:gsub("%.[^.]+$", ""))
+                end
             end
     
             -- set UI to current value state --
@@ -32,11 +34,13 @@ return function(settings)
     
             resmultichoice.OnChoiceSelected = function(object, choice)
                 registers.user.virtualSettings.misc.language = resmultichoice:GetValue()
+                languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
+                languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
             end
     
             grid:AddItem(optionTitle, 1, 1, "left")
             grid:AddItem(resmultichoice, 1, 12, "left")
-        end,
+        end,--[[
         function(grid)
             -- Antialiasing --
             local optionTitle = loveframes.Create("text")
@@ -55,7 +59,7 @@ return function(settings)
     
             grid:AddItem(optionTitle, 1, 1, "left")
             grid:AddItem(choiceButton, 1, 14, "left")
-        end,
+        end,]]--
         function(grid)
             -- Antialiasing --
             local optionTitle = loveframes.Create("text")

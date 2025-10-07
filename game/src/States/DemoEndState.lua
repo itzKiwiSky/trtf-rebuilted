@@ -1,11 +1,26 @@
 DemoEndState = {}
 
 function DemoEndState:enter()
-    self.background = love.graphics.newImage("assets/images/game/end_of_demo_gay_sex.png")
+    self.background = nil
     self.titleFont = fontcache.getFont("tnr", 50)
     self.textFont = fontcache.getFont("tnr", 36)
 
     self.glowText = moonshine(moonshine.effects.glow)
+    local blurredBG = moonshine(moonshine.effects.gaussianblur)
+    blurredBG.gaussianblur.sigma = 5
+
+    local bgtexture = love.graphics.newImage("assets/images/game/end_of_demo_gay_sex.png")
+    local canvas = love.graphics.newCanvas(bgtexture:getDimensions())
+    canvas:renderTo(function()
+        love.graphics.clear(0, 0, 0, 0)
+        blurredBG(function()
+            love.graphics.draw(bgtexture)
+        end)
+    end)
+    self.background = love.graphics.newImage(canvas:newImageData())
+    canvas:release()
+    bgtexture:release()
+    blurredBG = nil
 
     AudioSources["bg_sfx_end_demo"]:setLooping(true)
     AudioSources["bg_sfx_end_demo"]:setVolume(0.35)
@@ -28,9 +43,9 @@ function DemoEndState:enter()
     self.tmr_countDowm = timer.new()
     self.tmr_countDowm:script(function(sleep)
         sleep(2.5)
-        self.textconfig.showTitle = true
+        flux.to(self.textconfig, 2, { alphaTitle = 1 })
         sleep(1.5)
-        self.textconfig.showText = true
+        flux.to(self.textconfig, 2, { alpha = 1 })
         sleep(7)
         self.transition.activeOut = true
     end)
@@ -41,9 +56,11 @@ function DemoEndState:draw()
 
     self.glowText(function()
         love.graphics.setColor(0, 0, 0, self.textconfig.alphaTitle)
+            love.graphics.printf("End of demo", self.titleFont, 0, 128, shove.getViewportWidth(), "center")
         love.graphics.setColor(1, 1, 1, 1)
 
         love.graphics.setColor(0, 0, 0, self.textconfig.alpha)
+            love.graphics.printf("See you in the final version of the game", self.titleFont, 0, shove.getViewportHeight() - 64, shove.getViewportWidth(), "center")
         love.graphics.setColor(1, 1, 1, 1)
     end)
 
@@ -70,21 +87,7 @@ function DemoEndState:update(elapsed)
         end
     end
 
-    if self.textconfig.showTitle then
-        self.textconfig.alphaTitle = self.textconfig.alphaTitle + 0.35 * elapsed
-        
-        if textconfig.alphaTitle >= 1 then
-            self.textconfig.showTitle = false
-        end 
-    end
-
-    if self.textconfig.showText then
-        self.textconfig.alpha = self.textconfig.alpha + 0.35 * elapsed
-        
-        if textconfig.alpha >= 1 then
-            self.textconfig.showText = false
-        end 
-    end
+    flux.update(elapsed)
 
     self.tmr_countDowm:update(elapsed)
 end
@@ -96,6 +99,8 @@ function DemoEndState:leave(elapsed)
     end
 
     self.background:release()
+    self.titleFont:release()
+    self.textFont:release()
 end
 
 return DemoEndState

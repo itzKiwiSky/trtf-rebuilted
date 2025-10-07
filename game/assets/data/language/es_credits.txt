@@ -3,7 +3,7 @@ TheEternaut
 ShotOfRabbet
 
 -Programación-
-KiwiSky
+NimbusEclipse
 
 -Artistas 3D-
 ShotOfRabbet
@@ -51,6 +51,6 @@ en este largo viaje para completar este proyecto.
 Esperamos que hayan disfrutado del juego.
 
 Esperamos verlos en el próximo Rebuilt Again
-para más diversión y misterios…
+para más diversión y misterios...
 
 ¡Gracias por jugar!

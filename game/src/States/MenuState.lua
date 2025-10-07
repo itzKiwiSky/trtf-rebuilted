@@ -230,9 +230,14 @@ function MenuState:enter()
                 text = languageService["menu_button_continue"],
                 locked = gameSave.save.user.progress.night <= 1,
                 action = function()
-                    NightState.nightID = gameSave.save.user.progress.night
-                    self.transitionFade.target = LoadingState
-                    self.transitionFade.active = true
+                    if FEATURE_FLAGS.isDemo and gameSave.save.user.progress.night <= 3 then
+                        NightState.nightID = gameSave.save.user.progress.night
+                        self.transitionFade.target = LoadingState
+                        self.transitionFade.active = true
+                    else
+                        self.transitionFade.target = DemoEndState
+                        self.transitionFade.active = true
+                    end
                 end,
             },
             {

@@ -1,0 +1,179 @@
+{
+    "__ENGINE__" : {
+        "voicelinePath" : "assets/sounds/night/calls/EN",
+        "creditsPath" : "assets/data/language/en_credits.txt",
+        "classicModePath" : "assets/data/language/classic_mode_english.txt",
+        "freeRoamPath" : "assets/data/language/free_roam_english.txt",
+        "explainCoderPath" : "assets/data/language/coder_story_en.txt"
+    },
+    "warn" : {
+        "warn_title" : "[AVISO]",
+        "warn_text" : "Este jogo contém sons altos, luzes piscantes, palavrões leves e muitos sustos!"
+    },
+    "menu" : {
+        "menu_button" : {
+            "menu_button_new_game" : "Novo Jogo",
+            "menu_button_continue" : "Continuar",
+            "menu_button_extras" : "Extras",
+            "menu_button_custom_night" : "Noite personalizada",
+            "menu_button_night_secret" : "Noite 8",
+            "menu_button_exit" : "Sair"
+        },
+        "settings" : {
+            "menu_settings_buttons" : {
+                "menu_settings_buttons_save" : "Salvar e Aplicar",
+                "menu_settings_buttons_exit" : "Sair",
+                "menu_settings_buttons_modes" : {
+                    "menu_settings_buttons_modes_fullscreen" : "Tela Cheia",
+                    "menu_settings_buttons_modes_windowed" : "Modo Janela",
+                    "menu_settings_buttons_modes_turn_on" : "Ativado",
+                    "menu_settings_buttons_modes_turn_off" : "Desativado",
+                    "menu_settings_buttons_modes_filter_nearest" : "Mais próximo",
+                    "menu_settings_buttons_modes_filter_linear" : "Linear",
+                    "menu_settings_buttons_modes_effect_density_max" : "Todos os efeitos",
+                    "menu_settings_buttons_modes_effect_density_min" : "Poucos efeitos",
+                    "menu_settings_buttons_modes_effect_density_required" : "Apenas efeitos necessários"
+                }
+            },
+            "menu_settings_title" : "Configurações",
+            "menu_settings_categories" : {
+                "menu_settings_categories_video" : "Vídeo",
+                "menu_settings_categories_audio" : "Áudio",
+                "menu_settings_categories_misc" : "Diversos",
+                "menu_settings_categories_subtext" : {
+                    "menu_settings_categories_subtext_video" : "Configurações de Vídeo",
+                    "menu_settings_categories_subtext_audio" : "Configurações de Áudio",
+                    "menu_settings_categories_subtext_misc" : "Configurações diversas"
+                },
+                "menu_settings" : {
+                    "menu_settings_video" : {
+                        "menu_settings_video_resolution" : "Resolução",
+                        "menu_settings_video_fullscreen" : "Tela Cheia",
+                        "menu_settings_video_vsync" : "V-Sync",
+                        "menu_settings_video_filter" : "Filtro de renderização",
+                        "menu_settings_video_fpsCap" : "Limite de FPS",
+                        "menu_settings_video_display_fps" : "Exibir FPS",
+                        "menu_settings_video_effect_density" : "Densidade de efeito"
+                    },
+                    "menu_settings_audio" : {
+                        "menu_settings_audio_master" : "Volume principal",
+                        "menu_settings_audio_music" : "Volume da música",
+                        "menu_settings_audio_sfx" : "Volume dos efeitos sonoros"
+                    },
+                    "menu_settings_misc" : {
+                        "menu_settings_misc_language" : "Linguagem",
+                        "menu_settings_misc_gamejolt" : {
+                            "menu_settings_misc_gamejolt_title" : "Gamejolt",
+                            "menu_settings_misc_gamejolt_connected" : "Desconectado",
+                            "menu_settings_misc_gamejolt_not_connected" : "Conectado"
+                        },
+                        "menu_settings_misc_discordrpc" : "Discord Rich Presence",
+                        "menu_settings_misc_gamepad" : "Suporte de Controle",
+                        "menu_settings_misc_cache_night" : "Cachear recursos da noite"
+                    }
+                }
+            }
+        },
+        "menu_settings_gamejolt" : {
+            "menu_settings_gamejolt_username" : "Usuário",
+            "menu_settings_gamejolt_token" : "Token de Usuário",
+            "menu_settings_gamejolt_error" : "[FALHA] Um erro ocorreu durante a autenticação.",
+            "menu_settings_gamejolt_buttons" : {
+                "menu_settings_gamejolt_button_connect" : "Conectar",
+                "menu_settings_gamejolt_button_cancel" : "Cancelar"
+            }
+        },
+        "menu_gamejolt_login_text" : "Bem-vindo(a) %s",
+        "loading" : {
+            "loading_text" : "Carregando... %d%%",
+            "loading_ready" : "Pressione qualquer tecla ou clique em algum lugar para prosseguir." 
+        },
+        "custom_night_menu" : {
+            "custom_night_menu_title" : "Noite Personalizada",
+            "custom_night_menu_challenges" : "Desafios",
+            "custom_night_menu_ready" : "Pronto",
+            "custom_night_menu_custom_challenge" : "Desafio Personalizado",
+            "custom_night_menu_buttons" : {
+                "custom_night_menu_buttons_clear" : "Limpar tudo",
+                "custom_night_menu_buttons_add" : "Add 1",
+                "custom_night_menu_buttons_set_20" : "Set 20"
+            }
+        }
+    },
+    "game" : {
+        "game_night_announce" : "Noite %s",
+        "game_night_shift_end" : "Turno Completo",
+        "game_custom_night_announce" : "Noite Personalizada",
+        "game_mask_toxic" : "Oxigênio",
+        "game_vent_state_closed" : "Status do duto: Fechado",
+        "game_vent_state_open" : "Status do duto: Aberto",
+        "game_energy_usage" : "Uso de energia",
+        "game_energy" : "Energia: %d%%",
+        "game_btn_rewind_box" : "Rebobinar Caixa de Música",
+        "game_btn_seal_vent" : "Fechar o duto",
+        "game_btn_unseal_vent" : "Abrir duto",
+        "misc" : {
+            "game_misc_camera_error" : "Falha ao obter as imagens da câmera...",
+            "game_misc_camera_error_id" : "Reporte este erro à equipe especializada e forneça este código:",
+            "game_misc_call_name" : "Chefe",
+            "game_misc_call_incoming" : "Chamada recebida...",
+            "game_misc_buttons_options" : "Opções",
+            "game_misc_buttons_exit" : "Sair",
+            "game_misc_text_sealing" : "Fechando Duto",
+            "game_misc_text_unsealing" : "Abrindo Duto"
+        },
+        "minigame_display" : {
+            "minigame_display_bonnie_entertain_child" : "Entretenha as crianças",
+            "minigame_display_foxy_find_office" : "Encontre o Guarda de Segurança",
+            "minigame_display_sugar_find_key" : "Ache a Chave",
+            "minigame_display_sugar_boiler_room" : "Vá para a Sala de Caldeiras"
+        }
+    },
+    "gameover" : {
+        "gameover_title" : "Fim do jogo!",
+        "gameover_button_retry" : "Tentar novamente",
+        "gameover_button_exit" : "Voltar para o Menu",
+        "gameover_explain" : {
+            "gameover_explain_bonnie" : "Bonnie irá até o seu escritório. Você pode usar a lanterna para ver se ele está na janela do seu escritório. Quando bonnie estiver no escritório, use a máscara para fazê-lo ir embora.",
+            "gameover_explain_chica" : "Chica também entrará no seu escritório. Use a máscara para fazê-la voltar ao palco.",
+            "gameover_explain_freddy" : "Freddy se dirigirá ao seu escritório. Use a lanterna nas câmeras para fazê-lo voltar e não deixe a energia ser desligada.",
+            "gameover_explain_foxy" : "Ele surgirá em frente ao seu escritório. Use a lanterna para ver e feche a porta quando ele estiver prestes a se mover",
+            "gameover_explain_sugar" : "Ela vai se dirigir ao seu escritório pelo duto direito. Feche o duto para não deixá-la chegar até você.",
+            "gameover_explain_kitty" : "Ela virá pelo duto da esquerda. Feche o duto para não deixá-la passar.",
+            "gameover_explain_puppet" : "Ela se moverá aleatoriamente pelas câmeras. Rebobine sua caixa de música para acalmá-la.",
+            "gameover_explain_dummy" : "Como caralhos você morreu pro dummy?",
+            "gameover_explain_oxygen" : "Não deixe seu oxigênio diminuir, ou você ficará sufocado."
+        }
+    },
+    "extras": {
+        "extras_options" : {
+            "extras_options_animatronics" : "Animatrônicos",
+            "extras_options_jumpscares" : "Jumpscares",
+            "extras_options_dev_content" : "Por trás das Cameras",
+            "extras_options_minigames": "Minigames",
+            "extras_options_cutscenes" : "Cenas",
+            "extras_options_custom_night" : "Noite Personalizada",
+            "extras_options_credits": "Créditos"
+        },
+        "extras_category_animatronics": {
+            "extras_category_animatronics_click" : "Clique nos animatrônicos para alternar para a versão antiga",
+            "extras_category_animatronics_author" : "Modelo por:"
+        },
+        "extras_category_jumpscares": {
+            "extras_category_jumpscares_loading" : "Carregando jumpscares",
+            "extras_category_jumpscares_allow_sound" : "Reproduzir som",
+            "extras_category_jumpscares_show_UI" : "Mostrar interface"
+        }
+    },
+    "secret_night" : {
+        "beeper_instructions": [
+            "Queime os restos mortais de Vincent. \n\n Use a madeira que está sobre a mesa para fazer com que a caldeira incinere o corpo mais rapidamente.",
+            "Corrompa a IA dos animatrônicos no seu monitor, você precisa descriptografar as informações deles.",
+            "O homem de chapéu vai te procurar. Ilumine-o com a lanterna para afastá-lo, mas não se estiver muito perto. Ignore tudo que não for ele; isso só está tentando te distrair."
+        ]
+    },
+    "end_demo" : {
+        "end_demo_title": "Fim da Demo",
+        "end_demo_text": "Por enquanto é isso, a versão completa terá muitos recursos legais e segredos. Fique ligado!"
+    }
+}   
