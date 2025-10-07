@@ -5,6 +5,6 @@ featureFlags.debug = not love.filesystem.isFused()   -- debug stuff will not app
 featureFlags.videoStats = false
 featureFlags.captureScreenshot = true
 featureFlags.developerMode = featureFlags.debug
-featureFlags.isDemo = false
+featureFlags.isDemo = true
 
 return featureFlags

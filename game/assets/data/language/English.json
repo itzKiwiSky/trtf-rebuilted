@@ -171,5 +171,9 @@
             "Corrupt the AI of the animatronics in your monitor, you have to decrypt their information",
             "The man in the hat will try to find you.\nShine yourflashlight in his face to make him move away, but not if he's too close.\nIf you see anything other than him, ignore it; that thing is just trying to distract you."
         ]
+    },
+    "end_demo" : {
+        "end_demo_title": "End of the demo",
+        "end_demo_text": "This is the end for now, the full release will have a lot of cool features and secrets. Stay tunned"
     }
 }

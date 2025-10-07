@@ -76,7 +76,7 @@ function WinState:enter()
             c = c + 1
         end
         sleep(0.2)
-        if addHelp then
+        if self.addHelp then
             self.curNumbers[1] = self.numbers["h"]
             self.curNumbers[2] = self.numbers["e"]
             self.curNumbers[3] = self.numbers["l"]
@@ -135,7 +135,11 @@ function WinState:update(elapsed)
         if self.fadeAcc >= 0.07 then
             self.fadeOp = self.fadeOp + 0.56 * elapsed
             if self.fadeOp >= 1 then
-                gamestate.switch(MenuState)
+                if FEATURE_FLAGS.isDemo then
+                    gamestate.switch(DemoEndState)
+                else
+                    gamestate.switch(MenuState)
+                end
             end
         end
     end

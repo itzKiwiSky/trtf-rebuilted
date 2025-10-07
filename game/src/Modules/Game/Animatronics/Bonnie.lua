@@ -54,9 +54,9 @@ function Bonnie:update(elapsed)
         end
 
         if NightState.officeState.hasAnimatronicInOffice then
-            if self.patience >= 160 and not NightState.officeState.maskUp then
+            if self.patience >= 150 and not NightState.officeState.maskUp then
                 self:kill()
-            elseif self.patience >= 160 and NightState.officeState.maskUp then
+            elseif self.patience >= 150 and NightState.officeState.maskUp then
                 self.patience = 0
                 self.timer = 0
                 self.currentState = 1
