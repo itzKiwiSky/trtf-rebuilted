@@ -38,7 +38,7 @@ function table.concatf(tbl, sep, transform)
     
     local result = {}
     for k, v in pairs(tbl) do
-        result[#result + 1] = transform(k, v)
+        result[#result + 1] = tostring(transform(k, v))
     end
     
     return table.concat(result, sep)

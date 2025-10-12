@@ -86,7 +86,7 @@
         "menu_gamejolt_login_text" : "Bem-vindo(a) %s",
         "loading" : {
             "loading_text" : "Carregando... %d%%",
-            "loading_ready" : "Pressione qualquer tecla ou clique em algum lugar para prosseguir." 
+            "loading_ready" : "Carregamento concluido" 
         },
         "custom_night_menu" : {
             "custom_night_menu_title" : "Noite Personalizada",

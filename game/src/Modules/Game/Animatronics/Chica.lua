@@ -16,7 +16,7 @@ function Chica:__construct()
         { x = 1079, y = 592, camera = nil },        -- office
     }
 
-    self.moveTime = 8.25
+    self.moveTime = 5
 
     self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
 end

@@ -86,7 +86,7 @@
         "menu_gamejolt_login_text" : "Welcome back %s",
         "loading" : {
             "loading_text" : "Loading... %d%%",
-            "loading_ready" : "Press any key or click anywhere to continue"
+            "loading_ready" : "Loading done"
         },
         "custom_night_menu" : {
             "custom_night_menu_title" : "Custom Night",

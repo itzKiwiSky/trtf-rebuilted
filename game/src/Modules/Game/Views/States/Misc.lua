@@ -1,4 +1,5 @@
 local connectGJModal = require 'src.Modules.Game.Views.States.ConnectGJModal'
+local languageManager = require 'src.Modules.System.Utils.LanguageManager'
 
 return function(settings)
     local lfskin = settings.skin

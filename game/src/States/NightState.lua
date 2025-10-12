@@ -220,7 +220,7 @@ function NightState:enter()
     self.fnt_timerfnt = fontcache.getFont("vcr", 28)
     self.fnt_camError = fontcache.getFont("vcr", 30)
     self.fnt_camName = fontcache.getFont("vcr", 24)
-    self.fnt_boldtnr = fontcache.getFont("tnr_bold", 20)
+    self.fnt_boldtnr = fontcache.getFont("tnr", 20)
     self.fnt_nightDisplay = fontcache.getFont("tnr", 60)
 
     self.fnt_phoneCallName = fontcache.getFont("ocrx", 25)
@@ -384,6 +384,8 @@ function NightState:enter()
         _t = 0,
         _f = 0,
         _d = false,
+        _tabletisDown = false,
+        onAnimatronicInOffice = function()end,
         nightRun = false,
         jumpscareRunning = false,
         dead = false,
@@ -537,6 +539,13 @@ function NightState:enter()
     for k, v in pairs(NightState.AnimatronicControllers) do
         --NightState.AnimatronicControllers[k] = v:new()
         --if v.init then v.init() end
+    end
+
+    function NightState.officeState.onAnimatronicInOffice()
+        if self.officeState.tabletUp then
+            self.tabletController:setState(false)
+            self.officeState.tabletUp = false
+        end
     end
 end
 
@@ -1435,6 +1444,7 @@ function NightState:leave()
         end
 
         releaseRecursive(self.assets)
+        LoadingState.isNightLoaded = false
     end
 end
 

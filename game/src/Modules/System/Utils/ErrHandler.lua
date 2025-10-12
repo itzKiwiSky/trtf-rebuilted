@@ -99,9 +99,7 @@ function love.errorhandler(msg)
     love.filesystem.createDirectory(fdcrash)
 
     local err, f = love.filesystem.write(string.format("%s/traceback.txt", fdcrash), tostring(p))
-    --if FEATURE_FLAGS.debug then
     local err, f = love.filesystem.write(string.format("%s/outputlog.txt", fdcrash), tostring(table.concat(_G.FazKiwi_LOGBUFFER, "")))
-    --end
 
     
     local dskWidth, dskHeight = love.window.getDesktopDimensions()

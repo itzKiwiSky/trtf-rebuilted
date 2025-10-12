@@ -3,7 +3,7 @@ DemoEndState = {}
 function DemoEndState:enter()
     self.background = nil
     self.titleFont = fontcache.getFont("tnr", 50)
-    self.textFont = fontcache.getFont("tnr", 36)
+    self.textFont = fontcache.getFont("tnr", 30)
 
     self.glowText = moonshine(moonshine.effects.glow)
     local blurredBG = moonshine(moonshine.effects.gaussianblur)
@@ -43,6 +43,7 @@ function DemoEndState:enter()
     self.tmr_countDowm = timer.new()
     self.tmr_countDowm:script(function(sleep)
         sleep(2.5)
+        print("sex")
         flux.to(self.textconfig, 2, { alphaTitle = 1 })
         sleep(1.5)
         flux.to(self.textconfig, 2, { alpha = 1 })
@@ -55,12 +56,12 @@ function DemoEndState:draw()
     love.graphics.draw(self.background)
 
     self.glowText(function()
-        love.graphics.setColor(0, 0, 0, self.textconfig.alphaTitle)
-            love.graphics.printf("End of demo", self.titleFont, 0, 128, shove.getViewportWidth(), "center")
+        love.graphics.setColor(1, 1, 1, self.textconfig.alphaTitle)
+            love.graphics.printf(languageService["end_demo_title"], self.titleFont, 0, 128, shove.getViewportWidth(), "center")
         love.graphics.setColor(1, 1, 1, 1)
 
-        love.graphics.setColor(0, 0, 0, self.textconfig.alpha)
-            love.graphics.printf("See you in the final version of the game", self.titleFont, 0, shove.getViewportHeight() - 64, shove.getViewportWidth(), "center")
+        love.graphics.setColor(1, 1, 1, self.textconfig.alpha)
+            love.graphics.printf(languageService["end_demo_text"], self.textFont, 64, shove.getViewportHeight() - 128, shove.getViewportWidth() - 128, "center")
         love.graphics.setColor(1, 1, 1, 1)
     end)
 

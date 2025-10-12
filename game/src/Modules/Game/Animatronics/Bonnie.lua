@@ -14,7 +14,7 @@ function Bonnie:__construct()
         { x = 1079, y = 592, camera = nil },        -- office
     }
 
-    self.moveTime = 8.25
+    self.moveTime = 5
 
     self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
 end
@@ -51,6 +51,7 @@ function Bonnie:update(elapsed)
             self.timer = 0
             self.patience = self.patience + 1
             NightState.officeState.hasAnimatronicInOffice = true
+            NightState.officeState.onAnimatronicInOffice()
         end
 
         if NightState.officeState.hasAnimatronicInOffice then

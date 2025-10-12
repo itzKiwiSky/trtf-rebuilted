@@ -69,7 +69,10 @@ function DeathState:enter()
             hovered = false,
             hitbox = {},
             action = function()
-                
+                for k, v in pairs(AudioSources) do
+                    v:stop()
+                end
+                gamestate.switch(LoadingState.isNightLoaded and NightState or LoadingState)
             end
         },
         {
@@ -102,9 +105,9 @@ function DeathState:enter()
     self.twn_openAnim = flux.to(self.bgOption, 2, { startAngle = 0, startZoom = 1 }):ease("sineout")
 
     self.tmr_deathbegin = timer.new()
-    self.tmr_deathbegin:after(3.5, function()
+    self.tmr_deathbegin:after(2.5, function()
         self.gameOptions.canDisplay = true
-        self.tween_Options = self.twn_death:to(self.gameOptions, 0.8, { y = shove.getViewportHeight() - 400 })
+        self.tween_Options = self.twn_death:to(self.gameOptions, 1, { y = shove.getViewportHeight() - 400 })
         :ease("sineout")
         :oncomplete(function()
             self.gameOptions.clickItems = true
