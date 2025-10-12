@@ -17,7 +17,7 @@ function WinState:enter()
     for k, v in pairs(AudioSources) do
         v:stop()
     end
-    self.winCamera = camera.new()
+    self.winCamera = camera.new(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
     self.winCamera:zoomTo(0.67)
 
     self.ps_confetti:stop(0, 0)
@@ -135,11 +135,7 @@ function WinState:update(elapsed)
         if self.fadeAcc >= 0.07 then
             self.fadeOp = self.fadeOp + 0.56 * elapsed
             if self.fadeOp >= 1 then
-                if FEATURE_FLAGS.isDemo then
-                    gamestate.switch(DemoEndState)
-                else
-                    gamestate.switch(MenuState)
-                end
+                gamestate.switch(MenuState)
             end
         end
     end

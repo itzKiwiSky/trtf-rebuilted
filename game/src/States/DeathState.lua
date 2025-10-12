@@ -182,14 +182,16 @@ function DeathState:draw()
             love.graphics.setBlendMode("alpha")
             love.graphics.printf(languageService["gameover_explain_oxygen"], self.fnt_gameoverExplain, 120, self.explaindeath.y, shove.getViewportWidth() - 260, "left")
         end
-        love.graphics.setLineWidth(5)
-            self.blurFX(function()
-                love.graphics.clear(0, 0, 0, 0)
+        if NightState.KilledBy ~= "oxygen" then
+            love.graphics.setLineWidth(5)
+                self.blurFX(function()
+                    love.graphics.clear(0, 0, 0, 0)
+                    love.graphics.rectangle("line", 24, self.explaindeath.y, 72, 72)
+                end)
                 love.graphics.rectangle("line", 24, self.explaindeath.y, 72, 72)
-            end)
-            love.graphics.rectangle("line", 24, self.explaindeath.y, 72, 72)
-        love.graphics.setLineWidth(1)
-        love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.setLineWidth(1)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
     end)
 end
 
