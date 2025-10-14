@@ -167,9 +167,9 @@
     },
     "secret_night" : {
         "beeper_instructions": [
-            "Queime os restos mortais de Vincent. \n\n Use a madeira que está sobre a mesa para fazer com que a caldeira incinere o corpo mais rapidamente.",
-            "Corrompa a IA dos animatrônicos no seu monitor, você precisa descriptografar as informações deles.",
-            "O homem de chapéu vai te procurar. Ilumine-o com a lanterna para afastá-lo, mas não se estiver muito perto. Ignore tudo que não for ele; isso só está tentando te distrair."
+            "Queime os restos mortais de Vincent. \n\n Use a madeira que esta sobre a mesa para fazer com que a caldeira incinere o corpo mais rapidamente.",
+            "Corrompa a IA dos animatronicos no seu monitor, você precisa descriptografar as informações deles.",
+            "O homem de chapeu vai te procurar. Ilumine-o com a lanterna para afasta-lo, mas não se estiver muito perto. Ignore tudo que não for ele; isso só está tentando te distrair."
         ]
     },
     "end_demo" : {

@@ -259,7 +259,7 @@ function MenuState:enter()
         },
     }
 
-    if gameSave.save.user.progress.showNight8 then
+    if gameSave.save.user.progress.showNight8 or FEATURE_FLAGS.nightExtraDemo then
         --self.mainMenuButtons.elements[#self.mainMenuButtons.elements + 1] = 
         table.insert(self.mainMenuButtons.elements, #self.mainMenuButtons.elements, {
             text = languageService["menu_button_night_secret"],
@@ -314,10 +314,10 @@ function MenuState:enter()
 
     self.settingsIconTween = flux.to(self.settingsGear, 1.5, { x = shove.getViewportWidth() - 128 })
 
-    if not AudioSources["amb_rainleak"]:isPlaying() then
-        AudioSources["amb_rainleak"]:play()
-        AudioSources["amb_rainleak"]:setLooping(true)
-        AudioSources["amb_rainleak"]:setVolume(0.3)
+    if not AudioSources["sfx_rainleak"]:isPlaying() then
+        AudioSources["sfx_rainleak"]:play()
+        AudioSources["sfx_rainleak"]:setLooping(true)
+        AudioSources["sfx_rainleak"]:setVolume(0.3)
     end
 
     if not AudioSources["menu_theme_again"]:isPlaying() then
