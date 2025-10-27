@@ -239,7 +239,7 @@ function MinigameSceneState:enter()
     self.interferenceFX = love.graphics.newShader("assets/shaders/Interference.glsl")
     self.interferenceFX:send("intensity", 0.012)
     self.interferenceFX:send("speed", 100.0)
-    self.interferenceIntensity = 0.012
+    self.interferenceIntensity = 0
     self.interferenceSpeed = 100.0
     self.interferenceData = {
         acc = 0,
@@ -389,7 +389,9 @@ function MinigameSceneState:update(elapsed)
         self.interferenceFX:send("intensity", self.interferenceIntensity)
         self.interferenceFX:send("speed", self.interferenceSpeed)
 
-        self.interferenceIntensity = self.interferenceIntensity - 0.15 * elapsed
+        if self.interferenceIntensity > 0 then
+            self.interferenceIntensity = self.interferenceIntensity - 5 * elapsed
+        end
 
         self.interferenceData.interferenceTimerAcc = self.interferenceData.interferenceTimerAcc + elapsed
         if self.interferenceData.interferenceTimerAcc >= self.interferenceData.interferenceTimerMax then
