@@ -115,6 +115,8 @@ function love.initialize()
         devWindow = false,
         devWindowContent = function() return end,
         showDebugHitbox = false,
+        isStoryMode = false,
+        requireMinigame = false,
         statesName = {},
         user = {
             currentSettingsTab = "video",

@@ -11,6 +11,12 @@ local function loadAnimatronic(id)
     return anfiles
 end
 
+local function updateTexts(t)
+    for _, element in ipairs(t) do
+        element.text = languageService[element.key]
+    end
+end
+
 local function loadRandomBackground()
     local bgs = love.filesystem.getDirectoryItems("assets/images/game/menu/backgrounds")
     return love.graphics.newImage("assets/images/game/menu/backgrounds/" .. bgs[math.random(1, #bgs)])
@@ -55,7 +61,6 @@ function MenuState:enter()
             for _, value in ipairs(registers.statesName) do
                 if Slab.Button(value) then
                     loadstring("gamestate.switch(" .. value .. ")")()
-                    --gamestate.switch(loadstring(value))
                 end
             end
 
@@ -215,9 +220,11 @@ function MenuState:enter()
         },
         elements = {
             {
-                text = languageService["menu_button_new_game"],
+                key = "menu_button_new_game",
+                text = "",
                 locked = false,
                 action = function()
+                    registers.isStoryMode = true
                     gameSave.save.user.progress.newgame = true
                     gameSave.save.user.progress.night = 1
                     self.canUseMenu = false
@@ -227,30 +234,29 @@ function MenuState:enter()
                 end,
             },
             {
-                text = languageService["menu_button_continue"],
+                key = "menu_button_continue",
+                text = "",
                 locked = gameSave.save.user.progress.night <= 1,
                 action = function()
-                    if FEATURE_FLAGS.isDemo and gameSave.save.user.progress.night <= 3 then
-                        NightState.nightID = gameSave.save.user.progress.night
-                        self.transitionFade.target = LoadingState
-                        self.transitionFade.active = true
-                    else
-                        self.transitionFade.target = DemoEndState
-                        self.transitionFade.active = true
-                    end
+                    registers.isStoryMode = true
+                    NightState.nightID = gameSave.save.user.progress.night
+                    self.transitionFade.target = LoadingState
+                    self.transitionFade.active = true
                 end,
             },
             {
-                text = languageService["menu_button_extras"],
+                key = "menu_button_extras",
+                text = "",
                 locked = not gameSave.save.user.progress.extras,
                 action = function()
-                    --gamestate.switch(ExtrasState)
+                    registers.isStoryMode = false
                     self.transitionFade.target = ExtrasState
                     self.transitionFade.active = true
                 end,
             },
             {
-                text = languageService["menu_button_exit"],
+                key = "menu_button_exit",
+                text = "",
                 locked = false,
                 action = function()
                     love.event.quit()
@@ -262,7 +268,7 @@ function MenuState:enter()
     if gameSave.save.user.progress.showNight8 or FEATURE_FLAGS.nightExtraDemo then
         --self.mainMenuButtons.elements[#self.mainMenuButtons.elements + 1] = 
         table.insert(self.mainMenuButtons.elements, #self.mainMenuButtons.elements, {
-            text = languageService["menu_button_night_secret"],
+            key = "menu_button_night_secret",
             locked = false,
             action = function()
                 LoadingState.mode = "secret"
@@ -270,6 +276,8 @@ function MenuState:enter()
                 self.transitionFade.active = true
             end,
         })
+
+        updateTexts(self.mainMenuButtons.elements)
     end
 
     self.journalConfig = {
@@ -420,6 +428,10 @@ function MenuState:update(elapsed)
     if not self.canUseMenu then
         flux.update(elapsed)
     end
+
+    -- update all texts --
+    updateTexts(self.mainMenuButtons.elements)
+
 
     -- gear effect hover --
     self.settingsGear.hovered = collision.pointRect({ x = mx, y = my }, self.settingsGear.hitbox)

@@ -365,7 +365,7 @@
   </object>
   <object id="249" name="child" x="944" y="160" width="16" height="16"/>
   <object id="250" name="child" x="944" y="128" width="16" height="16"/>
-  <object id="255" name="night_guard" x="398.545" y="1037.27" width="16" height="16"/>
+  <object id="255" name="night_guard" x="397.295" y="1037.02" width="16" height="16"/>
   <object id="259" name="vincent" x="928" y="414" width="16" height="16"/>
   <object id="260" name="sugar_minigame_barrier" x="672" y="352" width="16" height="226">
    <properties>
@@ -375,6 +375,6 @@
   <object id="316" name="spawn_gift" x="353.5" y="519.5" width="16" height="16"/>
   <object id="317" name="spawn_gift" x="377.5" y="872.5" width="16" height="16"/>
   <object id="318" name="spawn_gift" x="511" y="744" width="16" height="16"/>
-  <object id="319" name="spawn_gift" x="397" y="1053" width="16" height="16"/>
+  <object id="319" name="spawn_gift" x="401.75" y="1056.5" width="16" height="16"/>
  </objectgroup>
 </map>

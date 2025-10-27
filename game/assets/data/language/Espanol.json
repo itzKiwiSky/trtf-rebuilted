@@ -169,8 +169,8 @@
     "secret_night": {
         "beeper_instructions": [
             "Quema los restos de Vincent.\n\n Usa la madera del escritorio para que la caldera incinere su cuerpo mas rapido.",
-            "Corrompe la IA de los animatrónicos en tu monitor, debes descifrar su informacion",
-            "El hombre del sombrero intentará encontrarte.\nEnfocale con la linterna para que se aleje, pero no si esta demasiado cerca.\nSi ves algo distinto a el, ignóralo; solo intenta distraerte."
+            "Corrompe la IA de los animatronicos en tu monitor, debes descifrar su informacion",
+            "El hombre del sombrero intentará encontrarte.\nEnfocale con la linterna para que se aleje, pero no si esta demasiado cerca.\nSi ves algo distinto a el, ignoralo; solo intenta distraerte."
         ]
     },
     "end_demo": {

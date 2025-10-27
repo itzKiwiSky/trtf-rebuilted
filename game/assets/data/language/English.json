@@ -126,7 +126,9 @@
             "minigame_display_bonnie_entertain_child" : "Entertain the childrens",
             "minigame_display_foxy_find_office" : "Find the Nightguard",
             "minigame_display_sugar_find_key" : "Find the key",
-            "minigame_display_sugar_boiler_room" : "Go to The Boiler Room"
+            "minigame_display_sugar_boiler_room" : "Go to The Boiler Room",
+            
+            "minigame_display_freddy_collect_gift": "Collect 5 gifts"
         }
     },
     "gameover" : {

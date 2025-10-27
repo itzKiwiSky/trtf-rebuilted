@@ -6,6 +6,7 @@ function SecretNightState:enter()
     self.beeperView = require 'src.Modules.Game.SecretNight.BeeperView'
     self.tabletController = require 'src.Modules.Game.TabletController'
     self.buttonsUI = require 'src.Modules.Game.Utils.ButtonUI'
+    self.animatorController = require 'src.Modules.Game.AnimatorController'
 
     self.fnt_nightDisplay = fontcache.getFont("tnr", 60)
 
@@ -81,6 +82,7 @@ function SecretNightState:enter()
     self.shd_perspective:send("fovVar", self.tuneConfig.fovVar)
 
     self.hoverLookButton = self.buttonsUI:new(self.assets.ui["hover_look"], shove.getViewportWidth() - 96, shove.getViewportHeight() / 2, 0, 0.75, 0.75, true)
+    self.hoverBackLookButton = self.buttonsUI:new(self.assets.ui["hover_look"], 96, shove.getViewportHeight() / 2, 0, -0.75, 0.75, true)
 
     -- room --
     self.roomSize = {
@@ -151,8 +153,6 @@ function SecretNightState:draw()
         end
     end)
 
-    -- 482 175
-
     love.graphics.setShader(self.shd_perspective)
         love.graphics.draw(self.cnv_mainCanvas, 0, 0)
         love.graphics.setBlendMode("multiply", "premultiplied")
@@ -165,7 +165,11 @@ function SecretNightState:draw()
     self.beeperView:postDraw()
 
     if self.officeState.nightStarted then
-        self.hoverLookButton:draw()
+        if self.officeState.lookingBack then
+            self.hoverBackLookButton:draw()
+        else
+            self.hoverLookButton:draw()
+        end
     end
 
 
@@ -241,7 +245,7 @@ function SecretNightState:update(elapsed)
     end
     
 
-    self.officeState.ambienceBoilerVolume = math.lerp(self.officeState.ambienceBoilerVolume, self.officeState.lookingBack and 0.75 or 0.2, 0.075, 1 * elapsed)
+    self.officeState.ambienceBoilerVolume = math.lerp(self.officeState.ambienceBoilerVolume, self.officeState.lookingBack and 0.75 or 0.2, 0.075, 0.9 * elapsed)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
 
     if self.officeState.nightStarted then

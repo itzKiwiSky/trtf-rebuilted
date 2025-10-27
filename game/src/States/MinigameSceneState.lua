@@ -1,7 +1,7 @@
 MinigameSceneState = {}
 
 MinigameSceneState.currentMinigame = "debug"
-MinigameSceneState.script = nil
+MinigameSceneState.script = {}
 MinigameSceneState.isExtras = true
 
 local function getTableByName(tbl, val)
@@ -169,7 +169,12 @@ function MinigameSceneState:enter()
     self.displayText = ""
     self.displayDate = ""
     self.fnt_text = fontcache.getFont("vcr", 34)
-    self.script = self.minigames[self.currentMinigame]
+    self.script = self.minigames[self.currentMinigame] or {
+        init = function()end,
+        draw = function()end,
+        shutdown = function()end,
+        update = function()end,
+    } -- defaul script --
     
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
@@ -384,7 +389,7 @@ function MinigameSceneState:update(elapsed)
         self.interferenceFX:send("intensity", self.interferenceIntensity)
         self.interferenceFX:send("speed", self.interferenceSpeed)
 
-        self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer * elapsed)
+        self.interferenceIntensity = self.interferenceIntensity - 0.15 * elapsed
 
         self.interferenceData.interferenceTimerAcc = self.interferenceData.interferenceTimerAcc + elapsed
         if self.interferenceData.interferenceTimerAcc >= self.interferenceData.interferenceTimerMax then

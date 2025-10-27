@@ -507,6 +507,16 @@ function NightState:enter()
         gameSave.save.user.progress.newgame = false
         gameSave.save.user.progress.canContinue = gameSave.save.user.progress.night > 1
         gameSave:saveSlot()
+        if registers.isStoryMode then
+            local minigames = {
+                "bonnie",
+                "foxy",
+                "sugar",
+                "freddy",
+                "lockjaw"
+            }
+            MinigameSceneState.currentMinigame = minigames[self.nightID]
+        end
         gamestate.switch(WinState)
     end)
 
@@ -605,7 +615,7 @@ function NightState:draw()
             end
             love.graphics.printf(languageService["game_misc_call_name"], self.fnt_phoneCallName, 1011, 430, 193, "center")
             if self.officeState.phoneCallNotRefused then
-                local tm, ts = convertTime(NightState.assets.calls["call_night" .. NightState.nightID]:tell("seconds"))
+                local tm, ts = convertTime(NightState.assets.calls["sfx_call_night" .. NightState.nightID]:tell("seconds"))
                 love.graphics.printf(string.format("%02d:%02d", tm, ts), self.fnt_phoneCallFooter, 1011, 470, 193, "center")
             else
                 love.graphics.printf(languageService["game_misc_call_incoming"], self.fnt_phoneCallFooter, 1011, 470, 193, "center")
@@ -786,7 +796,7 @@ function NightState:update(elapsed)
     for i = 1, 3, 1 do
         AudioSources["sfx_metalwalk" .. i]:setVolume(self.officeState.tabletUp and 0.08 or 0.5)
     end
-    AudioSources["vent_walk"]:setVolume(self.officeState.tabletUp and 0.3 or 0.67)
+    AudioSources["sfx_vent_walk"]:setVolume(self.officeState.tabletUp and 0.3 or 0.67)
 
     -- hud buttons --
     -- camera --
@@ -799,7 +809,7 @@ function NightState:update(elapsed)
                         if AudioSources[self.officeState.tabletUp and "sfx_tab_close" or "sfx_tab_up"]:isPlaying() then
                             AudioSources[self.officeState.tabletUp and "sfx_tab_close" or "sfx_tab_up"]:seek(0)
                         end
-                        AudioSources[self.officeState.tabletUp and "tab_close" or "tab_up"]:play()
+                        AudioSources[self.officeState.tabletUp and "sfx_tab_close" or "sfx_tab_up"]:play()
         
                         if not self.officeState.tabletUp then
                             AudioSources["sfx_cam"]:play()
@@ -904,7 +914,7 @@ function NightState:update(elapsed)
         if self.deskFan.acc >= self.deskFan.speed then
             self.deskFan.acc = 0
             self.deskFan.fid = self.deskFan.fid + 1
-            if self.deskFan.fid >= NightState.assets["sfx_fanAnim"].frameCount then
+            if self.deskFan.fid >= NightState.assets["fanAnim"].frameCount then
                 self.deskFan.fid = 1
             end
         end

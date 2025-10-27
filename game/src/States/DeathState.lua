@@ -48,7 +48,7 @@ function DeathState:enter()
         startZoom = 5,
     }
 
-    AudioSources["boom_death"]:play()
+    AudioSources["sfx_boom_death"]:play()
 
     self.gameOptions = {
         y = shove.getViewportHeight() * 2,

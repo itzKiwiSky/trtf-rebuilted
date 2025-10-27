@@ -22,8 +22,8 @@ function WinState:enter()
 
     self.ps_confetti:stop(0, 0)
 
-    if not AudioSources["shift_complete"]:isPlaying() then
-        AudioSources["shift_complete"]:play()
+    if not AudioSources["sfx_shift_complete"]:isPlaying() then
+        AudioSources["sfx_shift_complete"]:play()
     end
 
     self.digits = {
@@ -96,7 +96,7 @@ end
 function WinState:draw()
     love.graphics.draw(self.ps_confetti, shove.getViewportWidth() / 2, -16)
 
-    if not AudioSources["shift_complete"]:isPlaying() then
+    if not AudioSources["sfx_shift_complete"]:isPlaying() then
         self.fadeSC = true
     end
 
@@ -135,7 +135,11 @@ function WinState:update(elapsed)
         if self.fadeAcc >= 0.07 then
             self.fadeOp = self.fadeOp + 0.56 * elapsed
             if self.fadeOp >= 1 then
-                gamestate.switch(MenuState)
+                if registers.isStoryMode then
+                    gamestate.switch(MinigameSceneState)
+                else
+                    gamestate.switch(MenuState)
+                end
             end
         end
     end

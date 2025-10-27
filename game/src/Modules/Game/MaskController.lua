@@ -46,8 +46,7 @@ function MaskController:draw()
     if self.visible then
         --love.graphics.draw(self.frames[self.key .. self.frame], self.x + self.rx, self.y + self.ry)
         love.graphics.draw(self.frames[self.key .. self.frame], self.x + self.rx, self.y + self.ry, 0, 
-            shove.getViewportWidth() / self.frames[self.key .. self.frame]:getWidth(),
-            shove.getViewportHeight() / self.frames[self.key .. self.frame]:getHeight()
+            2, 2
         )
     end
 end

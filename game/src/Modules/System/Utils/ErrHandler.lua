@@ -96,7 +96,7 @@ function love.errorhandler(msg)
     local fdcrash = "session_" .. tostring(os.date("%Y_%m_%d%H.%M.%S"))
 
     --nfs.createDirectory(fdcrash)
-    love.filesystem.createDirectory(fdcrash)
+    love.filesystem.createDirectory("crashes/" .. fdcrash)
 
     local err, f = love.filesystem.write(string.format("%s/traceback.txt", fdcrash), tostring(p))
     local err, f = love.filesystem.write(string.format("%s/outputlog.txt", fdcrash), tostring(table.concat(_G.FazKiwi_LOGBUFFER, "")))
@@ -152,7 +152,7 @@ function love.errorhandler(msg)
             love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
 
-        local txt = "Oh no! apparently frankburt has died due an game error\nAn error log has been saved on the game folder.\nPlease contact the developers and send the \"crashlog.txt\" file to them\n\n\nThe game will be terminated, press [ESC] to close or press [F1] to see the error."
+        local txt = "Oh no! apparently frankburt has died due an game error\nAn error log has been saved on the game folder.\nPlease contact the developers and send the \"crashlog.txt\" file to them\n\n\nThe game will be terminated, press [ESC] to close, press [F1] to see the error or [F12] to force a restart."
 
         love.graphics.printf("-[ERROR]-", fnt_title, 0, 100, love.graphics.getWidth(), "center")
         love.graphics.printf(txt, fnt_error, 0, 250, love.graphics.getWidth(), "center")
@@ -174,6 +174,8 @@ function love.errorhandler(msg)
                 return 1
             elseif e == "keypressed" and a == "f1" then
                 disp = not disp
+            elseif e == "keypressed" and a == "f12" then
+                love.event.quit("restart")
             end
         end
 
