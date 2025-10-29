@@ -9,7 +9,7 @@
  <objectgroup id="12" name="map_img" locked="1">
   <object id="239" gid="1" x="0" y="1136" width="1072" height="1136"/>
  </objectgroup>
- <objectgroup color="#11ffdb" id="4" name="areas">
+ <objectgroup color="#11ffdb" id="4" name="areas" locked="1">
   <properties>
    <property name="debug_color" type="color" value="#ff4cc764"/>
   </properties>
@@ -203,7 +203,7 @@
   <object id="183" name="bonnie" x="275" y="22" width="16" height="16"/>
   <object id="184" name="chica" x="339" y="22" width="16" height="16"/>
   <object id="185" name="foxy" x="32" y="282" width="16" height="16"/>
-  <object id="254" name="sugar" x="64" y="112" width="16" height="16"/>
+  <object id="254" name="sugar" x="45.8182" y="102.182" width="16" height="16"/>
   <object id="315" name="spawn_gift" x="100" y="96.5" width="16" height="16"/>
   <object id="226" name="spawn_key" x="396.182" y="1066.36" width="16" height="16"/>
   <object id="227" name="spawn_big_table" x="420" y="904" width="16" height="16"/>

@@ -2,7 +2,8 @@ local Minigame = {}
 
 function Minigame.init()
     Minigame.chars = {}
-    Minigame.chars["puppet"] = require 'src.Modules.Game.Minigame.Puppet'
+    --Minigame.chars["puppet"] = require 'src.Modules.Game.Minigame.Puppet'
+    Minigame.statues = require 'src.Modules.Game.Minigame.Statues'
     Minigame.assets = {}
     Minigame.assets["tomato_sauce"] = love.graphics.newImage("assets/images/game/minigames/tomato_sauce.png")
     MinigameSceneState.displayFace.currentFace = "freddy"
@@ -21,6 +22,24 @@ function Minigame.init()
     Minigame.assets["gifts"] = { img = nil, quads = {} }
     Minigame.assets["gifts"].img =  love.graphics.newImage("assets/images/game/minigames/gifts.png")
     Minigame.assets["gifts"].quads = love.graphics.getQuads(Minigame.assets["gifts"].img, "assets/images/game/minigames/gifts.json", "array")
+
+    local charsPos = { "sugar", "bonnie", "chica", "foxy" }
+    for _, c in ipairs(charsPos) do
+        local char = Minigame.statues:new(MinigameSceneState.animatronicSprites, 
+        MinigameSceneState.animSets[c]["idle"],
+            MinigameSceneState.spawnAreas[c].centerX, MinigameSceneState.spawnAreas[c].centerY, false, true
+        )
+
+        char.drawOffset.x = -14
+        char.drawOffset.y = -12
+        char.hitbox.w = 28
+        char.hitbox.h = 24
+        char.hitbox.x = MinigameSceneState.spawnAreas[c].centerX - 14
+        char.hitbox.y = MinigameSceneState.spawnAreas[c].centerY - 16
+        MinigameSceneState.world:add(char.hitbox, char.hitbox.x, char.hitbox.y, char.hitbox.w, char.hitbox.h)
+        --table.insert(Minigame.chars, char)
+        Minigame.chars[c] = char
+    end
 
     for i = 0, 4, 1 do
         if i > 0 then
@@ -76,6 +95,10 @@ function Minigame.draw()
     -- draw gift --
     local gift = Minigame.gifts[Minigame.currentGift]
     --Minigame.chars["puppet"]:draw(MinigameSceneState.camView)
+    for anim, char in pairs(Minigame.chars) do
+        char:draw()
+    end
+
     if Minigame.showSauce then
         love.graphics.draw(
             Minigame.assets["tomato_sauce"], 
