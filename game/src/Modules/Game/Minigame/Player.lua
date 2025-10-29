@@ -6,6 +6,7 @@ Player.drawOffset = {
     x = 12,
     y = 16,
 }
+Player.displayPlayer = true
 Player.x = 0
 Player.y = 0
 Player.dx = 0
@@ -19,7 +20,7 @@ Player.hitbox = {
     h = 20,
 }
 Player.lastDirection = "down"
-Player.speed = 900
+Player.speed = 1200
 Player.locked = false
 Player.lastLockState = Player.locked
 Player.lockCooldown = 2
@@ -42,7 +43,7 @@ Player.animation = {
     maxFrames = 2,
 }
 
-Player.maxCooldown = 0.45
+Player.maxCooldown = 0.25
 
 ---Define the player position
 ---@param x number
@@ -63,10 +64,12 @@ function Player.setPos(x, y)
 end
 
 function Player.draw()
-    love.graphics.draw(MinigameSceneState.animatronicSprites, 
-        MinigameSceneState.animSets[Player.sprite][Player.lastDirection][Player.animation.frame], 
-        Player.x - Player.drawOffset.x, Player.y - Player.drawOffset.y, 0, 1.2, 1.2
-    )
+    if Player.displayPlayer then
+        love.graphics.draw(MinigameSceneState.animatronicSprites, 
+            MinigameSceneState.animSets[Player.sprite][Player.lastDirection][Player.animation.frame], 
+            Player.x - Player.drawOffset.x, Player.y - Player.drawOffset.y, 0, 1.2, 1.2
+        )
+    end
 
     if registers.showDebugHitbox then
         love.graphics.print(string.format("locked:%s\ncooldownLock:%s", tostring(Player.locked), Player.lockCooldown), Player.x + 32, Player.y - 32, 0, 0.6, 0.6)

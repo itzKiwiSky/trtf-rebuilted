@@ -18,7 +18,7 @@ function Minigame.init()
     AudioSources["msc_bg_sugar"]:setLooping(true)
     AudioSources["msc_bg_sugar"]:setVolume(0.75)
 
-    MinigameSceneState.displayDate = "10-21-2006"
+    MinigameSceneState.displayDate = "10-21-2005"
     MinigameSceneState.displayText = languageService["minigame_display_sugar_find_key"]
 
     local charsPos = { "freddy", "bonnie", "chica", "foxy" }

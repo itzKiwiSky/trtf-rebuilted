@@ -2,7 +2,7 @@ MinigameSceneState = {}
 
 MinigameSceneState.currentMinigame = "debug"
 MinigameSceneState.script = {}
-MinigameSceneState.isExtras = true
+MinigameSceneState.isExtras = false
 
 local function getTableByName(tbl, val)
     for _, t in ipairs(tbl) do
@@ -11,6 +11,16 @@ local function getTableByName(tbl, val)
         end
     end
     return false
+end
+
+local function reloadMinigames(t)
+    table.clear(t)
+    local minigameList = love.filesystem.getDirectoryItems("src/Modules/Game/Minigame/Events")
+    for _, m in ipairs(minigameList) do
+        t[m:gsub("%.lua", "")] = require("src.Modules.Game.Minigame.Events." .. m:gsub("%.lua", ""))
+    end
+    minigameList = nil
+    collectgarbage("collect")
 end
 
 local function drawBox(box, r, g, b)
@@ -40,17 +50,7 @@ function MinigameSceneState:enter()
     }
 
     self.minigames = {}
-    local minigameList = love.filesystem.getDirectoryItems("src/Modules/Game/Minigame/Events")
-
-    for _, m in ipairs(minigameList) do
-        self.minigames[m:gsub("%.lua", "")] = require("src.Modules.Game.Minigame.Events." .. m:gsub("%.lua", ""))
-    end
-
-    print(inspect(self.minigames))
-
-    minigameList = nil
-
-    collectgarbage("collect")
+    reloadMinigames(self.minigames)
 
     self.displayFace.flashTimer:script(function(sleep)
         if not self.isExtras then
@@ -77,6 +77,19 @@ function MinigameSceneState:enter()
             gamestate.switch(ExtrasState)
         end
     end)
+
+
+    self.minigameCam = camera(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
+    self.minigameCam:zoomTo(3.5)
+
+    self.camView = {
+        windowWidth = shove.getViewportWidth(),
+        windowHeight = shove.getViewportHeight(),
+        x = 0,
+        y = 0,
+        width = 2000,
+        height = 800,
+    }
 
     local files = love.filesystem.getDirectoryItems("assets/images/game/minigames/aftergame")
     for _, f in ipairs(files) do
@@ -106,6 +119,8 @@ function MinigameSceneState:enter()
             y = areasMap.objects[i].y,
             w = areasMap.objects[i].width,
             h = areasMap.objects[i].height,
+            centerX = areasMap.objects[i].x + areasMap.objects[i].width / 2,
+            centerY = areasMap.objects[i].y + areasMap.objects[i].height / 2,
             properties = areasMap.objects[i].properties,
         }
     end
@@ -175,6 +190,8 @@ function MinigameSceneState:enter()
         shutdown = function()end,
         update = function()end,
     } -- defaul script --
+
+    self.removeFog = false
     
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
@@ -183,10 +200,26 @@ function MinigameSceneState:enter()
                 if Slab.CheckBox(registers.showDebugHitbox, "Show hitboxes") then
                     registers.showDebugHitbox = not registers.showDebugHitbox
                 end
+                if Slab.CheckBox(self.isExtras, "force extras exit") then
+                    self.isExtras = not self.isExtras
+                end
                 Slab.Text("Player Cooldown")
                 Slab.SameLine()
                 if Slab.Input("playerSpeedCooldownInput", { Text = tostring(self.player.maxCooldown), ReturnOnText = false, NumbersOnly = true, Precision = 0.01 }) then
                     self.player.maxCooldown = Slab.GetInputNumber()
+                end
+                Slab.Text("Camera Zoom")
+                Slab.SameLine()
+                if Slab.Input("cameraZoomInput", { Text = tostring(self.minigameCam.scale), ReturnOnText = false, NumbersOnly = true, Precision = 0.01 }) then
+                    self.minigameCam:zoomTo(Slab.GetInputNumber())
+                end
+                Slab.Separator()
+                if Slab.CheckBox(self.removeFog, "Remove room clip") then
+                    self.removeFog = not self.removeFog
+                end
+                Slab.Separator()
+                if Slab.Button("Reload minigames") then
+                    reloadMinigames(self.minigames)
                 end
                 Slab.Separator()
                 for name, script in spairs(self.minigames) do
@@ -272,18 +305,6 @@ function MinigameSceneState:enter()
 
     self.currentArea = "showstage"
 
-    self.minigameCam = camera(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
-    self.minigameCam:zoomTo(3.5)
-
-    self.camView = {
-        windowWidth = shove.getViewportWidth(),
-        windowHeight = shove.getViewportHeight(),
-        x = 0,
-        y = 0,
-        width = 2000,
-        height = 800,
-    }
-
     -- only execute scripted minigames if is a valid minigame script --
     if self.script.init ~= nil then
         self.script.init()
@@ -305,7 +326,7 @@ function MinigameSceneState:draw()
 
             love.graphics.stencil(function()
                 for k, areas in pairs(self.map.areas) do
-                    if self.currentArea == k then
+                    if self.currentArea == k or self.removeFog then
                         love.graphics.rectangle("fill", areas.x, areas.y, areas.w, areas.h)
                         --love.graphics.draw(vignetteMask, areas.x, areas.y, vignetteMask:getWidth() / areas.w, vignetteMask:getHeight() / areas.h)
                     end
