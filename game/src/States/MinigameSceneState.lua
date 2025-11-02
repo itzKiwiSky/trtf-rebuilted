@@ -196,6 +196,10 @@ function MinigameSceneState:enter()
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
             Slab.BeginWindow("mainNightDev", { Title = "Minigame development" })
+                Slab.Separator()
+                Slab.Text("General debug values")
+                Slab.Text("currentArea : " .. self.currentArea)
+                Slab.Separator()
                 Slab.Text("General settings")
                 if Slab.CheckBox(registers.showDebugHitbox, "Show hitboxes") then
                     registers.showDebugHitbox = not registers.showDebugHitbox

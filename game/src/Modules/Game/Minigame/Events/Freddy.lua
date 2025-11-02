@@ -1,5 +1,22 @@
 local Minigame = {}
 
+local function updatePuppetPos(Minigame)
+    Minigame.chars["puppet"].setArea(Minigame.giftList[Minigame.currentGift].startArea)
+    print(Minigame.chars["puppet"].x, Minigame.chars["puppet"].y)
+
+    table.clear(Minigame.chars["puppet"].currentAreas)
+    for k, v in spairs(Minigame.giftList[Minigame.currentGift].activationAreas) do
+        table.insert(Minigame.chars["puppet"].currentAreas, k)
+    end
+
+    print(#Minigame.chars["puppet"].currentAreas)
+
+    --Minigame.chars["puppet"].currentAreas = Minigame.giftList[Minigame.currentGift].activationArea
+    --Minigame.chars["puppet"].moveDirection = Minigame.giftList[Minigame.currentGift].direction
+
+    Minigame.chars["puppet"].moveDirection = Minigame.giftList[Minigame.currentGift].activationAreas[MinigameSceneState.currentArea]
+end
+
 function Minigame.init()
     Minigame.chars = {}
     --Minigame.chars["puppet"] = require 'src.Modules.Game.Minigame.Puppet'
@@ -58,45 +75,100 @@ function Minigame.init()
         return a.y < b.y
     end)
 
-    --dinning_area
+    --[[Minigame.giftList = {
+        {
+            posArea = "showstage",
+            activationArea = { "showstage" },
+            direction = "left",
+        },
+        {
+            posArea = "dinning_area",
+            activationArea = { "dinning_area" },
+            direction = "right",
+        },
+        {
+            posArea = "dinning_area",
+            activationArea = { "dinning_area" },
+            direction = "down",
+        },
+        {
+            posArea = "dinning_area",
+            activationArea = { "dinning_area" },
+            direction = "down",
+        },
+    }]]
+
     Minigame.giftList = {
         {
-            ["showstage"] = {
-                direction = "left",
-                area = "showstage"
+            startArea = "showstage",
+            activationAreas = {
+                ["showstage"] = "left"
             },
         },
         {
-            ["dinning_area"] = "right",
-            ["storage"] = {
-                direction = "left",
-                area = "storage"
+            startArea = "dinning_area",
+            activationAreas = {
+                ["dinning_area"] = "right"
+            },
+        },
+            {
+            startArea = "dinning_area",
+            activationAreas = {
+                ["dinning_area"] = "down"
             },
         },
         {
-            ["dinning_area"] = "down",
-            ["storage"] = "left",
-            ["right_hall"] = "up",
+            startArea = "left_hall",
+            activationAreas = {
+                ["left_hall"] = "down",
+                ["right_hall"] = "down",
+            },
         },
         {
-            ["right_hall"] = "down",
-            ["left_hall"] = "down",
-        },
-        {
-            ["office_right_hall"] = "left",
-            ["office_left_hall"] = "right",
+            startArea = "office_left_hall",
+            activationAreas = {
+                ["office_left_hall"] = "right",
+                ["office_right_hall"] = "left",
+            },
         },
     }
 
-    --Minigame.chars["puppet"]:init()
+    Minigame.chars["puppet"] = {
+        img = love.graphics.newImage("assets/images/game/minigames/puppet.png"),
+        x = 0,
+        y = 0,
+        puppetMoveCooldown = 0.5,
+        step = 16,
+        moveCooldown = 0.5,
+        currentAreas = { "showstage" },
+        moveDirection = "left",
+    }
+
+    --print(inspect(MinigameSceneState.map))
+
+    Minigame.chars["puppet"].setArea = function(areaname)
+        Minigame.chars["puppet"].x = MinigameSceneState.map.areas[areaname].centerX
+        Minigame.chars["puppet"].y = MinigameSceneState.map.areas[areaname].centerY
+    end
+
+    updatePuppetPos(Minigame)
 end
 
 function Minigame.draw()
     -- draw gift --
     local gift = Minigame.gifts[Minigame.currentGift]
-    --Minigame.chars["puppet"]:draw(MinigameSceneState.camView)
     for anim, char in pairs(Minigame.chars) do
-        char:draw()
+        if char.draw then
+            char:draw()
+        end
+    end
+
+    if table.contains(Minigame.chars["puppet"].currentAreas, MinigameSceneState.currentArea) then
+        love.graphics.draw(Minigame.chars["puppet"].img, 
+            Minigame.chars["puppet"].x, Minigame.chars["puppet"].y, 0, 
+            Minigame.chars["puppet"].moveDirection == "left" and -1.2 or 1.2, 1.2, 
+            Minigame.chars["puppet"].img:getWidth() / 2, Minigame.chars["puppet"].img:getHeight() / 2
+        )
     end
 
     if Minigame.showSauce then
@@ -111,12 +183,12 @@ function Minigame.draw()
     if gift ~= nil then
         love.graphics.draw(Minigame.assets["gifts"].img, Minigame.assets["gifts"].quads[Minigame.currentGift], gift.x, gift.y, 0, 1.2, 1.2)
     end
+    love.graphics.print(string.format("%s / %s", Minigame.currentGift, #Minigame.giftList), 30, 30)
 end
 
 function Minigame.update(elapsed)
     local gift = Minigame.gifts[Minigame.currentGift]
 
-    --Minigame.chars["puppet"]:update(MinigameSceneState.camView, Minigame, elapsed)
 
     if gift ~= nil then
         if collision.rectRect(MinigameSceneState.player.hitbox, gift) then
@@ -125,8 +197,41 @@ function Minigame.update(elapsed)
             AudioSources["sfx_collect"]:play()
 
             if Minigame.currentGift < #Minigame.gifts then
-                --updatePuppetPos(Minigame)
-                --Minigame.chars["puppet"]:updatePos(Minigame)
+                updatePuppetPos(Minigame)
+            end
+        end
+
+        if table.contains(Minigame.chars["puppet"].currentAreas, MinigameSceneState.currentArea) then
+            Minigame.chars["puppet"].moveDirection = Minigame.giftList[Minigame.currentGift].activationAreas[MinigameSceneState.currentArea]
+            Minigame.chars["puppet"].moveCooldown = Minigame.chars["puppet"].moveCooldown - elapsed
+            if Minigame.chars["puppet"].moveCooldown <= 0 then
+                switch(Minigame.chars["puppet"].moveDirection, {
+                    ["left"] = function ()
+                        Minigame.chars["puppet"].x = Minigame.chars["puppet"].x - Minigame.chars["puppet"].step
+                    end,
+                    ["right"] = function ()
+                        Minigame.chars["puppet"].x = Minigame.chars["puppet"].x + Minigame.chars["puppet"].step
+                    end,
+                    ["up"] = function ()
+                        Minigame.chars["puppet"].y = Minigame.chars["puppet"].y - Minigame.chars["puppet"].step
+                    end,
+                    ["down"] = function ()
+                        Minigame.chars["puppet"].y = Minigame.chars["puppet"].y + Minigame.chars["puppet"].step
+                    end,
+                })
+                Minigame.chars["puppet"].moveCooldown = Minigame.chars["puppet"].puppetMoveCooldown
+            end
+        else
+            if Minigame.currentGift < #Minigame.giftList then
+                if #Minigame.chars["puppet"].currentAreas <= 1 then
+                    Minigame.chars["puppet"].setArea(Minigame.giftList[Minigame.currentGift].startArea)
+                else
+                    for k, v in spairs(Minigame.giftList[Minigame.currentGift].activationAreas) do
+                        if MinigameSceneState.currentArea == k then
+                            Minigame.chars["puppet"].setArea(k)
+                        end
+                    end
+                end
             end
         end
 

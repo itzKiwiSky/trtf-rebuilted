@@ -20,7 +20,7 @@ Player.hitbox = {
     h = 20,
 }
 Player.lastDirection = "down"
-Player.speed = 1200
+Player.speed = 1400
 Player.locked = false
 Player.lastLockState = Player.locked
 Player.lockCooldown = 2
@@ -43,7 +43,7 @@ Player.animation = {
     maxFrames = 2,
 }
 
-Player.maxCooldown = 0.25
+Player.maxCooldown = 0.35
 
 ---Define the player position
 ---@param x number
