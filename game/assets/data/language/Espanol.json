@@ -127,7 +127,7 @@
             "minigame_display_foxy_find_office": "Encuentra al guardia nocturno",
             "minigame_display_sugar_find_key": "Encuentra la llave",
             "minigame_display_sugar_boiler_room": "Ve a la sala de calderas",
-	    "minigame_display_lockjaw_kill_purple": "Encuentralo"
+        "minigame_display_lockjaw_kill_purple": "Encuentralo"
         }
     },
     "gameover": {

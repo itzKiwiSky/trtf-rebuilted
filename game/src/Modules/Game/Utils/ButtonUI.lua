@@ -21,4 +21,12 @@ function ButtonUI:draw()
     end
 end
 
+function ButtonUI:checkHover(mx, my)
+    if collision.pointRect({ x = mx, y = my }, self) then
+        self.isHover = true
+    else
+        self.isHover = false
+    end
+end
+
 return ButtonUI

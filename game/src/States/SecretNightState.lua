@@ -2,6 +2,8 @@ SecretNightState = {}
 SecretNightState.assets = {}
 
 function SecretNightState:enter()
+    local termite = require 'libraries.Termite'
+    self.astray = require 'libraries.astray'
     self.beeperController = require 'src.Modules.Game.BeeperController'
     self.beeperView = require 'src.Modules.Game.SecretNight.BeeperView'
     self.tabletController = require 'src.Modules.Game.TabletController'
@@ -9,6 +11,8 @@ function SecretNightState:enter()
     self.animatorController = require 'src.Modules.Game.AnimatorController'
 
     self.fnt_nightDisplay = fontcache.getFont("tnr", 60)
+
+    --self.terminal = termite:new()
 
     registers.devWindowContent = function ()
         Slab.BeginWindow("debugWindow", { Title = "Debug shader"})
@@ -52,6 +56,7 @@ function SecretNightState:enter()
 
     self.officeState = {
         nightStarted = false,
+        lookDir = "front",
         flashlight = {
             active = false,
             x = 0,
@@ -66,6 +71,10 @@ function SecretNightState:enter()
         },
         beeper = {
             open = false,
+        },
+        furnace = {
+            vincentIntegrity = 100,
+            furnaceFuel = 10,
         },
         ambienceBoilerVolume = 0.25,
         lookingBack = false,
@@ -115,6 +124,9 @@ function SecretNightState:enter()
         AudioSources["sfx_beeper_use"]:setVolume(0.87)
     end
 
+    self.turnAnim = self.animatorController:new(self.assets.office.states["look_back"], 25, "lb_")
+    self.turnAnim.visible = false
+
     AudioSources["sfx_boiler_amb"]:setLooping(true)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
     AudioSources["sfx_boiler_amb"]:play()
@@ -132,32 +144,34 @@ function SecretNightState:draw()
 
     self.cnv_mainCanvas:renderTo(function()
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
-            love.graphics.draw(self.assets.office.states["idle"]["front_light"], 0, 0)
+            if self.officeState.lookDir == "back" then
+                love.graphics.draw(self.assets.office.states["idle"]["back"], 0, 0)
+            else
+                love.graphics.draw(self.assets.office.states["idle"]["front_light"], 0, 0)
+            end
         self.gameCam:detach()
+        self.turnAnim:draw()
     end)
 
     self.cnv_flash:renderTo(function()
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
-            love.graphics.draw(self.assets.office.states["idle"]["front"], 0, 0)
+            if self.officeState.lookDir == "front" then
+                love.graphics.draw(self.assets.office.states["idle"]["front"], 0, 0)
+            end
         self.gameCam:detach()
         if self.officeState.flashlight.active then
             local ox, oy = self.assets.effects["light"]["flashlight"]:getWidth() / 2, self.assets.effects["light"]["flashlight"]:getHeight() / 2
             love.graphics.draw(self.assets.effects["light"]["flashlight"], self.officeState.flashlight.x, self.officeState.flashlight.y, 0, 1.15, 1.15, ox, oy)
-
-            love.graphics.setBlendMode("add", "premultiplied")
-            love.graphics.draw(self.assets.effects["light"]["light_beam"], 
-                shove.getViewportWidth() - 300, shove.getViewportHeight(), self.officeState.flashlight.lightBeam.angle - math.pi * 0.053, 0.5, 1.25,
-                self.assets.effects["light"]["light_beam"]:getWidth(), self.assets.effects["light"]["light_beam"]:getHeight() / 2
-            )
-            love.graphics.setBlendMode("alpha")
         end
     end)
 
     love.graphics.setShader(self.shd_perspective)
         love.graphics.draw(self.cnv_mainCanvas, 0, 0)
-        love.graphics.setBlendMode("multiply", "premultiplied")
-        love.graphics.draw(self.cnv_flash, 0, 0)
-        love.graphics.setBlendMode("alpha")
+        if not self.officeState.lookingBack and self.officeState.lookDir == "front" then
+            love.graphics.setBlendMode("multiply", "premultiplied")
+            love.graphics.draw(self.cnv_flash, 0, 0)
+            love.graphics.setBlendMode("alpha")
+        end
     love.graphics.setShader()
 
     self.beeperView:draw()
@@ -165,7 +179,7 @@ function SecretNightState:draw()
     self.beeperView:postDraw()
 
     if self.officeState.nightStarted then
-        if self.officeState.lookingBack then
+        if self.officeState.lookDir == "back" then
             self.hoverBackLookButton:draw()
         else
             self.hoverLookButton:draw()
@@ -245,15 +259,41 @@ function SecretNightState:update(elapsed)
     end
     
 
-    self.officeState.ambienceBoilerVolume = math.lerp(self.officeState.ambienceBoilerVolume, self.officeState.lookingBack and 0.75 or 0.2, 0.075, 0.9 * elapsed)
+    self.officeState.ambienceBoilerVolume = math.lerp(self.officeState.ambienceBoilerVolume, self.officeState.lookDir == "back" and 0.75 or 0.2, 0.075, 0.9 * elapsed)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
 
     if self.officeState.nightStarted then
-        if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton) then
-            self.officeState.lookingBack = true
-            
+        if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton) and self.officeState.lookDir == "front" then
+            if not self.hoverLookButton.isHover then
+                self.hoverLookButton.isHover = true
+                self.officeState.lookingBack = true
+                self.turnAnim:setState(true)
+                self.turnAnim.onComplete = function()
+                    self.turnAnim.visible = false
+                    self.officeState.lookDir = "back"
+                    self.officeState.lookingBack = false
+                end
+            end
+        else
+            self.hoverLookButton.isHover = false
+        end
+        if collision.pointRect({ x = vmx, y = vmy }, self.hoverBackLookButton) and self.officeState.lookDir == "back" then
+            if not self.hoverBackLookButton.isHover then
+                self.hoverBackLookButton.isHover = true
+                self.turnAnim:setState(false)
+                self.officeState.lookingBack = true
+                self.turnAnim.onComplete = function()
+                    self.officeState.lookDir = "front"
+                    self.turnAnim.visible = false
+                    self.officeState.lookingBack = false
+                end
+            end
+        else
+            self.hoverBackLookButton.isHover = false
         end
     end
+
+    self.turnAnim:update(elapsed)
 
     self.beeperController:update(elapsed)
     self.beeperView:update(elapsed)
@@ -267,7 +307,7 @@ function SecretNightState:mousepressed(x, y, button)
 
     if not self.officeState.nightStarted then return end
 
-    if button == 1 then
+    if button == 1 and self.officeState.lookDir == "front" then
         self.officeState.flashlight.active = not self.officeState.flashlight.active
     end
 end

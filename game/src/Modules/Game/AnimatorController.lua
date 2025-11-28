@@ -26,9 +26,9 @@ local function _playAnimation(this, reverse)
     this.animationRunning = true
 end
 
-function AnimatorController:setState(closed)
+function AnimatorController:setState(reverse)
     if not self.animationRunning then
-        _playAnimation(self, not closed)
+        _playAnimation(self, not reverse)
     end
 end
 

@@ -176,7 +176,8 @@ return function(night)
         assets.office = {
             states = {
                 ["idle"] = {},
-                ["look_back"] = {}
+                ["look_back"] = {},
+                ["boiler_open"] = {},
             },
             animated = {}
         }
@@ -212,6 +213,15 @@ return function(night)
             assets.office.states["look_back"].frameCount = s
         end
         look = nil
+        collectgarbage("collect")
+
+        assets.office.states["boiler_open"].frameCount = 0
+        local b = love.filesystem.getDirectoryItems("assets/images/game/night8/boiler_open")
+        for s = 1, #b, 1 do
+            loveloader.newImage(assets.office.states["boiler_open"], "bo_" .. s, "assets/images/game/night8/boiler_open/" .. look[s])
+            assets.office.states["boiler_open"].frameCount = s
+        end
+        b = nil
         collectgarbage("collect")
 
         assets["beeper"] = {}
