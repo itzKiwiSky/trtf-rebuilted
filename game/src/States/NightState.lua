@@ -70,7 +70,7 @@ end
 
 
 NightState.modifiers = {
-    radarMode = true,      -- can be use to debug or just for cheat (I know why u will use it your mf)
+    radarMode = false,      -- can be use to debug or just for cheat (I know why u will use it your mf)
 }
 
 function NightState:enter()

@@ -218,7 +218,7 @@ return function(night)
         assets.office.states["boiler_open"].frameCount = 0
         local b = love.filesystem.getDirectoryItems("assets/images/game/night8/boiler_open")
         for s = 1, #b, 1 do
-            loveloader.newImage(assets.office.states["boiler_open"], "bo_" .. s, "assets/images/game/night8/boiler_open/" .. look[s])
+            loveloader.newImage(assets.office.states["boiler_open"], "bo_" .. s, "assets/images/game/night8/boiler_open/" .. b[s])
             assets.office.states["boiler_open"].frameCount = s
         end
         b = nil
@@ -231,7 +231,11 @@ return function(night)
             loveloader.newImage(assets["beeper"], "beep_" .. t, "assets/images/game/night8/beeper/" .. tab[t])
             assets["beeper"].frameCount = t
         end
+
+        loveloader.newImage(assets.effects["staticfx"], "wood_hold", "assets/images/game/night8/wood.png")
+
         tab = nil
+        collectgarbage("collect")
     end
 
     return assets

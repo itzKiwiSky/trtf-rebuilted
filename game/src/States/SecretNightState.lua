@@ -45,6 +45,15 @@ function SecretNightState:enter()
         Slab.EndWindow()
     end
 
+    -- room --
+    self.roomSize = {
+        windowWidth = shove.getViewportWidth(),
+        windowHeight = shove.getViewportHeight(),
+        width = 2000,
+        height = 800,
+        compensation = 400,
+    }
+
     self.nightTextDisplay = {
         text = string.format(languageService["game_night_announce"], 8),
         fade = 0,
@@ -57,6 +66,14 @@ function SecretNightState:enter()
     self.officeState = {
         nightStarted = false,
         lookDir = "front",
+        hitboxes = {
+            box = {
+                x = self.roomSize.width / 2 - 300,
+                y = 380,
+                w = 170,
+                h = 140,
+            },
+        },
         flashlight = {
             active = false,
             x = 0,
@@ -74,10 +91,17 @@ function SecretNightState:enter()
         },
         furnace = {
             vincentIntegrity = 100,
-            furnaceFuel = 10,
+            furnaceTemp = 1000,
+            furnaceFuel = 20,
+            furnaceTempCooldown = 1
         },
         ambienceBoilerVolume = 0.25,
         lookingBack = false,
+        wood = {
+            fuelTakeTime = 0,
+            fuelMaxTakeTime = 5000,
+            holdingWood = false
+        }
     }
 
     self.shd_perspective = love.graphics.newShader("assets/shaders/Projection.glsl")
@@ -92,15 +116,7 @@ function SecretNightState:enter()
 
     self.hoverLookButton = self.buttonsUI:new(self.assets.ui["hover_look"], shove.getViewportWidth() - 96, shove.getViewportHeight() / 2, 0, 0.75, 0.75, true)
     self.hoverBackLookButton = self.buttonsUI:new(self.assets.ui["hover_look"], 96, shove.getViewportHeight() / 2, 0, -0.75, 0.75, true)
-
-    -- room --
-    self.roomSize = {
-        windowWidth = shove.getViewportWidth(),
-        windowHeight = shove.getViewportHeight(),
-        width = 2000,
-        height = 800,
-        compensation = 400,
-    }
+    self.computerHackButton = self.buttonsUI:new(self.assets.ui["hover_panel"], shove.getViewportWidth() / 2, shove.getViewportHeight() - 96, 0, 0.75, 0.75, true)
 
     self.gameCam = camera.new(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
     self.gameCam.factorX = 2.8
@@ -124,8 +140,12 @@ function SecretNightState:enter()
         AudioSources["sfx_beeper_use"]:setVolume(0.87)
     end
 
-    self.turnAnim = self.animatorController:new(self.assets.office.states["look_back"], 25, "lb_")
+    self.turnAnim = self.animatorController:new(self.assets.office.states["boiler_open"], 25, "bo_")
     self.turnAnim.visible = false
+
+    self.boilerAnim = self.animatorController:new(self.assets.office.states["boiler_open"], 25, "bo_")
+    self.boilerAnim.visible = false
+    self.boilerAnim.animationRunning = false
 
     AudioSources["sfx_boiler_amb"]:setLooping(true)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
@@ -151,6 +171,7 @@ function SecretNightState:draw()
             end
         self.gameCam:detach()
         self.turnAnim:draw()
+        self.boilerAnim:draw()
     end)
 
     self.cnv_flash:renderTo(function()
@@ -178,11 +199,24 @@ function SecretNightState:draw()
     self.beeperController:draw()
     self.beeperView:postDraw()
 
+    self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
+        for k, h in pairs(self.officeState.hitboxes) do
+            love.graphics.setColor(0, 1, 0.5, 0.4)
+                love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
+    self.gameCam:detach()
+
+    if self.officeState.wood.holdingWood then
+        love.graphics.draw(self.assets.effects.static["wood_hold"], 0, 0)
+    end
+
     if self.officeState.nightStarted then
         if self.officeState.lookDir == "back" then
             self.hoverBackLookButton:draw()
         else
             self.hoverLookButton:draw()
+            self.computerHackButton:draw()
         end
     end
 
@@ -294,6 +328,7 @@ function SecretNightState:update(elapsed)
     end
 
     self.turnAnim:update(elapsed)
+    self.boilerAnim:update(elapsed)
 
     self.beeperController:update(elapsed)
     self.beeperView:update(elapsed)
@@ -307,8 +342,10 @@ function SecretNightState:mousepressed(x, y, button)
 
     if not self.officeState.nightStarted then return end
 
-    if button == 1 and self.officeState.lookDir == "front" then
-        self.officeState.flashlight.active = not self.officeState.flashlight.active
+    for k, v in pairs( self.officeState.hitboxes.box) do
+        if button == 1 and self.officeState.lookDir == "front" and not collision.pointRect({ x = vmx, y = vmy }, v) then
+            self.officeState.flashlight.active = not self.officeState.flashlight.active
+        end
     end
 end
 
