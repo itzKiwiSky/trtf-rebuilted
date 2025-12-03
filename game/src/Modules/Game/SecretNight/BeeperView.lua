@@ -77,14 +77,16 @@ function BeeperView:postDraw()
     love.graphics.setColor(1, 1, 1, 1)
 
 
-    for key, box in pairs(self.buttons) do
-        --drawBox(value, 0.2, 0.6, 0.54)
-        local r, g, b = 0.2, 0.6, 0.54
-        love.graphics.setColor(r, g, b, 0.25)
-        love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
-        love.graphics.setColor(r, g, b)
-        love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
-        love.graphics.setColor(1, 1, 1, 1)
+    if registers.showDebugHitbox then
+        for key, box in pairs(self.buttons) do
+            --drawBox(value, 0.2, 0.6, 0.54)
+            local r, g, b = 0.2, 0.6, 0.54
+            love.graphics.setColor(r, g, b, 0.25)
+            love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
+            love.graphics.setColor(r, g, b)
+            love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
     end
 end
 

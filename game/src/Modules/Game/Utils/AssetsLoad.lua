@@ -232,7 +232,16 @@ return function(night)
             assets["beeper"].frameCount = t
         end
 
-        loveloader.newImage(assets.effects["staticfx"], "wood_hold", "assets/images/game/night8/wood.png")
+        assets["loadUI"] = {}
+        assets["loadUI"].frameCount = 0
+        local l = love.filesystem.getDirectoryItems("assets/images/game/night8/load")
+        for t = 1, #l, 1 do
+            loveloader.newImage(assets["loadUI"], "load" .. t - 1, "assets/images/game/night8/load/" .. l[t])
+            assets["loadUI"].frameCount = t
+        end
+        l = nil
+        
+        loveloader.newImage(assets, "wood_hold", "assets/images/game/night8/wood.png")
 
         tab = nil
         collectgarbage("collect")

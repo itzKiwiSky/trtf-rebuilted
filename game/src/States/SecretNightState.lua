@@ -38,9 +38,9 @@ function SecretNightState:enter()
                 self.gameCam.factorX = Slab.GetInputNumber()
             end
 
-            if Slab.Button("Re-import beeper") then
-                self.beeperView = love.filesystem.load("src/Modules/Game/SecretNight/BeeperView.lua")()
-                self.beeperView:init()
+            Slab.Text("General settings")
+            if Slab.CheckBox(registers.showDebugHitbox, "Show mouse hitboxes") then
+                registers.showDebugHitbox = not registers.showDebugHitbox
             end
         Slab.EndWindow()
     end
@@ -67,11 +67,25 @@ function SecretNightState:enter()
         nightStarted = false,
         lookDir = "front",
         hitboxes = {
-            box = {
+            ["box"] = {
                 x = self.roomSize.width / 2 - 300,
                 y = 380,
                 w = 170,
                 h = 140,
+
+                condition = function()
+                    return self.officeState.lookDir == "front" and not self.officeState.wood.holdingWood
+                end,
+            },
+            ["boiler"] = {
+                x = self.roomSize.width / 2 - 512 / 2,
+                y = 200,
+                w = 512,
+                h = 512,
+
+                condition = function()
+                    return self.officeState.lookDir == "back"
+                end,
             },
         },
         flashlight = {
@@ -97,10 +111,13 @@ function SecretNightState:enter()
         },
         ambienceBoilerVolume = 0.25,
         lookingBack = false,
+        lookingState = false,
         wood = {
             fuelTakeTime = 0,
-            fuelMaxTakeTime = 5000,
-            holdingWood = false
+            fuelMaxTakeTime = 9,
+            holdingWood = false,
+            holdingMouseState = false,
+            holdingFX = 0,
         }
     }
 
@@ -140,7 +157,7 @@ function SecretNightState:enter()
         AudioSources["sfx_beeper_use"]:setVolume(0.87)
     end
 
-    self.turnAnim = self.animatorController:new(self.assets.office.states["boiler_open"], 25, "bo_")
+    self.turnAnim = self.animatorController:new(self.assets.office.states["look_back"], 25, "lb_")
     self.turnAnim.visible = false
 
     self.boilerAnim = self.animatorController:new(self.assets.office.states["boiler_open"], 25, "bo_")
@@ -161,20 +178,24 @@ function SecretNightState:enter()
 end
 
 function SecretNightState:draw()
-
+    local inside, vmx, vmy = shove.mouseToViewport()
     self.cnv_mainCanvas:renderTo(function()
+        love.graphics.clear()
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
-            if self.officeState.lookDir == "back" then
-                love.graphics.draw(self.assets.office.states["idle"]["back"], 0, 0)
-            else
+            if self.officeState.lookDir == "front" then
                 love.graphics.draw(self.assets.office.states["idle"]["front_light"], 0, 0)
+            else
+                 love.graphics.draw(self.assets.office.states["idle"]["back"], 0, 0)
+            end
+            self.turnAnim:draw()
+            if self.officeState.lookDir == "back" then
+                self.boilerAnim:draw()
             end
         self.gameCam:detach()
-        self.turnAnim:draw()
-        self.boilerAnim:draw()
     end)
 
     self.cnv_flash:renderTo(function()
+        love.graphics.clear()
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
             if self.officeState.lookDir == "front" then
                 love.graphics.draw(self.assets.office.states["idle"]["front"], 0, 0)
@@ -199,17 +220,31 @@ function SecretNightState:draw()
     self.beeperController:draw()
     self.beeperView:postDraw()
 
-    self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
-        for k, h in pairs(self.officeState.hitboxes) do
-            love.graphics.setColor(0, 1, 0.5, 0.4)
-                love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
-            love.graphics.setColor(1, 1, 1, 1)
-        end
-    self.gameCam:detach()
+    if registers.showDebugHitbox then
+        self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
+            for k, h in pairs(self.officeState.hitboxes) do
+                love.graphics.setColor(0, 1, 0.5, 0.4)
+                    love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
+                love.graphics.setColor(1, 1, 1, 1)
+            end
+        self.gameCam:detach()
+    end
 
     if self.officeState.wood.holdingWood then
-        love.graphics.draw(self.assets.effects.static["wood_hold"], 0, 0)
+        love.graphics.draw(self.assets["wood_hold"], 0, 0)
     end
+
+    love.graphics.setBlendMode("add")
+        love.graphics.setColor(1, 1, 1, self.officeState.wood.holdingFX)
+            if self.assets["loadUI"]["load" .. math.floor(self.officeState.wood.fuelTakeTime)] ~= nil then
+                love.graphics.draw(
+                    self.assets["loadUI"]["load" .. math.floor(self.officeState.wood.fuelTakeTime)], 
+                    vmx, vmy, 0, 0.5, 0.5, 
+                    self.assets["loadUI"]["load1"]:getWidth() / 2, self.assets["loadUI"]["load1"]:getHeight() / 2
+                )
+            end
+        love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setBlendMode("alpha")
 
     if self.officeState.nightStarted then
         if self.officeState.lookDir == "back" then
@@ -229,11 +264,13 @@ function SecretNightState:draw()
     end
 
 
-    love.graphics.print(inspect(self.officeState), 20, 20)
+    love.graphics.print(inspect(self.officeState.wood), 20, 20)
 end
 
 function SecretNightState:update(elapsed)
     local inside, vmx, vmy = shove.mouseToViewport()
+    local mx, my = self.gameCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
+
     if self.officeState.flashlight.active then
         self.officeState.flashlight.x, self.officeState.flashlight.y = vmx, vmy
     end
@@ -242,13 +279,36 @@ function SecretNightState:update(elapsed)
     self.shd_perspective:send("longitudeVar", self.tuneConfig.longitudeVar)
     self.shd_perspective:send("fovVar", self.tuneConfig.fovVar)
 
-    mx, my = self.gameCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
-
-    self.officeState.flashlight.lightBeam.angle = math.atan2(my - shove.getViewportHeight(), mx - shove.getViewportWidth() - 300)
+    --self.officeState.flashlight.lightBeam.angle = math.atan2(vmy - shove.getViewportHeight(), vmx - shove.getViewportWidth() - 300)
 
     if not self.beeperController.tabUp then
         self.gameCam.x = (self.roomSize.width / 2 + (mx - self.roomSize.width / 2) / self.gameCam.factorX)
     end
+
+    -- hitboxes --
+    if love.mouse.isDown(1) then
+        if self.officeState.nightStarted then
+            if collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["box"]) then
+                if self.officeState.hitboxes["box"].condition() then
+                    self.officeState.wood.holdingMouseState = true
+                    self.officeState.wood.fuelTakeTime = self.officeState.wood.fuelTakeTime + elapsed
+                end
+
+                if self.officeState.wood.fuelTakeTime >= self.officeState.wood.fuelMaxTakeTime then
+                    self.officeState.wood.fuelTakeTime = 0
+                    self.officeState.wood.holdingWood = true
+                end
+            end
+        end
+    else
+        if not self.officeState.wood.holdingWood then
+            self.officeState.wood.fuelTakeTime = math.lerp(self.officeState.wood.fuelTakeTime, 0, 0.1)
+            
+        end
+        self.officeState.wood.holdingMouseState = false
+    end
+
+    self.officeState.wood.holdingFX = math.lerp(self.officeState.wood.holdingFX, self.officeState.wood.holdingMouseState and 1 or 0, 0.05)
 
     -- camera bounds --
     if self.gameCam.x < self.X_LEFT_FRAME then
@@ -297,29 +357,33 @@ function SecretNightState:update(elapsed)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
 
     if self.officeState.nightStarted then
-        if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton) and self.officeState.lookDir == "front" then
-            if not self.hoverLookButton.isHover then
-                self.hoverLookButton.isHover = true
-                self.officeState.lookingBack = true
-                self.turnAnim:setState(true)
-                self.turnAnim.onComplete = function()
-                    self.turnAnim.visible = false
-                    self.officeState.lookDir = "back"
-                    self.officeState.lookingBack = false
+        if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton) then
+            if self.officeState.lookDir == "front" and not self.officeState.lookingBack then
+                if not self.hoverLookButton.isHover then
+                    self.hoverLookButton.isHover = true
+                    self.officeState.lookingBack = true
+                    self.turnAnim:setState(true)
+                    self.turnAnim.onComplete = function()
+                        self.turnAnim.visible = false
+                        self.officeState.lookDir = "back"
+                        self.officeState.lookingBack = false
+                    end
                 end
             end
         else
             self.hoverLookButton.isHover = false
         end
-        if collision.pointRect({ x = vmx, y = vmy }, self.hoverBackLookButton) and self.officeState.lookDir == "back" then
-            if not self.hoverBackLookButton.isHover then
-                self.hoverBackLookButton.isHover = true
-                self.turnAnim:setState(false)
-                self.officeState.lookingBack = true
-                self.turnAnim.onComplete = function()
-                    self.officeState.lookDir = "front"
-                    self.turnAnim.visible = false
-                    self.officeState.lookingBack = false
+        if collision.pointRect({ x = vmx, y = vmy }, self.hoverBackLookButton) then
+            if self.officeState.lookDir == "back" and not self.officeState.lookingBack then
+                if not self.hoverBackLookButton.isHover then
+                    self.hoverBackLookButton.isHover = true
+                    self.officeState.lookingBack = true
+                    self.turnAnim:setState(false)
+                    self.turnAnim.onComplete = function()
+                        self.officeState.lookDir = "front"
+                        self.turnAnim.visible = false
+                        self.officeState.lookingBack = false
+                    end
                 end
             end
         else
@@ -342,10 +406,8 @@ function SecretNightState:mousepressed(x, y, button)
 
     if not self.officeState.nightStarted then return end
 
-    for k, v in pairs( self.officeState.hitboxes.box) do
-        if button == 1 and self.officeState.lookDir == "front" and not collision.pointRect({ x = vmx, y = vmy }, v) then
-            self.officeState.flashlight.active = not self.officeState.flashlight.active
-        end
+    if button == 1 and self.officeState.lookDir == "front" then
+        self.officeState.flashlight.active = not self.officeState.flashlight.active
     end
 end
 
