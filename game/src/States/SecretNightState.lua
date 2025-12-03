@@ -104,17 +104,17 @@ function SecretNightState:enter()
             open = false,
         },
         furnace = {
+            open = false,
             vincentIntegrity = 100,
-            furnaceTemp = 1000,
+            vincentIntegrityPenault = 0.5,
             furnaceFuel = 20,
-            furnaceTempCooldown = 1
         },
         ambienceBoilerVolume = 0.25,
         lookingBack = false,
         lookingState = false,
         wood = {
             fuelTakeTime = 0,
-            fuelMaxTakeTime = 9,
+            fuelMaxTakeTime = 20,
             holdingWood = false,
             holdingMouseState = false,
             holdingFX = 0,
@@ -234,12 +234,12 @@ function SecretNightState:draw()
         love.graphics.draw(self.assets["wood_hold"], 0, 0)
     end
 
+    local loadFrame = math.floor(math.map(self.officeState.wood.fuelTakeTime, 0, self.officeState.wood.fuelMaxTakeTime, 1, 9))
     love.graphics.setBlendMode("add")
         love.graphics.setColor(1, 1, 1, self.officeState.wood.holdingFX)
-            if self.assets["loadUI"]["load" .. math.floor(self.officeState.wood.fuelTakeTime)] ~= nil then
+            if self.assets["loadUI"]["load" .. loadFrame] ~= nil then
                 love.graphics.draw(
-                    self.assets["loadUI"]["load" .. math.floor(self.officeState.wood.fuelTakeTime)], 
-                    vmx, vmy, 0, 0.5, 0.5, 
+                    self.assets["loadUI"]["load" .. loadFrame], vmx, vmy, 0, 0.5, 0.5, 
                     self.assets["loadUI"]["load1"]:getWidth() / 2, self.assets["loadUI"]["load1"]:getHeight() / 2
                 )
             end
@@ -290,7 +290,6 @@ function SecretNightState:update(elapsed)
         if self.officeState.nightStarted then
             if collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["box"]) then
                 if self.officeState.hitboxes["box"].condition() then
-                    self.officeState.wood.holdingMouseState = true
                     self.officeState.wood.fuelTakeTime = self.officeState.wood.fuelTakeTime + elapsed
                 end
 
@@ -300,15 +299,11 @@ function SecretNightState:update(elapsed)
                 end
             end
         end
-    else
-        if not self.officeState.wood.holdingWood then
-            self.officeState.wood.fuelTakeTime = math.lerp(self.officeState.wood.fuelTakeTime, 0, 0.1)
-            
-        end
-        self.officeState.wood.holdingMouseState = false
     end
 
-    self.officeState.wood.holdingFX = math.lerp(self.officeState.wood.holdingFX, self.officeState.wood.holdingMouseState and 1 or 0, 0.05)
+    if self.officeState.lookDir == "front" and self.officeState.nightStarted then
+        self.officeState.wood.holdingFX = math.lerp(self.officeState.wood.holdingFX, collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["box"]) and 1 or 0, 0.05)
+    end
 
     -- camera bounds --
     if self.gameCam.x < self.X_LEFT_FRAME then
@@ -358,15 +353,17 @@ function SecretNightState:update(elapsed)
 
     if self.officeState.nightStarted then
         if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton) then
-            if self.officeState.lookDir == "front" and not self.officeState.lookingBack then
-                if not self.hoverLookButton.isHover then
-                    self.hoverLookButton.isHover = true
-                    self.officeState.lookingBack = true
-                    self.turnAnim:setState(true)
-                    self.turnAnim.onComplete = function()
-                        self.turnAnim.visible = false
-                        self.officeState.lookDir = "back"
-                        self.officeState.lookingBack = false
+            if self.officeState.lookDir == "front" then
+                if not self.turnAnim.animationRunning then
+                    if not self.hoverLookButton.isHover then
+                        self.hoverLookButton.isHover = true
+                        self.officeState.lookingBack = true
+                        self.turnAnim:setState(true)
+                        self.turnAnim.onComplete = function()
+                            self.turnAnim.visible = false
+                            self.officeState.lookDir = "back"
+                            self.officeState.lookingBack = false
+                        end
                     end
                 end
             end
@@ -374,15 +371,17 @@ function SecretNightState:update(elapsed)
             self.hoverLookButton.isHover = false
         end
         if collision.pointRect({ x = vmx, y = vmy }, self.hoverBackLookButton) then
-            if self.officeState.lookDir == "back" and not self.officeState.lookingBack then
-                if not self.hoverBackLookButton.isHover then
-                    self.hoverBackLookButton.isHover = true
-                    self.officeState.lookingBack = true
-                    self.turnAnim:setState(false)
-                    self.turnAnim.onComplete = function()
-                        self.officeState.lookDir = "front"
-                        self.turnAnim.visible = false
-                        self.officeState.lookingBack = false
+            if self.officeState.lookDir == "back" and not self.officeState.furnace.open then
+                if not self.turnAnim.animationRunning then
+                    if not self.hoverBackLookButton.isHover then
+                        self.hoverBackLookButton.isHover = true
+                        self.officeState.lookingBack = true
+                        self.turnAnim:setState(false)
+                        self.turnAnim.onComplete = function()
+                            self.officeState.lookDir = "front"
+                            self.turnAnim.visible = false
+                            self.officeState.lookingBack = false
+                        end
                     end
                 end
             end
@@ -402,12 +401,28 @@ end
 
 function SecretNightState:mousepressed(x, y, button)
     local inside, vmx, vmy = shove.mouseToViewport()
+    local mx, my = self.gameCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
+
     self.beeperView:mousepressed(vmx, vmy, button)
 
     if not self.officeState.nightStarted then return end
 
     if button == 1 and self.officeState.lookDir == "front" then
         self.officeState.flashlight.active = not self.officeState.flashlight.active
+    end
+    
+    if button == 1 then
+        if collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["boiler"]) then
+            print("sex")
+            if not self.boilerAnim.animationRunning then
+                if self.officeState.hitboxes["boiler"].condition() then
+                    self.boilerAnim:setState(not self.officeState.furnace.open)
+                    self.boilerAnim.onComplete = function()
+                        self.officeState.furnace.open = not self.officeState.furnace.open
+                    end
+                end
+            end
+        end
     end
 end
 

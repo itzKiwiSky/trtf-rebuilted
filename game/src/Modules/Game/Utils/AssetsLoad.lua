@@ -1,6 +1,19 @@
 return function(night)
     local assets = {}
 
+    local function loadBulk(key, path)
+        local b = {}
+        b.frameCount = 0
+        local a = love.filesystem.getDirectoryItems(path)
+        for s = 1, #a, 1 do
+            loveloader.newImage(b, key .. s, path .. a[s])
+            b.frameCount = s
+        end
+        a = nil
+        collectgarbage("collect")
+        return b
+    end
+
     if night == "normal" then
             -- calls --
         assets.calls = {}
@@ -185,63 +198,21 @@ return function(night)
         loveloader.newImage(assets.effects["light"], "flashlight", "assets/images/game/night8/flashlight.png")
         loveloader.newImage(assets.effects["light"], "light_beam", "assets/images/game/night8/lantern_light.png")
         loveloader.newImage(assets.effects["light"], "light_glare", "assets/images/game/night8/light_glare.png")
-
         loveloader.newImage(assets.office.states["idle"], "front", "assets/images/game/night8/front.png")
         loveloader.newImage(assets.office.states["idle"], "front_light", "assets/images/game/night8/front_light.png")
         loveloader.newImage(assets.office.states["idle"], "back", "assets/images/game/night8/back.png")
-
         loveloader.newImage(assets.ui, "hover_panel", "assets/images/game/night8/tablet_hover.png")
         loveloader.newImage(assets.ui, "hover_look", "assets/images/game/night8/look_hover.png")
-
         loveloader.newImage(assets.ui, "bg_beeper", "assets/images/game/night8/bg_beeper.png")
-
-        assets.effects["staticfx"] = {}
-        assets.effects["staticfx"].frameCount = 0
-        local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static3")
-        for s = 1, #statics, 1 do
-            loveloader.newImage(assets.effects["staticfx"], "static_" .. s, "assets/images/game/effects/static3/" .. statics[s])
-            assets.effects["staticfx"].frameCount = s
-        end
-        statics = nil
-        collectgarbage("collect")
-
-
-        assets.office.states["look_back"].frameCount = 0
-        local look = love.filesystem.getDirectoryItems("assets/images/game/night8/look_back")
-        for s = 1, #look, 1 do
-            loveloader.newImage(assets.office.states["look_back"], "lb_" .. s, "assets/images/game/night8/look_back/" .. look[s])
-            assets.office.states["look_back"].frameCount = s
-        end
-        look = nil
-        collectgarbage("collect")
-
-        assets.office.states["boiler_open"].frameCount = 0
-        local b = love.filesystem.getDirectoryItems("assets/images/game/night8/boiler_open")
-        for s = 1, #b, 1 do
-            loveloader.newImage(assets.office.states["boiler_open"], "bo_" .. s, "assets/images/game/night8/boiler_open/" .. b[s])
-            assets.office.states["boiler_open"].frameCount = s
-        end
-        b = nil
-        collectgarbage("collect")
-
-        assets["beeper"] = {}
-        assets["beeper"].frameCount = 0
-        local tab = love.filesystem.getDirectoryItems("assets/images/game/night8/beeper")
-        for t = 1, #tab, 1 do
-            loveloader.newImage(assets["beeper"], "beep_" .. t, "assets/images/game/night8/beeper/" .. tab[t])
-            assets["beeper"].frameCount = t
-        end
-
-        assets["loadUI"] = {}
-        assets["loadUI"].frameCount = 0
-        local l = love.filesystem.getDirectoryItems("assets/images/game/night8/load")
-        for t = 1, #l, 1 do
-            loveloader.newImage(assets["loadUI"], "load" .. t - 1, "assets/images/game/night8/load/" .. l[t])
-            assets["loadUI"].frameCount = t
-        end
-        l = nil
-        
         loveloader.newImage(assets, "wood_hold", "assets/images/game/night8/wood.png")
+
+        assets.effects["staticfx"] = loadBulk("static_", "assets/images/game/effects/static3/")
+        assets.office.states["look_back"] = loadBulk("lb_", "assets/images/game/night8/look_back/")
+        assets.office.states["boiler_open"] = loadBulk("bo_", "assets/images/game/night8/boiler_open/")
+        assets["beeper"] = loadBulk("beep_", "assets/images/game/night8/beeper/")
+        assets["monitor"] = loadBulk("mon", "assets/images/game/night8/monitor/")
+        assets["loadUI"] = loadBulk("load", "assets/images/game/night8/load/", 0)
+
 
         tab = nil
         collectgarbage("collect")
