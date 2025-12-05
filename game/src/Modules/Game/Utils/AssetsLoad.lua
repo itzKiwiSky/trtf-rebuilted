@@ -192,6 +192,7 @@ return function(night)
                 ["look_back"] = {},
                 ["boiler_open"] = {},
             },
+            animatronic = {},
             animated = {}
         }
 
@@ -203,8 +204,15 @@ return function(night)
         loveloader.newImage(assets.office.states["idle"], "back", "assets/images/game/night8/back.png")
         loveloader.newImage(assets.ui, "hover_panel", "assets/images/game/night8/tablet_hover.png")
         loveloader.newImage(assets.ui, "hover_look", "assets/images/game/night8/look_hover.png")
+        loveloader.newImage(assets.ui, "hover_monitor", "assets/images/game/night8/monitor_hover.png")
         loveloader.newImage(assets.ui, "bg_beeper", "assets/images/game/night8/bg_beeper.png")
         loveloader.newImage(assets, "wood_hold", "assets/images/game/night8/wood.png")
+
+        loveloader.newImage(assets, "monitor_static", "assets/images/game/night8/monitor_static.png")
+        loveloader.newImage(assets.office.animatronic, "infront1", "assets/images/game/night8/lockjaw_states/infront1.png")
+        loveloader.newImage(assets.office.animatronic, "infront2", "assets/images/game/night8/lockjaw_states/infront2.png")
+        loveloader.newImage(assets.office.animatronic, "near_off", "assets/images/game/night8/lockjaw_states/near.png")
+        loveloader.newImage(assets.office.animatronic, "near_on", "assets/images/game/night8/lockjaw_states/near_on.png")
 
         assets.effects["staticfx"] = loadBulk("static_", "assets/images/game/effects/static3/")
         assets.office.states["look_back"] = loadBulk("lb_", "assets/images/game/night8/look_back/")

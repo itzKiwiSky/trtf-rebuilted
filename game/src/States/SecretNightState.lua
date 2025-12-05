@@ -2,11 +2,10 @@ SecretNightState = {}
 SecretNightState.assets = {}
 
 function SecretNightState:enter()
-    local termite = require 'libraries.Termite'
     self.astray = require 'libraries.astray'
     self.beeperController = require 'src.Modules.Game.BeeperController'
     self.beeperView = require 'src.Modules.Game.SecretNight.BeeperView'
-    self.tabletController = require 'src.Modules.Game.TabletController'
+    self.monitorView = require 'src.Modules.Game.SecretNight.MonitorView'
     self.buttonsUI = require 'src.Modules.Game.Utils.ButtonUI'
     self.animatorController = require 'src.Modules.Game.AnimatorController'
 
@@ -103,6 +102,10 @@ function SecretNightState:enter()
         beeper = {
             open = false,
         },
+        monitor = {
+            open = false,
+            displayStatic = false,
+        },
         furnace = {
             open = false,
             vincentIntegrity = 100,
@@ -164,6 +167,10 @@ function SecretNightState:enter()
     self.boilerAnim.visible = false
     self.boilerAnim.animationRunning = false
 
+    self.computerAnim = self.animatorController:new(self.assets["monitor"], 20, "mon")
+    self.computerAnim.visible = false
+    self.computerAnim.animationRunning = false
+
     AudioSources["sfx_boiler_amb"]:setLooping(true)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
     AudioSources["sfx_boiler_amb"]:play()
@@ -179,6 +186,7 @@ end
 
 function SecretNightState:draw()
     local inside, vmx, vmy = shove.mouseToViewport()
+    local mx, my = self.gameCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
     self.cnv_mainCanvas:renderTo(function()
         love.graphics.clear()
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
@@ -220,6 +228,13 @@ function SecretNightState:draw()
     self.beeperController:draw()
     self.beeperView:postDraw()
 
+    self.monitorView:draw()
+    if self.officeState.monitor.displayStatic then
+        love.graphics.draw(self.assets["monitor_static"], 0, 0)
+    end
+    self.computerAnim:draw()
+    self.monitorView:postDraw()
+
     if registers.showDebugHitbox then
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
             for k, h in pairs(self.officeState.hitboxes) do
@@ -247,11 +262,23 @@ function SecretNightState:draw()
     love.graphics.setBlendMode("alpha")
 
     if self.officeState.nightStarted then
+        local rangeStart = 50
+        local rangeEnd = 130
         if self.officeState.lookDir == "back" then
-            self.hoverBackLookButton:draw()
+            local dist = math.distance(vmx, vmy, self.hoverBackLookButton.x, self.hoverBackLookButton.y)
+            love.graphics.setColor(1, 1, 1, math.map(dist, rangeStart, rangeEnd, 1, 0))
+                self.hoverBackLookButton:draw()
+            love.graphics.setColor(1, 1, 1, 1)
         else
-            self.hoverLookButton:draw()
-            self.computerHackButton:draw()
+            local distHoverLook = math.distance(vmx, vmy, self.hoverLookButton.x, self.hoverLookButton.y)
+            love.graphics.setColor(1, 1, 1, math.map(distHoverLook, rangeStart, rangeEnd, 1, 0))
+                self.hoverLookButton:draw()
+            love.graphics.setColor(1, 1, 1, 1)
+
+            local distHoverPC = math.distance(vmx, vmy, self.computerHackButton.x, self.computerHackButton.y)
+            love.graphics.setColor(1, 1, 1, math.map(distHoverPC, rangeStart, rangeEnd, 1, 0))
+                self.computerHackButton:draw()
+            love.graphics.setColor(1, 1, 1, 1)
         end
     end
 
@@ -281,7 +308,7 @@ function SecretNightState:update(elapsed)
 
     --self.officeState.flashlight.lightBeam.angle = math.atan2(vmy - shove.getViewportHeight(), vmx - shove.getViewportWidth() - 300)
 
-    if not self.beeperController.tabUp then
+    if not self.beeperController.tabUp and not self.officeState.monitor.open then
         self.gameCam.x = (self.roomSize.width / 2 + (mx - self.roomSize.width / 2) / self.gameCam.factorX)
     end
 
@@ -301,8 +328,16 @@ function SecretNightState:update(elapsed)
         end
     end
 
-    if self.officeState.lookDir == "front" and self.officeState.nightStarted then
-        self.officeState.wood.holdingFX = math.lerp(self.officeState.wood.holdingFX, collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["box"]) and 1 or 0, 0.05)
+    if self.officeState.nightStarted then
+        if self.officeState.lookDir == "front" then
+            if collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["box"]) then
+                self.officeState.wood.holdingFX = math.lerp(self.officeState.wood.holdingFX, 1, 0.05)
+            else
+                self.officeState.wood.holdingFX = math.lerp(self.officeState.wood.holdingFX, 0, 0.05)
+            end
+        else
+            self.officeState.wood.holdingFX = math.lerp(self.officeState.wood.holdingFX, 0, 0.05)
+        end
     end
 
     -- camera bounds --
@@ -346,7 +381,6 @@ function SecretNightState:update(elapsed)
             end
         end
     end
-    
 
     self.officeState.ambienceBoilerVolume = math.lerp(self.officeState.ambienceBoilerVolume, self.officeState.lookDir == "back" and 0.75 or 0.2, 0.075, 0.9 * elapsed)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
@@ -388,10 +422,39 @@ function SecretNightState:update(elapsed)
         else
             self.hoverBackLookButton.isHover = false
         end
+
+        if collision.pointRect({ x = vmx, y = vmy }, self.computerHackButton) then
+            if self.officeState.lookDir == "front" then
+                if not self.computerAnim.animationRunning then
+                    if not self.computerHackButton.isHover then
+                        self.computerHackButton.isHover = true
+                        if self.officeState.monitor.open then
+                            self.officeState.monitor.displayStatic = false
+                            self.computerAnim:setState(false)
+                            self.computerAnim.onComplete = function()
+                                self.computerAnim.visible = false
+                                self.officeState.monitor.open = true
+                            end
+                        else
+                            self.computerAnim:setState(true)
+                            self.computerAnim.onComplete = function()
+                                self.computerAnim.visible = false
+                                self.officeState.monitor.open = true
+                                self.officeState.monitor.displayStatic = true
+                            end
+                        end
+                    end
+                end
+            end
+        else
+            self.computerHackButton.isHover = false
+        end
     end
 
     self.turnAnim:update(elapsed)
     self.boilerAnim:update(elapsed)
+
+    self.computerAnim:update(elapsed)
 
     self.beeperController:update(elapsed)
     self.beeperView:update(elapsed)
@@ -413,7 +476,6 @@ function SecretNightState:mousepressed(x, y, button)
     
     if button == 1 then
         if collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["boiler"]) then
-            print("sex")
             if not self.boilerAnim.animationRunning then
                 if self.officeState.hitboxes["boiler"].condition() then
                     self.boilerAnim:setState(not self.officeState.furnace.open)

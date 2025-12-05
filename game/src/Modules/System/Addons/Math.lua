@@ -19,6 +19,10 @@ function math.map(v, l1, h1, l2, h2)
     return l2 + (v - l1) / (h1 - l1) * (h2 - l2)
 end
 
+function math.mapc(v, l1, h1, l2, h2)
+    return math.clamp(math.map(v, l1, h1, l2, h2), l2, h2)
+end
+
 function math.round(n, precision) return tonumber(string.format( '%.' .. (precision or 0) .. 'f', n)) end
 
 function math.byteToSize(byte)
@@ -33,7 +37,22 @@ function math.byteToSize(byte)
     elseif gb > 1024 then return math.round(tb, 2) .. "tb" end
 end
 
-function math.dist(x1, x2, y1, y2) return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ 2 end
+function math.dist(x1, x2, y1, y2) return math.sqrt( (x2-x1)^2 + (y2-y1)^2 ) end
+
+function math.distance(x1, y1, x2, y2)
+    local dx = x2 - x1
+    local dy = y2 - y1
+    return math.sqrt(dx * dx + dy * dy)
+end
+
+function math.sqrtdist( x1, y1, x2, y2 )
+    return (x2 - x1) ^ 2 + (y2-y1)^2
+end
+
+function math.linedist( x, y, dx, dy, u, v )
+    local wx,wy = u-x, v-y
+    return math.sqrt((wx^2 + wy^2)-(((dx*wx+dy*wy)^2)/(dx^2+dy^2))) --MATHAMAGICAL
+end
 
 function math.clamp(x, min, max)
     return math.max(min, math.min(x, max))
