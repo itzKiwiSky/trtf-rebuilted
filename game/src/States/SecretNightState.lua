@@ -6,8 +6,9 @@ function SecretNightState:enter()
     self.beeperController = require 'src.Modules.Game.BeeperController'
     self.beeperView = require 'src.Modules.Game.SecretNight.BeeperView'
     self.monitorView = require 'src.Modules.Game.SecretNight.MonitorView'
-    self.buttonsUI = require 'src.Modules.Game.Utils.ButtonUI'
+    self.buttonsUI = require 'src.Modules.Game.SecretNight.ButtonUI'
     self.animatorController = require 'src.Modules.Game.AnimatorController'
+    self.drawQueue = require 'src.Modules.Game.Utils.DrawQueueBar'
 
     self.fnt_nightDisplay = fontcache.getFont("tnr", 60)
 
@@ -44,6 +45,8 @@ function SecretNightState:enter()
         Slab.EndWindow()
     end
 
+    SecretNightState.assets.grd_battery = love.graphics.newGradient("horizontal", {lume.color('#4322D4')}, {lume.color('#225AD4')}, {lume.color('#22B3D4')})
+
     -- room --
     self.roomSize = {
         windowWidth = shove.getViewportWidth(),
@@ -65,6 +68,9 @@ function SecretNightState:enter()
     self.officeState = {
         nightStarted = false,
         lookDir = "front",
+        blink = {
+            alpha = 0
+        },
         hitboxes = {
             ["box"] = {
                 x = self.roomSize.width / 2 - 300,
@@ -91,13 +97,12 @@ function SecretNightState:enter()
             active = false,
             x = 0,
             y = 0,
-            lightGlare = {
-                x = 749, y = 164,
-                alpha = 0,
-            },
-            lightBeam = {
-                alpha = 0,
-            }
+            alpha = 1,
+            battery = 10,
+            maxBattery = 10,
+            rechargeMultiplier = 4,
+            energyConsumeMultiplier = 5,
+            reloading = false,
         },
         beeper = {
             open = false,
@@ -134,9 +139,19 @@ function SecretNightState:enter()
     self.shd_perspective:send("longitudeVar", self.tuneConfig.longitudeVar)
     self.shd_perspective:send("fovVar", self.tuneConfig.fovVar)
 
+    local sx, sy = 0.75, 0.75
     self.hoverLookButton = self.buttonsUI:new(self.assets.ui["hover_look"], shove.getViewportWidth() - 96, shove.getViewportHeight() / 2, 0, 0.75, 0.75, true)
-    self.hoverBackLookButton = self.buttonsUI:new(self.assets.ui["hover_look"], 96, shove.getViewportHeight() / 2, 0, -0.75, 0.75, true)
+    self.hoverLookButton.hitbox.w = self.hoverLookButton.image:getWidth() * sx
+    self.hoverLookButton.hitbox.h = self.hoverLookButton.image:getHeight() * sy
+
+    self.hoverBackLookButton = self.buttonsUI:new(self.assets.ui["hover_look"], 128, shove.getViewportHeight() / 2, 0, -0.75, 0.75, true)
+    self.hoverBackLookButton.hitbox.x = (self.hoverBackLookButton.hitbox.x - self.hoverBackLookButton.image:getWidth() / 2) * sx
+    self.hoverBackLookButton.hitbox.w = self.hoverBackLookButton.image:getWidth() * sx
+    self.hoverBackLookButton.hitbox.h = self.hoverBackLookButton.image:getHeight() * sy
+
     self.computerHackButton = self.buttonsUI:new(self.assets.ui["hover_panel"], shove.getViewportWidth() / 2, shove.getViewportHeight() - 96, 0, 0.75, 0.75, true)
+    self.computerHackButton.hitbox.w = self.computerHackButton.image:getWidth() * sx
+    self.computerHackButton.hitbox.h = self.computerHackButton.image:getHeight() * sy
 
     self.gameCam = camera.new(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
     self.gameCam.factorX = 2.8
@@ -150,6 +165,15 @@ function SecretNightState:enter()
     self.cnv_mainCanvas = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight())
     self.cnv_invertedRoom = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight())
     self.cnv_flash = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight())
+    self.cnv_battery = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight(), { readable = true })
+
+    self.maskShader = love.graphics.newShader([[
+        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+            if (Texel(texture, texture_coords).rgb == vec3(0.0)) 
+                discard;
+            return vec4(1.0);
+        }
+    ]])
 
     self.beeperController:init(SecretNightState.assets.beeper, 34, "beep_")
     self.beeperController.visible = false
@@ -160,14 +184,14 @@ function SecretNightState:enter()
         AudioSources["sfx_beeper_use"]:setVolume(0.87)
     end
 
-    self.turnAnim = self.animatorController:new(self.assets.office.states["look_back"], 25, "lb_")
+    self.turnAnim = self.animatorController:new(self.assets.office.states["look_back"], 35, "lb_")
     self.turnAnim.visible = false
 
-    self.boilerAnim = self.animatorController:new(self.assets.office.states["boiler_open"], 25, "bo_")
+    self.boilerAnim = self.animatorController:new(self.assets.office.states["boiler_open"], 35, "bo_")
     self.boilerAnim.visible = false
     self.boilerAnim.animationRunning = false
 
-    self.computerAnim = self.animatorController:new(self.assets["monitor"], 20, "mon")
+    self.computerAnim = self.animatorController:new(self.assets["monitor"], 30, "mon")
     self.computerAnim.visible = false
     self.computerAnim.animationRunning = false
 
@@ -210,8 +234,10 @@ function SecretNightState:draw()
             end
         self.gameCam:detach()
         if self.officeState.flashlight.active then
+            love.graphics.setColor(1, 1, 1, self.officeState.flashlight.alpha)
             local ox, oy = self.assets.effects["light"]["flashlight"]:getWidth() / 2, self.assets.effects["light"]["flashlight"]:getHeight() / 2
             love.graphics.draw(self.assets.effects["light"]["flashlight"], self.officeState.flashlight.x, self.officeState.flashlight.y, 0, 1.15, 1.15, ox, oy)
+            love.graphics.setColor(1, 1, 1, 1)
         end
     end)
 
@@ -262,21 +288,22 @@ function SecretNightState:draw()
     love.graphics.setBlendMode("alpha")
 
     if self.officeState.nightStarted then
-        local rangeStart = 50
-        local rangeEnd = 130
+        local rangeStart = 20
+        local rangeEnd = 300
+        local finalOpacity = 0.5
         if self.officeState.lookDir == "back" then
             local dist = math.distance(vmx, vmy, self.hoverBackLookButton.x, self.hoverBackLookButton.y)
-            love.graphics.setColor(1, 1, 1, math.map(dist, rangeStart, rangeEnd, 1, 0))
+            love.graphics.setColor(1, 1, 1, math.map(dist, rangeStart, rangeEnd, 1, finalOpacity))
                 self.hoverBackLookButton:draw()
             love.graphics.setColor(1, 1, 1, 1)
         else
             local distHoverLook = math.distance(vmx, vmy, self.hoverLookButton.x, self.hoverLookButton.y)
-            love.graphics.setColor(1, 1, 1, math.map(distHoverLook, rangeStart, rangeEnd, 1, 0))
+            love.graphics.setColor(1, 1, 1, math.map(distHoverLook, rangeStart, rangeEnd, 1, finalOpacity))
                 self.hoverLookButton:draw()
             love.graphics.setColor(1, 1, 1, 1)
 
             local distHoverPC = math.distance(vmx, vmy, self.computerHackButton.x, self.computerHackButton.y)
-            love.graphics.setColor(1, 1, 1, math.map(distHoverPC, rangeStart, rangeEnd, 1, 0))
+            love.graphics.setColor(1, 1, 1, math.map(distHoverPC, rangeStart, rangeEnd, 1, finalOpacity))
                 self.computerHackButton:draw()
             love.graphics.setColor(1, 1, 1, 1)
         end
@@ -291,7 +318,53 @@ function SecretNightState:draw()
     end
 
 
-    love.graphics.print(inspect(self.officeState.wood), 20, 20)
+    love.graphics.print(inspect(self.officeState.flashlight), 20, 20)
+
+    --love.graphics.rectangle("line", 96, shove.getViewportHeight() - 96, 128, 64)
+    --self.drawQueue(96, shove.getViewportHeight() - 96, 128, 64, self.officeState.flashlight.battery, 10, 4, 4, {{2, 0, 36}, {9, 9, 121}, {0, 212, 255}}, self.assets.grd_bars)
+
+--[[
+        love.graphics.stencil(function()
+            love.graphics.setShader(self.maskShader)
+                love.graphics.draw(
+                    self.assets.ui["flashlight_mask"], 96, shove.getViewportHeight() - 96, 0, 
+                    128 / self.assets.ui["flashlight_mask"]:getWidth(), 64 / self.assets.ui["flashlight_mask"]:getHeight(),
+                    self.assets.ui["flashlight_mask"]:getWidth() / 2, self.assets.ui["flashlight_mask"]:getHeight() / 2
+                )
+            love.graphics.setShader()
+        end, "replace", 1)
+        love.graphics.setStencilTest("greater", 0)
+            self.drawQueue(96, shove.getViewportHeight() - 96, 128, 64, self.officeState.flashlight.battery, 10, 4, 4, {{125, 85, 36}, {186, 127, 32}, {255, 196, 48}}, self.assets.grd_bars)
+        love.graphics.setStencilTest()
+]]
+
+    local icoX, icoY = 96, shove.getViewportHeight() - 96
+
+    love.graphics.setColor(lume.color('#0D1F42'))
+    love.graphics.draw(
+        self.assets.ui["flashlight_bg"], icoX, icoY, 0, 
+        128 / self.assets.ui["flashlight_bg"]:getWidth(), 64 / self.assets.ui["flashlight_bg"]:getHeight()
+    )
+    love.graphics.setColor(1, 1, 1, 1)
+
+    love.graphics.stencil(function()
+        love.graphics.setShader(self.maskShader)
+            love.graphics.draw(
+                self.assets.ui["flashlight_mask"], icoX, icoY, 0, 
+                128 / self.assets.ui["flashlight_mask"]:getWidth(), 64 / self.assets.ui["flashlight_mask"]:getHeight()
+            )
+        love.graphics.setShader()
+    end, "replace", 1)
+
+    love.graphics.setStencilTest("equal", 1)
+        love.graphics.draw(self.assets.grd_battery, icoX, icoY, 0, math.floor(128 * (self.officeState.flashlight.battery / self.officeState.flashlight.maxBattery)), 64)
+        --self.drawQueue(icoX, icoY, 128, 64, self.officeState.flashlight.battery, 10, 4, 4, {{125, 85, 36}, {186, 127, 32}, {255, 196, 48}}, self.assets.grd_bars)
+    love.graphics.setStencilTest()
+
+    love.graphics.draw(
+        self.assets.ui["flashlight_icon"], icoX, icoY, 0, 
+        128 / self.assets.ui["flashlight_icon"]:getWidth(), 64 / self.assets.ui["flashlight_icon"]:getHeight()
+    )
 end
 
 function SecretNightState:update(elapsed)
@@ -306,7 +379,6 @@ function SecretNightState:update(elapsed)
     self.shd_perspective:send("longitudeVar", self.tuneConfig.longitudeVar)
     self.shd_perspective:send("fovVar", self.tuneConfig.fovVar)
 
-    --self.officeState.flashlight.lightBeam.angle = math.atan2(vmy - shove.getViewportHeight(), vmx - shove.getViewportWidth() - 300)
 
     if not self.beeperController.tabUp and not self.officeState.monitor.open then
         self.gameCam.x = (self.roomSize.width / 2 + (mx - self.roomSize.width / 2) / self.gameCam.factorX)
@@ -373,7 +445,7 @@ function SecretNightState:update(elapsed)
         self.nightTextDisplay.acc = self.nightTextDisplay.acc + elapsed
         if self.nightTextDisplay.acc >= 0.3 then
             self.nightTextDisplay.acc = 0
-            self.nightTextDisplay.fade = self.nightTextDisplay.fade - 3.2 * elapsed
+            self.nightTextDisplay.fade = self.nightTextDisplay.fade - 6.2 * elapsed
             self.nightTextDisplay.scale = self.nightTextDisplay.scale + 0.2 * elapsed
 
             if self.nightTextDisplay.fade <= 0 then
@@ -386,8 +458,8 @@ function SecretNightState:update(elapsed)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
 
     if self.officeState.nightStarted then
-        if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton) then
-            if self.officeState.lookDir == "front" then
+        if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton.hitbox) then
+            if self.officeState.lookDir == "front" and not (self.officeState.monitor.open or self.computerAnim.animationRunning) then
                 if not self.turnAnim.animationRunning then
                     if not self.hoverLookButton.isHover then
                         self.hoverLookButton.isHover = true
@@ -404,7 +476,7 @@ function SecretNightState:update(elapsed)
         else
             self.hoverLookButton.isHover = false
         end
-        if collision.pointRect({ x = vmx, y = vmy }, self.hoverBackLookButton) then
+        if collision.pointRect({ x = vmx, y = vmy }, self.hoverBackLookButton.hitbox) then
             if self.officeState.lookDir == "back" and not self.officeState.furnace.open then
                 if not self.turnAnim.animationRunning then
                     if not self.hoverBackLookButton.isHover then
@@ -423,7 +495,7 @@ function SecretNightState:update(elapsed)
             self.hoverBackLookButton.isHover = false
         end
 
-        if collision.pointRect({ x = vmx, y = vmy }, self.computerHackButton) then
+        if collision.pointRect({ x = vmx, y = vmy }, self.computerHackButton.hitbox) then
             if self.officeState.lookDir == "front" then
                 if not self.computerAnim.animationRunning then
                     if not self.computerHackButton.isHover then
@@ -433,7 +505,7 @@ function SecretNightState:update(elapsed)
                             self.computerAnim:setState(false)
                             self.computerAnim.onComplete = function()
                                 self.computerAnim.visible = false
-                                self.officeState.monitor.open = true
+                                self.officeState.monitor.open = false
                             end
                         else
                             self.computerAnim:setState(true)
@@ -448,6 +520,17 @@ function SecretNightState:update(elapsed)
             end
         else
             self.computerHackButton.isHover = false
+        end
+    end
+
+    if self.officeState.flashlight.active then
+        self.officeState.flashlight.battery = self.officeState.flashlight.battery - elapsed * self.officeState.flashlight.energyConsumeMultiplier
+        if self.officeState.flashlight.battery <= 0 then
+            self.officeState.flashlight.active = false
+        end
+    else
+        if self.officeState.flashlight.battery < self.officeState.flashlight.maxBattery then
+            self.officeState.flashlight.battery = self.officeState.flashlight.battery + elapsed * self.officeState.flashlight.rechargeMultiplier
         end
     end
 
@@ -470,7 +553,7 @@ function SecretNightState:mousepressed(x, y, button)
 
     if not self.officeState.nightStarted then return end
 
-    if button == 1 and self.officeState.lookDir == "front" then
+    if button == 1 and self.officeState.lookDir == "front" and self.officeState.flashlight.battery > 1 then
         self.officeState.flashlight.active = not self.officeState.flashlight.active
     end
     

@@ -23,8 +23,8 @@ end
 ---@param padding number
 ---@param spacing number
 ---@param ... table
-local function drawQueue(x, y, areaWidth, areaHeight, count, maxCount, padding, spacing, ...)
-    local col = {...}
+local function drawQueue(x, y, areaWidth, areaHeight, count, maxCount, padding, spacing, colors, drawable)
+    local col = colors
     local enterColor = col[1] or {0, 255, 0}
     local endColor = col[2] or {255, 0, 0}
 
@@ -43,7 +43,7 @@ local function drawQueue(x, y, areaWidth, areaHeight, count, maxCount, padding, 
     
         love.graphics.setColor(r, g, b, 1)
             if i <= count then
-                love.graphics.draw(NightState.assets.grd_bars, lx, ly, 0, rectWidth, rectHeight)
+                love.graphics.draw(drawable or NightState.assets.grd_bars, lx, ly, 0, rectWidth, rectHeight)
             end
         love.graphics.setColor(1, 1, 1, 1)
         lx = lx + rectWidth + spacing

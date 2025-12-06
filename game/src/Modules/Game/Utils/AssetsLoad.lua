@@ -196,6 +196,9 @@ return function(night)
             animated = {}
         }
 
+        loveloader.newImage(assets.ui, "flashlight_mask", "assets/images/game/night8/flashlight_mask.png")
+        loveloader.newImage(assets.ui, "flashlight_icon", "assets/images/game/night8/flashlight_icon.png")
+        loveloader.newImage(assets.ui, "flashlight_bg", "assets/images/game/night8/flashlight_bg.png")
         loveloader.newImage(assets.effects["light"], "flashlight", "assets/images/game/night8/flashlight.png")
         loveloader.newImage(assets.effects["light"], "light_beam", "assets/images/game/night8/lantern_light.png")
         loveloader.newImage(assets.effects["light"], "light_glare", "assets/images/game/night8/light_glare.png")

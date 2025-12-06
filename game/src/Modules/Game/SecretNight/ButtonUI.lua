@@ -13,8 +13,12 @@ function ButtonUI:__construct(image, x, y, r, sx, sy, centerOrigin)
     self.image = image
     self.x = x
     self.y = y
-    self.w = image:getWidth()
-    self.h = image:getHeight() + 64
+    self.hitbox = {
+        x = x - (centerOrigin and image:getWidth() / 2 or 0) * sx,
+        y = y - (centerOrigin and image:getHeight() / 2 or 0) * sy,
+        w = image:getWidth(),
+        h = image:getHeight(),
+    }
     self.r = r or 0
     self.sx = sx or 1
     self.sy = sy or 1
@@ -24,12 +28,13 @@ end
 function ButtonUI:draw()
     if self.image then
         love.graphics.draw(self.image, self.x, self.y, self.r, self.sx, self.sy,
-            self.centerOrigin and self.image:getWidth() / 2 or 0, self.centerOrigin and self.image:getHeight() / 2 or 0
+            self.centerOrigin and self.image:getWidth() / 2 or 0, 
+            self.centerOrigin and self.image:getHeight() / 2 or 0
         )
     end
 
     if registers.showDebugHitbox then
-        drawBox(self, 0.25, 1, 0.5)
+        drawBox(self.hitbox, 0.25, 1, 0.5)
     end
 end
 

@@ -127,7 +127,9 @@ function love.run()
     -- Set up a resizable window
     --shove.setWindowMode(1280, 800, {resizable = true, vsync = 0})
 
-    shove.createLayer("mainView")
+    shove.createLayer("mainView", {
+        stencil = true,
+    })
     shove.createLayer("subtitles")
     shove.createLayer("effects")
     shove.createLayer("DevUI")

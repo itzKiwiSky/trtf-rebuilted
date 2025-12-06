@@ -15,8 +15,8 @@ function math.isPercent(a, b) return a / b * 100 end
 function math.onRange(n, max, range) return n / max * range end
 
 --function math.remapToRange(value, start1, stop1, start2, stop2) return start2 + (value - start1) * ((stop2 - start2) / (stop1 - start1)) end
-function math.map(v, l1, h1, l2, h2)
-    return l2 + (v - l1) / (h1 - l1) * (h2 - l2)
+function math.map(value, inMin, inMax, outMin, outMax)
+    return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
 end
 
 function math.mapc(v, l1, h1, l2, h2)
