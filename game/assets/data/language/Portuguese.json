@@ -175,5 +175,12 @@
     "end_demo" : {
         "end_demo_title": "Fim da Demo",
         "end_demo_text": "Por enquanto é isso, a versão completa terá muitos recursos legais e segredos. Fique ligado!"
-    }
+    },
+    "secret_night_manual" : [
+        "Use esta interface para invadir e desativar os animatrônicos",
+        "Utilize o comando `fwedit` seguido do nome do animatrônico",
+        "Exemplo: fwedit freddy",
+        "Outros comandos podem ser úteis para a interface",
+        "Use o comando `help` para ver a lista de todos os comandos"
+    ]
 }   

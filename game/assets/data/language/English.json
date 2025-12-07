@@ -177,5 +177,12 @@
     "end_demo" : {
         "end_demo_title": "End of the demo",
         "end_demo_text": "This is the end for now, the full release will have a lot of cool features and secrets. Stay tunned"
-    }
+    },
+    "secret_night_manual": [
+        "Use this interface to hack\nand disable the animatronics",
+        "Use the `fwedit` command followed by the animatronic's name",
+        "Example: fwedit freddy",
+        "Other commands may be useful for\nthe interface",
+        "Use the `help` command\nto see the list of all commands"
+    ]
 }

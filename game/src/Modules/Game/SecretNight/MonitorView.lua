@@ -4,30 +4,39 @@ local MonitorView = {}
 local Commands = {
     ["dir"] = function (self)
         local animatronics = {
-            { name = "freddy",  read = false, write = false, hidden = false },
-            { name = "bonnie",  read = false, write = false, hidden = false },
-            { name = "chica",  read = false, write = false, hidden = false },
-            { name = "foxy",  read = false, write = false, hidden = false },
-            { name = "sugar",  read = false, write = false, hidden = false },
-            { name = "kitty",  read = false, write = false, hidden = false },
-            { name = "marionette",  read = false, write = false, hidden = false },
-            { name = "frankburt",  read = false, write = false, hidden = true },
+            ["freddy"] = { read = false, write = false, hidden = false },
+            ["bonnie"] = { read = false, write = false, hidden = false },
+            ["chica"] = { name,  read = false, write = false, hidden = false },
+            ["foxy"] = { read = false, write = false, hidden = false },
+            ["sugar"] = { read = false, write = false, hidden = false },
+            ["kitty"] = { read = false, write = false, hidden = false },
+            ["marionette"] = { read = false, write = false, hidden = false },
+            ["frankburt"] = { read = false, write = false, hidden = true },
         }
 
-        self.terminal:print("Volume in drive C\n")
-        self.terminal:print("Directory of C:\\\n")
+        self.terminal:print("Volume in drive\n")
+        self.terminal:print("Listing directory\\\n")
         self.terminal:print(string.complete("─", 14) .. "\n")
-        for _, value in ipairs(animatronics) do
+        for k, value in pairs(animatronics) do
             --self.terminal:print(" [.WR] " .. value .. ".bin\n")
 
             if not value.hidden then
-                local state = string.format("[%s%s-]", value.read and "R")
-                self.terminal:print(string.format("[%s] %s.bin"))
+                local r = value.read and "R" or "-"
+                local w = value.write and "W" or "-"
+                --print(r, w, k)
+                self.terminal:print("[-" .. r .. w .. "] " .. k .. "\n")
             end
         end
     end,
     ["clear"] = function(self)
         self.terminal:clear()
+    end,
+    ["man"] = function(self)
+        self.terminal:print(string.complete("─", 14) .. "\n")
+        for _, value in ipairs(languageRaw["secret_night_manual"]) do
+            self.terminal:print(value .. "\n")
+        end
+        self.terminal:print(string.complete("─", 14) .. "\n")
     end
 }
 
@@ -42,12 +51,10 @@ function MonitorView:init()
     self.textBuffer = ""
 
     -- init texts --
-
     self.terminal:print("Starting StarlightDOS...\n")
 
     self.terminal:print("MEMTEST is testing memory... done.\n")
     self.terminal:setCursorY(4)
-
     self.terminal:print("> ")
 end
 
@@ -92,7 +99,7 @@ function MonitorView:keypressed(k)
         end
     elseif k == "return" then
         -- command parse --
-         self.terminal:print("\n")
+        self.terminal:setCursorY(self.terminal.cursorY + 1)
         local tokens = string.split(self.textBuffer, " ")
         local cmd = tokens[1]
         table.remove(tokens, 1)
@@ -100,13 +107,13 @@ function MonitorView:keypressed(k)
         if Commands[cmd] ~= nil then
             Commands[cmd](self)
         else
-            self.terminal:print("Command not found!")
+            self.terminal:setCursorX(1)
+            self.terminal:print("Command not found!\n")
         end
 
         self.textBuffer = ""
         self.terminal:setCursorX(1)
         self.terminal:print("> ")
-        self.terminal:setCursorX(3)
     end
 end
 

@@ -176,5 +176,12 @@
     "end_demo": {
         "end_demo_title": "Fin de la demo",
         "end_demo_text": "Esto es todo por ahora, la versión completa tendrá muchas características y secretos. Mantente atento"
-    }
+    },
+    "secret_night_manual": [
+        "Utiliza esta interfaz para hackear y desactivar a los animatrónicos",
+        "Utiliza el comando `fwedit` seguido del nombre del animatrónico",
+        "Ejemplo: fwedit freddy",
+        "Otros comandos pueden ser útiles para la interfaz",
+        "Utiliza el comando `help` para ver la lista de todos los comandos"
+    ]
 }
