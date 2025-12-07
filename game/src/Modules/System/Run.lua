@@ -11,6 +11,8 @@ moonshine = require 'src.Modules.System.Moonshine'
 loveloader = require 'src.Modules.System.Utils.loveloader'
 loveframes = require 'src.Modules.System.Utils.loveframes'
 bump = require 'src.Modules.System.Utils.BumpPhysics'
+astray = require 'libraries.astray'
+termite = require 'libraries.Termite'
 
 love._FPSCap = 1000
 love._unfocusedFPSCap = 60

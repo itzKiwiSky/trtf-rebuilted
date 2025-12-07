@@ -2,7 +2,6 @@ SecretNightState = {}
 SecretNightState.assets = {}
 
 function SecretNightState:enter()
-    self.astray = require 'libraries.astray'
     self.beeperController = require 'src.Modules.Game.BeeperController'
     self.beeperView = require 'src.Modules.Game.SecretNight.BeeperView'
     self.monitorView = require 'src.Modules.Game.SecretNight.MonitorView'
@@ -11,8 +10,6 @@ function SecretNightState:enter()
     self.drawQueue = require 'src.Modules.Game.Utils.DrawQueueBar'
 
     self.fnt_nightDisplay = fontcache.getFont("tnr", 60)
-
-    --self.terminal = termite:new()
 
     registers.devWindowContent = function ()
         Slab.BeginWindow("debugWindow", { Title = "Debug shader"})
@@ -100,8 +97,8 @@ function SecretNightState:enter()
             alpha = 1,
             battery = 10,
             maxBattery = 10,
-            rechargeMultiplier = 4,
-            energyConsumeMultiplier = 5,
+            rechargeMultiplier = 2,
+            energyConsumeMultiplier = 3,
             reloading = false,
         },
         beeper = {
@@ -206,6 +203,26 @@ function SecretNightState:enter()
         AudioSources["sfx_beeper_open"]:play()
         AudioSources["sfx_beeper_open"]:setVolume(0.87)
     end)
+
+    self.monitorView:init()
+    self.monitorView.terminal:setCursorBackColor("brightBlue")
+    self.monitorView.terminal:setCursorColor("brightWhite")
+
+    self.monitorView.terminal.useInterrupt = true
+
+
+    local meme = "Microsoft Windows 95 Setup"
+    self.monitorView.terminal:print(2, 3, meme)
+    self.monitorView.terminal:print(1, 4, string.complete("=", #meme))
+    self.monitorView.terminal:print(2, 6, "The setup program prepares Windows 95\n")
+    self.monitorView.terminal:print("to run on your computer.")
+
+    self.monitorView.terminal:print(4, 14, "Please wait")
+
+    self.monitorView.terminal:push()
+
+    self.monitorView.terminal:clear(1, 1)
+    self.monitorView.terminal:pop()
 end
 
 function SecretNightState:draw()
@@ -443,9 +460,9 @@ function SecretNightState:update(elapsed)
     elseif self.nightTextDisplay.displayNightText and self.nightTextDisplay.invert then
         self.officeState.nightRun = true
         self.nightTextDisplay.acc = self.nightTextDisplay.acc + elapsed
-        if self.nightTextDisplay.acc >= 0.3 then
+        if self.nightTextDisplay.acc >= 0.05 then
             self.nightTextDisplay.acc = 0
-            self.nightTextDisplay.fade = self.nightTextDisplay.fade - 6.2 * elapsed
+            self.nightTextDisplay.fade = self.nightTextDisplay.fade - 2.2 * elapsed
             self.nightTextDisplay.scale = self.nightTextDisplay.scale + 0.2 * elapsed
 
             if self.nightTextDisplay.fade <= 0 then
@@ -459,7 +476,7 @@ function SecretNightState:update(elapsed)
 
     if self.officeState.nightStarted then
         if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton.hitbox) then
-            if self.officeState.lookDir == "front" and not (self.officeState.monitor.open or self.computerAnim.animationRunning) then
+            if self.officeState.lookDir == "front" and not self.officeState.monitor.open and not self.computerAnim.animationRunning then
                 if not self.turnAnim.animationRunning then
                     if not self.hoverLookButton.isHover then
                         self.hoverLookButton.isHover = true
@@ -477,7 +494,7 @@ function SecretNightState:update(elapsed)
             self.hoverLookButton.isHover = false
         end
         if collision.pointRect({ x = vmx, y = vmy }, self.hoverBackLookButton.hitbox) then
-            if self.officeState.lookDir == "back" and not self.officeState.furnace.open then
+            if self.officeState.lookDir == "back" and not self.officeState.furnace.open and not self.boilerAnim.animationRunning then
                 if not self.turnAnim.animationRunning then
                     if not self.hoverBackLookButton.isHover then
                         self.hoverBackLookButton.isHover = true
@@ -498,7 +515,7 @@ function SecretNightState:update(elapsed)
         if collision.pointRect({ x = vmx, y = vmy }, self.computerHackButton.hitbox) then
             if self.officeState.lookDir == "front" then
                 if not self.computerAnim.animationRunning then
-                    if not self.computerHackButton.isHover then
+                    if not self.computerHackButton.isHover and not self.officeState.lookingBack then
                         self.computerHackButton.isHover = true
                         if self.officeState.monitor.open then
                             self.officeState.monitor.displayStatic = false
@@ -524,6 +541,7 @@ function SecretNightState:update(elapsed)
     end
 
     if self.officeState.flashlight.active then
+        self.officeState.flashlight.alpha = math.map(math.min(self.officeState.flashlight.battery, 5), 0, 5, 0, 1)
         self.officeState.flashlight.battery = self.officeState.flashlight.battery - elapsed * self.officeState.flashlight.energyConsumeMultiplier
         if self.officeState.flashlight.battery <= 0 then
             self.officeState.flashlight.active = false
@@ -542,6 +560,8 @@ function SecretNightState:update(elapsed)
     self.beeperController:update(elapsed)
     self.beeperView:update(elapsed)
 
+    self.monitorView:update(elapsed)
+
     self.nightTimer:update(elapsed)
 end
 
@@ -553,7 +573,11 @@ function SecretNightState:mousepressed(x, y, button)
 
     if not self.officeState.nightStarted then return end
 
-    if button == 1 and self.officeState.lookDir == "front" and self.officeState.flashlight.battery > 1 then
+    if button == 1 and self.officeState.lookDir == "front" 
+    and self.officeState.flashlight.battery > 1 
+    and not self.officeState.monitor.open 
+    and not self.computerAnim.animationRunning
+    then
         self.officeState.flashlight.active = not self.officeState.flashlight.active
     end
     
@@ -569,6 +593,11 @@ function SecretNightState:mousepressed(x, y, button)
             end
         end
     end
+end
+
+function SecretNightState:keypressd(k)
+    print(k)
+    self.monitorView.terminal:keypressed(k)
 end
 
 function SecretNightState:leave()

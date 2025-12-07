@@ -1282,7 +1282,7 @@ function NightState:update(elapsed)
                             if AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
                                 AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:seek(0)
                             end
-                            AudioSources[self.officeState.doors.left and "door_open" or "sfx_door_close"]:play()
+                            AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:play()
                             self.officeState.doors.left = not self.officeState.doors.left
                             self.doorL:setState(self.officeState.doors.left)
                         end

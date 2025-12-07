@@ -213,6 +213,9 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
             assertType(w, "number")
             assertType(h, "number")
 
+            w = w or self.width - 1
+            h = h or self.height - 1
+
             -- check terminal bounds --
             if x < 1 or y < 1 or x + w - 1 > self.width or y + h - 1 > self.height then
                 return
@@ -347,7 +350,36 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
             self.cursorBackColor[2] = color[2]
             self.cursorBackColor[3] = color[3]
             self.cursorBackColor[4] = color[4] or 1
-        end
+        end,
+        ["push"] = function(self)
+            local state = {
+                buffer = table.deepcopy(self.buffer),
+                stateBuffer = table.deepcopy(self.stateBuffer)
+            }
+
+            table.insert(self.stateStack, state)
+        end,
+        ["pop"] = function(self)
+            if #self.stateStack <= 0 then
+                error("[TermiteError] : More pop's than pushes, the stack lenth is 0")
+            end
+
+            local t = table.pop(self.stateStack)
+            -- restore correctly saved buffers
+
+            for x, row in ipairs(t.stateBuffer) do
+                for y, char in ipairs(row) do
+                    char.dirty = true
+                end
+            end
+
+            self.buffer = t.buffer
+            self.stateBuffer = t.stateBuffer
+
+            self.dirty = true
+            -- ensure all cells will be redrawn
+            --redrawState(self)
+        end,
     }
 
     -- for easy use, expose all commands as termite functions
@@ -372,25 +404,13 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
         end
     end
     
-    if self.useInterrupt then
-        local ogkeypressed = love.keypressed
-
-        love.keypressed = function(k, scancode, isrepeat)
-            if k == self.interruptKey then
-                self.isInterrupted = false
-            end
-
-            if ogkeypressed then
-                ogkeypressed(k, scancode, isrepeat)
-            end
-        end
-    end
 
     return self
 end
 
 ---Draw terminal
-function Termite:draw()
+function Termite:draw(x, y)
+    x, y = x or 0, y or 0
     local chWidth, chHeight = self.charWidth, self.charHeight
     if self.dirty then
         local prevColor = { love.graphics.getColor() }
@@ -432,10 +452,10 @@ function Termite:draw()
         love.graphics.setColor(unpack(prevColor))
     end
 
-    love.graphics.draw(self.canvas)
+    love.graphics.draw(self.canvas, x, y)
     if self.cursorVisible then
         if love.timer.getTime() % 1 > 0.5 then
-            love.graphics.print(self.cursorChar, self.font, (self.cursorX - 1) * chWidth, (self.cursorY -1) * chHeight)
+            love.graphics.print(self.cursorChar, self.font, ((self.cursorX - 1) * chWidth) + x, ((self.cursorY -1) * chHeight) + y)
         end
     end
 end
@@ -535,30 +555,14 @@ function Termite:print(x, y, ...)
     end
 end
 
----save the current terminal state to the stack
-function Termite:push()
-    local state = {
-        buffer = table.deepcopy(self.buffer),
-        stateBuffer = table.deepcopy(self.stateBuffer)
-    }
-
-    table.insert(self.stateStack, state)
-end
-
----discard the current terminal state and restore the last saved state
-function Termite:pop()
-    if #self.stateStack <= 0 then
-        error("[TermiteError] : More pop's than pushes, the stack lenth is 0")
+function Termite:keypressed(k)
+    if self.useInterrupt then
+        if k == self.interruptKey then
+            self.isInterrupted = false
+        end
     end
-
-    local t = table.pop(self.stateStack)
-    -- restore correctly saved buffers
-    self.buffer = t.buffer
-    self.stateBuffer = t.stateBuffer
-    self.dirty = true
-    -- ensure all cells will be redrawn
-    redrawState(self)
 end
+
 
 ---Print a block of text
 ---@param text string
