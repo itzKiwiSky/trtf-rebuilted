@@ -101,6 +101,7 @@ function love.initialize()
 
     gameSave:initialize()
     love.keyboard.setTextInput( true )
+    love.keyboard.setKeyRepeat( true )
 
     local Controls = json.decode(love.filesystem.read("Controls.json"))
     Controller = baton.new({

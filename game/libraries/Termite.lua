@@ -208,13 +208,13 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
     -- to easily integrate new commands --
     self.commands = {
         ["clear"] = function(self, x, y, w, h)
+            w = w or self.width - 1
+            h = h or self.height - 1
+
             assertType(x, "number")
             assertType(y, "number")
             assertType(w, "number")
             assertType(h, "number")
-
-            w = w or self.width - 1
-            h = h or self.height - 1
 
             -- check terminal bounds --
             if x < 1 or y < 1 or x + w - 1 > self.width or y + h - 1 > self.height then
@@ -353,8 +353,8 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
         end,
         ["push"] = function(self)
             local state = {
-                buffer = table.deepcopy(self.buffer),
-                stateBuffer = table.deepcopy(self.stateBuffer)
+                buffer = table.deepclone(self.buffer),
+                stateBuffer = table.deepclone(self.stateBuffer)
             }
 
             table.insert(self.stateStack, state)
@@ -364,21 +364,38 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
                 error("[TermiteError] : More pop's than pushes, the stack lenth is 0")
             end
 
-            local t = table.pop(self.stateStack)
-            -- restore correctly saved buffers
+            local t = table.pop(self.stateStack) -- table.pop existe no addon do repo
 
-            for x, row in ipairs(t.stateBuffer) do
-                for y, char in ipairs(row) do
-                    char.dirty = true
+            -- garante que as dimensões batam; caso contrário, recria os buffers
+            if type(t.buffer) ~= "table" or type(t.stateBuffer) ~= "table" then
+                error("[TermiteError] : Saved state is invalid")
+            end
+
+            -- copia célula a célula para manter referências externas se necessário
+            for y, row in ipairs(t.buffer) do
+                for x, char in ipairs(row) do
+                    self.buffer[y] = self.buffer[y] or {}
+                    self.buffer[y][x] = char
                 end
             end
 
-            self.buffer = t.buffer
-            self.stateBuffer = t.stateBuffer
+            for y, row in ipairs(t.stateBuffer) do
+                self.stateBuffer[y] = self.stateBuffer[y] or {}
+                for x, cell in ipairs(row) do
+                    -- copiar o objeto "cell" para evitar referências
+                    local newCell = {
+                        color    = { cell.color[1], cell.color[2], cell.color[3], cell.color[4] or 1 },
+                        backcolor= { cell.backcolor[1], cell.backcolor[2], cell.backcolor[3], cell.backcolor[4] or 1 },
+                        reversed = cell.reversed,
+                        dirty    = true
+                    }
+                    self.stateBuffer[y][x] = newCell
+                end
+            end
 
+            -- força redraw total
             self.dirty = true
-            -- ensure all cells will be redrawn
-            --redrawState(self)
+            redrawState(self)
         end,
     }
 
@@ -414,7 +431,6 @@ function Termite:draw(x, y)
     local chWidth, chHeight = self.charWidth, self.charHeight
     if self.dirty then
         local prevColor = { love.graphics.getColor() }
-
         self.canvas:renderTo(function()
             love.graphics.push("all")
             love.graphics.origin()

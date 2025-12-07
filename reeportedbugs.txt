@@ -14,4 +14,4 @@
 [X] Close the camera when animatronic enters the room
 [X] Fuck bug
 [X] Increase bonnie and chica speed
-[.] Fix retry button on deathstate  
+[X] Fix retry button on deathstate  

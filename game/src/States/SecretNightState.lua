@@ -39,6 +39,15 @@ function SecretNightState:enter()
             if Slab.CheckBox(registers.showDebugHitbox, "Show mouse hitboxes") then
                 registers.showDebugHitbox = not registers.showDebugHitbox
             end
+            Slab.Text('[DANGER]')
+            Slab.SameLine()
+            if Slab.Button("Restart Scene") then
+                local assets = self.assets
+                gamestate.switch(require 'src.States.SecretNightState')
+                SecretNightState.assets = assets
+                assets = nil
+                collectgarbage("collect")
+            end
         Slab.EndWindow()
     end
 
@@ -222,6 +231,7 @@ function SecretNightState:enter()
     self.monitorView.terminal:push()
 
     self.monitorView.terminal:clear(1, 1)
+    self.monitorView.terminal:print(2, 3, "new state")
     self.monitorView.terminal:pop()
 end
 
@@ -595,7 +605,7 @@ function SecretNightState:mousepressed(x, y, button)
     end
 end
 
-function SecretNightState:keypressd(k)
+function SecretNightState:keypressed(k)
     print(k)
     self.monitorView.terminal:keypressed(k)
 end

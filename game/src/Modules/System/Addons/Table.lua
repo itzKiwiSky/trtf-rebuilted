@@ -114,6 +114,25 @@ function table.deepmerge(target, source)
     return target
 end
 
+function table.deepclone(obj)
+    if type(obj) ~= "table" then return obj end
+    local seen = {}
+    local function _clone(t)
+        if seen[t] then return seen[t] end
+        local copy = {}
+        seen[t] = copy
+        for k, v in pairs(t) do
+            if type(v) == "table" then
+                copy[k] = _clone(v)
+            else
+                copy[k] = v
+            end
+        end
+        return copy
+    end
+    return _clone(obj)
+end
+
 function table.indexOf(table, element)
     for index, elem in ipairs(table) do
         if elem == element then
