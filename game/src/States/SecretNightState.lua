@@ -214,25 +214,6 @@ function SecretNightState:enter()
     end)
 
     self.monitorView:init()
-    self.monitorView.terminal:setCursorBackColor("brightBlue")
-    self.monitorView.terminal:setCursorColor("brightWhite")
-
-    self.monitorView.terminal.useInterrupt = true
-
-
-    local meme = "Microsoft Windows 95 Setup"
-    self.monitorView.terminal:print(2, 3, meme)
-    self.monitorView.terminal:print(1, 4, string.complete("=", #meme))
-    self.monitorView.terminal:print(2, 6, "The setup program prepares Windows 95\n")
-    self.monitorView.terminal:print("to run on your computer.")
-
-    self.monitorView.terminal:print(4, 14, "Please wait")
-
-    self.monitorView.terminal:push()
-
-    self.monitorView.terminal:clear(1, 1)
-    self.monitorView.terminal:print(2, 3, "new state")
-    self.monitorView.terminal:pop()
 end
 
 function SecretNightState:draw()
@@ -587,6 +568,7 @@ function SecretNightState:mousepressed(x, y, button)
     and self.officeState.flashlight.battery > 1 
     and not self.officeState.monitor.open 
     and not self.computerAnim.animationRunning
+    and not collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["box"])
     then
         self.officeState.flashlight.active = not self.officeState.flashlight.active
     end
@@ -606,8 +588,11 @@ function SecretNightState:mousepressed(x, y, button)
 end
 
 function SecretNightState:keypressed(k)
-    print(k)
-    self.monitorView.terminal:keypressed(k)
+    self.monitorView:keypressed(k)
+end
+
+function SecretNightState:textinput(t)
+    self.monitorView:textinput(t)
 end
 
 function SecretNightState:leave()
