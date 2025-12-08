@@ -265,7 +265,7 @@ function MenuState:enter()
         },
     }
 
-    if gameSave.save.user.progress.showNight8 or FEATURE_FLAGS.nightExtraDemo then
+    if gameSave.save.user.progress.showNight8 then
         --self.mainMenuButtons.elements[#self.mainMenuButtons.elements + 1] = 
         table.insert(self.mainMenuButtons.elements, #self.mainMenuButtons.elements, {
             key = "menu_button_night_secret",
@@ -297,7 +297,7 @@ function MenuState:enter()
         self.fadeTween = flux.to(self.journalConfig, 4, { transfade = 1, volSong = 0 })
         self.fadeTween:ease("linear")
         self.fadeTween:oncomplete(function()
-            AudioSources["menu_theme_again"]:stop()
+            AudioSources["msc_menu_theme_again"]:stop()
             gamestate.switch(LoadingState)
         end)
     end)

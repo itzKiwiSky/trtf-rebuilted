@@ -503,7 +503,9 @@ function NightState:enter()
             v:stop()
         end
 
-        gameSave.save.user.progress.night = gameSave.save.user.progress.night + 1
+        if gameSave.save.user.progress.night < 7 then
+            gameSave.save.user.progress.night = gameSave.save.user.progress.night + 1
+        end
         gameSave.save.user.progress.newgame = false
         gameSave.save.user.progress.canContinue = gameSave.save.user.progress.night > 1
         gameSave:saveSlot()
@@ -515,7 +517,9 @@ function NightState:enter()
                 "Freddy",
                 "Frankburt"
             }
-            MinigameSceneState.currentMinigame = minigames[self.nightID]
+            if self.nightID <= #minigames then
+                MinigameSceneState.currentMinigame = minigames[self.nightID]
+            end
         end
         gamestate.switch(WinState)
     end)
