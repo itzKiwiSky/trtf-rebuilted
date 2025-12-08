@@ -1202,7 +1202,7 @@ function NightState:update(elapsed)
             if AudioSources[self.officeState.tabletUp and "sfx_tab_close" or "tsfx_ab_up"]:isPlaying() then
                 AudioSources[self.officeState.tabletUp and "sfx_tab_close" or "sfx_tab_up"]:seek(0)
             end
-            AudioSources[self.officeState.tabletUp and "tab_close" or "tab_up"]:play()
+            AudioSources[self.officeState.tabletUp and "sfx_tab_close" or "sfx_tab_up"]:play()
             self.officeState.tabletUp = false
             self.tabletController:setState(false)
         end
