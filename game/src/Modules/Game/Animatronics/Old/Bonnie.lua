@@ -42,9 +42,9 @@ function BonnieAI.update(elapsed)
                 if NightState.officeState.tabletUp then
                     if tabletCameraSubState.camerasID[BonnieAI.metadataCameraID] then
                         if tabletCameraSubState.camerasID[BonnieAI.metadataCameraID] == tabletCameraSubState.camID then
-                            AudioSources["cam_animatronic_interference"]:seek(0)
+                            AudioSources["sfx_cam_animatronic_interference"]:seek(0)
                             tabletCameraSubState:doInterference(0.1, 200, 200, 6)
-                            AudioSources["cam_animatronic_interference"]:play()
+                            AudioSources["sfx_cam_animatronic_interference"]:play()
                         end
                     end
                 end
@@ -60,8 +60,8 @@ function BonnieAI.update(elapsed)
             BonnieAI.timer = 0
         end
     else
-        if not AudioSources["stare"]:isPlaying() then
-            AudioSources["stare"]:play()
+        if not AudioSources["sfx_stare"]:isPlaying() then
+            AudioSources["sfx_stare"]:play()
         end
 
         BonnieAI.timer = BonnieAI.timer + elapsed
@@ -88,7 +88,7 @@ function BonnieAI.update(elapsed)
                 BonnieAI.timer = 0
                 BonnieAI.currentState = 1
                 NightState.officeState.hasAnimatronicInOffice = false
-                AudioSources["stare"]:stop()
+                AudioSources["sfx_stare"]:stop()
                 NightState.officeState.fadealpha = 1
             end
         end

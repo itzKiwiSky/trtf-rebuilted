@@ -509,11 +509,11 @@ function NightState:enter()
         gameSave:saveSlot()
         if registers.isStoryMode then
             local minigames = {
-                "bonnie",
-                "foxy",
-                "sugar",
-                "freddy",
-                "lockjaw"
+                "Bonnie",
+                "Foxy",
+                "Sugar",
+                "Freddy",
+                "Frankburt"
             }
             MinigameSceneState.currentMinigame = minigames[self.nightID]
         end

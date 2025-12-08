@@ -400,8 +400,8 @@ function TabletCameraSubState:update(elapsed)
             if collision.pointRect({x = mx, y = my}, self.clickArea) then
                 NightState.officeState.lightCam.state = true
 
-                if not AudioSources["buzzlight"]:isPlaying() then
-                    AudioSources["buzzlight"]:play()
+                if not AudioSources["sfx_buzzlight"]:isPlaying() then
+                    AudioSources["sfx_buzzlight"]:play()
                 end
             end
         end

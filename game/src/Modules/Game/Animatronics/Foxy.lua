@@ -102,17 +102,17 @@ function Foxy:update(elapsed)
             self.timer = 0
             self.patience = self.patience + 1
             if self.patience == 20 then
-                if not AudioSources["run"]:isPlaying() then
+                if not AudioSources["sfx_run"]:isPlaying() then
                     if self.direction == "right" then
-                        AudioSources["run"]:setVolume(1.2)
-                        AudioSources["run"]:seek(0)
-                        AudioSources["run"]:setPosition(-0.001, 0, 0)
-                        AudioSources["run"]:play()
+                        AudioSources["sfx_run"]:setVolume(1.2)
+                        AudioSources["sfx_run"]:seek(0)
+                        AudioSources["sfx_run"]:setPosition(-0.001, 0, 0)
+                        AudioSources["sfx_run"]:play()
                     elseif self.direction == "left" then
-                        AudioSources["run"]:setVolume(1.2)
-                        AudioSources["run"]:seek(0)
-                        AudioSources["run"]:setPosition(0.001, 0, 0)
-                        AudioSources["run"]:play()
+                        AudioSources["sfx_run"]:setVolume(1.2)
+                        AudioSources["sfx_run"]:seek(0)
+                        AudioSources["sfx_run"]:setPosition(0.001, 0, 0)
+                        AudioSources["sfx_run"]:play()
                     end
                 end
             end
@@ -121,9 +121,9 @@ function Foxy:update(elapsed)
         if self.patience >= 90 then
             if self.direction == "left" then
                 if NightState.officeState.doors.left then
-                    AudioSources["door_knocking"]:setVolume(1.2)
-                    AudioSources["door_knocking"]:setPosition(0.001, 0, 0)
-                    AudioSources["door_knocking"]:play()
+                    AudioSources["sfx_door_knocking"]:setVolume(1.2)
+                    AudioSources["sfx_door_knocking"]:setPosition(0.001, 0, 0)
+                    AudioSources["sfx_door_knocking"]:play()
                     self.currentState = 2
                     self.timer = 0
                     self.position = math.random(1, 2)
@@ -133,9 +133,9 @@ function Foxy:update(elapsed)
                 end
             elseif self.direction == "right" then
                 if NightState.officeState.doors.right then
-                    AudioSources["door_knocking"]:setVolume(1.2)
-                    AudioSources["door_knocking"]:setPosition(-0.001, 0, 0)
-                    AudioSources["door_knocking"]:play()
+                    AudioSources["sfx_door_knocking"]:setVolume(1.2)
+                    AudioSources["sfx_door_knocking"]:setPosition(-0.001, 0, 0)
+                    AudioSources["sfx_door_knocking"]:play()
                     self.currentState = 2
                     self.position = math.random(1, 2)
                     self.timer = 0

@@ -29,8 +29,8 @@ end
 ---Plays a random walk sound
 function Animatronic.playWalk()
     local r = math.random(1, 3)
-    if not AudioSources["metalwalk" .. r]:isPlaying() then
-        AudioSources["metalwalk" .. r]:play()
+    if not AudioSources["sfx_metalwalk" .. r]:isPlaying() then
+        AudioSources["sfx_metalwalk" .. r]:play()
     end
 end
 
@@ -66,9 +66,9 @@ end
 function Animatronic:interference()
     if NightState.tabletCameraSubState.camerasID[self.metadataCameraID] then
         if NightState.tabletCameraSubState.camerasID[self.metadataCameraID] == NightState.tabletCameraSubState.camID then
-            AudioSources["cam_animatronic_interference"]:seek(0)
+            AudioSources["sfx_cam_animatronic_interference"]:seek(0)
             NightState.tabletCameraSubState:doInterference(0.1, 200, 200, 6)
-            AudioSources["cam_animatronic_interference"]:play()
+            AudioSources["sfx_cam_animatronic_interference"]:play()
         end
     end
 end

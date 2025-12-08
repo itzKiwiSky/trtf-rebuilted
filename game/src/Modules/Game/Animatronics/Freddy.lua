@@ -43,9 +43,9 @@ end
 
 local function playLaugh(self)
     self.laughID = math.random(1, 3)
-    if AudioSources["laugh" .. self.laughID]:isPlaying() then
-        AudioSources["laugh" .. self.laughID]:stop()
-        AudioSources["laugh" .. self.laughID]:seek(0)
+    if AudioSources["sfx_laugh" .. self.laughID]:isPlaying() then
+        AudioSources["sfx_laugh" .. self.laughID]:stop()
+        AudioSources["sfx_laugh" .. self.laughID]:seek(0)
     end
     AudioSources["laugh" .. self.laughID]:play()
 end
@@ -70,9 +70,9 @@ function Freddy:update(elapsed)
 
         if self.currentState == 5 then
             self.updateMoveTimer = false
-            AudioSources["freddy_music_box"]:setVolume(1)
-            if not AudioSources["freddy_music_box"]:isPlaying() then
-                AudioSources["freddy_music_box"]:play()
+            AudioSources["sfx_freddy_music_box"]:setVolume(1)
+            if not AudioSources["sfx_freddy_music_box"]:isPlaying() then
+                AudioSources["sfx_freddy_music_box"]:play()
             end
             self.timer = self.timer + elapsed
             if self.timer >= 0.05 then

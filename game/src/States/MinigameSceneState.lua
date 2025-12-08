@@ -309,6 +309,11 @@ function MinigameSceneState:enter()
 
     self.currentArea = "showstage"
 
+    if registers.isStoryMode then
+        self.script = self.minigames[self.currentMinigame]
+        --self.script.init()
+    end
+
     -- only execute scripted minigames if is a valid minigame script --
     if self.script.init ~= nil then
         self.script.init()

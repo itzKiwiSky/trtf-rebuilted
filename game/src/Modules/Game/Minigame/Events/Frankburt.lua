@@ -4,7 +4,7 @@ local Minigame = {
 }
 
 function Minigame.init()
-    MinigameSceneState.displayFace.currentFace = "bonnie"
+    MinigameSceneState.displayFace.currentFace = "lockjaw"
     Minigame.Child = require 'game.src.Modules.Game.Minigame.Child'
     Minigame.allUnhappy = false
     Minigame.showFace = false

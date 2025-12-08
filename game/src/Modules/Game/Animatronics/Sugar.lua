@@ -35,8 +35,8 @@ function Sugar:update(elapsed)
                 self.currentState = self.currentState + 1
                 self:moveAnimatronic()
             elseif self.currentState == 4 then
-                AudioSources["vent_walk"]:seek(0)
-                AudioSources["vent_walk"]:play()
+                AudioSources["sfx_vent_walk"]:seek(0)
+                AudioSources["sfx_vent_walk"]:play()
             end
         end
 
@@ -53,8 +53,8 @@ function Sugar:update(elapsed)
                         self:kill()
                     end
                 elseif self.patience >= 350 and NightState.officeState.vent.right then
-                    AudioSources["vent_amb2"]:seek(0)
-                    AudioSources["vent_amb2"]:play()
+                    AudioSources["sfx_vent_amb2"]:seek(0)
+                    AudioSources["sfx_vent_amb2"]:play()
                     self.patience = 0
                     self.timer = 0
                     self.currentState = 2

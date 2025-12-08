@@ -43,9 +43,9 @@ function ChicaAi.update(elapsed)
                 if NightState.officeState.tabletUp then
                     if tabletCameraSubState.camerasID[ChicaAi.metadataCameraID] then
                         if tabletCameraSubState.camerasID[ChicaAi.metadataCameraID] == tabletCameraSubState.camID then
-                            AudioSources["cam_animatronic_interference"]:seek(0)
+                            AudioSources["sfx_cam_animatronic_interference"]:seek(0)
                             tabletCameraSubState:doInterference(0.1, 200, 200, 6)
-                            AudioSources["cam_animatronic_interference"]:play()
+                            AudioSources["sfx_cam_animatronic_interference"]:play()
                         end
                     end
                 end
@@ -61,8 +61,8 @@ function ChicaAi.update(elapsed)
             ChicaAi.timer = 0
         end
     else
-        if not AudioSources["stare"]:isPlaying() then
-            AudioSources["stare"]:play()
+        if not AudioSources["sfx_stare"]:isPlaying() then
+            AudioSources["sfx_stare"]:play()
         end
 
         ChicaAi.timer = ChicaAi.timer + elapsed
@@ -89,7 +89,7 @@ function ChicaAi.update(elapsed)
                 ChicaAi.timer = 0
                 ChicaAi.currentState = 1
                 NightState.officeState.hasAnimatronicInOffice = false
-                AudioSources["stare"]:stop()
+                AudioSources["sfx_stare"]:stop()
                 NightState.officeState.fadealpha = 1
             end
         end
