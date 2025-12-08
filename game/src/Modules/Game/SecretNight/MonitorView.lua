@@ -29,7 +29,7 @@ local Commands = {
         end
     end,
     ["clear"] = function(self)
-        self.terminal:clear()
+        self.terminal:clear(1, 1)
     end,
     ["man"] = function(self)
         self.terminal:print(string.complete("─", 14) .. "\n")
@@ -61,7 +61,7 @@ end
 function MonitorView:draw()
     if not SecretNightState.officeState.monitor.displayStatic then return end
 
-    local x, y = 490, 96
+    local x, y = 483, 96
     self.glowcnv:renderTo(function ()
         self.glow(function ()
             self.terminal:draw(x, y)
@@ -99,18 +99,23 @@ function MonitorView:keypressed(k)
         end
     elseif k == "return" then
         -- command parse --
-        self.terminal:setCursorY(self.terminal.cursorY + 1)
+        --self.terminal:setCursorY(self.terminal.cursorY + 1)
+        self.terminal:clear()
+        self.terminal:setCursorPos(1, 1)
         local tokens = string.split(self.textBuffer, " ")
+
         local cmd = tokens[1]
         table.remove(tokens, 1)
+        local args = tokens
         
         if Commands[cmd] ~= nil then
-            Commands[cmd](self)
+            Commands[cmd](self, args)
         else
             self.terminal:setCursorX(1)
             self.terminal:print("Command not found!\n")
         end
 
+        -- clear and reset --
         self.textBuffer = ""
         self.terminal:setCursorX(1)
         self.terminal:print("> ")

@@ -208,13 +208,15 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
     -- to easily integrate new commands --
     self.commands = {
         ["clear"] = function(self, x, y, w, h)
+            x = x or 1
+            y = y or 1
             w = w or self.width - 1
             h = h or self.height - 1
 
-            assertType(x, "number")
-            assertType(y, "number")
-            assertType(w, "number")
-            assertType(h, "number")
+            --assertType(x, "number")
+            --assertType(y, "number")
+            --assertType(w, "number")
+            --assertType(h, "number")
 
             -- check terminal bounds --
             if x < 1 or y < 1 or x + w - 1 > self.width or y + h - 1 > self.height then
