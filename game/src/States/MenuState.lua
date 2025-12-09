@@ -328,9 +328,9 @@ function MenuState:enter()
         AudioSources["sfx_rainleak"]:setVolume(0.3)
     end
 
-    if not AudioSources["menu_theme_again"]:isPlaying() then
-        AudioSources["menu_theme_again"]:setLooping(true)
-        AudioSources["menu_theme_again"]:play()
+    if not AudioSources["msc_menu_theme_again"]:isPlaying() then
+        AudioSources["msc_menu_theme_again"]:setLooping(true)
+        AudioSources["msc_menu_theme_again"]:play()
     end
 end
 
@@ -450,7 +450,7 @@ function MenuState:update(elapsed)
 
     if self.journalConfig.active then
         --self.warnItems.songVol = self.journalConfig.volSong
-        AudioSources["menu_theme_again"]:setVolume(self.journalConfig.volSong)
+        AudioSources["msc_menu_theme_again"]:setVolume(self.journalConfig.volSong)
         if self.journalConfig.alpha <= 1 then
             self.journalConfig.alpha = self.journalConfig.alpha + 1 * elapsed
         end
