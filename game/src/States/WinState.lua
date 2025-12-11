@@ -1,7 +1,7 @@
 WinState = {}
 
 local function renderDigit(img, quads, x, y, ...)
-    local args = {...}
+    local args = { ... }
     local c = 1
     assert(#args <= 7, "[ERROR invalid digit")
     for k, q in ipairs(quads) do
@@ -12,7 +12,7 @@ local function renderDigit(img, quads, x, y, ...)
     end
 end
 
-function WinState:enter()    
+function WinState:enter()
     self.ps_confetti = require 'src.Modules.Game.Utils.confettiParticles'
     for k, v in pairs(AudioSources) do
         v:stop()
@@ -30,13 +30,14 @@ function WinState:enter()
         glow = {}
     }
     self.digits.img, self.digits.quads = love.graphics.newQuadFromImage("array", "assets/images/game/display")
-    self.digits.glow.img, self.digits.glow.quads = love.graphics.newQuadFromImage("array", "assets/images/game/display_glow")
+    self.digits.glow.img, self.digits.glow.quads = love.graphics.newQuadFromImage("array",
+        "assets/images/game/display_glow")
 
     self.curNumbers = {
-        {1, 1, 1, 1, 1, 1, 1},
-        {1, 1, 1, 1, 1, 1, 1},
-        {1, 1, 1, 1, 1, 1, 1},
-        {1, 1, 1, 1, 1, 1, 1},
+        { 1, 1, 1, 1, 1, 1, 1 },
+        { 1, 1, 1, 1, 1, 1, 1 },
+        { 1, 1, 1, 1, 1, 1, 1 },
+        { 1, 1, 1, 1, 1, 1, 1 },
     }
 
     self.numbers = {
@@ -60,7 +61,15 @@ function WinState:enter()
     self.fadeOp = 0
     self.fadeSC = false
     self.fadeAcc = 0
-    self.addHelp = lume.weightedchoice({[true] = 10, [false] = 90})
+    self.addHelp = lume.weightedchoice({ ["true"] = 10, ["false"] = 90 })
+
+    if self.addHelp == "true" then
+        self.addHelp = true
+    elseif self.addHelp == "false" then
+        self.addHelp = false
+    else
+        self.addHelp = false
+    end
 
     self.tmr_scene = timer.new()
     local c = 0
@@ -108,15 +117,15 @@ function WinState:draw()
         end
     end
     self.winCamera:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
-        for d = 1, #self.curNumbers, 1 do
-            local c = d >= 3 and 64 or 0
-            renderDigit(self.digits.img, self.digits.quads, 50 + (172 * d) + c, 100, unpack(self.curNumbers[d]))
-            love.graphics.setBlendMode("add")
-                renderDigit(self.digits.glow.img, self.digits.glow.quads, 50 + (172 * d) + c, 100, unpack(self.curNumbers[d]))
-            love.graphics.setBlendMode("alpha")
-        end
-        love.graphics.circle("fill", shove.getViewportWidth() / 2, shove.getViewportHeight() / 2 - 178, 8)
-        love.graphics.circle("fill", shove.getViewportWidth() / 2, shove.getViewportHeight() / 2 - 64, 8)
+    for d = 1, #self.curNumbers, 1 do
+        local c = d >= 3 and 64 or 0
+        renderDigit(self.digits.img, self.digits.quads, 50 + (172 * d) + c, 100, unpack(self.curNumbers[d]))
+        love.graphics.setBlendMode("add")
+        renderDigit(self.digits.glow.img, self.digits.glow.quads, 50 + (172 * d) + c, 100, unpack(self.curNumbers[d]))
+        love.graphics.setBlendMode("alpha")
+    end
+    love.graphics.circle("fill", shove.getViewportWidth() / 2, shove.getViewportHeight() / 2 - 178, 8)
+    love.graphics.circle("fill", shove.getViewportWidth() / 2, shove.getViewportHeight() / 2 - 64, 8)
     self.winCamera:detach()
     love.graphics.setColor(1, 1, 1, 1)
 

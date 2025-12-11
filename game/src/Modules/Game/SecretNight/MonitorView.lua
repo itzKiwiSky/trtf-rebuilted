@@ -28,7 +28,7 @@ local function generateMatrix(matrixSize)
     for y = 1, matrixSize, 1 do
         m[y] = {}
         for x = 1, matrixSize, 1 do
-            m[y][x] = math.random(1, 4)
+            m[y][x] = lume.weightedchoice()
         end
     end
 
