@@ -42,8 +42,12 @@ function SecretNightState:enter()
             Slab.Text('[DANGER]')
             Slab.SameLine()
             if Slab.Button("Restart Scene") then
-                local assets = self.assets
-                gamestate.switch(require 'src.States.SecretNightState')
+                local assets = table.deepclone(self.assets)
+                local ok, err = pcall(love.filesystem.load, "src/States/SecretNightState.lua")
+                if not ok then
+                    print(err)
+                end
+                gamestate.switch(ok())
                 SecretNightState.assets = assets
                 assets = nil
                 collectgarbage("collect")

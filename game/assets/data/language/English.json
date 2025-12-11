@@ -184,5 +184,11 @@
         "Example: fwedit freddy",
         "Other commands may be useful for\nthe interface",
         "Use the `help` command\nto see the list of all commands"
-    ]
+    ],
+    "secret_night_monitor": {
+        "secret_night_monitor_command_invalid": "Invalid command\n",
+        "secret_night_monitor_list_dir": "Listing directory \\\n",
+        "secret_night_monitor_invalid_file": "Invalid file\n"
+    },
+    "secret_night_monitor_hack_minigame": "Match the sensors"
 }

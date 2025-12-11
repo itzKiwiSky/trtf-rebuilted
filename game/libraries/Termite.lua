@@ -1,7 +1,46 @@
 local utf8 = require 'utf8'
+
+--- @class Termite
+
+-- internal functions --
+
 -- used internally for better assert --
 local function assertType(val, typestr)
-    assert(type(val) ==  tostring(typestr), string.format("[TermiteError] : Invalid argument type. Expected '%s', got '%s'", tostring(typestr), type(val)))
+    assert(type(val) == tostring(typestr),
+        string.format("[TermiteError] : Invalid argument type. Expected '%s', got '%s'", tostring(typestr), type(val)))
+end
+
+local function t_deepclone(obj)
+    if type(obj) ~= "table" then return obj end
+    local seen = {}
+    local function _clone(t)
+        if seen[t] then return seen[t] end
+        local copy = {}
+        seen[t] = copy
+        for k, v in pairs(t) do
+            if type(v) == "table" then
+                copy[k] = _clone(v)
+            else
+                copy[k] = v
+            end
+        end
+        return copy
+    end
+    return _clone(obj)
+end
+
+-- functions taken from my util script and adapted to be internal --
+function t_push(t, ...)
+    local n = select("#", ...)
+    for i = 1, n do
+        t[#t + 1] = select(i, ...)
+    end
+    return ...
+end
+
+function t_pop(t)
+    if #t <= 0 then return end
+    return table.remove(t)
 end
 
 -- used internally for better error messages --
@@ -20,23 +59,30 @@ local function utf8Sub(s, i, j)
     return string.sub(s, i, j)
 end
 
-local function updateStdinChar(this, x, y, newChar)
-    this.buffer[y][x] = newChar
-    local charColor = this.cursorColor
-    local charBackColor = this.cursorBackColor
+---update a char inside both buffers
+---@param self Termite
+---@param x number
+---@param y number
+---@param newChar string
+local function updateStdinChar(self, x, y, newChar)
+    self.buffer[y][x] = newChar
+    local charColor = self.cursorColor
+    local charBackColor = self.cursorBackColor
 
-    this.stateBuffer[y][x].color = {charColor[1], charColor[2], charColor[3], charColor[4]}
-    this.stateBuffer[y][x].backcolor = {charBackColor[1], charBackColor[2], charBackColor[3], charBackColor[4]}
-    this.stateBuffer[y][x].reversed = this.cursorReversed
-    this.stateBuffer[y][x].dirty = true
+    self.stateBuffer[y][x].color = { charColor[1], charColor[2], charColor[3], charColor[4] }
+    self.stateBuffer[y][x].backcolor = { charBackColor[1], charBackColor[2], charBackColor[3], charBackColor[4] }
+    self.stateBuffer[y][x].reversed = self.cursorReversed
+    self.stateBuffer[y][x].dirty = true
 end
 
-local function redrawState(this)
+---force a total redraw of the screen --
+---@param self Termite
+local function redrawState(self)
     --print("adhsajdahjda")
     -- force a total redraw of the screen --
-    for y = 1, this.height, 1 do
-        for x = 1, this.width, 1 do
-            this.stateBuffer[y][x].dirty = true
+    for y = 1, self.height, 1 do
+        for x = 1, self.width, 1 do
+            self.stateBuffer[y][x].dirty = true
         end
     end
 end
@@ -61,7 +107,8 @@ local function rollup(this, lines)
     end
 end
 
---- @class Termite
+------------------------------------------------------------------------------
+
 local Termite = {
     _NAME = "Termite",
     _VERSION = '0.0.2',
@@ -96,12 +143,12 @@ Termite.__index = Termite
 
 function Termite.new(width, height, font, customCharW, customCharH, options)
     local self = setmetatable({}, Termite)
-    
+
     local charWidth = customCharW or font:getWidth('█')
     local charHeight = customCharH or font:getHeight()
     local numCols = math.floor(width / charWidth)
     local numRows = math.floor(height / charHeight)
-    
+
 
     self.width = math.floor(numCols)
     self.height = math.floor(numRows)
@@ -112,21 +159,21 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
     self.cursorY = 1
     self.savedCursorX = 1
     self.savedCursorY = 1
-    self.cursorColor = {1, 1, 1}
-    self.cursorBackColor = {0, 0, 0}
+    self.cursorColor = { 1, 1, 1 }
+    self.cursorBackColor = { 0, 0, 0 }
     self.cursorColorID = "brightWhite"
     self.cursorBackColorID = "black"
     self.cursorReversed = false
-    self.dirty = false      -- if char on the terminal is 'dirty' means that the terminal engine will render again the char
-    
+    self.dirty = false -- if char on the terminal is 'dirty' means that the terminal engine will render again the char
+
     self.charWidth = charWidth
     self.charHeight = charHeight
 
     self.charCost = 1
     self.accumulator = 0
-    self.stdin = {}     -- used to store the terminal commands --
+    self.stdin = {}      -- used to store the terminal commands --
 
-    self.stateStack = {}        -- save snapshots of the terminal state --
+    self.stateStack = {} -- save snapshots of the terminal state --
     self.stateStackIndex = #self.stateStack
     self.currentScheme = "basic"
 
@@ -138,7 +185,7 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
     self.buffer = {}
     self.stateBuffer = {}
 
-    for i = 1,numRows, 1 do
+    for i = 1, numRows, 1 do
         local row = {}
         local stateRow = {}
         for j = 1, numCols do
@@ -170,22 +217,22 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
     -- exposing these interfaces to easily integrate new color schemes without modifying the original script --
     self.schemes = {
         basic = {
-            ["black"]   = {0, 0, 0},
-            ["red"]     = {0.5, 0, 0},
-            ["green"]   = {0, 0.5, 0},
-            ["yellow"]  = {0.5, 0.5, 0},
-            ["blue"]    = {0, 0, 0.5},
-            ["magenta"] = {0.5, 0, 0.5},
-            ["cyan"]    = {0, 0.5, 0.5},
-            ["white"]   = {0.75, 0.75, 0.75},
-            ["brightBlack"]   = {0.5, 0.5, 0.5},
-            ["brightRed"]     = {1, 0, 0},
-            ["brightGreen"]   = {0, 1, 0},
-            ["brightYellow"]  = {1, 1, 0},
-            ["brightBlue"]    = {0, 0, 1},
-            ["brightMagenta"] = {1, 0, 1},
-            ["brightCyan"]    = {0, 1, 1},
-            ["brightWhite"]   = {1, 1, 1}
+            ["black"]         = { 0, 0, 0 },
+            ["red"]           = { 0.5, 0, 0 },
+            ["green"]         = { 0, 0.5, 0 },
+            ["yellow"]        = { 0.5, 0.5, 0 },
+            ["blue"]          = { 0, 0, 0.5 },
+            ["magenta"]       = { 0.5, 0, 0.5 },
+            ["cyan"]          = { 0, 0.5, 0.5 },
+            ["white"]         = { 0.75, 0.75, 0.75 },
+            ["brightBlack"]   = { 0.5, 0.5, 0.5 },
+            ["brightRed"]     = { 1, 0, 0 },
+            ["brightGreen"]   = { 0, 1, 0 },
+            ["brightYellow"]  = { 1, 1, 0 },
+            ["brightBlue"]    = { 0, 0, 1 },
+            ["brightMagenta"] = { 1, 0, 1 },
+            ["brightCyan"]    = { 0, 1, 1 },
+            ["brightWhite"]   = { 1, 1, 1 }
         }
     }
 
@@ -243,7 +290,9 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
             end
 
             local fillStylesNames = listStyle(self.fillStyles)
-            assert(self.fillStyles[stylename] ~= nil, ("[TermiteError] : Invalid style '%s'. expected styles: %s"):format(stylename, table.concat(fillStylesNames, ", ")))
+            assert(self.fillStyles[stylename] ~= nil,
+                ("[TermiteError] : Invalid style '%s'. expected styles: %s"):format(stylename,
+                    table.concat(fillStylesNames, ", ")))
 
             local char = self.fillStyles[stylename]
             for y = y, (y + h) - 1 do
@@ -251,47 +300,6 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
                     self.buffer[y][x] = char
                 end
             end
-        end,
-        ["setCursorPos"] = function(self, x, y)
-            assertType(x, "number")
-            assertType(y, "number")
-
-            -- check if value is place out of bounds --
-            if x < 1 or y < 1 or x > self.width or y > self.height then
-                return
-            end
-
-            self.cursorX, self.cursorY = x or 1, y or 1
-        end,
-        ["setCursorX"] = function(self, x)
-            assertType(x, "number")
-
-            -- check if value is place out of bounds --
-            if x < 1 or x > self.width then
-                return
-            end
-
-            self.cursorX = x or 1
-        end,
-        ["setCursorY"] = function(self, y)
-            assertType(y, "number")
-
-            -- check if value is place out of bounds --
-            if y < 1 or y > self.height then
-                return
-            end
-
-            self.cursorY = y or 1
-        end,
-        ["setCursorVisible"] = function(self, val)
-            assertType(val, "boolean")
-
-            self.cursorVisible = val
-        end,
-        ["reverseCursor"] = function(self, val)
-            assertType(val, "boolean")
-            
-            self.cursorReversed = val
         end,
         ["frame"] = function(self, stylename, x, y, w, h)
             assertType(stylename, "string")
@@ -306,7 +314,9 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
             end
 
             local fillStylesNames = listStyle(self.frameStyles)
-            assert(self.frameStyles[stylename] ~= nil, ("[TermiteError] : Invalid style '%s'. expected styles: %s"):format(stylename, table.concat(fillStylesNames, ", ")))
+            assert(self.frameStyles[stylename] ~= nil,
+                ("[TermiteError] : Invalid style '%s'. expected styles: %s"):format(stylename,
+                    table.concat(fillStylesNames, ", ")))
 
             local left, right = x, x + (w - 1)
             local top, bottom = y, y + (h - 1)
@@ -330,9 +340,67 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
                 updateStdinChar(self, right, i, lineVertical)
             end
         end,
+        ["setCursorPos"] = function(self, x, y)
+            assertType(x, "number")
+            assertType(y, "number")
+
+            -- check if value is place out of bounds --
+            if x < 1 or y < 1 or x > self.width or y > self.height then
+                return
+            end
+
+            self.cursorX, self.cursorY = x or 1, y or 1
+        end,
+        ["setCursorX"] = function(self, x)
+            -- check if value is place out of bounds --
+            if type(x) == "nil" then
+                if self.cursorX < 1 or self.cursorX > self.width then
+                    return
+                end
+                self.cursorX = self.cursorX + 1
+            else
+                if x < 1 or x > self.width then
+                    return
+                end
+
+                assertType(x, "number")
+                self.cursorX = x or 1
+            end
+        end,
+        ["setCursorY"] = function(self, y)
+            -- if y nil then incremet one --
+            --assertType(y, "number")
+
+            -- check if value is place out of bounds --
+
+            if type(y) == "nil" then
+                if self.cursorY < 1 or self.cursorY > self.height then
+                    return
+                end
+                self.cursorY = self.cursorY + 1
+            else
+                if y < 1 or y > self.height then
+                    return
+                end
+
+                assertType(y, "number")
+                self.cursorY = y or 1
+            end
+        end,
+        ["setCursorVisible"] = function(self, val)
+            assertType(val, "boolean")
+
+            self.cursorVisible = val
+        end,
+        ["reverseCursor"] = function(self, val)
+            assertType(val, "boolean")
+
+            self.cursorReversed = val
+        end,
         ["setCursorColor"] = function(self, colorName)
             assertType(colorName, "string")
-            assert(self.schemes[self.currentScheme][colorName], ("[TermiteError] : Invalid color, can't found color named: %s"):format(colorName))
+            assert(self.schemes[self.currentScheme][colorName],
+                ("[TermiteError] : Invalid color, can't found color named: %s"):format(colorName))
             local color = self.schemes[self.currentScheme][colorName]
             self.cursorColorID = tostring(colorName)
 
@@ -343,7 +411,8 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
         end,
         ["setCursorBackColor"] = function(self, colorName)
             assertType(colorName, "string")
-            assert(self.schemes[self.currentScheme][colorName], ("[TermiteError] : Invalid color, can't found color named: %s"):format(colorName))
+            assert(self.schemes[self.currentScheme][colorName],
+                ("[TermiteError] : Invalid color, can't found color named: %s"):format(colorName))
             local color = self.schemes[self.currentScheme][colorName]
 
             self.cursorBackColorID = tostring(colorName)
@@ -353,27 +422,27 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
             self.cursorBackColor[3] = color[3]
             self.cursorBackColor[4] = color[4] or 1
         end,
-        ["push"] = function(self)
+        ["push"] = function(self, configs)
+            local availableConfigs = { "state", "config", "all" }
+
             local state = {
-                buffer = table.deepclone(self.buffer),
-                stateBuffer = table.deepclone(self.stateBuffer)
+                buffer = t_deepclone(self.buffer),
+                stateBuffer = t_deepclone(self.stateBuffer),
             }
 
-            table.insert(self.stateStack, state)
+            t_push(self.stateStack, state)
         end,
         ["pop"] = function(self)
             if #self.stateStack <= 0 then
                 error("[TermiteError] : More pop's than pushes, the stack lenth is 0")
             end
 
-            local t = table.pop(self.stateStack) -- table.pop existe no addon do repo
+            local t = t_pop(self.stateStack)
 
-            -- garante que as dimensões batam; caso contrário, recria os buffers
             if type(t.buffer) ~= "table" or type(t.stateBuffer) ~= "table" then
                 error("[TermiteError] : Saved state is invalid")
             end
 
-            -- copia célula a célula para manter referências externas se necessário
             for y, row in ipairs(t.buffer) do
                 for x, char in ipairs(row) do
                     self.buffer[y] = self.buffer[y] or {}
@@ -384,12 +453,11 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
             for y, row in ipairs(t.stateBuffer) do
                 self.stateBuffer[y] = self.stateBuffer[y] or {}
                 for x, cell in ipairs(row) do
-                    -- copiar o objeto "cell" para evitar referências
                     local newCell = {
-                        color    = { cell.color[1], cell.color[2], cell.color[3], cell.color[4] or 1 },
-                        backcolor= { cell.backcolor[1], cell.backcolor[2], cell.backcolor[3], cell.backcolor[4] or 1 },
-                        reversed = cell.reversed,
-                        dirty    = true
+                        color     = { cell.color[1], cell.color[2], cell.color[3], cell.color[4] or 1 },
+                        backcolor = { cell.backcolor[1], cell.backcolor[2], cell.backcolor[3], cell.backcolor[4] or 1 },
+                        reversed  = cell.reversed,
+                        dirty     = true
                     }
                     self.stateBuffer[y][x] = newCell
                 end
@@ -412,7 +480,7 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
     end
 
     self.canvas:renderTo(function()
-        love.graphics.clear({0, 0, 0})
+        love.graphics.clear({ 0, 0, 0 })
     end)
 
     if options then
@@ -422,7 +490,7 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
             end
         end
     end
-    
+
 
     return self
 end
@@ -449,8 +517,9 @@ function Termite:draw(x, y)
                         else
                             love.graphics.setColor(unpack(state.backcolor))
                         end
-                        love.graphics.rectangle("fill", left, top + (fontHeight - chHeight), self.charWidth, self.charHeight)
-                        
+                        love.graphics.rectangle("fill", left, top + (fontHeight - chHeight), self.charWidth,
+                            self.charHeight)
+
                         -- Character
                         if state.reversed then
                             love.graphics.setColor(unpack(state.backcolor))
@@ -473,7 +542,8 @@ function Termite:draw(x, y)
     love.graphics.draw(self.canvas, x, y)
     if self.cursorVisible then
         if love.timer.getTime() % 1 > 0.5 then
-            love.graphics.print(self.cursorChar, self.font, ((self.cursorX - 1) * chWidth) + x, ((self.cursorY -1) * chHeight) + y)
+            love.graphics.print(self.cursorChar, self.font, ((self.cursorX - 1) * chWidth) + x,
+                ((self.cursorY - 1) * chHeight) + y)
         end
     end
 end
@@ -506,7 +576,7 @@ function Termite:update(elapsed)
             elseif charCommand == '\n' then
                 self.cursorX = 1
                 self.cursorY = self.cursorY + 1
-                
+
                 if self.cursorY > self.height then
                     self.cursorY = self.height
                     rollup(self, self.cursorY - self.height)
@@ -580,7 +650,6 @@ function Termite:keypressed(k)
         end
     end
 end
-
 
 ---Print a block of text
 ---@param text string

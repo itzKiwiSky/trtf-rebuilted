@@ -1,29 +1,68 @@
 local utf8 = require 'utf8'
 local MonitorView = {}
+MonitorView.sensorMode = false
+MonitorView.sensors = {
+    directions = "←↑↓→",
+    cursor = { 1, 1 }
+}
+
+local animatronics = {
+    ["freddy"] = { read = true, write = true, hidden = false },
+    ["bonnie"] = { read = false, write = false, hidden = false },
+    ["chica"] = { name, read = false, write = false, hidden = false },
+    ["foxy"] = { read = false, write = false, hidden = false },
+    ["sugar"] = { read = false, write = false, hidden = false },
+    ["kitty"] = { read = false, write = false, hidden = false },
+    ["marionette"] = { read = false, write = false, hidden = false },
+    ["frankburt"] = { read = false, write = false, hidden = true },
+}
+
+local animatronicsMatrixes = {}
+
+---Generate a matrix with ids 1 to 4
+---@param matrixSize number
+---@return table<table<number>>
+local function generateMatrix(matrixSize)
+    local m = {}
+
+    for y = 1, matrixSize, 1 do
+        m[y] = {}
+        for x = 1, matrixSize, 1 do
+            m[y][x] = math.random(1, 4)
+        end
+    end
+
+    return m
+end
+
+---Take a matrix as argument and draw to terminal
+---@param matrix table
+---@param scale number
+function drawMatrix(t, matrix)
+    space = matrix.size
+
+    local colors = {
+        "black",
+        "brightGreen",
+        "brightYellow",
+        "brightRed"
+    }
+
+    --t:frame("line", 1, t.cursorY, space * 2, space * 2)
+    t:frame("line", math.floor(t.width / 2 - space * 2),
+        math.floor(t.height / 2 - space * 2), space * 2, space * 2
+    )
+end
 
 local Commands = {
-    ["dir"] = function (self)
-        local animatronics = {
-            ["freddy"] = { read = false, write = false, hidden = false },
-            ["bonnie"] = { read = false, write = false, hidden = false },
-            ["chica"] = { name,  read = false, write = false, hidden = false },
-            ["foxy"] = { read = false, write = false, hidden = false },
-            ["sugar"] = { read = false, write = false, hidden = false },
-            ["kitty"] = { read = false, write = false, hidden = false },
-            ["marionette"] = { read = false, write = false, hidden = false },
-            ["frankburt"] = { read = false, write = false, hidden = true },
-        }
-
-        self.terminal:print("Volume in drive\n")
-        self.terminal:print("Listing directory\\\n")
+    ["dir"] = function(self)
+        self.terminal:print("Volume ----01\n")
+        self.terminal:print(languageService["secret_night_monitor_list_dir"])
         self.terminal:print(string.complete("─", 14) .. "\n")
         for k, value in pairs(animatronics) do
-            --self.terminal:print(" [.WR] " .. value .. ".bin\n")
-
             if not value.hidden then
                 local r = value.read and "R" or "-"
                 local w = value.write and "W" or "-"
-                --print(r, w, k)
                 self.terminal:print("[-" .. r .. w .. "] " .. k .. "\n")
             end
         end
@@ -37,16 +76,41 @@ local Commands = {
             self.terminal:print(value .. "\n")
         end
         self.terminal:print(string.complete("─", 14) .. "\n")
+    end,
+    ["fwedit"] = function(self, name)
+        if animatronics[name] ~= nil then
+            --MonitorView.sensorMode = true
+            self.terminal:setCursorY(3)
+            self.terminal:print(string.justify(languageService["secret_night_monitor_hack_minigame"], self.terminal
+                .width, " ", "center"))
+            --self.terminal:setCursorY(self.terminal.cursorY + 5)
+
+            drawMatrix(self.terminal, animatronicsMatrixes[name])
+
+            self.terminal:setCursorPos(22, 22)
+        else
+            self.terminal:print(languageService["secret_night_monitor_invalid_file"])
+        end
     end
 }
 
 function MonitorView:init()
+    table.sort(animatronics)
     local font = fontcache.getFont("phbios", 14)
     --print(font)
-    self.terminal = termite.new(460, 460 - font:getHeight(), font)
+    self.terminal = termite.new(470, 470 - font:getHeight(), font)
     self.glow = moonshine(moonshine.effects.gaussianblur)
     self.glow.gaussianblur.sigma = 10
     self.glowcnv = love.graphics.newCanvas(shove.getViewportDimensions())
+
+    for key, value in pairs(animatronics) do
+        local matrixSize = 10
+        local m = generateMatrix(matrixSize)
+        animatronicsMatrixes[key] = {
+            size = matrixSize,
+            mx = m
+        }
+    end
 
     self.textBuffer = ""
 
@@ -62,8 +126,8 @@ function MonitorView:draw()
     if not SecretNightState.officeState.monitor.displayStatic then return end
 
     local x, y = 483, 96
-    self.glowcnv:renderTo(function ()
-        self.glow(function ()
+    self.glowcnv:renderTo(function()
+        self.glow(function()
             self.terminal:draw(x, y)
         end)
     end)
@@ -75,9 +139,9 @@ function MonitorView:postDraw()
     if not SecretNightState.officeState.monitor.displayStatic then return end
 
     love.graphics.setColor(1, 1, 1, 0.75)
-        love.graphics.setBlendMode("add")
-            love.graphics.draw(self.glowcnv)
-        love.graphics.setBlendMode("alpha")
+    love.graphics.setBlendMode("add")
+    love.graphics.draw(self.glowcnv)
+    love.graphics.setBlendMode("alpha")
     love.graphics.setColor(1, 1, 1, 1)
 end
 
@@ -88,6 +152,8 @@ end
 function MonitorView:keypressed(k)
     if not SecretNightState.officeState.monitor.displayStatic then return end
     if k == "backspace" then
+        if MonitorView.sensorMode then return end
+
         local byteoffset = utf8.offset(self.textBuffer, -1)
 
         if byteoffset then
@@ -98,8 +164,9 @@ function MonitorView:keypressed(k)
             end
         end
     elseif k == "return" then
+        if MonitorView.sensorMode then return end
+
         -- command parse --
-        --self.terminal:setCursorY(self.terminal.cursorY + 1)
         self.terminal:clear()
         self.terminal:setCursorPos(1, 1)
         local tokens = string.split(self.textBuffer, " ")
@@ -107,12 +174,12 @@ function MonitorView:keypressed(k)
         local cmd = tokens[1]
         table.remove(tokens, 1)
         local args = tokens
-        
+
         if Commands[cmd] ~= nil then
-            Commands[cmd](self, args)
+            Commands[cmd](self, unpack(args))
         else
             self.terminal:setCursorX(1)
-            self.terminal:print("Command not found!\n")
+            self.terminal:print(languageService["secret_night_monitor_command_invalid"])
         end
 
         -- clear and reset --
@@ -120,16 +187,29 @@ function MonitorView:keypressed(k)
         self.terminal:setCursorX(1)
         self.terminal:print("> ")
     end
+
+    if not MonitorView.sensorMode then return end
+
+    if k == "w" then
+
+    elseif k == "s" then
+
+    elseif k == "a" then
+
+    elseif k == "d" then
+
+    end
 end
 
 function MonitorView:textinput(t)
     if not SecretNightState.officeState.monitor.displayStatic then return end
 
+    if MonitorView.sensorMode then return end
     if self.terminal.cursorX < self.terminal.width - 3 then
         self.textBuffer = self.textBuffer .. t
-        self.terminal:print(t) 
+        self.terminal:print(t)
     end
-        
+
     if self.terminal.cursorX > self.terminal.width - 3 then
         self.terminal:setCursorX(3)
     end
