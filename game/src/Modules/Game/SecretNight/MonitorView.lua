@@ -2,8 +2,12 @@ local utf8 = require 'utf8'
 local MonitorView = {}
 MonitorView.sensorMode = false
 MonitorView.sensors = {
-    directions = "←↑↓→",
-    cursor = { 1, 1 }
+    directions = { ["up"] = "▲", ["down"] = "▼", ["left"] = "◄", ["right"] = "►" },
+    currentDir = "left",
+    playerTimer = 0,
+    maxPlayerTime = 1,
+    cursor = { 0, 0 },
+    mode = "clean"
 }
 
 local animatronics = {
@@ -25,10 +29,10 @@ local animatronicsMatrixes = {}
 local function generateMatrix(matrixSize)
     local m = {}
 
-    for y = 1, matrixSize, 1 do
+    for y = 1, matrixSize * 2, 1 do
         m[y] = {}
-        for x = 1, matrixSize, 1 do
-            m[y][x] = lume.weightedchoice()
+        for x = 1, matrixSize * 2, 1 do
+            m[y][x] = tonumber(lume.weightedchoice({ ["2"] = 70, ["3"] = 20, ["1"] = 10 }))
         end
     end
 
@@ -39,19 +43,49 @@ end
 ---@param matrix table
 ---@param scale number
 function drawMatrix(t, matrix)
-    space = matrix.size
+    local offset = 0
 
-    local colors = {
-        "black",
-        "brightGreen",
-        "brightYellow",
-        "brightRed"
-    }
+    local colors = { "brightGreen", "brightYellow", "brightRed" }
+
+    local style = { " ", "▓", "▒" }
 
     --t:frame("line", 1, t.cursorY, space * 2, space * 2)
-    t:frame("line", math.floor(t.width / 2 - space * 2),
-        math.floor(t.height / 2 - space * 2), space * 2, space * 2
+    local sx, sy = math.floor(t.width / 2 - matrix.size / 2), math.floor(t.height / 2 - matrix.size / 2)
+    t:frame("line", sx, sy, matrix.size + 2, matrix.size + 2)
+
+    t:setCursorColor("brightWhite")
+    t:setCursorBackColor("black")
+    t:clear(sx + 2, sy + 2, matrix.size - 2, matrix.size - 2)
+    for y = 1, matrix.size, 1 do
+        for x = 1, matrix.size, 1 do
+            t:setCursorColor(colors[matrix.mx[y][x]])
+            if matrix.mx[y][x] == 1 then
+                t:setCursorBackColor(colors[matrix.mx[y][x]])
+                t:print((sx + offset) + x, (sy + offset) + y, style[matrix.mx[y][x]])
+            else
+                t:print((sx + offset) + x, (sy + offset) + y, style[matrix.mx[y][x]])
+            end
+            t:setCursorColor("brightWhite")
+            t:setCursorBackColor("black")
+        end
+    end
+end
+
+local function printInstructions(self)
+    self.terminal:setCursorPos(4, 32)
+    self.terminal:print(
+        string.format(
+            languageService["secret_night_monitor_hack_minigame_instructions"],
+            self.sensors.directions[self.sensors.currentDir]
+        )
     )
+end
+
+local function updateInstructions(self, dir)
+    local lastPos = { self.terminal.cursorX, self.terminal.cursorY }
+    self.sensors.currentDir = dir
+    printInstructions(self)
+    self.terminal:setCursorPos(lastPos[1], lastPos[2])
 end
 
 local Commands = {
@@ -78,16 +112,23 @@ local Commands = {
         self.terminal:print(string.complete("─", 14) .. "\n")
     end,
     ["fwedit"] = function(self, name)
-        if animatronics[name] ~= nil then
-            --MonitorView.sensorMode = true
-            self.terminal:setCursorY(3)
-            self.terminal:print(string.justify(languageService["secret_night_monitor_hack_minigame"], self.terminal
-                .width, " ", "center"))
-            --self.terminal:setCursorY(self.terminal.cursorY + 5)
+        if animatronics[name] ~= nil and not animatronics[name].hidden then
+            if animatronics[name].write then
+                MonitorView.sensorMode = true
+                self.terminal.speed = 10000
+                self.terminal:setCursorY(3)
+                self.terminal:print(string.justify(
+                    languageService["secret_night_monitor_hack_minigame_title"],
+                    self.terminal.width, " ", "center")
+                )
 
-            drawMatrix(self.terminal, animatronicsMatrixes[name])
+                drawMatrix(self.terminal, animatronicsMatrixes[name])
 
-            self.terminal:setCursorPos(22, 22)
+                --self.terminal:setCursorPos(22, 22)
+                printInstructions(self)
+            else
+                self.terminal:print(languageService["secret_night_monitor_permission_write"])
+            end
         else
             self.terminal:print(languageService["secret_night_monitor_invalid_file"])
         end
@@ -99,12 +140,13 @@ function MonitorView:init()
     local font = fontcache.getFont("phbios", 14)
     --print(font)
     self.terminal = termite.new(470, 470 - font:getHeight(), font)
+    self.oldSpeed = self.terminal.speed
     self.glow = moonshine(moonshine.effects.gaussianblur)
     self.glow.gaussianblur.sigma = 10
     self.glowcnv = love.graphics.newCanvas(shove.getViewportDimensions())
 
     for key, value in pairs(animatronics) do
-        local matrixSize = 10
+        local matrixSize = 14
         local m = generateMatrix(matrixSize)
         animatronicsMatrixes[key] = {
             size = matrixSize,
@@ -147,6 +189,31 @@ end
 
 function MonitorView:update(elapsed)
     self.terminal:update(elapsed)
+
+    if self.sensorMode then
+        self.sensors.playerTimer = self.sensors.playerTimer + elapsed
+        if self.sensors.playerTimer >= self.sensors.maxPlayerTime then
+            self.sensors.playerTimer = 0
+            switch(self.sensors.currentDir, {
+                ["up"] = function()
+
+                end,
+                ["down"] = function()
+
+                end,
+                ["left"] = function()
+
+                end,
+                ["right"] = function()
+
+                end,
+                ["default"] = function()
+
+                end
+            })
+            drawMatrix(self.terminal, animatronicsMatrixes[name])
+        end
+    end
 end
 
 function MonitorView:keypressed(k)
@@ -184,20 +251,22 @@ function MonitorView:keypressed(k)
 
         -- clear and reset --
         self.textBuffer = ""
-        self.terminal:setCursorX(1)
-        self.terminal:print("> ")
+        if not MonitorView.sensorMode then
+            self.terminal:setCursorX(1)
+            self.terminal:print("> ")
+        end
     end
 
     if not MonitorView.sensorMode then return end
 
     if k == "w" then
-
+        updateInstructions(self, "up")
     elseif k == "s" then
-
+        updateInstructions(self, "down")
     elseif k == "a" then
-
+        updateInstructions(self, "left")
     elseif k == "d" then
-
+        updateInstructions(self, "right")
     end
 end
 

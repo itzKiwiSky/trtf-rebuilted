@@ -78,7 +78,6 @@ end
 ---force a total redraw of the screen --
 ---@param self Termite
 local function redrawState(self)
-    --print("adhsajdahjda")
     -- force a total redraw of the screen --
     for y = 1, self.height, 1 do
         for x = 1, self.width, 1 do
@@ -149,6 +148,9 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
     local numCols = math.floor(width / charWidth)
     local numRows = math.floor(height / charHeight)
 
+    -- get self-ed bitch --
+    self.charWidth = charWidth
+    self.charHeight = charHeight
 
     self.width = math.floor(numCols)
     self.height = math.floor(numRows)
@@ -171,9 +173,10 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
 
     self.charCost = 1
     self.accumulator = 0
-    self.stdin = {}      -- used to store the terminal commands --
+    self.stdin = {}            -- used to store the terminal commands --
 
-    self.stateStack = {} -- save snapshots of the terminal state --
+    self.stateStack = {}       -- save snapshots of the terminal state --
+    self.cursorStateStack = {} -- save snapshots of the cursor --
     self.stateStackIndex = #self.stateStack
     self.currentScheme = "basic"
 
@@ -467,6 +470,24 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
             self.dirty = true
             redrawState(self)
         end,
+        ["pushCursorState"] = function(self)
+            t_push(self.cursorStateStack, {
+                bg = self.cursorBackColor,
+                fg = self.cursorColor,
+                reversed = self.cursorReversed,
+            })
+        end,
+        ["popCursorState"] = function(self)
+            if #self.cursorStateStack <= 0 then
+                error("[TermiteError] : More pop's than pushes, the stack lenth is 0")
+            end
+
+            local t = t_pop(self.cursorStateStack)
+
+            self.cursorBackColor = t.bg
+            self.cursorColor = t.fg
+            self.cursorReversed = t.reversed
+        end
     }
 
     -- for easy use, expose all commands as termite functions
@@ -661,6 +682,19 @@ function Termite:blit(text, x, y)
         self:print(x, y, "%s", line)
         y = y + 1
     end
+end
+
+---Get cell state
+---@param x number
+---@param y number
+---@return table
+function Termite:getCellState(x, y)
+    return {
+        fg = self.stateBuffer[y][x].color,
+        bg = self.stateBuffer[y][x].backcolor,
+        reversed = self.stateBuffer[y][x].reversed,
+        dirty = self.stateBuffer[y][x].dirty,
+    }
 end
 
 return Termite

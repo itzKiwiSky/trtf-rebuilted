@@ -127,7 +127,7 @@
             "minigame_display_foxy_find_office": "Encuentra al guardia nocturno",
             "minigame_display_sugar_find_key": "Encuentra la llave",
             "minigame_display_sugar_boiler_room": "Ve a la sala de calderas",
-        "minigame_display_lockjaw_kill_purple": "Encuentralo"
+            "minigame_display_lockjaw_kill_purple": "Encuentralo"
         }
     },
     "gameover": {
@@ -184,5 +184,11 @@
         "Otros comandos pueden ser útiles para la interfaz",
         "Utiliza el comando `help` para ver la lista de todos los comandos"
     ],
+    "secret_night_monitor": {
+        "secret_night_monitor_command_invalid": "Invalid command\n",
+        "secret_night_monitor_list_dir": "Listing directory \\\n",
+        "secret_night_monitor_invalid_file": "Invalid file\n",
+        "secret_night_monitor_permission_write": "Permission denied to write to this file!\n"
+    },
     "secret_night_monitor_hack_minigame": "Match the sensors"
 }
