@@ -154,31 +154,6 @@ local Commands = {
 
 function MonitorView:init()
     table.sort(animatronics)
-    local font = fontcache.getFont("phbios", 14)
-    --print(font)
-    self.terminal = termite.new(470, 470 - font:getHeight(), font)
-    self.oldSpeed = self.terminal.speed
-    self.glow = moonshine(moonshine.effects.gaussianblur)
-    self.glow.gaussianblur.sigma = 10
-    self.glowcnv = love.graphics.newCanvas(shove.getViewportDimensions())
-
-    for key, value in pairs(animatronics) do
-        local matrixSize = 14
-        local m = generateMatrix(matrixSize)
-        animatronicsMatrixes[key] = {
-            size = matrixSize,
-            mx = m
-        }
-    end
-
-    self.textBuffer = ""
-
-    -- init texts --
-    self.terminal:print("Starting StarlightDOS...\n")
-
-    self.terminal:print("MEMTEST is testing memory... done.\n")
-    self.terminal:setCursorY(4)
-    self.terminal:print("> ")
 end
 
 function MonitorView:draw()
@@ -205,111 +180,11 @@ function MonitorView:postDraw()
 end
 
 function MonitorView:update(elapsed)
-    local sx, sy = self.sensors.matrixPos.x, self.sensors.matrixPos.y
-    self.terminal:update(elapsed)
 
-    if self.sensorMode then
-        self.sensors.playerTimer = self.sensors.playerTimer + elapsed
-        if self.sensors.playerTimer >= self.sensors.maxPlayerTime then
-            self.sensors.playerTimer = 0
-            switch(self.sensors.currentDir, {
-                ["up"] = function()
-                    if self.cursor.y > 1 then
-                        self.sensors.cursor.y = self.sensors.cursor.y - 1
-                        self.terminal:setCursorBackColor("brightGreen")
-                        self.terminal:print(self.cursor.x, self.cursor.y, " ")
-                    end
-                end,
-                ["down"] = function()
-                    if self.cursor.y < #animatronicsMatrixes[self.activeMatrix].mx[1] - 1 then
-                        self.sensors.cursor.y = self.sensors.cursor.y - 1
-                        self.terminal:setCursorBackColor("brightGreen")
-                        self.terminal:print(self.cursor.x, self.cursor.y, " ")
-                    end
-                end,
-                ["left"] = function()
-                    if self.cursor.x > 1 then
-                        self.sensors.cursor.x = self.sensors.cursor.x - 1
-                    end
-                end,
-                ["right"] = function()
-                    if self.cursor.x < #animatronicsMatrixes[self.activeMatrix].mx[1] - 1 then
-                        self.sensors.cursor.x = self.sensors.cursor.x + 1
-                    end
-                end
-            })
-            drawMatrix(self.terminal, animatronicsMatrixes[name])
-            drawPlayer(self, self.sensorMode.cursor.x, self.sensorMode.cursor.y)
-        end
-    end
 end
 
 function MonitorView:keypressed(k)
     if not SecretNightState.officeState.monitor.displayStatic then return end
-    if k == "backspace" then
-        if MonitorView.sensorMode then return end
-
-        local byteoffset = utf8.offset(self.textBuffer, -1)
-
-        if byteoffset then
-            self.textBuffer = string.sub(self.textBuffer, 1, byteoffset - 1)
-            if self.terminal.cursorX > 3 then
-                self.terminal.cursorX = self.terminal.cursorX - 1
-                self.terminal:clear(self.terminal.cursorX, self.terminal.cursorY, 1, 1)
-            end
-        end
-    elseif k == "return" then
-        if MonitorView.sensorMode then return end
-
-        -- command parse --
-        self.terminal:clear()
-        self.terminal:setCursorPos(1, 1)
-        local tokens = string.split(self.textBuffer, " ")
-
-        local cmd = tokens[1]
-        table.remove(tokens, 1)
-        local args = tokens
-
-        if Commands[cmd] ~= nil then
-            Commands[cmd](self, unpack(args))
-        else
-            self.terminal:setCursorX(1)
-            self.terminal:print(languageService["secret_night_monitor_command_invalid"])
-        end
-
-        -- clear and reset --
-        self.textBuffer = ""
-        if not MonitorView.sensorMode then
-            self.terminal:setCursorX(1)
-            self.terminal:print("> ")
-        end
-    end
-
-    if not MonitorView.sensorMode then return end
-
-    if k == "w" then
-        updateInstructions(self, "up")
-    elseif k == "s" then
-        updateInstructions(self, "down")
-    elseif k == "a" then
-        updateInstructions(self, "left")
-    elseif k == "d" then
-        updateInstructions(self, "right")
-    end
-end
-
-function MonitorView:textinput(t)
-    if not SecretNightState.officeState.monitor.displayStatic then return end
-
-    if MonitorView.sensorMode then return end
-    if self.terminal.cursorX < self.terminal.width - 3 then
-        self.textBuffer = self.textBuffer .. t
-        self.terminal:print(t)
-    end
-
-    if self.terminal.cursorX > self.terminal.width - 3 then
-        self.terminal:setCursorX(3)
-    end
 end
 
 return MonitorView
