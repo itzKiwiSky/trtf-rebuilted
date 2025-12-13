@@ -401,29 +401,51 @@ function Termite.new(width, height, font, customCharW, customCharH, options)
             self.cursorReversed = val
         end,
         ["setCursorColor"] = function(self, colorName)
-            assertType(colorName, "string")
-            assert(self.schemes[self.currentScheme][colorName],
-                ("[TermiteError] : Invalid color, can't found color named: %s"):format(colorName))
-            local color = self.schemes[self.currentScheme][colorName]
-            self.cursorColorID = tostring(colorName)
+            --assertType(colorName, "string")
+            if type(colorName) == "table" then
+                self.cursorColor[1] = color[1]
+                self.cursorColor[2] = color[2]
+                self.cursorColor[3] = color[3]
+                self.cursorColor[4] = color[4] or 1
+            elseif type(colorName) == "string" then
+                assert(
+                    self.schemes[self.currentScheme][colorName],
+                    ("[TermiteError] : Invalid color, can't found color named: %s"):format(colorName)
+                )
+                local color = self.schemes[self.currentScheme][colorName]
+                self.cursorColorID = tostring(colorName)
 
-            self.cursorColor[1] = color[1]
-            self.cursorColor[2] = color[2]
-            self.cursorColor[3] = color[3]
-            self.cursorColor[4] = color[4] or 1
+                self.cursorColor[1] = color[1]
+                self.cursorColor[2] = color[2]
+                self.cursorColor[3] = color[3]
+                self.cursorColor[4] = color[4] or 1
+            else
+                -- too lazy to write error here, reusing the assert since will fail anyway --
+                assertType(colorName, "string")
+            end
         end,
         ["setCursorBackColor"] = function(self, colorName)
-            assertType(colorName, "string")
-            assert(self.schemes[self.currentScheme][colorName],
-                ("[TermiteError] : Invalid color, can't found color named: %s"):format(colorName))
-            local color = self.schemes[self.currentScheme][colorName]
+            if type(colorName) == "table" then
+                self.cursorBackColor[1] = color[1]
+                self.cursorBackColor[2] = color[2]
+                self.cursorBackColor[3] = color[3]
+                self.cursorBackColor[4] = color[4] or 1
+            elseif type(colorName) == "string" then
+                assert(
+                    self.schemes[self.currentScheme][colorName],
+                    ("[TermiteError] : Invalid color, can't found color named: %s"):format(colorName)
+                )
+                local color = self.schemes[self.currentScheme][colorName]
+                self.cursorBackColorID = tostring(colorName)
 
-            self.cursorBackColorID = tostring(colorName)
-
-            self.cursorBackColor[1] = color[1]
-            self.cursorBackColor[2] = color[2]
-            self.cursorBackColor[3] = color[3]
-            self.cursorBackColor[4] = color[4] or 1
+                self.cursorBackColor[1] = color[1]
+                self.cursorBackColor[2] = color[2]
+                self.cursorBackColor[3] = color[3]
+                self.cursorBackColor[4] = color[4] or 1
+            else
+                -- too lazy to write error here, reusing the assert since will fail anyway --
+                assertType(colorName, "string")
+            end
         end,
         ["push"] = function(self, configs)
             local availableConfigs = { "state", "config", "all" }
@@ -695,6 +717,17 @@ function Termite:getCellState(x, y)
         reversed = self.stateBuffer[y][x].reversed,
         dirty = self.stateBuffer[y][x].dirty,
     }
+end
+
+function Termite:setCellState(state, x, y)
+    local charColor = state.fg
+    local charBackColor = state.bg
+
+    self.stateBuffer[y][x].color = { charColor[1], charColor[2], charColor[3], charColor[4] }
+    self.stateBuffer[y][x].backcolor = { charBackColor[1], charBackColor[2], charBackColor[3], charBackColor[4] }
+    self.stateBuffer[y][x].reversed = self.cursorReversed
+    self.stateBuffer[y][x].dirty = true
+    --updateStdinChar(Termite, x, y)
 end
 
 return Termite

@@ -1,12 +1,14 @@
 local utf8 = require 'utf8'
 local MonitorView = {}
 MonitorView.sensorMode = false
+MonitorView.activeMatrix = ""
 MonitorView.sensors = {
+    matrixPos = { x = 0, y = 0 },
     directions = { ["up"] = "▲", ["down"] = "▼", ["left"] = "◄", ["right"] = "►" },
     currentDir = "left",
     playerTimer = 0,
     maxPlayerTime = 1,
-    cursor = { 0, 0 },
+    cursor = { x = 0, y = 0 },
     mode = "clean"
 }
 
@@ -51,6 +53,7 @@ function drawMatrix(t, matrix)
 
     --t:frame("line", 1, t.cursorY, space * 2, space * 2)
     local sx, sy = math.floor(t.width / 2 - matrix.size / 2), math.floor(t.height / 2 - matrix.size / 2)
+    self.sensors.matrixPos.x, self.sensors.matrixPos.y = sx, sy
     t:frame("line", sx, sy, matrix.size + 2, matrix.size + 2)
 
     t:setCursorColor("brightWhite")
@@ -85,7 +88,18 @@ local function updateInstructions(self, dir)
     local lastPos = { self.terminal.cursorX, self.terminal.cursorY }
     self.sensors.currentDir = dir
     printInstructions(self)
-    self.terminal:setCursorPos(lastPos[1], lastPos[2])
+    self.terminal:setCursorPos(unpack(lastPos))
+end
+
+local function drawPlayer(self, x, y)
+    --self.terminal:push()
+    local sx, sy = self.sensors.matrixPos.x, self.sensors.matrixPos.y
+    local cellState = self.terminal:getCellState(sx + x, sy + y)
+
+    self.terminal:setCursorColor("white")
+    self.terminal:setCursorBackColor("brightGreen")
+    self.terminal:print(x, y, self.sensors.directions[self.sensors.currentDir])
+    self.terminal:setCursorBackColor("black")
 end
 
 local Commands = {
@@ -114,7 +128,8 @@ local Commands = {
     ["fwedit"] = function(self, name)
         if animatronics[name] ~= nil and not animatronics[name].hidden then
             if animatronics[name].write then
-                MonitorView.sensorMode = true
+                self.activeMatrix = name
+                self.sensorMode = true
                 self.terminal.speed = 10000
                 self.terminal:setCursorY(3)
                 self.terminal:print(string.justify(
@@ -126,6 +141,8 @@ local Commands = {
 
                 --self.terminal:setCursorPos(22, 22)
                 printInstructions(self)
+
+                drawPlayer(self, self.sensorMode.cursor.x, self.sensorMode.cursor.y)
             else
                 self.terminal:print(languageService["secret_night_monitor_permission_write"])
             end
@@ -188,6 +205,7 @@ function MonitorView:postDraw()
 end
 
 function MonitorView:update(elapsed)
+    local sx, sy = self.sensors.matrixPos.x, self.sensors.matrixPos.y
     self.terminal:update(elapsed)
 
     if self.sensorMode then
@@ -196,22 +214,32 @@ function MonitorView:update(elapsed)
             self.sensors.playerTimer = 0
             switch(self.sensors.currentDir, {
                 ["up"] = function()
-
+                    if self.cursor.y > 1 then
+                        self.sensors.cursor.y = self.sensors.cursor.y - 1
+                        self.terminal:setCursorBackColor("brightGreen")
+                        self.terminal:print(self.cursor.x, self.cursor.y, " ")
+                    end
                 end,
                 ["down"] = function()
-
+                    if self.cursor.y < #animatronicsMatrixes[self.activeMatrix].mx[1] - 1 then
+                        self.sensors.cursor.y = self.sensors.cursor.y - 1
+                        self.terminal:setCursorBackColor("brightGreen")
+                        self.terminal:print(self.cursor.x, self.cursor.y, " ")
+                    end
                 end,
                 ["left"] = function()
-
+                    if self.cursor.x > 1 then
+                        self.sensors.cursor.x = self.sensors.cursor.x - 1
+                    end
                 end,
                 ["right"] = function()
-
-                end,
-                ["default"] = function()
-
+                    if self.cursor.x < #animatronicsMatrixes[self.activeMatrix].mx[1] - 1 then
+                        self.sensors.cursor.x = self.sensors.cursor.x + 1
+                    end
                 end
             })
             drawMatrix(self.terminal, animatronicsMatrixes[name])
+            drawPlayer(self, self.sensorMode.cursor.x, self.sensorMode.cursor.y)
         end
     end
 end
