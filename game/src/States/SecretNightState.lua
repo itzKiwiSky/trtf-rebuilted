@@ -68,6 +68,15 @@ function SecretNightState:enter()
         Slab.EndWindow()
     end
 
+    self.IA = {
+        config = {
+            ["frankburt"] = 10,
+            ["golden_freddy"] = 8,
+            timerIncrement = 20, -- increment the IA values by 1 every 20 seconds passed
+            tmr = 0,
+        }
+    }
+
     SecretNightState.assets.grd_battery = love.graphics.newGradient("horizontal", { lume.color('#4322D4') },
         { lume.color('#225AD4') }, { lume.color('#22B3D4') })
 
