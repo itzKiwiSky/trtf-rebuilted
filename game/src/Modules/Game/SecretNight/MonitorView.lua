@@ -12,8 +12,8 @@ MonitorView.currentSelection = ""
 MonitorView.currentSelectionID = 1
 MonitorView.currentState = "idle"
 MonitorView.game = {
-    boardStart = { x = 480, y = 128 },
-    boardOffset = { x = 24, y = 10 },
+    boardStart = { x = 480, y = 120 },
+    boardOffset = { x = 58, y = 16 },
     hitbox = { w = 24, h = 24 },
     inverted = false,
     playerPos = { x = -1, y = 0 },
@@ -145,8 +145,8 @@ function MonitorView:init()
     for key, value in spairs(self.animatronics) do
         local m        = generateMatrix(matrixSize)
 
-        local tileSize = 48
-        local spacing  = 38
+        local tileSize = 38
+        local spacing  = 32
 
         local width    = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
         local height   = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
