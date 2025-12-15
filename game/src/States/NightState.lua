@@ -19,14 +19,14 @@ NightState.AnimatronicControllers = {}
 
 local function mapToRange(input, min, max, step)
     local clampedInput = math.max(min, math.min(max, input))
-    
+
     local proportion = (clampedInput - min) / (max - min)
 
     local invertedProportion = 1 - proportion
-    
+
     local range = max - min
     local steppedValue = math.floor(invertedProportion * range / step + 0.5) * step + min
-    
+
     return steppedValue
 end
 
@@ -50,7 +50,7 @@ local function formatAdjustedTimeAMPM(realSeconds, scaleFactor, startHour, start
     local hours = math.floor(totalSeconds / 3600) % 24
     local minutes = math.floor((totalSeconds % 3600) / 60)
     local seconds = math.floor(totalSeconds % 60)
-    
+
     local period = hours >= 12 and "PM" or "AM"
     hours = hours % 12
     if hours == 0 then hours = 12 end
@@ -70,7 +70,7 @@ end
 
 
 NightState.modifiers = {
-    radarMode = false,      -- can be use to debug or just for cheat (I know why u will use it your mf)
+    radarMode = false, -- can be use to debug or just for cheat (I know why u will use it your mf)
 }
 
 function NightState:enter()
@@ -91,9 +91,9 @@ function NightState:enter()
     self.phoneController:init(NightState.assets.phoneModel, 45, "ph")
     self.phoneController.visible = false
     self.phoneController.hitbox = {
-        x = 1036, 
-        y = 540, 
-        w = 48, 
+        x = 1036,
+        y = 540,
+        w = 48,
         h = 48
     }
 
@@ -107,9 +107,9 @@ function NightState:enter()
     local aif = love.filesystem.getDirectoryItems("src/Modules/Game/Animatronics")
     for _, a in ipairs(aif) do
         local filename = a:gsub("%.[^.]+$", "")
-        if love.filesystem.getInfo("src/Modules/Game/Animatronics/" .. a).type ~= "directory" then 
+        if love.filesystem.getInfo("src/Modules/Game/Animatronics/" .. a).type ~= "directory" then
             self.AnimatronicControllers[filename:lower()] = require("src.Modules.Game.Animatronics." .. filename):new()
-         end
+        end
     end
     aif = nil
     collectgarbage("collect")
@@ -118,92 +118,94 @@ function NightState:enter()
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
             Slab.BeginWindow("mainNightDev", { Title = "Night development" })
-                Slab.Text("General settings")
-                if Slab.CheckBox(registers.showDebugHitbox, "Show mouse hitboxes") then
-                    registers.showDebugHitbox = not registers.showDebugHitbox
-                end
-                if Slab.CheckBox(NightState.modifiers.radarMode, "Show animatronics in camera map") then
-                    NightState.modifiers.radarMode = not NightState.modifiers.radarMode
-                end
-                if Slab.Button("End night") then
-                    self.night.time = 298
-                end
-                Slab.SameLine()
-                if Slab.Button("Create random challenge") then
-                    --NightState.animatronicsAI[name] = 0
-                    self.night.time = 0
-                    for name in spairs(NightState.animatronicsAI) do
-                        NightState.animatronicsAI[name] = math.random(0, 20)
-                    end
-                end
-                Slab.SameLine()
-                if Slab.Button("Reset All AI") then
-                    --NightState.animatronicsAI[name] = 0
-                    self.night.time = 0
-                    for name in spairs(NightState.animatronicsAI) do
-                        NightState.animatronicsAI[name] = 0
-                    end
-                end
-                Slab.SameLine()
-                if Slab.Button("Disable office") then
-                    self.officeState.power.powerStat = 1
-                end
-                Slab.Separator()
-                Slab.Text("Debug")
-                Slab.Text("interferenceIntensity: "..  self.tabletCameraSubState.interferenceIntensity)
-                Slab.Text("interferenceISpeed: " ..  self.tabletCameraSubState.interferenceSpeed)
-                Slab.Separator()
-                Slab.Text("IA Settings")
+            Slab.Text("General settings")
+            if Slab.CheckBox(registers.showDebugHitbox, "Show mouse hitboxes") then
+                registers.showDebugHitbox = not registers.showDebugHitbox
+            end
+            if Slab.CheckBox(NightState.modifiers.radarMode, "Show animatronics in camera map") then
+                NightState.modifiers.radarMode = not NightState.modifiers.radarMode
+            end
+            if Slab.Button("End night") then
+                self.night.time = 298
+            end
+            Slab.SameLine()
+            if Slab.Button("Create random challenge") then
+                --NightState.animatronicsAI[name] = 0
+                self.night.time = 0
                 for name in spairs(NightState.animatronicsAI) do
-                    Slab.Text(name)
-                    if Slab.Button("-") then
-                        if NightState.animatronicsAI[name] > 0 then
-                            NightState.animatronicsAI[name] = NightState.animatronicsAI[name] - 1
-                        end
-                    end
-                    Slab.SameLine({
-                        Pad = 2
-                    })
-                    Slab.Text(tostring(NightState.animatronicsAI[name]))
-                    Slab.SameLine({
-                        Pad = 2
-                    })
-                    if Slab.Button("+") then
-                        if NightState.animatronicsAI[name] < 20 then
-                            NightState.animatronicsAI[name] = NightState.animatronicsAI[name] + 1
-                        end
-                    end
-                    Slab.SameLine({
-                        Pad = 2
-                    })
-                    if Slab.Button("reset") then
-                        NightState.animatronicsAI[name] = 0
-                    end
-                    if Slab.Button("max AI") then
-                        --NightState.animatronicsAI[name] = 0
-                        NightState.animatronicsAI[name] = 20
-                    end
-                    Slab.SameLine({
-                        Pad = 2
-                    })
-                    if Slab.Button("move foward") then
-                        --NightState.animatronicsAI[name] = 0
-                        if NightState.AnimatronicControllers[name].currentState < #NightState.AnimatronicControllers[name].path then
-                            NightState.AnimatronicControllers[name].currentState = NightState.AnimatronicControllers[name].currentState + 1
-                        end
-                    end
-                    Slab.SameLine({
-                        Pad = 2
-                    })
-                    if Slab.Button("move backwards") then
-                        --NightState.animatronicsAI[name] = 0
-                        if NightState.AnimatronicControllers[name].currentState > 1 then 
-                            NightState.AnimatronicControllers[name].currentState = NightState.AnimatronicControllers[name].currentState - 1
-                        end
-                    end
-                    Slab.SameLine()
-                    Slab.Text("  State: " .. NightState.AnimatronicControllers[name].currentState)
+                    NightState.animatronicsAI[name] = math.random(0, 20)
                 end
+            end
+            Slab.SameLine()
+            if Slab.Button("Reset All AI") then
+                --NightState.animatronicsAI[name] = 0
+                self.night.time = 0
+                for name in spairs(NightState.animatronicsAI) do
+                    NightState.animatronicsAI[name] = 0
+                end
+            end
+            Slab.SameLine()
+            if Slab.Button("Disable office") then
+                self.officeState.power.powerStat = 1
+            end
+            Slab.Separator()
+            Slab.Text("Debug")
+            Slab.Text("interferenceIntensity: " .. self.tabletCameraSubState.interferenceIntensity)
+            Slab.Text("interferenceISpeed: " .. self.tabletCameraSubState.interferenceSpeed)
+            Slab.Separator()
+            Slab.Text("IA Settings")
+            for name in spairs(NightState.animatronicsAI) do
+                Slab.Text(name)
+                if Slab.Button("-") then
+                    if NightState.animatronicsAI[name] > 0 then
+                        NightState.animatronicsAI[name] = NightState.animatronicsAI[name] - 1
+                    end
+                end
+                Slab.SameLine({
+                    Pad = 2
+                })
+                Slab.Text(tostring(NightState.animatronicsAI[name]))
+                Slab.SameLine({
+                    Pad = 2
+                })
+                if Slab.Button("+") then
+                    if NightState.animatronicsAI[name] < 20 then
+                        NightState.animatronicsAI[name] = NightState.animatronicsAI[name] + 1
+                    end
+                end
+                Slab.SameLine({
+                    Pad = 2
+                })
+                if Slab.Button("reset") then
+                    NightState.animatronicsAI[name] = 0
+                end
+                if Slab.Button("max AI") then
+                    --NightState.animatronicsAI[name] = 0
+                    NightState.animatronicsAI[name] = 20
+                end
+                Slab.SameLine({
+                    Pad = 2
+                })
+                if Slab.Button("move foward") then
+                    --NightState.animatronicsAI[name] = 0
+                    if NightState.AnimatronicControllers[name].currentState < #NightState.AnimatronicControllers[name].path then
+                        NightState.AnimatronicControllers[name].currentState = NightState.AnimatronicControllers[name]
+                            .currentState + 1
+                    end
+                end
+                Slab.SameLine({
+                    Pad = 2
+                })
+                if Slab.Button("move backwards") then
+                    --NightState.animatronicsAI[name] = 0
+                    if NightState.AnimatronicControllers[name].currentState > 1 then
+                        NightState.AnimatronicControllers[name].currentState = NightState.AnimatronicControllers[name]
+                            .currentState - 1
+                    end
+                end
+                Slab.SameLine()
+                Slab.Text("  State: " .. NightState.AnimatronicControllers[name].currentState)
+            end
             Slab.EndWindow()
         end
     end
@@ -213,7 +215,7 @@ function NightState:enter()
     self.blurPhoneFX.gaussianblur.sigma = 5
 
     self.blurVisionFX = moonshine(moonshine.effects.boxblur)
-    self.blurVisionFX.boxblur.radius = {0, 0}
+    self.blurVisionFX.boxblur.radius = { 0, 0 }
 
     self.fnt_vhs = fontcache.getFont("vcr", 25)
     self.fnt_camfnt = fontcache.getFont("vcr", 16)
@@ -245,17 +247,18 @@ function NightState:enter()
 
     -- radar --
     NightState.assets["radar_icons"] = {}
-    NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads = love.graphics.newQuadFromImage("hash", "assets/images/game/night/cameraUI/radar_animatronics")
+    NightState.assets["radar_icons"].image, NightState.assets["radar_icons"].quads = love.graphics.newQuadFromImage(
+        "hash", "assets/images/game/night/cameraUI/radar_animatronics")
     NightState.assets["radar_icons"].image:setFilter("nearest", "nearest")
 
-    NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", {31, 225, 34, 255}, {20, 100, 28, 255})
-    NightState.assets.grd_toxicmeter = love.graphics.newGradient("vertical", 
+    NightState.assets.grd_progressBar = love.graphics.newGradient("vertical", { 31, 225, 34, 255 }, { 20, 100, 28, 255 })
+    NightState.assets.grd_toxicmeter = love.graphics.newGradient("vertical",
         { 130, 129, 158, 255 },
         { 191, 198, 227, 255 },
         { 130, 129, 158, 255 }
     )
-    NightState.assets.grd_bars = love.graphics.newGradient("vertical", 
-        { 242, 246, 248, 255 }, 
+    NightState.assets.grd_bars = love.graphics.newGradient("vertical",
+        { 242, 246, 248, 255 },
         { 216, 225, 231, 255 },
         { 181, 198, 208, 255 },
         { 193, 211, 222, 255 },
@@ -312,7 +315,7 @@ function NightState:enter()
 
     self.mainCam.factorX = 2.452
     self.mainCam.factorY = 25
-    self.cameraObject = {   -- this will allow camera view --
+    self.cameraObject = { -- this will allow camera view --
         x = 0,
         y = 0,
     }
@@ -325,8 +328,11 @@ function NightState:enter()
     self.maskController.timeout = 0.2
     self.maskController.acc = 0
 
-    self.maskBtn = self.buttonsUI:new(NightState.assets.maskButton, 96, (shove.getViewportHeight() - NightState.assets.maskButton:getHeight()) - 24)
-    self.camBtn = self.buttonsUI:new(NightState.assets.camButton, (shove.getViewportWidth() - NightState.assets.camButton:getWidth()) - 96, (shove.getViewportHeight() - NightState.assets.camButton:getHeight()) - 24)
+    self.maskBtn = self.buttonsUI:new(NightState.assets.maskButton, 96,
+        (shove.getViewportHeight() - NightState.assets.maskButton:getHeight()) - 24)
+    self.camBtn = self.buttonsUI:new(NightState.assets.camButton,
+        (shove.getViewportWidth() - NightState.assets.camButton:getWidth()) - 96,
+        (shove.getViewportHeight() - NightState.assets.camButton:getHeight()) - 24)
 
     self.X_LEFT_FRAME = self.mainCam.x - 72
     self.X_RIGHT_FRAME = self.mainCam.x + self.roomSize.width
@@ -346,7 +352,7 @@ function NightState:enter()
     }
 
     self.night = {
-        time = 0,   -- accumulator --
+        time = 0, -- accumulator --
         speed = 0.4,
         h = 0,
         m = 0,
@@ -358,7 +364,7 @@ function NightState:enter()
         text = "",
     }
 
-        -- night text --
+    -- night text --
     self.nightTextDisplay = {
         text = string.format(languageService["game_night_announce"], NightState.nightID),
         fade = 0,
@@ -385,7 +391,7 @@ function NightState:enter()
         _f = 0,
         _d = false,
         _tabletisDown = false,
-        onAnimatronicInOffice = function()end,
+        onAnimatronicInOffice = function() end,
         nightRun = false,
         jumpscareRunning = false,
         dead = false,
@@ -477,20 +483,20 @@ function NightState:enter()
     self.tmr_nightStartPhone:script(function(sleep)
         if self.nightID >= 1 and self.nightID <= 5 then
             sleep(3)
-                self.phoneController:setState(true)
-                AudioSources["sfx_phone_pickup"]:play()
+            self.phoneController:setState(true)
+            AudioSources["sfx_phone_pickup"]:play()
             sleep(0.25)
-                AudioSources["sfx_ringphone"]:play()
+            AudioSources["sfx_ringphone"]:play()
             sleep(AudioSources["sfx_ringphone"]:getDuration("seconds") - 1.2)
-                self.assets.calls["sfx_call_night" .. self.nightID]:play()
-                self.officeState.phoneCallNotRefused = true
-                self.officeState.phoneCall = true
-                self.phoneController.hitbox.x = 1090
+            self.assets.calls["sfx_call_night" .. self.nightID]:play()
+            self.officeState.phoneCallNotRefused = true
+            self.officeState.phoneCall = true
+            self.phoneController.hitbox.x = 1090
             sleep(self.assets.calls["sfx_call_night" .. self.nightID]:getDuration("seconds") - 0.015)
         elseif self.nightID >= 6 then
             sleep(3)
-                self.nightTextDisplay.displayNightText = true
-                self.officeState.phoneCall = false
+            self.nightTextDisplay.displayNightText = true
+            self.officeState.phoneCall = false
         end
     end)
 
@@ -540,68 +546,73 @@ end
 function NightState:draw()
     self.shakeController:prepare()
     self.mainCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
-        self.cnv_mainCanvas:renderTo(function()
-            love.graphics.clear(love.graphics.getBackgroundColor())
-            love.graphics.draw(self.doorLFX, 1700, 178)
-            love.graphics.draw(self.doorRFX, 140, 178)
-            if self.officeState.isOfficeDisabled then
-                if self.AnimatronicControllers["freddy"] ~= nil and self.AnimatronicControllers["freddy"].currentState == 5 then
-                    if self.AnimatronicControllers["freddy"].animState then
-                        love.graphics.draw(NightState.assets["door_freddy_attack"], 0, 0)
-                    else
-                        love.graphics.draw(NightState.assets["door_freddy_idle"], 0, 0)
-                    end
-                end
-            end
-
-            self.doorL:draw(0, 0)
-            self.doorR:draw(0, 0)
-
-            -- flicking front XD --
-            if self.officeState.flashlight.state then
-                if not self.officeState.flashlight.isFlicking and self.AnimatronicControllers["foxy"] ~= nil then
-                    if collision.rectRect(self.AnimatronicControllers["foxy"], self.tabletCameraSubState.areas["front_office"]) then
-                        love.graphics.draw(NightState.assets.front_office["foxy" .. self.AnimatronicControllers["foxy"].position], 0, 0)
-                    else
-                        love.graphics.draw(NightState.assets.front_office.idle, 0, 0)
-                    end
-                    if collision.rectRect(self.AnimatronicControllers["bonnie"], self.tabletCameraSubState.areas["front_office"]) then
-                        love.graphics.draw(NightState.assets["front_office_bonnie"], 0, 0)
-                    end
-                    if collision.rectRect(self.AnimatronicControllers["chica"], self.tabletCameraSubState.areas["front_office"]) then
-                        love.graphics.draw(NightState.assets["front_office_chica"], 0, 0)
-                    end
-                end
-            end
-
-            love.graphics.draw(NightState.assets.office[self.officeState.isOfficeDisabled and "off" or "idle"], 0, 0)
-            love.graphics.draw(NightState.assets.fanAnim["fan_" .. self.deskFan.fid], 0, 0)
-            
-            if self.AnimatronicControllers["bonnie"] ~= nil then
-                if collision.rectRect(self.AnimatronicControllers["bonnie"], self.tabletCameraSubState.areas["office"]) then
-                    love.graphics.draw(NightState.assets["in_office_bonnie"], 0, 0)
-                end
-            end
-            if self.AnimatronicControllers["chica"] ~= nil then
-                if collision.rectRect(self.AnimatronicControllers["chica"], self.tabletCameraSubState.areas["office"]) then
-                    love.graphics.draw(NightState.assets["in_office_chica"], 0, 0)
-                end
-            end
-
-            if not self.officeState.isOfficeDisabled then
-                if not self.officeState.doors.canUseDoorL then
-                    love.graphics.draw(NightState.assets.doorButtons.left[love.timer.getTime() % 1 > 0.5 and "not_ok" or "off"], 0, 0)
+    self.cnv_mainCanvas:renderTo(function()
+        love.graphics.clear(love.graphics.getBackgroundColor())
+        love.graphics.draw(self.doorLFX, 1700, 178)
+        love.graphics.draw(self.doorRFX, 140, 178)
+        if self.officeState.isOfficeDisabled then
+            if self.AnimatronicControllers["freddy"] ~= nil and self.AnimatronicControllers["freddy"].currentState == 5 then
+                if self.AnimatronicControllers["freddy"].animState then
+                    love.graphics.draw(NightState.assets["door_freddy_attack"], 0, 0)
                 else
-                    love.graphics.draw(NightState.assets.doorButtons.left[self.officeState.doors.left and "on" or "off"], 0, 0)
-                end
-    
-                if not self.officeState.doors.canUseDoorR then
-                    love.graphics.draw(NightState.assets.doorButtons.right[love.timer.getTime() % 1 > 0.5 and "not_ok" or "off"], 0, 0)
-                else
-                    love.graphics.draw(NightState.assets.doorButtons.right[self.officeState.doors.right and "on" or "off"], 0, 0)
+                    love.graphics.draw(NightState.assets["door_freddy_idle"], 0, 0)
                 end
             end
-        end)
+        end
+
+        self.doorL:draw(0, 0)
+        self.doorR:draw(0, 0)
+
+        -- flicking front XD --
+        if self.officeState.flashlight.state then
+            if not self.officeState.flashlight.isFlicking and self.AnimatronicControllers["foxy"] ~= nil then
+                if collision.rectRect(self.AnimatronicControllers["foxy"], self.tabletCameraSubState.areas["front_office"]) then
+                    love.graphics.draw(
+                        NightState.assets.front_office["foxy" .. self.AnimatronicControllers["foxy"].position], 0, 0)
+                else
+                    love.graphics.draw(NightState.assets.front_office.idle, 0, 0)
+                end
+                if collision.rectRect(self.AnimatronicControllers["bonnie"], self.tabletCameraSubState.areas["front_office"]) then
+                    love.graphics.draw(NightState.assets["front_office_bonnie"], 0, 0)
+                end
+                if collision.rectRect(self.AnimatronicControllers["chica"], self.tabletCameraSubState.areas["front_office"]) then
+                    love.graphics.draw(NightState.assets["front_office_chica"], 0, 0)
+                end
+            end
+        end
+
+        love.graphics.draw(NightState.assets.office[self.officeState.isOfficeDisabled and "off" or "idle"], 0, 0)
+        love.graphics.draw(NightState.assets.fanAnim["fan_" .. self.deskFan.fid], 0, 0)
+
+        if self.AnimatronicControllers["bonnie"] ~= nil then
+            if collision.rectRect(self.AnimatronicControllers["bonnie"], self.tabletCameraSubState.areas["office"]) then
+                love.graphics.draw(NightState.assets["in_office_bonnie"], 0, 0)
+            end
+        end
+        if self.AnimatronicControllers["chica"] ~= nil then
+            if collision.rectRect(self.AnimatronicControllers["chica"], self.tabletCameraSubState.areas["office"]) then
+                love.graphics.draw(NightState.assets["in_office_chica"], 0, 0)
+            end
+        end
+
+        if not self.officeState.isOfficeDisabled then
+            if not self.officeState.doors.canUseDoorL then
+                love.graphics.draw(
+                    NightState.assets.doorButtons.left[love.timer.getTime() % 1 > 0.5 and "not_ok" or "off"], 0, 0)
+            else
+                love.graphics.draw(NightState.assets.doorButtons.left[self.officeState.doors.left and "on" or "off"], 0,
+                    0)
+            end
+
+            if not self.officeState.doors.canUseDoorR then
+                love.graphics.draw(
+                    NightState.assets.doorButtons.right[love.timer.getTime() % 1 > 0.5 and "not_ok" or "off"], 0, 0)
+            else
+                love.graphics.draw(NightState.assets.doorButtons.right[self.officeState.doors.right and "on" or "off"], 0,
+                    0)
+            end
+        end
+    end)
     self.mainCam:detach()
 
     -- phone shit --
@@ -610,7 +621,8 @@ function NightState:draw()
         if self.phoneController.visible and self.phoneController.frame == 1 then
             local btn_refuse = NightState.assets["phone_refuse"]
             local btn_accept = NightState.assets["phone_accept"]
-            love.graphics.draw(NightState.assets["phone_bg"], 1010, 375, 0, 200 / NightState.assets["phone_bg"]:getWidth(), 236 / NightState.assets["phone_bg"]:getHeight())
+            love.graphics.draw(NightState.assets["phone_bg"], 1010, 375, 0,
+                200 / NightState.assets["phone_bg"]:getWidth(), 236 / NightState.assets["phone_bg"]:getHeight())
             if self.officeState.phoneCallNotRefused then
                 love.graphics.draw(btn_refuse, 1090, 540, 0, 48 / btn_refuse:getWidth(), 48 / btn_refuse:getHeight())
             else
@@ -619,14 +631,19 @@ function NightState:draw()
             end
             love.graphics.printf(languageService["game_misc_call_name"], self.fnt_phoneCallName, 1011, 430, 193, "center")
             if self.officeState.phoneCallNotRefused then
-                local tm, ts = convertTime(NightState.assets.calls["sfx_call_night" .. NightState.nightID]:tell("seconds"))
-                love.graphics.printf(string.format("%02d:%02d", tm, ts), self.fnt_phoneCallFooter, 1011, 470, 193, "center")
+                local tm, ts = convertTime(NightState.assets.calls["sfx_call_night" .. NightState.nightID]:tell(
+                    "seconds"))
+                love.graphics.printf(string.format("%02d:%02d", tm, ts), self.fnt_phoneCallFooter, 1011, 470, 193,
+                    "center")
             else
-                love.graphics.printf(languageService["game_misc_call_incoming"], self.fnt_phoneCallFooter, 1011, 470, 193, "center")
+                love.graphics.printf(languageService["game_misc_call_incoming"], self.fnt_phoneCallFooter, 1011, 470, 193,
+                    "center")
             end
             love.graphics.setColor(0, 0, 0, 1)
-                love.graphics.printf(languageService["game_misc_buttons_exit"], self.fnt_phoneCallFooter, 1011, 590, 193, "left")
-                love.graphics.printf(languageService["game_misc_buttons_options"], self.fnt_phoneCallFooter, 1011, 590, 193, "right")
+            love.graphics.printf(languageService["game_misc_buttons_exit"], self.fnt_phoneCallFooter, 1011, 590, 193,
+                "left")
+            love.graphics.printf(languageService["game_misc_buttons_options"], self.fnt_phoneCallFooter, 1011, 590, 193,
+                "right")
             love.graphics.setColor(1, 1, 1, 1)
         end
     end)
@@ -634,53 +651,56 @@ function NightState:draw()
     self.blurVisionFX(function()
         love.graphics.clear(0, 0, 0, 0)
         love.graphics.setShader(self.shd_perspective)
-            love.graphics.draw(self.cnv_mainCanvas, 0, 0)
+        love.graphics.draw(self.cnv_mainCanvas, 0, 0)
         love.graphics.setShader()
-        
+
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.draw(self.cnv_phone, 0, 0, 0, shove.getViewportWidth() / self.cnv_phone:getWidth(), shove.getViewportHeight() / self.cnv_phone:getHeight())
-    
+        love.graphics.draw(self.cnv_phone, 0, 0, 0, shove.getViewportWidth() / self.cnv_phone:getWidth(),
+            shove.getViewportHeight() / self.cnv_phone:getHeight())
+
         self.cnv_blurPhone:renderTo(function()
             love.graphics.clear(0, 0, 0, 0)
             self.blurPhoneFX(function()
                 love.graphics.draw(self.cnv_phone, 0, 0)
             end)
         end)
-        
+
         self.phoneController:draw()
-    
+
         love.graphics.setColor(1, 1, 1, 0.8)
-            love.graphics.setBlendMode("add")
-                love.graphics.draw(self.cnv_blurPhone, 0, 0, 0, shove.getViewportWidth() / self.cnv_blurPhone:getWidth(), shove.getViewportHeight() / self.cnv_blurPhone:getHeight())
-            love.graphics.setBlendMode("alpha")
+        love.graphics.setBlendMode("add")
+        love.graphics.draw(self.cnv_blurPhone, 0, 0, 0, shove.getViewportWidth() / self.cnv_blurPhone:getWidth(),
+            shove.getViewportHeight() / self.cnv_blurPhone:getHeight())
+        love.graphics.setBlendMode("alpha")
         love.graphics.setColor(1, 1, 1, 1)
-    
-            -- tablet --
+
+        -- tablet --
         self.tabletController:draw()
-    
+
         -- mask --
         self.maskController:draw()
-    
+
         -- toxicmeter --
         if self.officeState.maskUp then
             love.graphics.rectangle("line", 16, 48, 256, 32)
-    
+
             love.graphics.print(languageService["game_mask_toxic"], fnt_boldtnr, 16, 24)
-    
+
             love.graphics.setColor(236 / 255, 56 / 255, 41 / 255, 1)
-                love.graphics.draw(NightState.assets.grd_toxicmeter, 16 + 3, 48 + 3, 0, math.floor(250 * (self.officeState.toxicmeter / 100)), 26)
+            love.graphics.draw(NightState.assets.grd_toxicmeter, 16 + 3, 48 + 3, 0,
+                math.floor(250 * (self.officeState.toxicmeter / 100)), 26)
             love.graphics.setColor(1, 1, 1, 1)
         end
-    
+
         -- camera render substate --
         if self.tabletController.tabUp then
             self.tabletCameraSubState:draw()
         end
     end)
 
-        -- screen fade --
+    -- screen fade --
     love.graphics.setColor(0, 0, 0, self.officeState._f)
-        love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
     love.graphics.setColor(1, 1, 1, 1)
 
     if not self.officeState.isOfficeDisabled then
@@ -706,33 +726,39 @@ function NightState:draw()
 
     if self.officeState.hasAnimatronicInOffice and not self.officeState.officeFlick then
         love.graphics.setColor(0, 0, 0, 1)
-            love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
+        love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
         love.graphics.setColor(1, 1, 1, 1)
     end
 
     love.graphics.setColor(0, 0, 0, self.officeState.fadealpha)
-        love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
     love.graphics.setColor(1, 1, 1, 1)
 
     -- jumpscare --
     if NightState.killed then
         love.graphics.setColor(0, 0, 0, 1)
-            love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
+        love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
         love.graphics.setColor(1, 1, 1, 1)
     end
     self.jumpscareController.draw()
 
     -- display --
     if self.nightTextDisplay.displayNightText then
-        local txt = NightState.nightID <= 7 and languageService["game_night_announce"]:format(NightState.nightID) or languageService["game_custom_night_announce"]
+        local txt = NightState.nightID <= 7 and languageService["game_night_announce"]:format(NightState.nightID) or
+            languageService["game_custom_night_announce"]
         love.graphics.setColor(1, 1, 1, self.nightTextDisplay.fade)
-            love.graphics.print(txt, self.fnt_nightDisplay, shove.getViewportWidth() / 2, shove.getViewportHeight() / 2 - self.fnt_nightDisplay:getHeight() / 2, 0, self.nightTextDisplay.scale, self.nightTextDisplay.scale, self.fnt_nightDisplay:getWidth(txt) / 2, self.fnt_nightDisplay:getHeight())
+        love.graphics.print(txt, self.fnt_nightDisplay, shove.getViewportWidth() / 2,
+            shove.getViewportHeight() / 2 - self.fnt_nightDisplay:getHeight() / 2, 0, self.nightTextDisplay.scale,
+            self.nightTextDisplay.scale, self.fnt_nightDisplay:getWidth(txt) / 2, self.fnt_nightDisplay:getHeight())
         love.graphics.setColor(1, 1, 1, 1)
     end
 
     if self.nightEndTextDisplay.displayNightText then
         love.graphics.setColor(1, 1, 1, self.nightEndTextDisplay.fade)
-            love.graphics.print(self.nightEndTextDisplay.text, self.fnt_nightDisplay, shove.getViewportWidth() / 2, shove.getViewportHeight() / 2 - self.fnt_nightDisplay:getHeight() / 2, 0, self.nightEndTextDisplay.scale, self.nightEndTextDisplay.scale, self.fnt_nightDisplay:getWidth(nightEndTextDisplay.text) / 2, self.fnt_nightDisplay:getHeight())
+        love.graphics.print(self.nightEndTextDisplay.text, self.fnt_nightDisplay, shove.getViewportWidth() / 2,
+            shove.getViewportHeight() / 2 - self.fnt_nightDisplay:getHeight() / 2, 0, self.nightEndTextDisplay.scale,
+            self.nightEndTextDisplay.scale, self.fnt_nightDisplay:getWidth(nightEndTextDisplay.text) / 2,
+            self.fnt_nightDisplay:getHeight())
         love.graphics.setColor(1, 1, 1, 1)
     end
     self.shakeController:clear()
@@ -746,37 +772,38 @@ function NightState:draw()
         --love.graphics.print(debug.formattable(NightState.animatronicsAI), 10, 10)
         local inside, mx, my = shove.mouseToViewport()
         mx, my = self.mainCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
-        
+
         if registers.showDebugHitbox then
             love.graphics.setColor(0.54, 0.3, 0.67, 0.4)
-                love.graphics.rectangle("fill", self.phoneController.hitbox.x, self.phoneController.hitbox.y, self.phoneController.hitbox.w, self.phoneController.hitbox.h)
+            love.graphics.rectangle("fill", self.phoneController.hitbox.x, self.phoneController.hitbox.y,
+                self.phoneController.hitbox.w, self.phoneController.hitbox.h)
             love.graphics.setColor(1, 1, 1, 1)
 
             self.mainCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
-                love.graphics.setColor(0.7, 0, 1, 0.4)
-                    love.graphics.rectangle("fill", mx, my, 32, 32)
+            love.graphics.setColor(0.7, 0, 1, 0.4)
+            love.graphics.rectangle("fill", mx, my, 32, 32)
+            love.graphics.setColor(1, 1, 1, 1)
+
+            for k, h in pairs(self.officeState.doors.hitboxes) do
+                love.graphics.setColor(0, 1, 0.5, 0.4)
+                love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
                 love.graphics.setColor(1, 1, 1, 1)
-            
-                for k, h in pairs(self.officeState.doors.hitboxes) do
-                    love.graphics.setColor(0, 1, 0.5, 0.4)
-                        love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
-                    love.graphics.setColor(1, 1, 1, 1)
-                end
+            end
 
             self.mainCam:detach()
 
             love.graphics.setColor(0.3, 1, 1, 0.4)
-                love.graphics.rectangle("fill", self.camBtn.x, self.camBtn.y, self.camBtn.w, self.camBtn.h)
+            love.graphics.rectangle("fill", self.camBtn.x, self.camBtn.y, self.camBtn.w, self.camBtn.h)
             love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setColor(1, 0.2, 0.6, 0.4)
-                love.graphics.rectangle("fill", self.maskBtn.x, self.maskBtn.y, self.maskBtn.w, self.maskBtn.h)
+            love.graphics.rectangle("fill", self.maskBtn.x, self.maskBtn.y, self.maskBtn.w, self.maskBtn.h)
             love.graphics.setColor(1, 1, 1, 1)
         end
     end
 end
 
 function NightState:update(elapsed)
-    local inside, mx, my = shove.mouseToViewport()  -- get the mouse --
+    local inside, mx, my = shove.mouseToViewport() -- get the mouse --
     local vmx, vmy = mx, my
     -- convert mouse position from screen to viewport and than the viewport to the world --
     --mx, my = self.mainCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
@@ -793,7 +820,7 @@ function NightState:update(elapsed)
         end
     end
 
-            -- phone shit --
+    -- phone shit --
     self.phoneController:update(elapsed)
 
     -- set the volume of the sources if you have the tablet up --
@@ -814,13 +841,13 @@ function NightState:update(elapsed)
                             AudioSources[self.officeState.tabletUp and "sfx_tab_close" or "sfx_tab_up"]:seek(0)
                         end
                         AudioSources[self.officeState.tabletUp and "sfx_tab_close" or "sfx_tab_up"]:play()
-        
+
                         if not self.officeState.tabletUp then
                             AudioSources["sfx_cam"]:play()
                         else
                             AudioSources["sfx_cam"]:pause()
                         end
-        
+
                         self.officeState.tabletUp = not self.officeState.tabletUp
                         self.tabletController:setState(self.officeState.tabletUp)
                     end
@@ -833,7 +860,7 @@ function NightState:update(elapsed)
 
     -- mask --
     if self.maskController.acc >= self.maskController.timeout and not self.officeState.isOfficeDisabled then
-        if collision.pointRect({x = vmx, y = vmy}, self.maskBtn) then
+        if collision.pointRect({ x = vmx, y = vmy }, self.maskBtn) then
             if not self.officeState.tabletUp then
                 if not self.maskBtn.isHover then
                     self.maskBtn.isHover = true
@@ -844,13 +871,13 @@ function NightState:update(elapsed)
                         end
                         AudioSources["sfx_mask_breath"]:setLooping(true)
                         AudioSources["sfx_mask_off"]:play()
-        
+
                         if not self.officeState.maskUp then
                             AudioSources["sfx_mask_breath"]:play()
                         else
                             AudioSources["sfx_mask_breath"]:stop()
                         end
-        
+
                         self.officeState.maskUp = not self.officeState.maskUp
                         self.maskController:setState(self.officeState.maskUp)
                     end
@@ -952,13 +979,15 @@ function NightState:update(elapsed)
             day = 13
         end
     })
-    
+
     if self.officeState.nightRun and not NightState.nightPassed then
         self.night.time = self.night.time + elapsed
     end
 
-    self.night.h, self.night.m, self.night.s, self.night.period = formatAdjustedTimeAMPM(self.night.time, 72, self.night.startingHour, self.night.startingMinute, self.night.startingPeriod)
-    self.night.text = string.format("%02d/11/2005 - %02d:%02d:%s", day, self.night.h, self.night.m, self.night.period:lower())
+    self.night.h, self.night.m, self.night.s, self.night.period = formatAdjustedTimeAMPM(self.night.time, 72,
+        self.night.startingHour, self.night.startingMinute, self.night.startingPeriod)
+    self.night.text = string.format("%02d/11/2005 - %02d:%02d:%s", day, self.night.h, self.night.m,
+        self.night.period:lower())
 
     if self.night.time >= 300 then
         -- night end
@@ -969,20 +998,21 @@ function NightState:update(elapsed)
     -- office front flashlight --
     self.officeState.flashlight.state = false
     -- keyboard --
-    self.officeState.flashlight.state = Controller:down("game_flashlight") and not self.officeState.maskUp and not self.officeState.tabletUp and not self.officeState.isOfficeDisabled
+    self.officeState.flashlight.state = Controller:down("game_flashlight") and not self.officeState.maskUp and
+        not self.officeState.tabletUp and not self.officeState.isOfficeDisabled
     -- mouse --
     if love.mouse.isDown(1) then
         for k, h in pairs(self.officeState.doors.hitboxes) do
             if not self.officeState.maskUp and not self.officeState.tabletUp and not self.officeState.isOfficeDisabled then
                 if k == "center" then
-                    if collision.pointRect({x = mx, y = my}, h) then
+                    if collision.pointRect({ x = mx, y = my }, h) then
                         self.officeState.flashlight.state = true
                     end
                 end
             end
         end
     end
-    
+
 
     if self.officeState.flashlight.state then
         AudioSources["sfx_buzzlight"]:setLooping(true)
@@ -1016,13 +1046,14 @@ function NightState:update(elapsed)
 
     -- door timer --
     if self.officeState.doors.left and self.officeState.doors.canUseDoorL then
-        self.officeState.doors.lDoorTimer = self.officeState.doors.lDoorTimer - self.officeState.doors.doorUsageBoost * elapsed
+        self.officeState.doors.lDoorTimer = self.officeState.doors.lDoorTimer -
+            self.officeState.doors.doorUsageBoost * elapsed
         if self.officeState.doors.lDoorTimer <= 0 then
             self.officeState.doors.left = false
             if AudioSources["sfx_door_open"]:isPlaying() then
                 AudioSources["sfx_door_open"]:seek(0)
             end
-            
+
             AudioSources["sfx_door_open"]:play()
             self.doorL:setState(false)
             self.officeState.doors.canUseDoorL = false
@@ -1031,7 +1062,8 @@ function NightState:update(elapsed)
             self.doorLFX:emit(154)
         end
     elseif not self.officeState.doors.left or not self.officeState.doors.canUseDoorL then
-        self.officeState.doors.lDoorTimer = self.officeState.doors.lDoorTimer + self.officeState.doors.doorReloadBoost * elapsed
+        self.officeState.doors.lDoorTimer = self.officeState.doors.lDoorTimer +
+            self.officeState.doors.doorReloadBoost * elapsed
         if self.officeState.doors.lDoorTimer >= self.officeState.doors.maxDoorTime then
             self.officeState.doors.lDoorTimer = self.officeState.doors.maxDoorTime
         end
@@ -1042,7 +1074,8 @@ function NightState:update(elapsed)
     end
 
     if self.officeState.doors.right and self.officeState.doors.canUseDoorR then
-        self.officeState.doors.rDoorTimer = self.officeState.doors.rDoorTimer - self.officeState.doors.doorUsageBoost * elapsed
+        self.officeState.doors.rDoorTimer = self.officeState.doors.rDoorTimer -
+            self.officeState.doors.doorUsageBoost * elapsed
         if self.officeState.doors.rDoorTimer <= 0 then
             self.officeState.doors.right = false
             if AudioSources["sfx_door_open"]:isPlaying() then
@@ -1057,7 +1090,8 @@ function NightState:update(elapsed)
             self.doorRFX:emit(154)
         end
     elseif not self.officeState.doors.right or not self.officeState.doors.canUseDoorR then
-        self.officeState.doors.rDoorTimer = self.officeState.doors.rDoorTimer + self.officeState.doors.doorReloadBoost * elapsed
+        self.officeState.doors.rDoorTimer = self.officeState.doors.rDoorTimer +
+            self.officeState.doors.doorReloadBoost * elapsed
         if self.officeState.doors.rDoorTimer >= self.officeState.doors.maxDoorTime then
             self.officeState.doors.rDoorTimer = self.officeState.doors.maxDoorTime
         end
@@ -1177,7 +1211,7 @@ function NightState:update(elapsed)
             self.nightEndTextDisplay.acc = 0
             self.nightEndTextDisplay.fade = nightEndTextDisplay.fade + 8.5 * elapsed
             self.nightEndTextDisplay.scale = nightEndTextDisplay.scale + 0.4 * elapsed
-    
+
             if self.nightEndTextDisplay.fade >= 1.4 then
                 self.nightEndTextDisplay.invert = true
             end
@@ -1188,7 +1222,7 @@ function NightState:update(elapsed)
             self.nightEndTextDisplay.acc = 0
             self.nightEndTextDisplay.fade = self.nightEndTextDisplay.fade - 3.2 * elapsed
             self.nightEndTextDisplay.scale = self.nightEndTextDisplay.scale + 0.2 * elapsed
-    
+
             if self.nightEndTextDisplay.fade <= 0 then
                 self.nightEndTextDisplay.displayNightText = false
             end
@@ -1230,12 +1264,12 @@ function NightState:update(elapsed)
             if AudioSources["sfx_door_open"]:isPlaying() then
                 AudioSources["sfx_door_open"]:seek(0)
             end
-            
+
             AudioSources["sfx_door_open"]:play()
             self.officeState.doors.right = false
             self.doorR:setState(false)
         end
-        
+
         self.officeState._d = true
     end
 
@@ -1316,13 +1350,13 @@ function NightState:update(elapsed)
                         AudioSources[self.officeState.tabletUp and "sfx_tab_close" or "sfx_tab_up"]:seek(0)
                     end
                     AudioSources[self.officeState.tabletUp and "sfx_tab_close" or "sfx_tab_up"]:play()
-    
+
                     if not self.officeState.tabletUp then
                         AudioSources["sfx_cam"]:play()
                     else
                         AudioSources["sfx_cam"]:pause()
                     end
-    
+
                     self.officeState.tabletUp = not self.officeState.tabletUp
                     self.tabletController:setState(self.officeState.tabletUp)
                 end
@@ -1357,7 +1391,7 @@ function NightState:update(elapsed)
 end
 
 function NightState:mousepressed(x, y, button)
-    local inside, vmx, vmy = shove.mouseToViewport()  -- get the mouse --
+    local inside, vmx, vmy = shove.mouseToViewport() -- get the mouse --
     -- convert mouse position from screen to viewport and than the viewport to the world --
     mx, my = self.mainCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
 
@@ -1372,10 +1406,11 @@ function NightState:mousepressed(x, y, button)
             for k, h in pairs(self.officeState.doors.hitboxes) do
                 if not self.officeState.maskUp and not self.officeState.tabletUp then
                     if k == "left" and self.officeState.doors.canUseDoorL then
-                        if collision.pointRect({x = mx, y = my}, h) then
+                        if collision.pointRect({ x = mx, y = my }, h) then
                             if not self.doorL.animationRunning then
                                 if AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
-                                    AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:seek(0)
+                                    AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]
+                                        :seek(0)
                                 end
                                 AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:play()
                                 self.officeState.doors.left = not self.officeState.doors.left
@@ -1384,10 +1419,11 @@ function NightState:mousepressed(x, y, button)
                         end
                     end
                     if k == "right" and self.officeState.doors.canUseDoorR then
-                        if collision.pointRect({x = mx, y = my}, h) then
+                        if collision.pointRect({ x = mx, y = my }, h) then
                             if not self.doorR.animationRunning then
                                 if AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
-                                    AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:seek(0)
+                                    AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]
+                                        :seek(0)
                                 end
                                 AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:play()
                                 self.officeState.doors.right = not self.officeState.doors.right
@@ -1397,9 +1433,9 @@ function NightState:mousepressed(x, y, button)
                     end
                 end
             end
-    
+
             if self.phoneController.visible and self.officeState.phoneCallNotRefused and not self.nightTextDisplay.displayNightText then
-                if collision.pointRect({x = vmx, y = vmy}, self.phoneController.hitbox) then
+                if collision.pointRect({ x = vmx, y = vmy }, self.phoneController.hitbox) then
                     --NightState.assets.calls["call_night" .. NightState.nightID]:seek(NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") - 0.015)
                     NightState.assets.calls["sfx_call_night" .. NightState.nightID]:stop()
                     self.phoneController:setState(false)
@@ -1424,7 +1460,7 @@ function NightState:leave()
                 if type(value) == "table" then
                     releaseRecursive(value)
                 else
-                    if type(value) == "userdata" then
+                    if type(value) == "userdata" and value.release then
                         value:release()
                     end
                 end

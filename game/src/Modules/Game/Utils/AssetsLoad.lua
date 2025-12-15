@@ -15,7 +15,7 @@ return function(night)
     end
 
     if night == "normal" then
-            -- calls --
+        -- calls --
         assets.calls = {}
         local callsF = fsutil.scanFolder(languageRaw["__ENGINE__"].voicelinePath)
         for c = 1, #callsF, 1 do
@@ -47,7 +47,7 @@ return function(night)
         loveloader.newImage(assets, "door_freddy_attack", "assets/images/game/night/freddy_door/attack.png")
         loveloader.newImage(assets, "door_freddy_idle", "assets/images/game/night/freddy_door/idle.png")
 
-        loveloader.newImage(assets, "perfect_crt",  "assets/images/game/effects/perfect_crt.png")
+        loveloader.newImage(assets, "perfect_crt", "assets/images/game/effects/perfect_crt.png")
 
         -- fan --
         assets["fanAnim"] = {}
@@ -84,7 +84,8 @@ return function(night)
         local dr = love.filesystem.getDirectoryItems("assets/images/game/night/doors/door_right")
         assets.doorsAnim.right.frameCount = 0
         for a = 1, #dl, 1 do
-            loveloader.newImage(assets.doorsAnim.right, "dr_" .. a, "assets/images/game/night/doors/door_right/" .. dl[a])
+            loveloader.newImage(assets.doorsAnim.right, "dr_" .. a, "assets/images/game/night/doors/door_right/" .. dl
+                [a])
             assets.doorsAnim.right.frameCount = a
         end
 
@@ -106,7 +107,6 @@ return function(night)
         for m = 1, #mask, 1 do
             loveloader.newImage(assets["maskAnim"], "mask_" .. m, "assets/images/game/night/mask/" .. mask[m])
             assets["maskAnim"].frameCount = m
-
         end
         mask = nil
 
@@ -154,7 +154,7 @@ return function(night)
             loveloader.newImage(assets["phoneModel"], "ph" .. p, "assets/images/game/night/phone/anim/" .. phone[p])
             assets["phoneModel"].frameCount = p
         end
-        
+
         phone = nil
         loveloader.newImage(assets, "phone_bg", "assets/images/game/night/phone/UI/bg.png")
         loveloader.newImage(assets, "phone_refuse", "assets/images/game/night/phone/UI/phone_refuse_button.png")
@@ -210,6 +210,13 @@ return function(night)
         loveloader.newImage(assets.ui, "hover_monitor", "assets/images/game/night8/monitor_hover.png")
         loveloader.newImage(assets.ui, "bg_beeper", "assets/images/game/night8/bg_beeper.png")
         loveloader.newImage(assets, "wood_hold", "assets/images/game/night8/wood.png")
+
+        assets.ui["pc_icons"] = {
+            quads = {},
+        }
+
+        assets.ui["pc_icons"].image = love.graphics.newImage("assets/images/game/night8/pc_icons.png")
+        assets.ui["pc_icons"].quads = love.graphics.getQuads(assets.ui["pc_icons"].image, "assets/images/game/night8/pc_icons.json", "hash")
 
         loveloader.newImage(assets, "monitor_static", "assets/images/game/night8/monitor_static.png")
         loveloader.newImage(assets.office.animatronic, "infront1", "assets/images/game/night8/lockjaw_states/infront1.png")

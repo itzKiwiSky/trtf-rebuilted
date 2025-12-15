@@ -1,5 +1,6 @@
 SecretNightState = {}
 SecretNightState.assets = {}
+SecretNightState.forceRestart = false
 
 function SecretNightState:enter()
     self.beeperController = require 'src.Modules.Game.BeeperController'
@@ -8,6 +9,8 @@ function SecretNightState:enter()
     self.buttonsUI = require 'src.Modules.Game.SecretNight.ButtonUI'
     self.animatorController = require 'src.Modules.Game.AnimatorController'
     self.drawQueue = require 'src.Modules.Game.Utils.DrawQueueBar'
+
+    self.forceRestart = false
 
     self.fnt_nightDisplay = fontcache.getFont("tnr", 60)
 
@@ -42,15 +45,25 @@ function SecretNightState:enter()
         Slab.Text('[DANGER]')
         Slab.SameLine()
         if Slab.Button("Restart Scene") then
-            local assets = table.deepclone(self.assets)
-            local ok, err = pcall(love.filesystem.load, "src/States/SecretNightState.lua")
-            if not ok then
-                print(err)
+            self.forceRestart = true
+            local preservedAssets = table.deepclone(self.assets)
+
+            local path = "src/States/SecretNightState.lua"
+
+            local ok, chunk = pcall(love.filesystem.load, path)
+            if not ok then error(chunk) end
+
+            local ok, newState = pcall(chunk)
+            if not ok then error(newState) end
+
+            assert(type(newState) == "table", "State inválido")
+
+            newState.assets = preservedAssets
+            gamestate.switch(newState)
+
+            if FEATURE_FLAGS.developerMode then
+                collectgarbage("collect")
             end
-            gamestate.switch(ok())
-            SecretNightState.assets = assets
-            assets = nil
-            collectgarbage("collect")
         end
         Slab.EndWindow()
     end
@@ -609,22 +622,20 @@ function SecretNightState:keypressed(k)
     self.monitorView:keypressed(k)
 end
 
-function SecretNightState:textinput(t)
-    self.monitorView:textinput(t)
-end
-
 function SecretNightState:leave()
     for k, v in pairs(AudioSources) do
         v:stop()
     end
 
-    if gameSave.save.user.settings.misc.cacheNight then
+    if self.forceRestart then return end
+
+    if not gameSave.save.user.settings.misc.cacheNight then
         local function releaseRecursive(tbl)
             for key, value in pairs(tbl) do
                 if type(value) == "table" then
                     releaseRecursive(value)
                 else
-                    if type(value) == "userdata" then
+                    if type(value) == "userdata" and value.release then
                         value:release()
                     end
                 end
