@@ -147,7 +147,7 @@ function MonitorView:init()
     self.glow                    = moonshine(moonshine.effects.gaussianblur)
     self.glow.gaussianblur.sigma = 10
     self.glowcnv                 = love.graphics.newCanvas(shove.getViewportDimensions())
-    local matrixSize             = 3
+    local matrixSize             = 4
     self.game.maxSize            = matrixSize
     local tileSize               = 64
     local spacing                = 32
