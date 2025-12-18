@@ -70,33 +70,48 @@ function SecretNightState:enter()
         Slab.Text('Frankburt')
         Slab.SameLine()
         if Slab.Button("front") then
-
+            self.IA.frankburt.state = "front"
         end
         Slab.SameLine()
         if Slab.Button("office") then
-
+            self.IA.frankburt.state = "office"
         end
         Slab.SameLine()
         if Slab.Button("right") then
-
+            self.IA.frankburt.state = "right"
         end
         Slab.EndWindow()
     end
 
     self.IA = {
         config = {
-            ["frankburt"] = 10,
+            ["frankburt"] = 4,
             ["golden_freddy"] = 8,
             timerIncrement = 20, -- increment the IA values by 1 every 20 seconds passed
+            incrementValue = 0,
             tmr = 0,
         },
         frankburt = {
+            hitboxes = {
+                ["front"] = {
+                    x = 890,
+                    y = 230,
+                    w = 280,
+                    h = 180,
+                },
+                ["right"] = {
+                    x = 1390,
+                    y = 200,
+                    w = 220,
+                    h = 230,
+                }
+            },
             rng = 0,
             moveTimer = 0,
-            moveTimerMax = 4,
+            moveTimerMax = 10,
             state = "idle",
             patience = 3,
-        }
+        },
     }
 
     SecretNightState.assets.grd_battery = love.graphics.newGradient("horizontal", { lume.color('#4322D4') },
@@ -153,10 +168,10 @@ function SecretNightState:enter()
             x = 0,
             y = 0,
             alpha = 1,
-            battery = 20,
-            maxBattery = 20,
+            battery = 10,
+            maxBattery = 10,
             rechargeMultiplier = 2,
-            energyConsumeMultiplier = 3,
+            energyConsumeMultiplier = 2.3,
             reloading = false,
         },
         beeper = {
@@ -276,7 +291,12 @@ function SecretNightState:draw()
         love.graphics.clear()
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
         if self.officeState.lookDir == "front" then
-            love.graphics.draw(self.assets.office.states["idle"]["front_light"], 0, 0)
+            if self.IA.frankburt.state ~= "idle" then
+                local state = self.IA.frankburt.state == "office" and "office_light" or self.IA.frankburt.state
+                love.graphics.draw(self.assets.office.animatronic[state], 0, 0)
+            else
+                love.graphics.draw(self.assets.office.states["idle"]["front_light"], 0, 0)
+            end
         else
             love.graphics.draw(self.assets.office.states["idle"]["back"], 0, 0)
         end
@@ -291,7 +311,11 @@ function SecretNightState:draw()
         love.graphics.clear()
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
         if self.officeState.lookDir == "front" then
-            love.graphics.draw(self.assets.office.states["idle"]["front"], 0, 0)
+            if self.IA.frankburt.state ~= "idle" and self.IA.frankburt.state == "office" then
+                love.graphics.draw(self.assets.office.animatronic["office"], 0, 0)
+            else
+                love.graphics.draw(self.assets.office.states["idle"]["front"], 0, 0)
+            end
         end
         self.gameCam:detach()
         if self.officeState.flashlight.active then
@@ -332,6 +356,11 @@ function SecretNightState:draw()
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
         for k, h in pairs(self.officeState.hitboxes) do
             love.graphics.setColor(0, 1, 0.5, 0.4)
+            love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
+            love.graphics.setColor(1, 1, 1, 1)
+        end
+        for k, h in pairs(self.IA.frankburt.hitboxes) do
+            love.graphics.setColor(lume.color("#EEC618A7"))
             love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
             love.graphics.setColor(1, 1, 1, 1)
         end
@@ -420,6 +449,10 @@ end
 function SecretNightState:update(elapsed)
     local inside, vmx, vmy = shove.mouseToViewport()
     local mx, my = self.gameCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
+
+    -- blinkm shit --
+    local speed = 8
+    self.officeState.blink.alpha = self.officeState.blink.alpha - speed * elapsed
 
     if self.officeState.flashlight.active then
         self.officeState.flashlight.x, self.officeState.flashlight.y = vmx, vmy
@@ -591,21 +624,51 @@ function SecretNightState:update(elapsed)
     if self.officeState.nightStarted then
         self.IA.frankburt.moveTimer = self.IA.frankburt.moveTimer - elapsed
 
+        if self.IA.config.incrementValue < 5 then
+            self.IA.config.tmr = self.IA.config.tmr - elapsed
+            if self.IA.config.tmr <= 0 then
+                self.IA.config.tmr = self.IA.config.timerIncrement
+                self.IA.config.incrementValue = self.IA.config.incrementValue + 1
+                self.IA.config["frankburt"] = self.IA.config["frankburt"] + math.random(1, 3)
+                self.IA.config["golden_freddy"] = self.IA.config["golden_freddy"] + math.random(1, 2)
+            end
+
+            self.IA.config["frankburt"] = math.clamp(self.IA.config["frankburt"], 0, 20)
+            self.IA.config["golden_freddy"] = math.clamp(self.IA.config["golden_freddy"], 0, 20)
+        end
+
         if self.IA.frankburt.moveTimer <= 0 then
             self.IA.frankburt.moveTimer = self.IA.frankburt.moveTimerMax
 
-            self.IA.frankburt.rng = math.random(0, 20)
+            self.IA.frankburt.rng = math.random(1, 20)
 
             if self.IA.frankburt.rng <= self.IA.config["frankburt"] and self.IA.config["frankburt"] > 0 then
                 self.officeState.blink.alpha = 1
-                self.IA.frankburt.state = lume.randomchoice({ "front", "left", "office" })
+                local s = lume.weightedchoice({ ["front"] = 40, ["right"] = 60, ["office"] = 10 })
+                if s == "office" and not self.officeState.flashlight.active then
+                    self.IA.frankburt.state = "office"
+                else
+                    self.IA.frankburt.state = s
+                end
+            end
+
+            if self.IA.frankburt.state ~= "idle" then
+                self.IA.frankburt.patience = self.IA.frankburt.patience - elapsed
+
+                if self.IA.frankburt.state == "office" then
+                    if self.officeState.flashlight.active then
+                        -- kill --
+                    end
+                    if self.IA.frankburt.patience <= 0 then
+                        -- go away --
+                    end
+                else
+                    if self.IA.frankburt.patience <= 0 then
+                        -- kill shit --
+                    end
+                end
             end
         end
-
-
-        -- blinkm shit --
-        local speed = 3
-        self.officeState.blink.alpha = self.officeState.blink.alpha - speed * elapsed
     end
 
     self.turnAnim:update(elapsed)
