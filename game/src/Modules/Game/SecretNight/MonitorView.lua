@@ -20,7 +20,8 @@ MonitorView.game = {
     playerAbs = { x = 0, y = 0 },
     canChangeLane = false,
     maxSize = 0,
-    lineNum = 1
+    lineNum = 1,
+    invertCooldown = 0
 }
 local names = { "freddy", "bonnie", "chica", "foxy", "sugar", "kitty", "marionette", "frankburt" }
 
@@ -53,7 +54,8 @@ local function generateMatrix(matrixSize, tileSize)
             table.insert(m, {
                 pos = { x = x, y = y },
                 lastCellID = 0,
-                id = tonumber(lume.weightedchoice({ ["1"] = 70, ["2"] = 30 })),
+                wasColliding = false,
+                id = tonumber(lume.weightedchoice({ ["1"] = 80, ["2"] = 20 })),
                 hitbox = {
                     x = 0,
                     y = 0,
@@ -145,13 +147,19 @@ function MonitorView:init()
     self.glow                    = moonshine(moonshine.effects.gaussianblur)
     self.glow.gaussianblur.sigma = 10
     self.glowcnv                 = love.graphics.newCanvas(shove.getViewportDimensions())
-    local matrixSize             = 5
+    local matrixSize             = 3
     self.game.maxSize            = matrixSize
+    local tileSize               = 64
+    local spacing                = 32
+    local totalSize              = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
+    local centerX                = startX + 240
+    local centerY                = startY + 240
+    self.game.boardOffset.x      = centerX - (totalSize / 2) - startX
+    self.game.boardOffset.y      = centerY - (totalSize / 2) - startY
 
     for key, value in spairs(self.animatronics) do
-        local matrixSize          = 5
-        local tileSize            = 38
-        local spacing             = 32
+        local tileSize            = tileSize
+        local spacing             = spacing
 
         local width               = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
         local height              = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
@@ -187,8 +195,7 @@ function MonitorView:draw()
                 local count = 1
                 love.graphics.printf(languageService["secret_night_monitor_title"], self.font, startX, startY, 400, "center")
                 for name, anim in spairs(self.namesList) do
-                    --print(inspect(anim))
-                    local drawName = string.format("[%s] %s", self.animatronics[name].complete and "X" or ".", name)
+                    local drawName = string.format("[%s] %s", self.animatronics[name].locked and "X" or ".", name)
                     if self.currentSelection == name then
                         love.graphics.rectangle(
                             "fill", anim.x, anim.y,
@@ -279,8 +286,6 @@ function MonitorView:postDraw()
     love.graphics.draw(self.glowcnv)
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(1, 1, 1, 1)
-
-    --love.graphics.print(inspect(self.game))
 end
 
 function MonitorView:update(elapsed)
@@ -300,14 +305,18 @@ function MonitorView:update(elapsed)
             local cellPosX = self.game.playerPos.x
             if cellPosX > self.game.maxSize + 1 then
                 self.game.inverted = true
+                self.game.invertCooldown = 0.5
             elseif cellPosX <= -1 then
                 self.game.inverted = false
+                self.game.invertCooldown = 0.5
             end
 
+            local multi = 0.6
+
             if self.game.inverted then
-                self.game.playerPos.x = self.game.playerPos.x - elapsed * 0.25
+                self.game.playerPos.x = self.game.playerPos.x - elapsed * multi
             else
-                self.game.playerPos.x = self.game.playerPos.x + elapsed * 0.25
+                self.game.playerPos.x = self.game.playerPos.x + elapsed * multi
             end
 
             self.game.playerAbs.x = (startX + offsetX) + self.game.playerPos.x * (tileSize + spacing * 0.5)
@@ -320,26 +329,6 @@ function MonitorView:update(elapsed)
                 h = 1,
             }
 
-            --self.game.playerPos.y = self.game.lineNum
-
-            --local cellX = self.game.inverted and math.ceil(self.game.playerPos.x) or math.floor(self.game.playerPos.x)
-            --local cellX = self.game.playerPos.x + tileSize / 2
-            --local cellY = self.game.lineNum
-
-            --[[if cellX > 0 and cellX < self.game.maxSize + 1 then
-                if cellX ~= self.lastCellX or cellY ~= self.lastCellY then
-                    local cell = animatronicsMatrixes[self.currentSelection].mx[cellY][cellX]
-
-                    if cell == 2 then
-                        animatronicsMatrixes[self.currentSelection].mx[cellY][cellX] = 1
-                    else
-                        animatronicsMatrixes[self.currentSelection].mx[cellY][cellX] = 2
-                    end
-
-                    self.lastCellX = cellX
-                    self.lastCellY = cellY
-                end
-            end]]
             self.game.canChangeLane = true
             for _, b in ipairs(animatronicsMatrixes[self.currentSelection].mx) do
                 local blockX = (startX + offsetX) + (b.pos.x - 1) * (tileSize + spacing)
@@ -359,12 +348,17 @@ function MonitorView:update(elapsed)
                     self.game.canChangeLane = false
                 end
 
-                if collision.rectRect(hbox, b.hitbox) then
-                    if b.id ~= b.lastCellID then
-                        b.id = (b.id == 2) and 1 or 2
+                local isColliding = collision.rectRect(hbox, box)
+                if isColliding and not b.wasColliding then
+                    if self.game.invertCooldown <= 0 then
+                        if b.id == 1 then
+                            b.id = 2
+                        elseif b.id == 2 then
+                            b.id = 1
+                        end
                     end
-                    b.lastCellID = b.id
                 end
+                b.wasColliding = isColliding
             end
 
 
@@ -375,6 +369,8 @@ function MonitorView:update(elapsed)
             end
         end,
     })
+
+    self.game.invertCooldown = math.max(0, self.game.invertCooldown - elapsed)
 end
 
 function MonitorView:keypressed(k)
@@ -397,13 +393,11 @@ function MonitorView:keypressed(k)
                 end,
                 ["return"] = function()
                     local anim = self.animatronics[self.currentSelection]
-                    print(inspect(anim))
                     if not anim.locked then
                         self.currentState = "minigame"
                     end
                 end
             })
-            --self.currentSelection = names[self.currentSelectionID]
         end,
         ["minigame"] = function()
             if not self.game.canChangeLane then return end
@@ -414,6 +408,16 @@ function MonitorView:keypressed(k)
                     end
                 end,
                 ["s"] = function()
+                    if self.game.playerPos.y < self.game.maxSize then
+                        self.game.playerPos.y = self.game.playerPos.y + 1
+                    end
+                end,
+                ["up"] = function()
+                    if self.game.playerPos.y > 1 then
+                        self.game.playerPos.y = self.game.playerPos.y - 1
+                    end
+                end,
+                ["down"] = function()
                     if self.game.playerPos.y < self.game.maxSize then
                         self.game.playerPos.y = self.game.playerPos.y + 1
                     end
