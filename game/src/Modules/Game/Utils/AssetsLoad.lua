@@ -231,6 +231,13 @@ return function(night)
         assets["monitor"] = loadBulk("mon", "assets/images/game/night8/monitor/")
         assets["loadUI"] = loadBulk("load", "assets/images/game/night8/load/", 0)
 
+        assets["jumpscares"] = {
+            ["frankburt"] = {
+                ["front"] = loadBulk("frankburt_jmp", "assets/images/game/night8/jumpscares/lockjaw_jumpscare/"),
+                ["back"] = loadBulk("frankburt_jmp", "assets/images/game/night8/jumpscares/lockjaw_jumpscare_back/")
+            }
+        }
+
 
         tab = nil
         collectgarbage("collect")
