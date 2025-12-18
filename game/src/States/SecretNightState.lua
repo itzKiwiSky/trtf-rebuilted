@@ -65,6 +65,21 @@ function SecretNightState:enter()
                 collectgarbage("collect")
             end
         end
+        Slab.Text('[Animatronic stuff]')
+        Slab.Separator()
+        Slab.Text('Frankburt')
+        Slab.SameLine()
+        if Slab.Button("front") then
+
+        end
+        Slab.SameLine()
+        if Slab.Button("office") then
+
+        end
+        Slab.SameLine()
+        if Slab.Button("right") then
+
+        end
         Slab.EndWindow()
     end
 
@@ -74,6 +89,13 @@ function SecretNightState:enter()
             ["golden_freddy"] = 8,
             timerIncrement = 20, -- increment the IA values by 1 every 20 seconds passed
             tmr = 0,
+        },
+        frankburt = {
+            rng = 0,
+            moveTimer = 0,
+            moveTimerMax = 4,
+            state = "idle",
+            patience = 3,
         }
     }
 
@@ -102,7 +124,7 @@ function SecretNightState:enter()
         nightStarted = false,
         lookDir = "front",
         blink = {
-            alpha = 0
+            alpha = 1
         },
         hitboxes = {
             ["box"] = {
@@ -131,8 +153,8 @@ function SecretNightState:enter()
             x = 0,
             y = 0,
             alpha = 1,
-            battery = 10,
-            maxBattery = 10,
+            battery = 20,
+            maxBattery = 20,
             rechargeMultiplier = 2,
             energyConsumeMultiplier = 3,
             reloading = false,
@@ -291,6 +313,10 @@ function SecretNightState:draw()
     end
     love.graphics.setShader()
 
+    love.graphics.setColor(0, 0, 0, self.officeState.blink.alpha)
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
+
     self.beeperView:draw()
     self.beeperController:draw()
     self.beeperView:postDraw()
@@ -361,27 +387,6 @@ function SecretNightState:draw()
         love.graphics.setColor(1, 1, 1, 1)
     end
 
-
-    --love.graphics.print(inspect(self.officeState.flashlight), 20, 20)
-
-    --love.graphics.rectangle("line", 96, shove.getViewportHeight() - 96, 128, 64)
-    --self.drawQueue(96, shove.getViewportHeight() - 96, 128, 64, self.officeState.flashlight.battery, 10, 4, 4, {{2, 0, 36}, {9, 9, 121}, {0, 212, 255}}, self.assets.grd_bars)
-
-    --[[
-        love.graphics.stencil(function()
-            love.graphics.setShader(self.maskShader)
-                love.graphics.draw(
-                    self.assets.ui["flashlight_mask"], 96, shove.getViewportHeight() - 96, 0,
-                    128 / self.assets.ui["flashlight_mask"]:getWidth(), 64 / self.assets.ui["flashlight_mask"]:getHeight(),
-                    self.assets.ui["flashlight_mask"]:getWidth() / 2, self.assets.ui["flashlight_mask"]:getHeight() / 2
-                )
-            love.graphics.setShader()
-        end, "replace", 1)
-        love.graphics.setStencilTest("greater", 0)
-            self.drawQueue(96, shove.getViewportHeight() - 96, 128, 64, self.officeState.flashlight.battery, 10, 4, 4, {{125, 85, 36}, {186, 127, 32}, {255, 196, 48}}, self.assets.grd_bars)
-        love.graphics.setStencilTest()
-]]
-
     local icoX, icoY = 96, shove.getViewportHeight() - 96
 
     love.graphics.setColor(lume.color('#0D1F42'))
@@ -403,7 +408,7 @@ function SecretNightState:draw()
     love.graphics.setStencilTest("equal", 1)
     love.graphics.draw(self.assets.grd_battery, icoX, icoY, 0,
         math.floor(128 * (self.officeState.flashlight.battery / self.officeState.flashlight.maxBattery)), 64)
-    --self.drawQueue(icoX, icoY, 128, 64, self.officeState.flashlight.battery, 10, 4, 4, {{125, 85, 36}, {186, 127, 32}, {255, 196, 48}}, self.assets.grd_bars)
+
     love.graphics.setStencilTest()
 
     love.graphics.draw(
@@ -581,6 +586,26 @@ function SecretNightState:update(elapsed)
             self.officeState.flashlight.battery = self.officeState.flashlight.battery +
                 elapsed * self.officeState.flashlight.rechargeMultiplier
         end
+    end
+
+    if self.officeState.nightStarted then
+        self.IA.frankburt.moveTimer = self.IA.frankburt.moveTimer - elapsed
+
+        if self.IA.frankburt.moveTimer <= 0 then
+            self.IA.frankburt.moveTimer = self.IA.frankburt.moveTimerMax
+
+            self.IA.frankburt.rng = math.random(0, 20)
+
+            if self.IA.frankburt.rng <= self.IA.config["frankburt"] and self.IA.config["frankburt"] > 0 then
+                self.officeState.blink.alpha = 1
+                self.IA.frankburt.state = lume.randomchoice({ "front", "left", "office" })
+            end
+        end
+
+
+        -- blinkm shit --
+        local speed = 3
+        self.officeState.blink.alpha = self.officeState.blink.alpha - speed * elapsed
     end
 
     self.turnAnim:update(elapsed)

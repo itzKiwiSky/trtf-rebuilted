@@ -311,7 +311,7 @@ function MonitorView:update(elapsed)
                 self.game.invertCooldown = 0.5
             end
 
-            local multi = 0.6
+            local multi = 0.20
 
             if self.game.inverted then
                 self.game.playerPos.x = self.game.playerPos.x - elapsed * multi
