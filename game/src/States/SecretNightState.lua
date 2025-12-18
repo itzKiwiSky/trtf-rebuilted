@@ -362,7 +362,7 @@ function SecretNightState:draw()
     end
 
 
-    love.graphics.print(inspect(self.officeState.flashlight), 20, 20)
+    --love.graphics.print(inspect(self.officeState.flashlight), 20, 20)
 
     --love.graphics.rectangle("line", 96, shove.getViewportHeight() - 96, 128, 64)
     --self.drawQueue(96, shove.getViewportHeight() - 96, 128, 64, self.officeState.flashlight.battery, 10, 4, 4, {{2, 0, 36}, {9, 9, 121}, {0, 212, 255}}, self.assets.grd_bars)
