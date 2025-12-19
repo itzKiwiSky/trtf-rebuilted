@@ -1,12 +1,11 @@
 LoadingState = {}
 LoadingState.mode = "normal"
-LoadingState.isNightLoaded = false
 
 function LoadingState:enter()
     self.ctrEffect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
     self.glowTextEffect = moonshine(moonshine.effects.glow)
 
-    print("why")
+    self.isNightLoaded = false
 
     subtitlesController.clear()
 
@@ -29,7 +28,7 @@ function LoadingState:enter()
             frame = 1
         }
     }
-    self.lockjawdance.image,self.lockjawdance.quads = love.graphics.newQuadFromImage("array", "assets/images/game/loading_lockjaw")
+    self.lockjawdance.image, self.lockjawdance.quads = love.graphics.newQuadFromImage("array", "assets/images/game/loading_lockjaw")
 
     self.ready = false
     self.pressToGO = false
@@ -69,7 +68,7 @@ function LoadingState:draw()
     end)
 
     love.graphics.setColor(0, 0, 0, self.screen_fade)
-        love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
     love.graphics.setColor(1, 1, 1, 1)
 end
 

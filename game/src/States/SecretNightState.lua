@@ -92,6 +92,7 @@ function SecretNightState:enter()
             tmr = 0,
         },
         frankburt = {
+            active = false,
             hitboxes = {
                 ["front"] = {
                     x = 890,
@@ -137,6 +138,7 @@ function SecretNightState:enter()
 
     self.officeState = {
         nightStarted = false,
+        killed = false,
         lookDir = "front",
         blink = {
             alpha = 1
@@ -231,6 +233,12 @@ function SecretNightState:enter()
     self.gameCam.factorX = 2.8
     self.gameCam.factorY = 25
 
+    self.activateTmr = timer.new()
+
+    self.activateTmr:after(14, function()
+        self.IA.frankburt.active = true
+    end)
+
     self.X_LEFT_FRAME = self.gameCam.x
     self.X_RIGHT_FRAME = self.gameCam.x + self.roomSize.width
     self.Y_TOP_FRAME = self.gameCam.y
@@ -249,7 +257,7 @@ function SecretNightState:enter()
         }
     ]])
 
-    self.beeperController:init(SecretNightState.assets.beeper, 34, "beep_")
+    self.beeperController:init(self.assets.beeper, 34, "beep_")
     self.beeperController.visible = false
 
     self.beeperView:init()
@@ -268,6 +276,20 @@ function SecretNightState:enter()
     self.computerAnim = self.animatorController:new(self.assets["monitor"], 30, "mon")
     self.computerAnim.visible = false
     self.computerAnim.animationRunning = false
+
+    local function kill()
+        DeathState.secretNight = true
+        gamestate.switch(DeathState)
+    end
+
+    self.jumpscareFront = self.animatorController:new(self.assets["jumpscares"]["frankburt"]["front"], 35, "frankburt_jmp")
+    self.jumpscareBack = self.animatorController:new(self.assets["jumpscares"]["frankburt"]["back"], 35, "frankburt_jmp")
+    self.jumpscareFront.visible = false
+    self.jumpscareFront.animationRunning = false
+    self.jumpscareBack.visible = false
+    self.jumpscareBack.animationRunning = false
+    self.jumpscareFront.onComplete = kill
+    self.jumpscareBack.onComplete = kill
 
     AudioSources["sfx_boiler_amb"]:setLooping(true)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
@@ -444,6 +466,9 @@ function SecretNightState:draw()
         self.assets.ui["flashlight_icon"], icoX, icoY, 0,
         128 / self.assets.ui["flashlight_icon"]:getWidth(), 64 / self.assets.ui["flashlight_icon"]:getHeight()
     )
+
+    self.jumpscareFront:draw()
+    self.jumpscareBack:draw()
 end
 
 function SecretNightState:update(elapsed)
@@ -541,7 +566,7 @@ function SecretNightState:update(elapsed)
         self.officeState.lookDir == "back" and 0.75 or 0.2, 0.075, 0.9 * elapsed)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
 
-    if self.officeState.nightStarted then
+    if self.officeState.nightStarted and not self.officeState.killed then
         if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton.hitbox) then
             if self.officeState.lookDir == "front" and not self.officeState.monitor.open and not self.computerAnim.animationRunning then
                 if not self.turnAnim.animationRunning then
@@ -642,29 +667,48 @@ function SecretNightState:update(elapsed)
 
             self.IA.frankburt.rng = math.random(1, 20)
 
-            if self.IA.frankburt.rng <= self.IA.config["frankburt"] and self.IA.config["frankburt"] > 0 then
+            if self.IA.frankburt.rng <= self.IA.config["frankburt"] and self.IA.config["frankburt"] > 0 and self.IA.frankburt.state == "idle" then
                 self.officeState.blink.alpha = 1
                 local s = lume.weightedchoice({ ["front"] = 40, ["right"] = 60, ["office"] = 10 })
                 if s == "office" and not self.officeState.flashlight.active then
                     self.IA.frankburt.state = "office"
+                    self.IA.frankburt.patience = 3 -- reinicia paciência ao entrar no office
                 else
                     self.IA.frankburt.state = s
+                    self.IA.frankburt.patience = 3 -- reinicia paciência em novo estado
                 end
             end
+        end
 
-            if self.IA.frankburt.state ~= "idle" then
-                self.IA.frankburt.patience = self.IA.frankburt.patience - elapsed
+        -- Lógica de paciência e ações executadas a cada frame (fora do timer)
+        if self.IA.frankburt.state ~= "idle" then
+            self.IA.frankburt.patience = self.IA.frankburt.patience - elapsed
 
-                if self.IA.frankburt.state == "office" then
-                    if self.officeState.flashlight.active then
-                        -- kill --
-                    end
-                    if self.IA.frankburt.patience <= 0 then
-                        -- go away --
-                    end
+            if self.IA.frankburt.state == "office" then
+                -- Se a lanterna está ATIVA no office, ele mata imediatamente
+                if self.officeState.flashlight.active then
+                    -- kill --
                 else
+                    -- Lanterna desligada: ele espera
                     if self.IA.frankburt.patience <= 0 then
-                        -- kill shit --
+                        -- go away -- (sai do office após paciência acabar)
+                    end
+                end
+            else
+                -- Estados "front" ou "right"
+                -- O jogador pode usar a lanterna para se defender
+                if self.IA.frankburt.patience <= 0 then
+                    if collision.pointRect({ x = mx, y = my }, self.IA.frankburt.hitboxes[self.IA.frankburt.state]) then
+                        self.officeState.blink.alpha = 1
+                        self.IA.frankburt.state = "idle"
+                    else
+                        -- kill shit -- (mata se a paciência acabar)
+                        self.officeState.killed = true
+                        if self.officeState.lookDir == "front" then
+                            self.jumpscareFront:setState(false)
+                        else
+                            self.jumpscareBack:setState(false)
+                        end
                     end
                 end
             end
@@ -682,6 +726,13 @@ function SecretNightState:update(elapsed)
     self.monitorView:update(elapsed)
 
     self.nightTimer:update(elapsed)
+
+    if self.officeState.nightStarted then
+        self.activateTmr:update(elapsed)
+    end
+
+    self.jumpscareFront:update(elapsed)
+    self.jumpscareBack:update(elapsed)
 end
 
 function SecretNightState:mousepressed(x, y, button)
@@ -691,6 +742,8 @@ function SecretNightState:mousepressed(x, y, button)
     self.beeperView:mousepressed(vmx, vmy, button)
 
     if not self.officeState.nightStarted then return end
+
+    if self.officeState.killed then return end
 
     if button == 1 and self.officeState.lookDir == "front"
         and self.officeState.flashlight.battery > 1
@@ -716,6 +769,7 @@ function SecretNightState:mousepressed(x, y, button)
 end
 
 function SecretNightState:keypressed(k)
+    if self.officeState.killed then return end
     self.monitorView:keypressed(k)
 end
 

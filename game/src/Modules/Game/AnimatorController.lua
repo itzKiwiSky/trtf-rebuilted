@@ -10,23 +10,24 @@ function AnimatorController:__construct(frames, speed, k)
     self.frame = 1
     self.visible = true
     self.reverseAnim = false
-    self.onComplete = function()end
+    self.onComplete = function() end
 end
 
-local function _playAnimation(this, reverse)
-    this.acc = 0
-    this.visible = true
-    this.reverseAnim = reverse
+local function _playAnimation(self, reverse)
+    self.acc = 0
+    self.visible = true
+    self.reverseAnim = reverse
 
-    this.frame = reverse and this.frames.frameCount or 1
+    self.frame = reverse and self.frames.frameCount or 1
     if reverse then
-        this.tabUp = false
+        thselfis.tabUp = false
     end
 
-    this.animationRunning = true
+    self.animationRunning = true
 end
 
 function AnimatorController:setState(reverse)
+    reverse = reverse or true
     if not self.animationRunning then
         _playAnimation(self, not reverse)
     end
