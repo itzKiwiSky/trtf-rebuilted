@@ -139,10 +139,15 @@ local function moveSelection(self, dir, names)
 end
 
 function MonitorView:init()
+    local animatorController = require 'src.Modules.Game.AnimatorController'
     self.gradients = {
         ["body_integrity"] = love.graphics.newGradient("horizontal", { lume.color("#521612") }, { lume.color("#E61E1E") }),
         ["fuel"] = love.graphics.newGradient("horizontal", { lume.color("#234214") }, { lume.color("#ABD941") })
     }
+
+    self.static = animatorController:new(SecretNightState.assets.effects["staticfx"], 25, "static_")
+    self.static.frame = 1
+    self.static.loop = true
 
     self.font = fontcache.getFont("ocrx", 24)
     self.fontInt = fontcache.getFont("ocrx", 18)
@@ -298,6 +303,11 @@ function MonitorView:draw()
                 )
             end,
         })
+        local sx = 480 / SecretNightState.assets["staticfx"]["static_1"]:getWidth()
+        local sy = 480 / SecretNightState.assets["staticfx"]["static_1"]:getHeight()
+        love.graphics.setBlendMode("add")
+        self.static:draw(startX, startY, sx, sy)
+        love.graphics.setBlendMode("alpha")
     end
 
     self.glowcnv:renderTo(function()

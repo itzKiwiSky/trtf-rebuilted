@@ -10,6 +10,7 @@ function AnimatorController:__construct(frames, speed, k)
     self.frame = 1
     self.visible = true
     self.reverseAnim = false
+    self.loop = true
     self.onComplete = function() end
 end
 
@@ -20,20 +21,23 @@ local function _playAnimation(self, reverse)
 
     self.frame = reverse and self.frames.frameCount or 1
     if reverse then
-        thselfis.tabUp = false
+        self.tabUp = false
     end
 
     self.animationRunning = true
 end
 
 function AnimatorController:setState(reverse)
-    reverse = reverse or true
     if not self.animationRunning then
         _playAnimation(self, not reverse)
     end
 end
 
-function AnimatorController:draw()
+function AnimatorController:draw(x, y, sx, sy)
+    x = x or 0
+    y = y or 0
+    sx = sx or 1
+    sy = sy or 1
     if self.visible then
         love.graphics.draw(self.frames[self.key .. self.frame], 0, 0, 0)
     end

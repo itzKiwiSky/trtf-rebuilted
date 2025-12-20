@@ -171,10 +171,10 @@ function SecretNightState:enter()
             x = 0,
             y = 0,
             alpha = 1,
-            battery = 10,
-            maxBattery = 10,
-            rechargeMultiplier = 2.1,
-            energyConsumeMultiplier = 2,
+            battery = 20,
+            maxBattery = 20,
+            rechargeMultiplier = 2.4,
+            energyConsumeMultiplier = 2.2,
             reloading = false,
         },
         beeper = {
@@ -187,7 +187,9 @@ function SecretNightState:enter()
         furnace = {
             open = false,
             vincentIntegrity = 100,
-            vincentIntegrityPenault = 0.5,
+            vincentIntegrityPenault = 0.25,
+            fuelPenalty = 0.3,
+            fuelAdd = 20,
             furnaceFuel = 20,
         },
         ambienceBoilerVolume = 0.25,
@@ -477,7 +479,7 @@ function SecretNightState:update(elapsed)
     local mx, my = self.gameCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
 
     -- blinkm shit --
-    local speed = 8
+    local speed = 4
     self.officeState.blink.alpha = self.officeState.blink.alpha - speed * elapsed
 
     if self.officeState.flashlight.active then
@@ -518,6 +520,12 @@ function SecretNightState:update(elapsed)
             end
         else
             self.officeState.wood.holdingFX = math.lerp(self.officeState.wood.holdingFX, 0, 0.05)
+        end
+
+        -- boiler update --
+        if self.officeState.furnace.furnaceFuel > 0 then
+            self.officeState.furnace.vincentIntegrity = self.officeState.furnace.vincentIntegrity - elapsed * self.officeState.furnace.vincentIntegrityPenault
+            self.officeState.furnace.furnaceFuel = self.officeState.furnace.furnaceFuel - elapsed * self.officeState.furnace.fuelPenalty
         end
     end
 
@@ -673,10 +681,10 @@ function SecretNightState:update(elapsed)
                 local s = lume.weightedchoice({ ["front"] = 40, ["right"] = 60, ["office"] = 10 })
                 if s == "office" and not self.officeState.flashlight.active then
                     self.IA.frankburt.state = "office"
-                    self.IA.frankburt.patience = 3 -- reinicia paciência ao entrar no office
+                    self.IA.frankburt.patience = math.random(5, 7) -- reinicia paciência ao entrar no office
                 else
                     self.IA.frankburt.state = s
-                    self.IA.frankburt.patience = 3 -- reinicia paciência em novo estado
+                    self.IA.frankburt.patience = math.random(5, 7) -- reinicia paciência em novo estado
                 end
             end
         end
@@ -768,6 +776,12 @@ function SecretNightState:mousepressed(x, y, button)
                     self.boilerAnim.onComplete = function()
                         self.officeState.furnace.open = not self.officeState.furnace.open
                     end
+                end
+            end
+            if self.officeState.furnace.open then
+                if self.officeState.wood.holdingWood then
+                    self.officeState.furnace.furnaceFuel = self.officeState.furnace.furnaceFuel + self.officeState.furnace.fuelAdd
+                    self.officeState.wood.holdingWood = false
                 end
             end
         end

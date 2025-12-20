@@ -1,6 +1,7 @@
 {
     "__ENGINE__": {
         "voicelinePath": "assets/sounds/night/calls/EN",
+        "voiceLineLockjawCall": "assets/sounds/night8/calls/night8_call_en.ogg",
         "creditsPath": "assets/data/language/en_credits.txt",
         "classicModePath": "assets/data/language/classic_mode_english.txt",
         "freeRoamPath": "assets/data/language/free_roam_english.txt",
@@ -187,7 +188,7 @@
         "secret_night_monitor_title": "Select a animatronic to modify",
         "secret_night_monitor_instruction": "Corrupt all bytes",
         "secret_night_monitor_permission_write": "Permission denied to write to this file!",
-        "secret_night_monitor_body_integrity": "Vincent body integrity",
+        "secret_night_monitor_body_integrity": "Boiler flame increase",
         "secret_night_monitor_boiler_fuel": "Boiler fuel"
     }
 }
