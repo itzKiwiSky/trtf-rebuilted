@@ -115,8 +115,9 @@ function SecretNightState:enter()
         },
     }
 
-    SecretNightState.assets.grd_battery = love.graphics.newGradient("horizontal", { lume.color('#4322D4') },
-        { lume.color('#225AD4') }, { lume.color('#22B3D4') })
+    SecretNightState.assets.grd_battery = love.graphics.newGradient("horizontal",
+        { lume.color('#4322D4') }, { lume.color('#225AD4') }, { lume.color('#22B3D4') }
+    )
 
     -- room --
     self.roomSize = {
@@ -172,8 +173,8 @@ function SecretNightState:enter()
             alpha = 1,
             battery = 10,
             maxBattery = 10,
-            rechargeMultiplier = 2,
-            energyConsumeMultiplier = 2.3,
+            rechargeMultiplier = 2.1,
+            energyConsumeMultiplier = 2,
             reloading = false,
         },
         beeper = {
@@ -662,7 +663,7 @@ function SecretNightState:update(elapsed)
             self.IA.config["golden_freddy"] = math.clamp(self.IA.config["golden_freddy"], 0, 20)
         end
 
-        if self.IA.frankburt.moveTimer <= 0 then
+        if self.IA.frankburt.moveTimer <= 0 and self.IA.frankburt.active then
             self.IA.frankburt.moveTimer = self.IA.frankburt.moveTimerMax
 
             self.IA.frankburt.rng = math.random(1, 20)
@@ -687,18 +688,23 @@ function SecretNightState:update(elapsed)
             if self.IA.frankburt.state == "office" then
                 -- Se a lanterna está ATIVA no office, ele mata imediatamente
                 if self.officeState.flashlight.active then
-                    -- kill --
+                    self.officeState.killed = true
+                    if self.officeState.lookDir == "front" then
+                        self.jumpscareFront:setState(false)
+                    else
+                        self.jumpscareBack:setState(false)
+                    end
                 else
-                    -- Lanterna desligada: ele espera
                     if self.IA.frankburt.patience <= 0 then
-                        -- go away -- (sai do office após paciência acabar)
+                        self.officeState.blink.alpha = 1
+                        self.IA.frankburt.state = "idle"
                     end
                 end
             else
                 -- Estados "front" ou "right"
                 -- O jogador pode usar a lanterna para se defender
                 if self.IA.frankburt.patience <= 0 then
-                    if collision.pointRect({ x = mx, y = my }, self.IA.frankburt.hitboxes[self.IA.frankburt.state]) then
+                    if collision.pointRect({ x = mx, y = my }, self.IA.frankburt.hitboxes[self.IA.frankburt.state]) and self.officeState.flashlight.alpha >= 0.3 then
                         self.officeState.blink.alpha = 1
                         self.IA.frankburt.state = "idle"
                     else

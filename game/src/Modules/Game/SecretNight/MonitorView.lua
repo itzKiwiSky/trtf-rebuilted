@@ -139,7 +139,13 @@ local function moveSelection(self, dir, names)
 end
 
 function MonitorView:init()
+    self.gradients = {
+        ["body_integrity"] = love.graphics.newGradient("horizontal", { lume.color("#521612") }, { lume.color("#E61E1E") }),
+        ["fuel"] = love.graphics.newGradient("horizontal", { lume.color("#234214") }, { lume.color("#ABD941") })
+    }
+
     self.font = fontcache.getFont("ocrx", 24)
+    self.fontInt = fontcache.getFont("ocrx", 18)
     local startX, startY = self.game.boardStart.x, self.game.boardStart.y
     local offsetX, offsetY = self.game.boardOffset.x, self.game.boardOffset.y
     table.sort(names)
@@ -189,6 +195,7 @@ function MonitorView:draw()
         love.graphics.setColor(0, 0, 0)
         local startX, startY = self.game.boardStart.x, self.game.boardStart.y
         love.graphics.rectangle("fill", startX, startY - 100, 480, 480)
+        local lastY = 0
         love.graphics.setColor(1, 1, 1)
         switch(self.currentState, {
             ["idle"] = function()
@@ -207,6 +214,31 @@ function MonitorView:draw()
                     love.graphics.print(drawName, self.font, anim.x, anim.y)
                     love.graphics.setColor(1, 1, 1)
                 end
+
+
+                love.graphics.print(languageService["secret_night_monitor_body_integrity"], self.fontInt, startX + 10, self.namesList["sugar"].y + 60)
+                love.graphics.draw(self.gradients["body_integrity"],
+                    startX + self.fontInt:getWidth(languageService["secret_night_monitor_body_integrity"]) + 30,
+                    self.namesList["sugar"].y + 60, 0,
+                    math.floor(128 * SecretNightState.officeState.furnace.vincentIntegrity / 100),
+                    self.fontInt:getHeight()
+                )
+                love.graphics.rectangle("line",
+                    startX + self.fontInt:getWidth(languageService["secret_night_monitor_body_integrity"]) + 30,
+                    self.namesList["sugar"].y + 60, 128, self.fontInt:getHeight()
+                )
+
+                love.graphics.print(languageService["secret_night_monitor_boiler_fuel"], self.fontInt, startX + 10, self.namesList["sugar"].y + 90)
+                love.graphics.draw(self.gradients["fuel"],
+                    startX + self.fontInt:getWidth(languageService["secret_night_monitor_boiler_fuel"]) + 30,
+                    self.namesList["sugar"].y + 90, 0,
+                    math.floor(128 * SecretNightState.officeState.furnace.furnaceFuel / 100),
+                    self.fontInt:getHeight()
+                )
+                love.graphics.rectangle("line",
+                    startX + self.fontInt:getWidth(languageService["secret_night_monitor_boiler_fuel"]) + 30,
+                    self.namesList["sugar"].y + 90, 128, self.fontInt:getHeight()
+                )
             end,
             ["minigame"] = function()
                 local animatronicsColors = {
