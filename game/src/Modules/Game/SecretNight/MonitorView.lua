@@ -145,9 +145,23 @@ function MonitorView:init()
         ["fuel"] = love.graphics.newGradient("horizontal", { lume.color("#234214") }, { lume.color("#ABD941") })
     }
 
-    self.static = animatorController:new(SecretNightState.assets.effects["staticfx"], 25, "static_")
-    self.static.frame = 1
-    self.static.loop = true
+    self.static = {
+        frames = SecretNightState.assets.effects["static"],
+        frame = 1,
+        speed = 30,
+        acc = 0,
+    }
+
+    print(inspect(self.static))
+    --self.static.
+    --animatorController:new(SecretNightState.assets.effects["static"], 25, "static_")
+    --[[self.static.onComplete = function()
+        print(self.static.frame)
+        self.static.frame = 1
+        self.static.animationRunning = true
+    end
+
+    self.static:setState(false)]]
 
     self.font = fontcache.getFont("ocrx", 24)
     self.fontInt = fontcache.getFont("ocrx", 18)
@@ -169,13 +183,19 @@ function MonitorView:init()
     self.game.boardOffset.y      = centerY - (totalSize / 2) - startY
 
     for key, value in spairs(self.animatronics) do
-        local tileSize            = tileSize
-        local spacing             = spacing
+        local tileSize = tileSize
+        local spacing  = spacing
 
-        local width               = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
-        local height              = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
+        local width    = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
+        local height   = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
 
-        local m                   = generateMatrix(matrixSize, tileSize)
+        local m        = generateMatrix(matrixSize, tileSize)
+
+        if key == "frankburt" then
+            for _, b in ipairs(m) do
+                b.id = 0
+            end
+        end
 
         animatronicsMatrixes[key] = {
             size = matrixSize,
@@ -196,9 +216,9 @@ end
 function MonitorView:draw()
     if not SecretNightState.officeState.monitor.displayStatic then return end
 
+    local startX, startY = self.game.boardStart.x, self.game.boardStart.y
     local function drawShit()
         love.graphics.setColor(0, 0, 0)
-        local startX, startY = self.game.boardStart.x, self.game.boardStart.y
         love.graphics.rectangle("fill", startX, startY - 100, 480, 480)
         local lastY = 0
         love.graphics.setColor(1, 1, 1)
@@ -303,12 +323,13 @@ function MonitorView:draw()
                 )
             end,
         })
-        local sx = 480 / SecretNightState.assets["staticfx"]["static_1"]:getWidth()
-        local sy = 480 / SecretNightState.assets["staticfx"]["static_1"]:getHeight()
-        love.graphics.setBlendMode("add")
-        self.static:draw(startX, startY, sx, sy)
-        love.graphics.setBlendMode("alpha")
     end
+
+    local sx = 512 / SecretNightState.assets.effects["static"]["static_1"]:getWidth()
+    local sy = 512 / SecretNightState.assets.effects["static"]["static_1"]:getHeight()
+    love.graphics.setBlendMode("add")
+    love.graphics.draw(self.static.frames["static_" .. self.static.frame], startX - 30, startY, 0, sx, sy)
+    love.graphics.setBlendMode("alpha")
 
     self.glowcnv:renderTo(function()
         love.graphics.clear(0, 0, 0, 0)
@@ -335,6 +356,13 @@ function MonitorView:update(elapsed)
 
     local startX, startY = self.game.boardStart.x, self.game.boardStart.y
     local offsetX, offsetY = self.game.boardOffset.x, self.game.boardOffset.y
+
+    if self.static.acc >= (1 / self.static.speed) then
+        self.static.frame = self.static.frame + 1
+        if self.static.frame > self.static.frames.frameCount then
+            self.static.frame = 1
+        end
+    end
 
     switch(self.currentState, {
         ["minigame"] = function()

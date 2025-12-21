@@ -39,7 +39,7 @@ function AnimatorController:draw(x, y, sx, sy)
     sx = sx or 1
     sy = sy or 1
     if self.visible then
-        love.graphics.draw(self.frames[self.key .. self.frame], 0, 0, 0)
+        love.graphics.draw(self.frames[self.key .. self.frame], x, y, 0, sx, sy)
     end
 end
 

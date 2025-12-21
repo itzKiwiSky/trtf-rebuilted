@@ -193,6 +193,7 @@ return function(night)
                 ["boiler_open"] = {},
             },
             animatronic = {},
+            hallu = {},
             animated = {}
         }
 
@@ -224,7 +225,12 @@ return function(night)
         loveloader.newImage(assets.office.animatronic, "office", "assets/images/game/night8/lockjaw_states/near.png")
         loveloader.newImage(assets.office.animatronic, "office_light", "assets/images/game/night8/lockjaw_states/near_on.png")
 
-        assets.effects["staticfx"] = loadBulk("static_", "assets/images/game/effects/static3/")
+        loveloader.newImage(assets.office.hallu, "back", "assets/images/game/night8/golden_freddy/golden_freddy_behind.png")
+        loveloader.newImage(assets.office.hallu, "office", "assets/images/game/night8/golden_freddy/golden_freddy_state1.png")
+        loveloader.newImage(assets.office.hallu, "front", "assets/images/game/night8/golden_freddy/golden_freddy_state2.png")
+        loveloader.newImage(assets.office.hallu, "right", "assets/images/game/night8/golden_freddy/golden_freddy_state3.png")
+
+        assets.effects["static"] = loadBulk("static_", "assets/images/game/effects/static3/")
         assets.office.states["look_back"] = loadBulk("lb_", "assets/images/game/night8/look_back/")
         assets.office.states["boiler_open"] = loadBulk("bo_", "assets/images/game/night8/boiler_open/")
         assets["beeper"] = loadBulk("beep_", "assets/images/game/night8/beeper/")
