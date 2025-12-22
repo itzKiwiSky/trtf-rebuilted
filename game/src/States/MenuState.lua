@@ -72,6 +72,12 @@ function MenuState:enter()
                 gamestate.switch(LoadingState)
             end
 
+            Slab.Separator()
+
+            if Slab.Button("Load ending") then
+                gamestate.switch(EndingState)
+            end
+
             Slab.EndWindow()
         end
     end
