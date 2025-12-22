@@ -18,6 +18,8 @@ end
 function CutsceneState:enter()
     love.mouse.setVisible(false)
 
+    self.font = fontcache.getFont("tnr", 34)
+
     self.blinkAlpha = 1
     self.cutsceneEnd = false
 
@@ -73,6 +75,11 @@ function CutsceneState:enter()
         radius = 0.3
     }
 
+    self.textFX = {
+        text = languageService["cutscene_day"],
+        alpha = 0,
+    }
+
     AudioSources["msc_bg_ambient"]:setLooping(true)
     AudioSources["msc_bg_ambient"]:setVolume(0.75)
     AudioSources["msc_bg_ambient"]:play()
@@ -120,13 +127,17 @@ function CutsceneState:enter()
         end
         AudioSources["sfx_cutscene_end"]:setVolume(0.8)
         AudioSources["sfx_cutscene_end"]:play()
-        sleep(3.5)
-        if registers.isStoryMode then
-            LoadingState.mode = "normal"
-            gamestate.switch(LoadingState)
-        else
-            gamestate.switch(MenuState)
-        end
+        sleep(1)
+        flux.to(self.textFX, 2, { alpha = 1 }):oncomplete(function()
+            flux.to(self.textFX, 2, { alpha = 0 }):delay(1):oncomplete(function()
+                if registers.isStoryMode then
+                    LoadingState.mode = "normal"
+                    gamestate.switch(LoadingState)
+                else
+                    gamestate.switch(MenuState)
+                end
+            end)
+        end)
     end)
 end
 
@@ -148,19 +159,21 @@ function CutsceneState:draw()
             )
         end
         if self.shadow.lookAnim then
-            love.graphics.setColor(0, 0, 0, 0.4)
+            love.graphics.setColor(0, 0, 0)
             love.graphics.rectangle("fill", 842, 281, 318, 138)
             love.graphics.setColor(1, 1, 1)
 
             love.graphics.draw(self.assets["eyes"], self.shadow.eyeX, 0)
 
-            love.graphics.setBlendMode("add")
-            love.graphics.draw(self.assets["eyes_glow"], self.shadow.eyeX, 0)
-            love.graphics.setBlendMode("alpha")
-
             love.graphics.draw(
                 self.assets["shadow"]["look"]["frame_" .. self.shadow.anim.frame], 0, 0
             )
+
+            love.graphics.setColor(1, 1, 1, 0.32)
+            love.graphics.setBlendMode("add")
+            love.graphics.draw(self.assets["eyes_glow"], self.shadow.eyeX, 0)
+            love.graphics.setBlendMode("alpha")
+            love.graphics.setColor(1, 1, 1)
         end
     end)
     self.mainCam:detach()
@@ -176,6 +189,10 @@ function CutsceneState:draw()
 
     love.graphics.setColor(0, 0, 0, self.blinkAlpha)
     love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
+
+    love.graphics.setColor(1, 1, 1, self.textFX.alpha)
+    love.graphics.printf(self.textFX.text, self.font, 0, shove.getViewportHeight() / 2, shove.getViewportWidth(), "center")
     love.graphics.setColor(1, 1, 1, 1)
 end
 

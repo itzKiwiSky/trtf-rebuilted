@@ -524,6 +524,8 @@ function MenuState:leave()
         f:release()
     end
 
+    flux.remove()
+
     self.menuBackground:release()
 end
 
