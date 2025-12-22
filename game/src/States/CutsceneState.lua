@@ -16,6 +16,9 @@ function applyShake(amplitude, frequency)
 end
 
 function CutsceneState:enter()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
     love.mouse.setVisible(false)
 
     self.font = fontcache.getFont("tnr", 34)

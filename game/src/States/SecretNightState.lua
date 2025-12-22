@@ -3,6 +3,9 @@ SecretNightState.assets = {}
 SecretNightState.forceRestart = false
 
 function SecretNightState:enter()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
     self.beeperController = require 'src.Modules.Game.BeeperController'
     self.beeperView = require 'src.Modules.Game.SecretNight.BeeperView'
     self.monitorView = require 'src.Modules.Game.SecretNight.MonitorView'

@@ -3,17 +3,17 @@ local animatronic = require 'src.Modules.Game.Animatronic'
 local Chica = animatronic:extend("Chica")
 
 function Chica:__construct()
-    Chica.super.__construct(self, "chica", 0, 0)  -- wtf outside the map XDDD
+    Chica.super.__construct(self, "chica", 0, 0) -- wtf outside the map XDDD
 
 
     self.id = "chica"
     self.path = {
-        { x = 1124, y = 256, camera = 6 },        -- showstage
-        { x = 1064, y = 323, camera = 3 },         -- dining_area
-        { x = 1165, y = 432, camera = 2 },         -- storage
-        { x = 1127, y = 490, camera = 10 },         -- right_hall
-        { x = 1116, y = 544, camera = nil },        -- front_office
-        { x = 1079, y = 592, camera = nil },        -- office
+        { x = 1124, y = 256, camera = 6 },   -- showstage
+        { x = 1064, y = 323, camera = 3 },   -- dining_area
+        { x = 1165, y = 432, camera = 2 },   -- storage
+        { x = 1127, y = 490, camera = 10 },  -- right_hall
+        { x = 1116, y = 544, camera = nil }, -- front_office
+        { x = 1079, y = 592, camera = nil }, -- office
     }
 
     self.moveTime = 5
@@ -64,7 +64,7 @@ function Chica:update(elapsed)
                 self.timer = 0
                 self.currentState = 1
                 NightState.officeState.hasAnimatronicInOffice = false
-                AudioSources["stare"]:stop()
+                AudioSources["sfx_stare"]:stop()
                 NightState.officeState.fadealpha = 1
             end
         end

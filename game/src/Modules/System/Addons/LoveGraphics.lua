@@ -64,16 +64,20 @@ function love.graphics.newQuadFromImage(mode, filename)
     return image, quads
 end
 
+---@alias QuadLoadMode
+---| "hash"
+---| "array"
+
 ---Get quads from filename
 ---@param image love.Drawable
 ---@param filename string
----@param mode string
+---@param mode QuadLoadMode
 function love.graphics.getQuads(image, filename, mode)
     mode = mode or "array"
     local jsonData = love.filesystem.read(filename)
     local sparrow = json.decode(jsonData)
 
-    local quads = processQuadGroup(mode, image, sparrow)   -- discards the image data --
+    local quads = processQuadGroup(mode, image, sparrow) -- discards the image data --
     return quads
 end
 
@@ -81,7 +85,7 @@ function love.graphics.getQuadsFromAtlas(atlas, splitX, splitY)
     local image = love.graphics.newImage(atlas)
     splitX, splitY = splitX or image:getWidth(), splitY or image:getHeight()
     local quads = {}
-    
+
     local frameWidth = image:getWidth() / splitX
     local frameHeight = image:getHeight() / splitY
 
@@ -124,16 +128,16 @@ function love.graphics.newGradient(dir, ...)
             local color = select(i, ...)
             local x = (i - 1) / (colorLen - 1)
 
-            meshData[#meshData + 1] = {x, 1, x, 1, color[1], color[2], color[3], color[4] or 1}
-            meshData[#meshData + 1] = {x, 0, x, 0, color[1], color[2], color[3], color[4] or 1}
+            meshData[#meshData + 1] = { x, 1, x, 1, color[1], color[2], color[3], color[4] or 1 }
+            meshData[#meshData + 1] = { x, 0, x, 0, color[1], color[2], color[3], color[4] or 1 }
         end
     else
         for i = 1, colorLen do
             local color = select(i, ...)
             local y = (i - 1) / (colorLen - 1)
 
-            meshData[#meshData + 1] = {0, y, 0, y, color[1], color[2], color[3], color[4] or 1}
-            meshData[#meshData + 1] = {1, y, 1, y, color[1], color[2], color[3], color[4] or 1}
+            meshData[#meshData + 1] = { 0, y, 0, y, color[1], color[2], color[3], color[4] or 1 }
+            meshData[#meshData + 1] = { 1, y, 1, y, color[1], color[2], color[3], color[4] or 1 }
         end
     end
 
@@ -171,5 +175,5 @@ function love.graphics.setHexColor(_r, _g, _b, _a)
         lgSetColor(r, g, b, a or 1)
     end
 end
-]]--
+]] --
 return love.graphics

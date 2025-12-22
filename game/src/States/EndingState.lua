@@ -2,6 +2,9 @@ EndingState = {}
 EndingState.mode = "normal"
 
 function EndingState:enter()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
     local lang = gameSave.save.user.settings.misc.language
     self.text = love.filesystem.read("assets/data/language/credits_" .. lang .. ".txt")
     --print(self.text)

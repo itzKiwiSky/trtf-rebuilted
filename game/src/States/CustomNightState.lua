@@ -22,8 +22,8 @@ function CustomNightState:enter()
     self.fxBlurBG = moonshine(moonshine.effects.boxblur)
     self.fxBlurBG.boxblur.radius = { 7, 7 }
     self.shdFXScreen = moonshine(moonshine.effects.crt)
-    .chain(moonshine.effects.pixelate)
-    .chain(moonshine.effects.chromasep)
+        .chain(moonshine.effects.pixelate)
+        .chain(moonshine.effects.chromasep)
 
     self.shdFXScreen.pixelate.feedback = 0.1
     self.shdFXScreen.pixelate.size = { 1.5, 1.5 }
@@ -55,7 +55,7 @@ function CustomNightState:enter()
     self.menuBG = love.graphics.newImage("assets/images/game/cn_menu.png")
 
     self.crtOverlay = love.graphics.newImage("assets/images/game/effects/perfect_crt_noframe.png")
-    
+
     self.menuCam = camera.new(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
     self.menuCam.factorX = 25
     self.menuCam.factorY = 34
@@ -75,7 +75,7 @@ function CustomNightState:draw()
     self.shdFXScreen(function()
         self.fxBlurBG(function()
             self.menuCam:attach()
-                love.graphics.draw(self.menuBG, shove.getViewportWidth() / self.menuBG:getWidth(), shove.getViewportHeight() / self.menuBG:getHeight())
+            love.graphics.draw(self.menuBG, shove.getViewportWidth() / self.menuBG:getWidth(), shove.getViewportHeight() / self.menuBG:getHeight())
             self.menuCam:detach()
         end)
 
@@ -95,7 +95,7 @@ function CustomNightState:update(elapsed)
 
     loveView.update(elapsed)
 
-        -- camera bounds --
+    -- camera bounds --
     if self.menuCam.x < self.X_LEFT_FRAME then
         self.menuCam.x = self.X_LEFT_FRAME
     end

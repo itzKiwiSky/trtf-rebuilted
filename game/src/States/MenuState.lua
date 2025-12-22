@@ -27,6 +27,7 @@ local function newButtonHitbox(x, y, w, h)
 end
 
 function MenuState:enter()
+    flux.remove()
     MenuState.saveState = gameSave.save.user.progress
     self.settingsSubState = require 'src.States.Substates.SettingsSubstate'
     self.settingsSubState:load()
@@ -396,7 +397,7 @@ function MenuState:draw()
         end
         love.graphics.print(e.text, self.fnt_menu, self.mainMenuButtons.config.x + e.meta.offsetX, e.hitbox.y)
         love.graphics.setColor(1, 1, 1, 1)
-        --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+        love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
     end
 
     if self.configMenu then

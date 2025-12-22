@@ -1,5 +1,5 @@
 local function preloadAudio()
-    local files = fsutil.scanFolder("assets/sounds", false, {"assets/sounds/night/calls", "assets/sounds/night8/calls"})
+    local files = fsutil.scanFolder("assets/sounds", false, { "assets/sounds/night/calls", "assets/sounds/night8/calls" })
 
     for f = 1, #files, 1 do
         local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")
@@ -13,11 +13,14 @@ end
 SplashState = {}
 
 function SplashState:enter()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
             Slab.BeginWindow("menuNightDev", { Title = "Development" })
             Slab.Text("State teleport")
-            
+
             if Slab.Button("Minigame State") then
                 gamestate.switch(MinigameSceneState)
             end
@@ -37,14 +40,14 @@ function SplashState:enter()
         end
     end)
 
-    local introID = lume.weightedchoice({["trtl_meme.ogv"] = 25, ["new_intro.ogv"] = 75}) -- new_intro.ogv
+    local introID = lume.weightedchoice({ ["trtl_meme.ogv"] = 25, ["new_intro.ogv"] = 75 }) -- new_intro.ogv
     self.introVideo = love.graphics.newVideo("assets/videos/" .. introID)
     self.canContinue = false
 
     if self.introVideo then
         self.introVideo:play()
     end
-    
+
     love.mouse.setVisible(false)
 
     self.VIDEO_WIDTH = love.graphics.getWidth() / self.introVideo:getWidth()
@@ -71,7 +74,7 @@ function SplashState:update(elapsed)
         else
             gamestate.switch(MenuState)
         end
-        ]]--
+        ]] --
         gamestate.switch(MenuState)
     else
         loveloader.update()

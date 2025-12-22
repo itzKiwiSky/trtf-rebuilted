@@ -5,6 +5,9 @@ local function newButtonHitbox(x, y, w, h)
 end
 
 function ExtrasState:enter()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
     self.isJumpcareLoading = false
     self.showExtrasOptions = true
     self.fnt_extras = fontcache.getFont("ocrx", 28)
@@ -43,7 +46,7 @@ function ExtrasState:enter()
     self.fxBlurBG = moonshine(moonshine.effects.boxblur).chain(moonshine.effects.pixelate)
     self.fxBlurBG.boxblur.radius = { 7, 7 }
     self.shd_effect = moonshine(moonshine.effects.crt)
-    .chain(moonshine.effects.chromasep)
+        .chain(moonshine.effects.chromasep)
 
     self.fxBlurBG.pixelate.feedback = 0.1
     self.fxBlurBG.pixelate.size = { 1.5, 1.5 }
@@ -53,7 +56,7 @@ function ExtrasState:enter()
     self.menuItems = {
         config = {
             startY = 165,
-            paddingElements = 69,       -- :smirk: --
+            paddingElements = 69, -- :smirk: --
             x = 64,
             offsetX = 24
         },
@@ -123,9 +126,9 @@ function ExtrasState:draw()
         end)
 
         love.graphics.setBlendMode("add")
-            love.graphics.setColor(1, 1, 1, 0.12)
-                love.graphics.draw(self.staticAnimationFX.frames[self.staticAnimationFX.config.frameid], 0, 0)
-            love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setColor(1, 1, 1, 0.12)
+        love.graphics.draw(self.staticAnimationFX.frames[self.staticAnimationFX.config.frameid], 0, 0)
+        love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
 
         love.graphics.draw(self.crtOverlay, 0, 0, 0, shove.getViewportWidth() / self.crtOverlay:getWidth(), shove.getViewportHeight() / self.crtOverlay:getHeight())
@@ -170,7 +173,6 @@ function ExtrasState:update(elapsed)
             else
                 e.meta.offsetX = math.lerp(e.meta.offsetX, 0, 0.1)
             end
-            
         end
     end
 end
@@ -202,7 +204,7 @@ function ExtrasState:leave()
     for k, v in pairs(AudioSources) do
         v:stop()
     end
-    
+
     for _, f in ipairs(self.staticAnimationFX.frames) do
         f:release()
     end

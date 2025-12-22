@@ -15,11 +15,35 @@ end
 
 local function reloadMinigames(t)
     table.clear(t)
-    local minigameList = love.filesystem.getDirectoryItems("src/Modules/Game/Minigame/Events")
-    for _, m in ipairs(minigameList) do
-        t[m:gsub("%.lua", "")] = require("src.Modules.Game.Minigame.Events." .. m:gsub("%.lua", ""))
+
+    local path = "src/Modules/Game/Minigame/Events"
+    local files = love.filesystem.getDirectoryItems(path)
+
+    for _, file in ipairs(files) do
+        if file:sub(-4) == ".lua" then
+            local name = file:gsub("%.lua$", "")
+            local fullPath = path .. "/" .. file
+
+            -- carrega o chunk
+            local ok, chunkOrErr = pcall(love.filesystem.load, fullPath)
+            if not ok then
+                print("[Minigame Reload] Failed to load:", name, chunkOrErr)
+                goto continue
+            end
+
+            -- executa o chunk
+            local ok2, moduleOrErr = pcall(chunkOrErr)
+            if not ok2 then
+                print("[Minigame Reload] Failed to run:", name, moduleOrErr)
+                goto continue
+            end
+
+            t[name] = moduleOrErr
+        end
+
+        ::continue::
     end
-    minigameList = nil
+
     collectgarbage("collect")
 end
 
@@ -35,7 +59,7 @@ function MinigameSceneState:enter()
     self.player = require 'src.Modules.Game.Minigame.Player'
     self.world = bump.newWorld(16)
     self.isShuttingDown = false
-    
+
     AudioSources["sfx_minigame_loop_bg"]:play()
     AudioSources["sfx_minigame_loop_bg"]:setLooping(true)
     AudioSources["sfx_minigame_loop_bg"]:setVolume(0.5)
@@ -185,54 +209,54 @@ function MinigameSceneState:enter()
     self.displayDate = ""
     self.fnt_text = fontcache.getFont("vcr", 34)
     self.script = self.minigames[self.currentMinigame] or {
-        init = function()end,
-        draw = function()end,
-        shutdown = function()end,
-        update = function()end,
+        init = function() end,
+        draw = function() end,
+        shutdown = function() end,
+        update = function() end,
     } -- defaul script --
 
     self.removeFog = false
-    
+
     if FEATURE_FLAGS.developerMode then
         registers.devWindowContent = function()
             Slab.BeginWindow("mainNightDev", { Title = "Minigame development" })
-                Slab.Separator()
-                Slab.Text("General debug values")
-                Slab.Text("currentArea : " .. self.currentArea)
-                Slab.Separator()
-                Slab.Text("General settings")
-                if Slab.CheckBox(registers.showDebugHitbox, "Show hitboxes") then
-                    registers.showDebugHitbox = not registers.showDebugHitbox
+            Slab.Separator()
+            Slab.Text("General debug values")
+            Slab.Text("currentArea : " .. self.currentArea)
+            Slab.Separator()
+            Slab.Text("General settings")
+            if Slab.CheckBox(registers.showDebugHitbox, "Show hitboxes") then
+                registers.showDebugHitbox = not registers.showDebugHitbox
+            end
+            if Slab.CheckBox(self.isExtras, "force extras exit") then
+                self.isExtras = not self.isExtras
+            end
+            Slab.Text("Player Cooldown")
+            Slab.SameLine()
+            if Slab.Input("playerSpeedCooldownInput", { Text = tostring(self.player.maxCooldown), ReturnOnText = false, NumbersOnly = true, Precision = 0.01 }) then
+                self.player.maxCooldown = Slab.GetInputNumber()
+            end
+            Slab.Text("Camera Zoom")
+            Slab.SameLine()
+            if Slab.Input("cameraZoomInput", { Text = tostring(self.minigameCam.scale), ReturnOnText = false, NumbersOnly = true, Precision = 0.01 }) then
+                self.minigameCam:zoomTo(Slab.GetInputNumber())
+            end
+            Slab.Separator()
+            if Slab.CheckBox(self.removeFog, "Remove room clip") then
+                self.removeFog = not self.removeFog
+            end
+            Slab.Separator()
+            if Slab.Button("Reload minigames") then
+                reloadMinigames(self.minigames)
+            end
+            Slab.Separator()
+            for name, script in spairs(self.minigames) do
+                if Slab.Button(name) then
+                    self.currentMinigame = name
+                    self.script = self.minigames[self.currentMinigame]
+                    self.script.init()
                 end
-                if Slab.CheckBox(self.isExtras, "force extras exit") then
-                    self.isExtras = not self.isExtras
-                end
-                Slab.Text("Player Cooldown")
-                Slab.SameLine()
-                if Slab.Input("playerSpeedCooldownInput", { Text = tostring(self.player.maxCooldown), ReturnOnText = false, NumbersOnly = true, Precision = 0.01 }) then
-                    self.player.maxCooldown = Slab.GetInputNumber()
-                end
-                Slab.Text("Camera Zoom")
-                Slab.SameLine()
-                if Slab.Input("cameraZoomInput", { Text = tostring(self.minigameCam.scale), ReturnOnText = false, NumbersOnly = true, Precision = 0.01 }) then
-                    self.minigameCam:zoomTo(Slab.GetInputNumber())
-                end
-                Slab.Separator()
-                if Slab.CheckBox(self.removeFog, "Remove room clip") then
-                    self.removeFog = not self.removeFog
-                end
-                Slab.Separator()
-                if Slab.Button("Reload minigames") then
-                    reloadMinigames(self.minigames)
-                end
-                Slab.Separator()
-                for name, script in spairs(self.minigames) do
-                    if Slab.Button(name) then
-                        self.currentMinigame = name
-                        self.script = self.minigames[self.currentMinigame]
-                        self.script.init()
-                    end
-                end
+            end
             Slab.EndWindow()
         end
     end
@@ -251,10 +275,10 @@ function MinigameSceneState:enter()
 
     for _, animatronic in ipairs(availableAnimatronics) do
         local anim = {
-            down = {self.animationsAnimatronics[animatronic .. "_" .. 0], self.animationsAnimatronics[animatronic .. "_" .. 1]},
-            left = {self.animationsAnimatronics[animatronic .. "_" .. 2], self.animationsAnimatronics[animatronic .. "_" .. 3]},
-            right = {self.animationsAnimatronics[animatronic .. "_" .. 4], self.animationsAnimatronics[animatronic .. "_" .. 5]},
-            up = {self.animationsAnimatronics[animatronic .. "_" .. 6], self.animationsAnimatronics[animatronic .. "_" .. 7]},
+            down = { self.animationsAnimatronics[animatronic .. "_" .. 0], self.animationsAnimatronics[animatronic .. "_" .. 1] },
+            left = { self.animationsAnimatronics[animatronic .. "_" .. 2], self.animationsAnimatronics[animatronic .. "_" .. 3] },
+            right = { self.animationsAnimatronics[animatronic .. "_" .. 4], self.animationsAnimatronics[animatronic .. "_" .. 5] },
+            up = { self.animationsAnimatronics[animatronic .. "_" .. 6], self.animationsAnimatronics[animatronic .. "_" .. 7] },
         }
 
         if animatronic == "bonnie" then
@@ -286,11 +310,11 @@ function MinigameSceneState:enter()
     }
 
     self.minigameCRT = moonshine(moonshine.effects.crt)
-    .chain(moonshine.effects.vignette)
-    .chain(moonshine.effects.chromasep)
+        .chain(moonshine.effects.vignette)
+        .chain(moonshine.effects.chromasep)
 
     self.minigameCRT.chromasep.radius = 1
-    
+
     self.mainMap = love.graphics.newImage("assets/images/game/minigames/map.png")
     self.decoCRT = love.graphics.newImage("assets/images/game/effects/perfect_crt.png")
     self.vignetteMask = love.graphics.newImage("assets/images/game/effects/vignette.png")
@@ -326,68 +350,68 @@ function MinigameSceneState:draw()
     end
 
     love.graphics.push("all")
-    love.graphics.setCanvas({self.gameBuffer, stencil = true})
-        love.graphics.clear(0, 0, 0)
+    love.graphics.setCanvas({ self.gameBuffer, stencil = true })
+    love.graphics.clear(0, 0, 0)
 
-        self.minigameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
-        
-            love.graphics.draw(self.mainMap)
+    self.minigameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
 
-            love.graphics.stencil(function()
-                for k, areas in pairs(self.map.areas) do
-                    if self.currentArea == k or self.removeFog then
-                        love.graphics.rectangle("fill", areas.x, areas.y, areas.w, areas.h)
-                        --love.graphics.draw(vignetteMask, areas.x, areas.y, vignetteMask:getWidth() / areas.w, vignetteMask:getHeight() / areas.h)
-                    end
-                end
-            end, "replace")
+    love.graphics.draw(self.mainMap)
 
-            if self.script.draw then
-                self.script.draw()
+    love.graphics.stencil(function()
+        for k, areas in pairs(self.map.areas) do
+            if self.currentArea == k or self.removeFog then
+                love.graphics.rectangle("fill", areas.x, areas.y, areas.w, areas.h)
+                --love.graphics.draw(vignetteMask, areas.x, areas.y, vignetteMask:getWidth() / areas.w, vignetteMask:getHeight() / areas.h)
             end
+        end
+    end, "replace")
 
-            love.graphics.setStencilTest("less", 1)
-                love.graphics.setColor(0, 0, 0, 1)
-                love.graphics.rectangle("fill", 0, 0, self.mainMap:getDimensions())
-                love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.setStencilTest()
+    if self.script.draw then
+        self.script.draw()
+    end
+
+    love.graphics.setStencilTest("less", 1)
+    love.graphics.setColor(0, 0, 0, 1)
+    love.graphics.rectangle("fill", 0, 0, self.mainMap:getDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setStencilTest()
 
 
-            self.player.draw()
-            -- debug --
-            if FEATURE_FLAGS.developerMode and registers.showDebugHitbox then
-                for k, areas in pairs(self.map.areas) do
-                    if currentArea == k then
-                        local cr, cg, cb = lume.color(areas.color)
-                        drawBox(area, cr, cg, cb)
-                    end
-                end
-                
-                for _, walls in ipairs(self.map.collisions) do
-                    local cr, cg, cb = lume.color(walls.color)
-                    drawBox(walls, cr, cg, cb)
-                end
-
-                for i, v in pairs(self.map.actionAreas) do
-                    local cr, cg, cb = lume.color(v.color)
-                    drawBox(v, cr, cg, cb)
-                end
-
-                --for _, spawn in pairs(self.spawnAreas) do
-                    --drawBox(spawn, 0.75, 0, 1)
-                    --love.graphics.print(_, spawn.x, spawn.y - 5, 0, 0.5, 0.5)
-                --end
-
-                drawBox(self.player.hitbox, 0.75, 1, 0)
+    self.player.draw()
+    -- debug --
+    if FEATURE_FLAGS.developerMode and registers.showDebugHitbox then
+        for k, areas in pairs(self.map.areas) do
+            if currentArea == k then
+                local cr, cg, cb = lume.color(areas.color)
+                drawBox(area, cr, cg, cb)
             end
-        self.minigameCam:detach()
+        end
 
-        --local cycleDuration = 0.3
-        --local activeThreshold = 0.5
-        --if (love.timer.getTime() % cycleDuration) / cycleDuration > activeThreshold == 0 then
-        love.graphics.printf(self.displayDate, self.fnt_text, 0, 24, shove.getViewportWidth(), "center")
-        love.graphics.printf(self.displayText, self.fnt_text, 0, shove.getViewportHeight() - 64, shove.getViewportWidth(), "center")
+        for _, walls in ipairs(self.map.collisions) do
+            local cr, cg, cb = lume.color(walls.color)
+            drawBox(walls, cr, cg, cb)
+        end
+
+        for i, v in pairs(self.map.actionAreas) do
+            local cr, cg, cb = lume.color(v.color)
+            drawBox(v, cr, cg, cb)
+        end
+
+        --for _, spawn in pairs(self.spawnAreas) do
+        --drawBox(spawn, 0.75, 0, 1)
+        --love.graphics.print(_, spawn.x, spawn.y - 5, 0, 0.5, 0.5)
         --end
+
+        drawBox(self.player.hitbox, 0.75, 1, 0)
+    end
+    self.minigameCam:detach()
+
+    --local cycleDuration = 0.3
+    --local activeThreshold = 0.5
+    --if (love.timer.getTime() % cycleDuration) / cycleDuration > activeThreshold == 0 then
+    love.graphics.printf(self.displayDate, self.fnt_text, 0, 24, shove.getViewportWidth(), "center")
+    love.graphics.printf(self.displayText, self.fnt_text, 0, shove.getViewportHeight() - 64, shove.getViewportWidth(), "center")
+    --end
     love.graphics.setCanvas()
     love.graphics.pop()
 
@@ -398,7 +422,7 @@ function MinigameSceneState:draw()
     self.interfereceBuffer:renderTo(function()
         love.graphics.clear()
         love.graphics.setShader(self.interferenceFX)
-            love.graphics.draw(self.gameBuffer)
+        love.graphics.draw(self.gameBuffer)
         love.graphics.setShader()
     end)
 
@@ -433,7 +457,7 @@ function MinigameSceneState:update(elapsed)
 
     if self.isShuttingDown then
         self.displayFace.flashTimer:update(elapsed)
-    end 
+    end
 
     -- set room size --
     local area = self.map.areas[self.currentArea]

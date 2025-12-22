@@ -8,6 +8,9 @@ LoadingState = {}
 LoadingState.mode = "normal"
 
 function LoadingState:enter()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
     self.ctrEffect = moonshine(moonshine.effects.crt).chain(moonshine.effects.vignette)
     self.glowTextEffect = moonshine(moonshine.effects.glow)
 

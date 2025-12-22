@@ -25,7 +25,7 @@ function Minigame.init()
     Minigame.assets["tomato_sauce"] = love.graphics.newImage("assets/images/game/minigames/tomato_sauce.png")
     MinigameSceneState.displayFace.currentFace = "freddy"
 
-    MinigameSceneState.displayDate = "1-11-2005"
+    MinigameSceneState.displayDate = "11-04-2005"
     MinigameSceneState.displayText = languageService["minigame_display_freddy_collect_gift"]
 
     AudioSources["msc_bg_freddy"]:play()
@@ -37,13 +37,13 @@ function Minigame.init()
 
     Minigame.gifts = {}
     Minigame.assets["gifts"] = { img = nil, quads = {} }
-    Minigame.assets["gifts"].img =  love.graphics.newImage("assets/images/game/minigames/gifts.png")
+    Minigame.assets["gifts"].img = love.graphics.newImage("assets/images/game/minigames/gifts.png")
     Minigame.assets["gifts"].quads = love.graphics.getQuads(Minigame.assets["gifts"].img, "assets/images/game/minigames/gifts.json", "array")
 
     local charsPos = { "sugar", "bonnie", "chica", "foxy" }
     for _, c in ipairs(charsPos) do
-        local char = Minigame.statues:new(MinigameSceneState.animatronicSprites, 
-        MinigameSceneState.animSets[c]["idle"],
+        local char = Minigame.statues:new(MinigameSceneState.animatronicSprites,
+            MinigameSceneState.animSets[c]["idle"],
             MinigameSceneState.spawnAreas[c].centerX, MinigameSceneState.spawnAreas[c].centerY, false, true
         )
 
@@ -66,37 +66,14 @@ function Minigame.init()
         end
     end
 
-    --MinigameSceneState.spawnAreas["bonnie_child_minigame"] 
+    --MinigameSceneState.spawnAreas["bonnie_child_minigame"]
     local playerPos = MinigameSceneState.spawnAreas["freddy"]
     MinigameSceneState.player.setPos(playerPos.x, playerPos.y)
 
     -- hopefully the gift will spawn in correct order --
-    table.sort(Minigame.gifts, function (a, b)
+    table.sort(Minigame.gifts, function(a, b)
         return a.y < b.y
     end)
-
-    --[[Minigame.giftList = {
-        {
-            posArea = "showstage",
-            activationArea = { "showstage" },
-            direction = "left",
-        },
-        {
-            posArea = "dinning_area",
-            activationArea = { "dinning_area" },
-            direction = "right",
-        },
-        {
-            posArea = "dinning_area",
-            activationArea = { "dinning_area" },
-            direction = "down",
-        },
-        {
-            posArea = "dinning_area",
-            activationArea = { "dinning_area" },
-            direction = "down",
-        },
-    }]]
 
     Minigame.giftList = {
         {
@@ -111,7 +88,7 @@ function Minigame.init()
                 ["dinning_area"] = "right"
             },
         },
-            {
+        {
             startArea = "dinning_area",
             activationAreas = {
                 ["dinning_area"] = "down"
@@ -144,8 +121,6 @@ function Minigame.init()
         moveDirection = "left",
     }
 
-    --print(inspect(MinigameSceneState.map))
-
     Minigame.chars["puppet"].setArea = function(areaname)
         Minigame.chars["puppet"].x = MinigameSceneState.map.areas[areaname].centerX
         Minigame.chars["puppet"].y = MinigameSceneState.map.areas[areaname].centerY
@@ -164,18 +139,18 @@ function Minigame.draw()
     end
 
     if table.contains(Minigame.chars["puppet"].currentAreas, MinigameSceneState.currentArea) then
-        love.graphics.draw(Minigame.chars["puppet"].img, 
-            Minigame.chars["puppet"].x, Minigame.chars["puppet"].y, 0, 
-            Minigame.chars["puppet"].moveDirection == "left" and -1.2 or 1.2, 1.2, 
+        love.graphics.draw(Minigame.chars["puppet"].img,
+            Minigame.chars["puppet"].x, Minigame.chars["puppet"].y, 0,
+            Minigame.chars["puppet"].moveDirection == "left" and -1.2 or 1.2, 1.2,
             Minigame.chars["puppet"].img:getWidth() / 2, Minigame.chars["puppet"].img:getHeight() / 2
         )
     end
 
     if Minigame.showSauce then
         love.graphics.draw(
-            Minigame.assets["tomato_sauce"], 
+            Minigame.assets["tomato_sauce"],
             MinigameSceneState.player.x, MinigameSceneState.player.y, 0, 2, 2,
-            Minigame.assets["tomato_sauce"]:getWidth() / 2, 
+            Minigame.assets["tomato_sauce"]:getWidth() / 2,
             Minigame.assets["tomato_sauce"]:getHeight() / 2
         )
     end
@@ -206,16 +181,16 @@ function Minigame.update(elapsed)
             Minigame.chars["puppet"].moveCooldown = Minigame.chars["puppet"].moveCooldown - elapsed
             if Minigame.chars["puppet"].moveCooldown <= 0 then
                 switch(Minigame.chars["puppet"].moveDirection, {
-                    ["left"] = function ()
+                    ["left"] = function()
                         Minigame.chars["puppet"].x = Minigame.chars["puppet"].x - Minigame.chars["puppet"].step
                     end,
-                    ["right"] = function ()
+                    ["right"] = function()
                         Minigame.chars["puppet"].x = Minigame.chars["puppet"].x + Minigame.chars["puppet"].step
                     end,
-                    ["up"] = function ()
+                    ["up"] = function()
                         Minigame.chars["puppet"].y = Minigame.chars["puppet"].y - Minigame.chars["puppet"].step
                     end,
-                    ["down"] = function ()
+                    ["down"] = function()
                         Minigame.chars["puppet"].y = Minigame.chars["puppet"].y + Minigame.chars["puppet"].step
                     end,
                 })
@@ -236,7 +211,7 @@ function Minigame.update(elapsed)
         end
 
         if Minigame.currentGift > #Minigame.gifts then
-            Minigame.showSauce = true           
+            Minigame.showSauce = true
             MinigameSceneState.isShuttingDown = true
             MinigameSceneState.interferenceIntensity = 60
             MinigameSceneState.interferenceSpeed = 100

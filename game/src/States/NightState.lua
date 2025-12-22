@@ -74,6 +74,10 @@ NightState.modifiers = {
 }
 
 function NightState:enter()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
+
     self.doorController = require 'src.Modules.Game.DoorController'
     self.tabletController = require 'src.Modules.Game.TabletController'
     self.buttonsUI = require 'src.Modules.Game.Utils.ButtonUI'

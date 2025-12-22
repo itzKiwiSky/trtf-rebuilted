@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="15" nextobjectid="320">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="15" nextobjectid="343">
  <editorsettings>
   <export target="../game/assets/images/game/minigames/minigame_map.lua" format="lua"/>
  </editorsettings>
@@ -9,7 +9,7 @@
  <objectgroup id="12" name="map_img" locked="1">
   <object id="239" gid="1" x="0" y="1136" width="1072" height="1136"/>
  </objectgroup>
- <objectgroup color="#11ffdb" id="4" name="areas">
+ <objectgroup color="#11ffdb" id="4" name="areas" locked="1">
   <properties>
    <property name="debug_color" type="color" value="#ff4cc764"/>
   </properties>
@@ -192,6 +192,7 @@
   </properties>
   <object id="222" name="foxy_minigame_guard_action_left" x="329.834" y="970.334" width="7.33333" height="155"/>
   <object id="253" name="foxy_minigame_guard_action_right" x="477.333" y="972.167" width="7.33333" height="155"/>
+  <object id="341" name="lockjaw_minigame_window" x="344.333" y="925.167" width="124.667" height="4.66667"/>
   <object id="257" name="sugar_minigame_door_unlock" x="631.455" y="413.364" width="18.9697" height="54.2727"/>
   <object id="258" name="sugar_minigame_vincent_attack" x="847.417" y="370.417" width="7.33333" height="155"/>
  </objectgroup>
@@ -211,6 +212,23 @@
   <object id="305" name="spawn_box" x="475.25" y="899.75" width="16" height="16"/>
   <object id="306" name="spawn_box" x="269.5" y="909.75" width="16" height="16"/>
   <object id="307" name="spawn_box" x="347.25" y="837.5" width="16" height="16"/>
+  <object id="321" name="spawn_box" x="447.333" y="487" width="16" height="16"/>
+  <object id="325" name="spawn_box" x="455.333" y="502.333" width="16" height="16"/>
+  <object id="326" name="spawn_box" x="448.333" y="516.333" width="16" height="16"/>
+  <object id="327" name="spawn_box" x="511" y="395.333" width="16" height="16"/>
+  <object id="328" name="spawn_box" x="525.333" y="412.333" width="16" height="16"/>
+  <object id="329" name="spawn_box" x="538.667" y="402.333" width="16" height="16"/>
+  <object id="330" name="spawn_box" x="555.333" y="394" width="16" height="16"/>
+  <object id="331" name="spawn_box" x="567" y="407" width="16" height="16"/>
+  <object id="332" name="spawn_box" x="248.667" y="827.333" width="16" height="16"/>
+  <object id="333" name="spawn_box" x="263.667" y="835" width="16" height="16"/>
+  <object id="334" name="spawn_box" x="277.667" y="826.333" width="16" height="16"/>
+  <object id="335" name="spawn_box" x="294.667" y="825.667" width="16" height="16"/>
+  <object id="336" name="spawn_box" x="306" y="832" width="16" height="16"/>
+  <object id="337" name="spawn_box" x="571.667" y="922" width="16" height="16"/>
+  <object id="338" name="spawn_box" x="584.333" y="929" width="16" height="16"/>
+  <object id="339" name="spawn_box" x="595.667" y="920" width="16" height="16"/>
+  <object id="340" name="spawn_box" x="605" y="904.333" width="16" height="16"/>
   <object id="308" name="spawn_box" x="195" y="911" width="16" height="16"/>
   <object id="309" name="spawn_box" x="223.5" y="924" width="16" height="16"/>
   <object id="310" name="spawn_box" x="217" y="897.25" width="16" height="16"/>
@@ -366,6 +384,7 @@
   <object id="249" name="child" x="944" y="160" width="16" height="16"/>
   <object id="250" name="child" x="944" y="128" width="16" height="16"/>
   <object id="255" name="night_guard" x="397.295" y="1037.02" width="16" height="16"/>
+  <object id="342" name="vincent_lockjaw" x="397.628" y="1042.02" width="16" height="16"/>
   <object id="259" name="vincent" x="928" y="414" width="16" height="16"/>
   <object id="260" name="sugar_minigame_barrier" x="672" y="352" width="16" height="226">
    <properties>
@@ -376,5 +395,6 @@
   <object id="317" name="spawn_gift" x="377.5" y="872.5" width="16" height="16"/>
   <object id="318" name="spawn_gift" x="560" y="240" width="16" height="16"/>
   <object id="319" name="spawn_gift" x="401.75" y="1056.5" width="16" height="16"/>
+  <object id="320" name="lockjaw" x="864" y="455.273" width="16" height="16"/>
  </objectgroup>
 </map>

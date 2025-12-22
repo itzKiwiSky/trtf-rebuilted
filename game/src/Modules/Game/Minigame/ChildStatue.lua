@@ -1,14 +1,6 @@
 local Statues = require 'src.Modules.Game.Minigame.Statues'
 local ChildStatue = Statues:extend("ChildStatue")
 
-local function drawBox(box, r, g, b)
-    love.graphics.setColor(r, g, b, 0.25)
-    love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
-    love.graphics.setColor(r, g, b)
-    love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
-    love.graphics.setColor(1, 1, 1, 1)
-end
-
 function ChildStatue:__construct(img, quad, x, y, addToWorld, centerOffset, spriteScaleFactor)
     ChildStatue.super.__construct(self, img, quad, x, y, addToWorld, centerOffset, spriteScaleFactor)
 
@@ -23,9 +15,9 @@ function ChildStatue:__construct(img, quad, x, y, addToWorld, centerOffset, spri
 end
 
 function ChildStatue:draw()
-    love.graphics.draw(self.assets.img, self.assets.quad[self.animation.frame], 
-        self.hitbox.x - self.drawOffset.x, self.hitbox.y - self.drawOffset.y, 0, self.spriteScaleFactor, self.spriteScaleFactor, 
-        self.centerOffset and 16 or 0,self.centerOffset and 16 or 0
+    love.graphics.draw(self.assets.img, self.assets.quad[self.animation.frame],
+        self.hitbox.x - self.drawOffset.x, self.hitbox.y - self.drawOffset.y, 0, self.spriteScaleFactor, self.spriteScaleFactor,
+        self.centerOffset and 16 or 0, self.centerOffset and 16 or 0
     )
 
     if registers.showDebugHitbox then
