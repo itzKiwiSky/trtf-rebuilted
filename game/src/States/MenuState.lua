@@ -74,7 +74,12 @@ function MenuState:enter()
 
             Slab.Separator()
 
-            if Slab.Button("Load ending") then
+            if Slab.Button("Load ending [NORMAL]") then
+                gamestate.switch(EndingState)
+            end
+
+            if Slab.Button("Load ending [SECRET]") then
+                EndingState.mode = "secret"
                 gamestate.switch(EndingState)
             end
 

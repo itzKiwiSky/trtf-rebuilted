@@ -8,6 +8,7 @@
         "explainCoderPath": "assets/data/language/coder_story_en.txt"
     },
     "cutscene_day": "5 days earlier",
+    "credits_speed": "Hold the mouse to speed up",
     "warn": {
         "warn_title": "[WARNING]",
         "warn_text": "This game contains loud sounds, flashing\nlights, mild swearing, and many jumpscares!"

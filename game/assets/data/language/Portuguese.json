@@ -8,6 +8,7 @@
         "explainCoderPath": "assets/data/language/coder_story_en.txt"
     },
     "cutscene_day": "5 dias atras",
+    "credits_speed": "Mantenha o botao pressionado para acelerar",
     "warn": {
         "warn_title": "[AVISO]",
         "warn_text": "Este jogo contém sons altos, luzes piscantes, palavrões leves e muitos sustos!"

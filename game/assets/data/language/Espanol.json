@@ -8,6 +8,7 @@
         "explainCoderPath": "assets/data/language/coder_story_en.txt"
     },
     "cutscene_day": "5 días antes",
+    "credits_speed": "Manten clickeado para adelantar",
     "warn": {
         "warn_title": "[WARNING]",
         "warn_text": "¡Este juego contiene sonidos fuertes, luces intermitentes,\nlenguaje moderado y muchos jumpscares!"
