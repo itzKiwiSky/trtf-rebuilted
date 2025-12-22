@@ -1,4 +1,10 @@
 LoadingState = {}
+
+---@alias Load mode
+---@type string
+---| "normal"
+---| "cutscene"
+---| "secret"
 LoadingState.mode = "normal"
 
 function LoadingState:enter()
@@ -20,6 +26,9 @@ function LoadingState:enter()
     collectgarbage("collect")
 
     self.textLoadingFont = fontcache.getFont("ocrx", 34)
+    if self.mode == "cutscene" then
+        self.textLoadingFont = fontcache.getFont("ocrx", 20)
+    end
 
     self.lockjawdance = {
         cfg = {
@@ -53,19 +62,43 @@ function LoadingState:enter()
 end
 
 function LoadingState:draw()
-    self.ctrEffect(function()
-        love.graphics.draw(self.ldBackgrounds[self.randBG], 0, 0, 0, shove.getViewportWidth() / self.ldBackgrounds[self.randBG]:getWidth(), shove.getViewportHeight() / self.ldBackgrounds[self.randBG]:getHeight())
-    end)
-    --love.graphics.draw(clockIcon, shove.getViewportHeight() - 69, shove.getViewportHeight() - 69, 0, 64 / clockIcon:getWidth(), 64 / clockIcon:getHeight())
-    love.graphics.draw(self.lockjawdance.image, self.lockjawdance.quads[self.lockjawdance.cfg.frame], shove.getViewportWidth() - 135, shove.getViewportHeight() - 135, 0, 128 / 300, 128 / 300)
+    switch(self.mode, {
+        ["default"] = function()
+            self.ctrEffect(function()
+                love.graphics.draw(self.ldBackgrounds[self.randBG], 0, 0, 0, shove.getViewportWidth() / self.ldBackgrounds[self.randBG]:getWidth(), shove.getViewportHeight() / self.ldBackgrounds[self.randBG]:getHeight())
+            end)
+            --love.graphics.draw(clockIcon, shove.getViewportHeight() - 69, shove.getViewportHeight() - 69, 0, 64 / clockIcon:getWidth(), 64 / clockIcon:getHeight())
+            love.graphics.draw(self.lockjawdance.image, self.lockjawdance.quads[self.lockjawdance.cfg.frame], shove.getViewportWidth() - 135, shove.getViewportHeight() - 135, 0, 128 / 300, 128 / 300)
 
-    self.glowTextEffect(function()
-        love.graphics.clear(0, 0, 0, 0)
-        local percent = 0
-        if loveloader.resourceCount > 0 then percent = loveloader.loadedCount / loveloader.resourceCount end
-        local loadText = string.format(languageService[not self.ready and "loading_text" or "loading_ready"], (not self.ready and math.floor(percent * 100) or nil))
-        love.graphics.printf(loadText, self.textLoadingFont, 0, shove.getViewportHeight() - (self.textLoadingFont:getHeight() + 16), shove.getViewportWidth(), "center")
-    end)
+            self.glowTextEffect(function()
+                love.graphics.clear(0, 0, 0, 0)
+                local percent = 0
+                if loveloader.resourceCount > 0 then percent = loveloader.loadedCount / loveloader.resourceCount end
+                local loadText = string.format(languageService[not self.ready and "loading_text" or "loading_ready"], (not self.ready and math.floor(percent * 100) or nil))
+                love.graphics.printf(loadText, self.textLoadingFont, 0, shove.getViewportHeight() - (self.textLoadingFont:getHeight() + 16), shove.getViewportWidth(), "center")
+            end)
+        end,
+        ["cutscene"] = function()
+            self.glowTextEffect(function()
+                love.graphics.clear(0, 0, 0, 0)
+                local percent = 0
+                if loveloader.resourceCount > 0 then percent = loveloader.loadedCount / loveloader.resourceCount end
+                local loadText = string.format(languageService[not self.ready and "loading_text" or "loading_ready"], (not self.ready and math.floor(percent * 100) or nil))
+                love.graphics.print(loadText,
+                    self.textLoadingFont, shove.getViewportWidth() - (self.textLoadingFont:getWidth(loadText) + 96),
+                    shove.getViewportHeight() - (self.textLoadingFont:getHeight() + 32)
+                )
+                love.graphics.setLineWidth(3)
+                love.graphics.line(
+                    shove.getViewportWidth() - (self.textLoadingFont:getWidth(loadText) + 96),
+                    shove.getViewportHeight() - (self.textLoadingFont:getHeight() + -3),
+                    shove.getViewportWidth() - 96,
+                    shove.getViewportHeight() - (self.textLoadingFont:getHeight() + -3)
+                )
+                love.graphics.setLineWidth(1)
+            end)
+        end
+    })
 
     love.graphics.setColor(0, 0, 0, self.screen_fade)
     love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
@@ -73,15 +106,22 @@ function LoadingState:draw()
 end
 
 function LoadingState:update(elapsed)
-    self.lockjawdance.cfg.acc = self.lockjawdance.cfg.acc + elapsed
+    switch(self.mode, {
+        ["default"] = function()
+            self.lockjawdance.cfg.acc = self.lockjawdance.cfg.acc + elapsed
 
-    if self.lockjawdance.cfg.acc >= 1 / self.lockjawdance.cfg.speed then
-        self.lockjawdance.cfg.acc = 0
-        self.lockjawdance.cfg.frame = self.lockjawdance.cfg.frame + 1
-        if self.lockjawdance.cfg.frame > #self.lockjawdance.quads then
-            self.lockjawdance.cfg.frame = 1
+            if self.lockjawdance.cfg.acc >= 1 / self.lockjawdance.cfg.speed then
+                self.lockjawdance.cfg.acc = 0
+                self.lockjawdance.cfg.frame = self.lockjawdance.cfg.frame + 1
+                if self.lockjawdance.cfg.frame > #self.lockjawdance.quads then
+                    self.lockjawdance.cfg.frame = 1
+                end
+            end
+        end,
+        ["cutscene"] = function()
+
         end
-    end
+    })
 
     if not self.ready then
         loveloader.update()
@@ -96,6 +136,9 @@ function LoadingState:update(elapsed)
         elseif self.mode == "secret" then
             SecretNightState.assets = self._tempAssets
             gamestate.switch(SecretNightState)
+        elseif self.mode == "cutscene" then
+            CutsceneState.assets = self._tempAssets
+            gamestate.switch(CutsceneState)
         end
     end
 end

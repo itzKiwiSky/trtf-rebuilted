@@ -800,21 +800,19 @@ function SecretNightState:leave()
 
     if self.forceRestart then return end
 
-    if not gameSave.save.user.settings.misc.cacheNight then
-        local function releaseRecursive(tbl)
-            for key, value in pairs(tbl) do
-                if type(value) == "table" then
-                    releaseRecursive(value)
-                else
-                    if type(value) == "userdata" and value.release then
-                        value:release()
-                    end
+    local function releaseRecursive(tbl)
+        for key, value in pairs(tbl) do
+            if type(value) == "table" then
+                releaseRecursive(value)
+            else
+                if type(value) == "userdata" and value.release then
+                    value:release()
                 end
             end
         end
-
-        releaseRecursive(self.assets)
     end
+
+    releaseRecursive(self.assets)
 end
 
 return SecretNightState

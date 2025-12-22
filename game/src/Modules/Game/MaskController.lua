@@ -5,7 +5,7 @@ local function _circularPath(this, radius, speed, time)
 
     local x = radius * math.cos(angle)
     local y = radius * math.sin(angle)
-    
+
     this.rx = this.rx + x
     this.ry = this.ry + y
 end
@@ -45,7 +45,7 @@ end
 function MaskController:draw()
     if self.visible then
         --love.graphics.draw(self.frames[self.key .. self.frame], self.x + self.rx, self.y + self.ry)
-        love.graphics.draw(self.frames[self.key .. self.frame], self.x + self.rx, self.y + self.ry, 0, 
+        love.graphics.draw(self.frames[self.key .. self.frame], self.x + self.rx, self.y + self.ry, 0,
             1.15, 1.15, self.frames[self.key .. self.frame]:getWidth() / 2, self.frames[self.key .. self.frame]:getHeight() / 2
         )
     end

@@ -1,7 +1,7 @@
 MenuState = {}
 
 local function loadAnimatronic(id)
-    local chars = {"bonnie", "chica", "foxy", "freddy", "sugar", "kitty_fazcat", "lockjaw"}
+    local chars = { "bonnie", "chica", "foxy", "freddy", "sugar", "kitty_fazcat", "lockjaw" }
     local anfiles = {}
     local char = chars[id]
     local charFolder = love.filesystem.getDirectoryItems("assets/images/game/menu/animatronics/" .. char)
@@ -64,6 +64,14 @@ function MenuState:enter()
                 end
             end
 
+            Slab.Separator()
+
+            if Slab.Button("Load cutscene") then
+                LoadingState.mode = "cutscene"
+                --table.clear(LoadingState._tempAssets)
+                gamestate.switch(LoadingState)
+            end
+
             Slab.EndWindow()
         end
     end
@@ -81,7 +89,7 @@ function MenuState:enter()
     self.shd_blur = moonshine(moonshine.effects.boxblur)
     self.shd_glowEffect = moonshine(moonshine.effects.glow)
     self.shd_glowEffect.glow.strength = 5
-    self.shd_blur.boxblur.radius = {0, 0}
+    self.shd_blur.boxblur.radius = { 0, 0 }
 
     self.shd_glowEffectText = moonshine(moonshine.effects.glow)
     self.shd_glowEffectText.glow.strength = 5
@@ -97,7 +105,7 @@ function MenuState:enter()
         },
         frames = {}
     }
-    
+
     self.logoMenu = {
         x = 200,
         y = 200,
@@ -105,7 +113,7 @@ function MenuState:enter()
         text = "the\nreturn\nto\nfreddy's\nagain",
         scale = 0.75
     }
-    
+
     self.menuAnimatronic = {
         x = 0,
         frame = 1,
@@ -121,11 +129,11 @@ function MenuState:enter()
     -- timers --
     self.tmr_randFrame = timer.new()
     self.tmr_randPos = timer.new()
-    
+
     self.tmr_randPos:every(0.04, function()
         self.menuAnimatronic.timer = 0
         self.menuAnimatronic.x = math.random(0, 6)
-        
+
         if self.logoMenu.update then
             self.logoMenu.x = math.random(208, 215)
             self.shd_chromafx:send("aberration", 7)
@@ -135,7 +143,7 @@ function MenuState:enter()
         end
     end)
 
-    
+
     self.tmr_randFrame:every(0.08, function()
         self.menuAnimatronic.randFrameValue = math.random(10, 20)
         if self.menuAnimatronic.randFrameValue == 20 then
@@ -171,7 +179,7 @@ function MenuState:enter()
     }
 
     self.settingsGear.hitbox = newButtonHitbox(
-        self.settingsGear.x - self.settingsGear.offsetX, 
+        self.settingsGear.x - self.settingsGear.offsetX,
         self.settingsGear.y - self.settingsGear.offsetY, 78, 78
     )
 
@@ -212,7 +220,7 @@ function MenuState:enter()
     self.mainMenuButtons = {
         config = {
             startY = 400,
-            paddingElements = 69,       -- :smirk: --
+            paddingElements = 69, -- :smirk: --
             targetX = 64,
             startX = -480,
             x = -480,
@@ -266,7 +274,7 @@ function MenuState:enter()
     }
 
     if gameSave.save.user.progress.showNight8 then
-        --self.mainMenuButtons.elements[#self.mainMenuButtons.elements + 1] = 
+        --self.mainMenuButtons.elements[#self.mainMenuButtons.elements + 1] =
         table.insert(self.mainMenuButtons.elements, #self.mainMenuButtons.elements, {
             key = "menu_button_night_secret",
             locked = false,
@@ -297,7 +305,7 @@ function MenuState:enter()
         self.fadeTween = flux.to(self.journalConfig, 4, { transfade = 1, volSong = 0 })
         self.fadeTween:ease("linear")
         self.fadeTween:oncomplete(function()
-            AudioSources["msc_menu_theme_again"]:stop()
+            LoadingState.mode = "cutscene"
             gamestate.switch(LoadingState)
         end)
     end)
@@ -335,9 +343,8 @@ function MenuState:enter()
 end
 
 function MenuState:draw()
-
-    self.shd_blur(function ()
-        self.shd_effect(function ()
+    self.shd_blur(function()
+        self.shd_effect(function()
             love.graphics.draw(self.menuBackground, 0, 0, 0, shove.getViewportWidth() / self.menuBackground:getWidth(), shove.getViewportHeight() / self.menuBackground:getHeight())
             love.graphics.draw(self.animatronicsAnim[self.menuAnimatronic.frame], self.menuAnimatronic.x, 0)
         end)
@@ -345,31 +352,31 @@ function MenuState:draw()
 
 
     love.graphics.setShader(self.shd_chromafx)
-        love.graphics.setBlendMode("add")
-            love.graphics.draw(self.spr_logo, self.logoMenu.x, self.logoMenu.y, 0, self.logoMenu.scale, self.logoMenu.scale, self.spr_logo:getWidth() / 2, self.spr_logo:getHeight() / 2)
-        love.graphics.setBlendMode("alpha")
+    love.graphics.setBlendMode("add")
+    love.graphics.draw(self.spr_logo, self.logoMenu.x, self.logoMenu.y, 0, self.logoMenu.scale, self.logoMenu.scale, self.spr_logo:getWidth() / 2, self.spr_logo:getHeight() / 2)
+    love.graphics.setBlendMode("alpha")
     love.graphics.setShader()
     --love.graphics.setBlendMode("alpha")
 
     love.graphics.setColor(1, 1, 1, self.settingsGear.alpha)
     love.graphics.draw(
-        self.settingsGear.glow, self.settingsGear.x, self.settingsGear.y, math.rad(self.settingsGear.angle), 
-        self.settingsGear.size / self.settingsGear.glow:getWidth(), self.settingsGear.size / self.settingsGear.glow:getHeight(), 
+        self.settingsGear.glow, self.settingsGear.x, self.settingsGear.y, math.rad(self.settingsGear.angle),
+        self.settingsGear.size / self.settingsGear.glow:getWidth(), self.settingsGear.size / self.settingsGear.glow:getHeight(),
         self.settingsGear.glow:getWidth() / 2, self.settingsGear.glow:getHeight() / 2
     )
     love.graphics.setColor(1, 1, 1, 1)
 
     love.graphics.draw(
-        self.settingsGear.ico, self.settingsGear.x, self.settingsGear.y, math.rad(self.settingsGear.angle), 
-        self.settingsGear.size / self.settingsGear.ico:getWidth(), self.settingsGear.size / self.settingsGear.ico:getHeight(), 
+        self.settingsGear.ico, self.settingsGear.x, self.settingsGear.y, math.rad(self.settingsGear.angle),
+        self.settingsGear.size / self.settingsGear.ico:getWidth(), self.settingsGear.size / self.settingsGear.ico:getHeight(),
         self.settingsGear.ico:getWidth() / 2, self.settingsGear.ico:getHeight() / 2
     )
 
     -- static overlay --
     love.graphics.setBlendMode("add")
-        love.graphics.setColor(1, 1, 1, 0.3)
-            love.graphics.draw(self.staticAnimationFX.frames[self.staticAnimationFX.config.frameid], 0, 0)
-        love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setColor(1, 1, 1, 0.3)
+    love.graphics.draw(self.staticAnimationFX.frames[self.staticAnimationFX.config.frameid], 0, 0)
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.setBlendMode("alpha")
 
     for _, e in ipairs(self.mainMenuButtons.elements) do
@@ -387,16 +394,16 @@ function MenuState:draw()
 
     -- journal --
     love.graphics.setColor(1, 1, 1, self.journalConfig.alpha)
-        love.graphics.draw(self.newGameJournal, shove.getViewportWidth() / 2, shove.getViewportHeight() / 2, math.rad(self.journalConfig.angle), self.journalConfig.zoom, self.journalConfig.zoom, self.newGameJournal:getWidth() / 2, self.newGameJournal:getHeight() / 2)
+    love.graphics.draw(self.newGameJournal, shove.getViewportWidth() / 2, shove.getViewportHeight() / 2, math.rad(self.journalConfig.angle), self.journalConfig.zoom, self.journalConfig.zoom, self.newGameJournal:getWidth() / 2, self.newGameJournal:getHeight() / 2)
     love.graphics.setColor(1, 1, 1, 1)
 
     love.graphics.setColor(0, 0, 0, self.journalConfig.transfade)
-        love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
     love.graphics.setColor(1, 1, 1, 1)
 
     -- trans fade rectangle --
     love.graphics.setColor(0, 0, 0, self.transitionFade.fade)
-        love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
     love.graphics.setColor(1, 1, 1, 1)
 
     --love.graphics.setColor(0, 0, 0, self.journalScreen.alpha)
@@ -461,7 +468,7 @@ function MenuState:update(elapsed)
     end
 
     if self.transitionFade.active then
-        self.transitionFade.fade = self.transitionFade.fade + 0.5 * elapsed 
+        self.transitionFade.fade = self.transitionFade.fade + 0.5 * elapsed
 
         if self.transitionFade.fade >= 1 then
             gamestate.switch(self.transitionFade.target)
@@ -478,12 +485,11 @@ function MenuState:update(elapsed)
             e.meta.offsetX = math.lerp(e.meta.offsetX, 0, 0.1)
             e.meta.hovered = false
         end
-        
     end
 end
 
 function MenuState:mousepressed(x, y, button)
-    local inside, mx, my = shove.mouseToViewport()-- x, y from callback is bugged for some reason, use these instead --
+    local inside, mx, my = shove.mouseToViewport() -- x, y from callback is bugged for some reason, use these instead --
 
     if self.canUseMenu then
         for _, e in ipairs(self.mainMenuButtons.elements) do

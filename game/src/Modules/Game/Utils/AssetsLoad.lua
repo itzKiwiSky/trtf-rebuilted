@@ -247,6 +247,31 @@ return function(night)
 
         tab = nil
         collectgarbage("collect")
+    elseif night == "cutscene" then
+        --[[self = {
+            ["mask"] = love.graphics.newImage("assets/images/game/cutscene/mask.png"),
+            ["office"] = love.graphics.newImage("assets/images/game/cutscene/mask.png"),
+            ["shadow"] = {
+                ["saludos"] = {
+                    ["saludo1"] = loadBulk("hi_", "assets/images/game/cutscene/shadow_hi1/"),
+                    ["saludo2"] = loadBulk("hi_", "assets/images/game/cutscene/shadow_hi2/"),
+                    ["saludo3"] = loadBulk("hi_", "assets/images/game/cutscene/shadow_hi3/"),
+                }
+            }
+        }]]
+
+        assets["shadow"] = {
+            ["saludos"] = {}
+        }
+        loveloader.newImage(assets, "mask", "assets/images/game/cutscene/mask.png")
+        loveloader.newImage(assets, "office", "assets/images/game/cutscene/office.png")
+        loveloader.newImage(assets, "eyes", "assets/images/game/cutscene/shadow_eyes.png")
+        loveloader.newImage(assets, "eyes_glow", "assets/images/game/cutscene/shadow_eyes_glow.png")
+
+        assets["shadow"]["saludos"]["saludo1"] = loadBulk("frame_", "assets/images/game/cutscene/shadow_hi1/")
+        assets["shadow"]["saludos"]["saludo2"] = loadBulk("frame_", "assets/images/game/cutscene/shadow_hi2/")
+        assets["shadow"]["saludos"]["saludo3"] = loadBulk("frame_", "assets/images/game/cutscene/shadow_hi3/")
+        assets["shadow"]["look"] = loadBulk("frame_", "assets/images/game/cutscene/look_lockjaw/")
     end
 
     return assets

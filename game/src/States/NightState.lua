@@ -655,8 +655,7 @@ function NightState:draw()
         love.graphics.setShader()
 
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.draw(self.cnv_phone, 0, 0, 0, shove.getViewportWidth() / self.cnv_phone:getWidth(),
-            shove.getViewportHeight() / self.cnv_phone:getHeight())
+        love.graphics.draw(self.cnv_phone, 0, 0, 0, shove.getViewportWidth() / self.cnv_phone:getWidth(), shove.getViewportHeight() / self.cnv_phone:getHeight())
 
         self.cnv_blurPhone:renderTo(function()
             love.graphics.clear(0, 0, 0, 0)
@@ -1454,22 +1453,20 @@ function NightState:leave()
         v:stop()
     end
 
-    if not gameSave.save.user.settings.misc.cacheNight then
-        local function releaseRecursive(tbl)
-            for key, value in pairs(tbl) do
-                if type(value) == "table" then
-                    releaseRecursive(value)
-                else
-                    if type(value) == "userdata" and value.release then
-                        value:release()
-                    end
+    local function releaseRecursive(tbl)
+        for key, value in pairs(tbl) do
+            if type(value) == "table" then
+                releaseRecursive(value)
+            else
+                if type(value) == "userdata" and value.release then
+                    value:release()
                 end
             end
         end
-
-        releaseRecursive(self.assets)
-        LoadingState.isNightLoaded = false
     end
+
+    releaseRecursive(self.assets)
+    LoadingState.isNightLoaded = false
 end
 
 return NightState
