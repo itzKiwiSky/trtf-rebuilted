@@ -97,24 +97,24 @@ function CutsceneState:enter()
         self.blinkAlpha = 1
         self.shadow.saludState = 1
         self.shadow.visible = true
-        AudioSources["sfx_shadow_ch_pos"]:setVolume(0.5)
+        AudioSources["sfx_shadow_ch_pos"]:setVolume(0.4)
         AudioSources["sfx_shadow_ch_pos"]:play()
         sleep(15)
         self.blinkAlpha = 1
         self.shadow.saludState = 2
-        AudioSources["sfx_shadow_ch_pos"]:setVolume(0.5)
+        AudioSources["sfx_shadow_ch_pos"]:setVolume(0.6)
         AudioSources["sfx_shadow_ch_pos"]:play()
         sleep(10)
         self.blinkAlpha = 1
         self.shadow.saludState = 3
-        AudioSources["sfx_shadow_ch_pos"]:setVolume(0.5)
+        AudioSources["sfx_shadow_ch_pos"]:setVolume(0.76)
         AudioSources["sfx_shadow_ch_pos"]:play()
         sleep(10)
         self.blinkAlpha = 1
         self.shadow.state = "look"
         self.shadow.visible = false
         self.shadow.lookAnim = true
-        AudioSources["sfx_shadow_ch_pos"]:setVolume(0.5)
+        AudioSources["sfx_shadow_ch_pos"]:setVolume(0.8)
         AudioSources["sfx_shadow_ch_pos"]:play()
         AudioSources["sfx_look"]:setLooping(true)
         AudioSources["sfx_look"]:setVolume(0.8)
