@@ -231,6 +231,9 @@ function MinigameSceneState:enter()
             if Slab.CheckBox(self.isExtras, "force extras exit") then
                 self.isExtras = not self.isExtras
             end
+            if Slab.CheckBox(registers.hideTexts, "Hide all the text") then
+                registers.hideTexts = not registers.hideTexts
+            end
             Slab.Text("Player Cooldown")
             Slab.SameLine()
             if Slab.Input("playerSpeedCooldownInput", { Text = tostring(self.player.maxCooldown), ReturnOnText = false, NumbersOnly = true, Precision = 0.01 }) then
@@ -252,6 +255,10 @@ function MinigameSceneState:enter()
             Slab.Separator()
             for name, script in spairs(self.minigames) do
                 if Slab.Button(name) then
+                    for k, v in pairs(AudioSources) do
+                        v:stop()
+                    end
+
                     self.currentMinigame = name
                     self.script = self.minigames[self.currentMinigame]
                     self.script.init()
@@ -409,8 +416,10 @@ function MinigameSceneState:draw()
     --local cycleDuration = 0.3
     --local activeThreshold = 0.5
     --if (love.timer.getTime() % cycleDuration) / cycleDuration > activeThreshold == 0 then
-    love.graphics.printf(self.displayDate, self.fnt_text, 0, 24, shove.getViewportWidth(), "center")
-    love.graphics.printf(self.displayText, self.fnt_text, 0, shove.getViewportHeight() - 64, shove.getViewportWidth(), "center")
+    if FEATURE_FLAGS.developerMode and not registers.hideTexts then
+        love.graphics.printf(self.displayDate, self.fnt_text, 0, 24, shove.getViewportWidth(), "center")
+        love.graphics.printf(self.displayText, self.fnt_text, 0, shove.getViewportHeight() - 64, shove.getViewportWidth(), "center")
+    end
     --end
     love.graphics.setCanvas()
     love.graphics.pop()
@@ -444,7 +453,7 @@ function MinigameSceneState:update(elapsed)
         self.interferenceFX:send("speed", self.interferenceSpeed)
 
         if self.interferenceIntensity > 0 then
-            self.interferenceIntensity = self.interferenceIntensity - 5 * elapsed
+            self.interferenceIntensity = self.interferenceIntensity - 2.24 * elapsed
         end
 
         self.interferenceData.interferenceTimerAcc = self.interferenceData.interferenceTimerAcc + elapsed
@@ -511,6 +520,7 @@ function MinigameSceneState:update(elapsed)
 end
 
 function MinigameSceneState:leave()
+    flux.removeAll()
     for k, v in pairs(AudioSources) do
         v:stop()
     end

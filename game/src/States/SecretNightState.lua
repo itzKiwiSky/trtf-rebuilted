@@ -797,6 +797,7 @@ function SecretNightState:keypressed(k)
 end
 
 function SecretNightState:leave()
+    flux.removeAll()
     for k, v in pairs(AudioSources) do
         v:stop()
     end

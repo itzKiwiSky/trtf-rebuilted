@@ -141,11 +141,11 @@ function love.run()
     local SlabStyle = Slab.GetStyle()
     SlabStyle.API.Initialize()
     SlabStyle.API.SetStyle("Pinky")
-    Slab.Initialize({"NoDocks"})
+    Slab.Initialize({ "NoDocks" })
 
     local fpsfont = love.graphics.newFont(16)
 
-    if love.initialize then  
+    if love.initialize then
         love.initialize(love.arg.parseGameArguments(arg), arg)
     end
 
@@ -158,7 +158,7 @@ function love.run()
         -- Process events.
         if love.event then
             love.event.pump()
-            for name, a,b,c,d,e,f in love.event.poll() do
+            for name, a, b, c, d, e, f in love.event.poll() do
                 if name == "quit" then
                     if not love.quit or not love.quit() then
                         return a or 0
@@ -178,19 +178,20 @@ function love.run()
                         end
                     end
                 end
-                love.handlers[name](a,b,c,d,e,f)
+                love.handlers[name](a, b, c, d, e, f)
             end
         end
 
         local isFocused = love.window.hasFocus()
 
         local fpsCap = isFocused and love._FPSCap or love._unfocusedFPSCap
-        if love.timer then 
+        if love.timer then
             elapsed = love.timer.step()
         end
 
-        if love.update then 
+        if love.update then
             love.update(elapsed)
+            --flux.update(elapsed)
             Controller:update()
             if FEATURE_FLAGS.developerMode then
                 Slab.Update(elapsed)
@@ -208,32 +209,32 @@ function love.run()
 
             shove.beginDraw()
 
-                shove.beginLayer("mainView")
-                    if love.draw then
-                        love.draw()
-                    end
-                shove.endLayer()
+            shove.beginLayer("mainView")
+            if love.draw then
+                love.draw()
+            end
+            shove.endLayer()
 
-                if FEATURE_FLAGS.developerMode then
-                    shove.beginLayer("DevUI")
-                        Slab.Draw()
-                    shove.endLayer()
-                end
-
-                shove.beginLayer("fps")
-                    love.graphics.print("FPS : " .. love.timer.getFPS(), fpsfont, 5, 5)
-                    if FEATURE_FLAGS.videoStats then
-                        local strs = {}
-                        for k = 1, #love.keys.videoStats, 1 do
-                            local st = love.keys.videoStats[k] .. " = " .. love.graphics.getStats()[love.keys.videoStats[k]]
-                            if love.keys.videoStats[k] == "texturememory" then
-                                st = love.keys.videoStats[k] .. " = " .. string.format("%.2f mb", love.graphics.getStats()["texturememory"] / 1024 / 1024)
-                            end
-                            strs[k] = st
-                        end
-                        love.graphics.print(table.concat(strs, "\n"), fpsfont, 5, 20)
-                    end
+            if FEATURE_FLAGS.developerMode then
+                shove.beginLayer("DevUI")
+                Slab.Draw()
                 shove.endLayer()
+            end
+
+            --shove.beginLayer("fps")
+            --    love.graphics.print("FPS : " .. love.timer.getFPS(), fpsfont, 5, 5)
+            --    if FEATURE_FLAGS.videoStats then
+            --        local strs = {}
+            --        for k = 1, #love.keys.videoStats, 1 do
+            --            local st = love.keys.videoStats[k] .. " = " .. love.graphics.getStats()[love.keys.videoStats[k]]
+            --            if love.keys.videoStats[k] == "texturememory" then
+            --                st = love.keys.videoStats[k] .. " = " .. string.format("%.2f mb", love.graphics.getStats()["texturememory"] / 1024 / 1024)
+            --            end
+            --            strs[k] = st
+            --        end
+            --        love.graphics.print(table.concat(strs, "\n"), fpsfont, 5, 20)
+            --    end
+            --shove.endLayer()
             shove.endDraw()
             love.graphics.present()
         end

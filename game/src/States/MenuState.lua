@@ -27,7 +27,7 @@ local function newButtonHitbox(x, y, w, h)
 end
 
 function MenuState:enter()
-    flux.remove()
+    flux.removeAll()
     MenuState.saveState = gameSave.save.user.progress
     self.settingsSubState = require 'src.States.Substates.SettingsSubstate'
     self.settingsSubState:load()
@@ -545,7 +545,7 @@ function MenuState:leave()
         f:release()
     end
 
-    flux.remove()
+    flux.removeAll()
 
     self.menuBackground:release()
 end

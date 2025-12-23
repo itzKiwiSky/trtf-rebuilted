@@ -57,32 +57,32 @@ function DemoEndState:draw()
 
     self.glowText(function()
         love.graphics.setColor(1, 1, 1, self.textconfig.alphaTitle)
-            love.graphics.printf(languageService["end_demo_title"], self.titleFont, 0, 128, shove.getViewportWidth(), "center")
+        love.graphics.printf(languageService["end_demo_title"], self.titleFont, 0, 128, shove.getViewportWidth(), "center")
         love.graphics.setColor(1, 1, 1, 1)
 
         love.graphics.setColor(1, 1, 1, self.textconfig.alpha)
-            love.graphics.printf(languageService["end_demo_text"], self.textFont, 64, shove.getViewportHeight() - 128, shove.getViewportWidth() - 128, "center")
+        love.graphics.printf(languageService["end_demo_text"], self.textFont, 64, shove.getViewportHeight() - 128, shove.getViewportWidth() - 128, "center")
         love.graphics.setColor(1, 1, 1, 1)
     end)
 
     love.graphics.setColor(0, 0, 0, self.transition.alpha)
-        love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
     love.graphics.setColor(1, 1, 1, 1)
 end
 
 function DemoEndState:update(elapsed)
     if self.transition.activeOut then
         self.transition.alpha = self.transition.alpha + 0.35 * elapsed
-        
+
         if self.transition.alpha >= 1 then
             self.activeOut = false
             gamestate.switch(self.transition.outState)
-        end 
+        end
     end
 
     if self.transition.activeIn then
         self.transition.alpha = self.transition.alpha - 0.35 * elapsed
-        
+
         if self.transition.alpha <= 0 then
             self.activeIn = false
         end
@@ -94,6 +94,7 @@ function DemoEndState:update(elapsed)
 end
 
 function DemoEndState:leave(elapsed)
+    flux.removeAll()
     self.tmr_countDowm:cancel()
     for key, value in pairs(AudioSources) do
         value:stop()

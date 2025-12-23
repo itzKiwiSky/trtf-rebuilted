@@ -159,6 +159,7 @@ function LoadingState:mousepressed(x, y, button)
 end
 
 function LoadingState:leave()
+    flux.removeAll()
     for k, v in pairs(AudioSources) do
         v:stop()
     end

@@ -38,7 +38,7 @@ function ExtrasState:enter()
         frames = {}
     }
 
-    flux.remove()
+    flux.removeAll()
 
     self.fade = {
         alpha = 1,
@@ -93,12 +93,12 @@ function ExtrasState:enter()
                     self.categories[self.currentCategory]:load()
                 end,
             },
-            {
+            --[[{
                 text = languageService["extras_options_dev_content"],
                 action = function()
 
                 end,
-            },
+            },]]
             {
                 text = languageService["extras_options_minigames"],
                 action = function()
@@ -221,7 +221,7 @@ function ExtrasState:mousepressed(x, y, button)
 end
 
 function ExtrasState:leave()
-    flux.remove()
+    flux.removeAll()
 
     for k, v in pairs(AudioSources) do
         v:stop()

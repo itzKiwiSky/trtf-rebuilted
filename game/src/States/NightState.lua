@@ -516,7 +516,7 @@ function NightState:enter()
             v:stop()
         end
 
-        if gameSave.save.user.progress.night < 7 then
+        if gameSave.save.user.progress.night < 6 then
             gameSave.save.user.progress.night = gameSave.save.user.progress.night + 1
         end
         gameSave.save.user.progress.newgame = false
@@ -526,6 +526,9 @@ function NightState:enter()
             VideoPlayerState.path = "assets/videos/teaserCutscene.ogv"
             VideoPlayerState.onSceneComplete = function()
                 gameSave.save.user.progress.specialCutsceneSee = true
+                gameSave.save.user.progress.stars.beat20 = true
+                gameSave:saveSlot()
+                VideoPlayerState.targetState = MenuState
             end
             gamestate.switch(VideoPlayerState)
         else
@@ -1475,6 +1478,7 @@ function NightState:mousepressed(x, y, button)
 end
 
 function NightState:leave()
+    flux.removeAll()
     for k, v in pairs(AudioSources) do
         v:stop()
     end

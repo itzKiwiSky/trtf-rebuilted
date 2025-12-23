@@ -95,6 +95,11 @@ function love.initialize()
                 showNight8 = false,
                 night8 = false,
                 minigameID = "",
+                stars = {
+                    beatNight8 = false,
+                    beat20 = false,
+                    beatNight6 = false,
+                }
             }
 
         }
@@ -119,6 +124,7 @@ function love.initialize()
         showDebugHitbox = false,
         isStoryMode = false,
         requireMinigame = false,
+        hideTexts = false,
         statesName = {},
         user = {
             currentSettingsTab = "video",

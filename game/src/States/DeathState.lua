@@ -236,6 +236,7 @@ function DeathState:mousepressed(x, y, button)
 end
 
 function DeathState:leave()
+    flux.removeAll()
     for k, v in pairs(AudioSources) do
         v:stop()
     end

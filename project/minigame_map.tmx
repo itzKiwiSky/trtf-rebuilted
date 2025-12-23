@@ -394,7 +394,7 @@
   <object id="249" name="child" x="944" y="160" width="16" height="16"/>
   <object id="250" name="child" x="944" y="128" width="16" height="16"/>
   <object id="255" name="night_guard" x="398.931" y="1040.29" width="16" height="16"/>
-  <object id="342" name="vincent_lockjaw" x="400.901" y="1076.22" width="16" height="16"/>
+  <object id="342" name="vincent_lockjaw" x="382.901" y="1060.55" width="16" height="16"/>
   <object id="259" name="vincent" x="928" y="414" width="16" height="16"/>
   <object id="260" name="sugar_minigame_barrier" x="672" y="352" width="16" height="226">
    <properties>

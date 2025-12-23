@@ -115,6 +115,7 @@ function CustomNightState:update(elapsed)
 end
 
 function CustomNightState:leave()
+    flux.removeAll()
     for k, v in pairs(AudioSources) do
         v:stop()
     end

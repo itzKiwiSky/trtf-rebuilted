@@ -94,6 +94,7 @@ function SplashState:mousepressed(x, y, button)
 end
 
 function SplashState:leave()
+    flux.removeAll()
     -- release all objects from the scene before leave
     self.introVideo:pause()
     self.introVideo:rewind()

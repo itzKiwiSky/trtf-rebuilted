@@ -85,7 +85,7 @@ function EndingState:update(elapsed)
 end
 
 function EndingState:leave()
-    flux.remove()
+    flux.removeAll()
     self.bg:release()
 end
 

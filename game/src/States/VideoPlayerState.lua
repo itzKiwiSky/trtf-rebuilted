@@ -20,6 +20,7 @@ function VideoPlayerState:update(elapsed)
 end
 
 function VideoPlayerState:leave()
+    flux.removeAll()
     self.sceneRun:release()
     VideoPlayerState.onSceneComplete()
 end
