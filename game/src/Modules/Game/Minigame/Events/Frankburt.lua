@@ -28,6 +28,15 @@ function Minigame.init()
     Minigame.flashFace = false
     Minigame.waitTimer = 0
     Minigame.seqPlaying = false
+
+    state = {
+        vincentScream = false,
+        vincentPutMask = false,
+        vincentMoveCooldown = 0.25,
+        lockedExit = false,
+        frankInsideOffice = false,
+    }
+
     -- set player pos --/
     AudioSources["msc_bg_lockjaw"]:play()
     AudioSources["msc_bg_lockjaw"]:setLooping(true)
@@ -71,26 +80,78 @@ function Minigame.init()
         table.insert(Minigame.boxes, prop)
     end
 
+    Minigame.chars = {}
+
     local guardImg = love.graphics.newImage("assets/images/game/minigames/vincent.png")
     local animQuads = love.graphics.getQuads(guardImg, "assets/images/game/minigames/vincent.json", "hash")
 
     local guard = Minigame.guard:new({ img = guardImg, quads = animQuads },
-        MinigameSceneState.spawnAreas["vincent"].centerX, MinigameSceneState.spawnAreas["vincent"].centerY
+        MinigameSceneState.spawnAreas["vincent_lockjaw"].centerX, MinigameSceneState.spawnAreas["vincent_lockjaw"].centerY
     )
     guard.flipped = false
+    --lockjaw_tp_zone
 
     Minigame.chars["vincent"] = guard
     --print(inspect(MinigameSceneState.spawnAreas))
+
+    Minigame.tmr_script = timer.new()
+    Minigame.tmr_script:script(function(sleep)
+        sleep(1)
+        Minigame.chars["vincent"].state = "scared"
+        AudioSources["sfx_guard_scream"]:play()
+        sleep(0.75)
+        Minigame.chars["vincent"].flipped = true
+        sleep(0.15)
+        Minigame.chars["vincent"].flipped = false
+        sleep(0.15)
+        Minigame.chars["vincent"].flipped = true
+        sleep(0.15)
+        Minigame.chars["vincent"].flipped = false
+        sleep(0.15)
+        Minigame.chars["vincent"].state = "front"
+        sleep(0.076)
+        state.vincentPutMask = true
+        sleep(1)
+        MinigameSceneState.player.locked = false
+    end)
 end
 
 function Minigame.draw()
     for _, box in ipairs(Minigame.boxes) do
         box:draw()
     end
+
+    for anim, char in pairs(Minigame.chars) do
+        char:draw()
+        if anim == "vincent" then
+            love.graphics.draw(Minigame.assets["collectibles"].img, Minigame.assets["collectibles"].quads["freddy_mask"], char.hitbox.x + 16, char.hitbox.y + 16, 0, 1.25, 1.25, 8, 8)
+        end
+    end
 end
 
 function Minigame.update(elapsed)
+    if collision.rectRect(MinigameSceneState.player.hitbox, MinigameSceneState.map.actionAreas["lockjaw_minigame_window"]) and not state.frankInsideOffice then
+        --state.vincentScream = true
+        local tp = MinigameSceneState.spawnAreas["lockjaw_tp_zone"]
+        MinigameSceneState.player.locked = true
+        state.frankInsideOffice = true
+        MinigameSceneState.player.setPos(tp.x, tp.y)
+    end
 
+    if collision.rectRect(MinigameSceneState.player.hitbox, Minigame.chars["vincent"].hitbox) then
+        MinigameSceneState.isShuttingDown = true
+        MinigameSceneState.interferenceIntensity = 60
+        MinigameSceneState.interferenceSpeed = 150
+        MinigameSceneState.interferenceFX:send("intensity", MinigameSceneState.interferenceIntensity)
+        MinigameSceneState.interferenceFX:send("speed", MinigameSceneState.interferenceSpeed)
+
+        AudioSources["sfx_minigame_shutdown"]:setLooping(true)
+        AudioSources["sfx_minigame_shutdown"]:play()
+    end
+
+    if state.frankInsideOffice then
+        Minigame.tmr_script:update(elapsed)
+    end
 end
 
 function Minigame.shutdown()
