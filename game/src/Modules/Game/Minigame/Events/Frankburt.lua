@@ -51,7 +51,7 @@ function Minigame.init()
     MinigameSceneState.displayText = languageService["minigame_display_lockjaw_kill_purple"]
     local playerPos = MinigameSceneState.spawnAreas["lockjaw"]
     MinigameSceneState.player.sprite = "lockjaw"
-    MinigameSceneState.player.lastDirection = "left"
+    MinigameSceneState.player.lastDirection = "down"
     MinigameSceneState.player.setPos(playerPos.x, playerPos.y)
 
     local spawns = findByKeyPrefix(MinigameSceneState.spawnAreas, "spawn_box")

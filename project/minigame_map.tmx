@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="15" nextobjectid="354">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="25" tilewidth="16" tileheight="16" infinite="1" backgroundcolor="#3c005a" nextlayerid="15" nextobjectid="360">
  <editorsettings>
   <export target="../game/assets/images/game/minigames/minigame_map.lua" format="lua"/>
  </editorsettings>
@@ -221,6 +221,12 @@
   <object id="329" name="spawn_box" x="538.667" y="402.333" width="16" height="16"/>
   <object id="330" name="spawn_box" x="555.333" y="394" width="16" height="16"/>
   <object id="331" name="spawn_box" x="567" y="407" width="16" height="16"/>
+  <object id="354" name="spawn_box" x="616.667" y="410" width="16" height="16"/>
+  <object id="355" name="spawn_box" x="623.667" y="422.333" width="16" height="16"/>
+  <object id="356" name="spawn_box" x="623.333" y="439.333" width="16" height="16"/>
+  <object id="357" name="spawn_box" x="627.667" y="462.667" width="16" height="16"/>
+  <object id="358" name="spawn_box" x="605.667" y="454.667" width="16" height="16"/>
+  <object id="359" name="spawn_box" x="595.333" y="522.667" width="16" height="16"/>
   <object id="332" name="spawn_box" x="248.667" y="827.333" width="16" height="16"/>
   <object id="333" name="spawn_box" x="263.667" y="835" width="16" height="16"/>
   <object id="334" name="spawn_box" x="277.667" y="826.333" width="16" height="16"/>
@@ -405,6 +411,6 @@
   <object id="317" name="spawn_gift" x="377.5" y="872.5" width="16" height="16"/>
   <object id="318" name="spawn_gift" x="560" y="240" width="16" height="16"/>
   <object id="319" name="spawn_gift" x="397.932" y="1055.59" width="16" height="16"/>
-  <object id="320" name="lockjaw" x="864" y="455.273" width="16" height="16"/>
+  <object id="320" name="lockjaw" x="560" y="448" width="16" height="16"/>
  </objectgroup>
 </map>
