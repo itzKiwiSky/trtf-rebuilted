@@ -88,7 +88,7 @@ function SecretNightState:enter()
 
     self.IA = {
         config = {
-            ["frankburt"] = 4,
+            ["frankburt"] = 8,
             ["golden_freddy"] = 8,
             timerIncrement = 20, -- increment the IA values by 1 every 20 seconds passed
             incrementValue = 0,
@@ -117,6 +117,13 @@ function SecretNightState:enter()
             patience = 3,
         },
     }
+
+    self.tmr_iaIncrement = timer.new()
+    self.tmr_iaIncrement:after(27, function()
+        self.IA.config.incrementValue = self.IA.config.incrementValue + 1
+        self.IA.config["frankburt"] = self.IA.config["frankburt"] + math.random(1, 3)
+        self.IA.config["golden_freddy"] = self.IA.config["golden_freddy"] + math.random(1, 2)
+    end)
 
     SecretNightState.assets.grd_battery = love.graphics.newGradient("horizontal",
         { lume.color('#4322D4') }, { lume.color('#225AD4') }, { lume.color('#22B3D4') }
@@ -646,15 +653,13 @@ function SecretNightState:update(elapsed)
 
     if self.officeState.flashlight.active then
         self.officeState.flashlight.alpha = math.map(math.min(self.officeState.flashlight.battery, 5), 0, 5, 0, 1)
-        self.officeState.flashlight.battery = self.officeState.flashlight.battery -
-            elapsed * self.officeState.flashlight.energyConsumeMultiplier
+        self.officeState.flashlight.battery = self.officeState.flashlight.battery - elapsed * self.officeState.flashlight.energyConsumeMultiplier
         if self.officeState.flashlight.battery <= 0 then
             self.officeState.flashlight.active = false
         end
     else
         if self.officeState.flashlight.battery < self.officeState.flashlight.maxBattery then
-            self.officeState.flashlight.battery = self.officeState.flashlight.battery +
-                elapsed * self.officeState.flashlight.rechargeMultiplier
+            self.officeState.flashlight.battery = self.officeState.flashlight.battery + elapsed * self.officeState.flashlight.rechargeMultiplier
         end
     end
 
@@ -662,17 +667,11 @@ function SecretNightState:update(elapsed)
         self.IA.frankburt.moveTimer = self.IA.frankburt.moveTimer - elapsed
 
         if self.IA.config.incrementValue < 5 then
-            self.IA.config.tmr = self.IA.config.tmr - elapsed
-            if self.IA.config.tmr <= 0 then
-                self.IA.config.tmr = self.IA.config.timerIncrement
-                self.IA.config.incrementValue = self.IA.config.incrementValue + 1
-                self.IA.config["frankburt"] = self.IA.config["frankburt"] + math.random(1, 3)
-                self.IA.config["golden_freddy"] = self.IA.config["golden_freddy"] + math.random(1, 2)
-            end
-
-            self.IA.config["frankburt"] = math.clamp(self.IA.config["frankburt"], 0, 20)
-            self.IA.config["golden_freddy"] = math.clamp(self.IA.config["golden_freddy"], 0, 20)
+            self.tmr_iaIncrement:update(elapsed)
         end
+
+        self.IA.config["frankburt"] = math.clamp(self.IA.config["frankburt"], 0, 20)
+        self.IA.config["golden_freddy"] = math.clamp(self.IA.config["golden_freddy"], 0, 20)
 
         if self.IA.frankburt.moveTimer <= 0 and self.IA.frankburt.active then
             self.IA.frankburt.moveTimer = self.IA.frankburt.moveTimerMax
@@ -697,7 +696,6 @@ function SecretNightState:update(elapsed)
             self.IA.frankburt.patience = self.IA.frankburt.patience - elapsed
 
             if self.IA.frankburt.state == "office" then
-                -- Se a lanterna está ATIVA no office, ele mata imediatamente
                 if self.officeState.flashlight.active then
                     self.officeState.killed = true
                     if self.officeState.lookDir == "front" then
