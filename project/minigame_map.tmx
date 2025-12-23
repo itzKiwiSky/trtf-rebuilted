@@ -192,7 +192,7 @@
   </properties>
   <object id="222" name="foxy_minigame_guard_action_left" x="329.834" y="970.334" width="7.33333" height="155"/>
   <object id="253" name="foxy_minigame_guard_action_right" x="477.333" y="972.167" width="7.33333" height="155"/>
-  <object id="341" name="lockjaw_minigame_window" x="344.333" y="925.167" width="124.667" height="4.66667"/>
+  <object id="341" name="lockjaw_minigame_window" x="365.041" y="925.167" width="78.0003" height="4.66667"/>
   <object id="257" name="sugar_minigame_door_unlock" x="631.455" y="413.364" width="18.9697" height="54.2727"/>
   <object id="258" name="sugar_minigame_vincent_attack" x="847.417" y="370.417" width="7.33333" height="155"/>
  </objectgroup>

@@ -328,7 +328,7 @@ function MenuState:enter()
         e.meta = {}
         e.meta.offsetX = 0
         e.hovered = false
-        e.hitbox = newButtonHitbox(self.mainMenuButtons.config.targetX, self.mainMenuButtons.config.startY, self.fnt_menu:getWidth(e.text) + 8, self.fnt_menu:getHeight() + 8)
+        e.hitbox = newButtonHitbox(self.mainMenuButtons.config.targetX, self.mainMenuButtons.config.startY, 180, self.fnt_menu:getHeight() + 8)
         self.mainMenuButtons.config.startY = self.mainMenuButtons.config.startY + self.mainMenuButtons.config.paddingElements
     end
 
@@ -405,7 +405,7 @@ function MenuState:draw()
         love.graphics.print(e.text, self.fnt_menu, self.mainMenuButtons.config.x + e.meta.offsetX, e.hitbox.y)
         love.graphics.setColor(1, 1, 1, 1)
         --if registers.showDebugHitbox then
-        love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+        --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
         --end
     end
 

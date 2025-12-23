@@ -3,15 +3,15 @@ local animatronic = require 'src.Modules.Game.Animatronic'
 local Bonnie = animatronic:extend("Bonnie") ---@type Animatronic
 
 function Bonnie:__construct()
-    Bonnie.super.__construct(self, "bonnie", 0, 0)  -- wtf outside the map XDDD
+    Bonnie.super.__construct(self, "bonnie", 0, 0) -- wtf outside the map XDDD
 
     self.id = "bonnie"
     self.path = {
-        { x = 1064, y = 256, camera = 6 },        -- showstage
-        { x = 950, y = 431, camera = 1 },         -- arcade
-        { x = 999, y = 490, camera = 9 },         -- left_hall
-        { x = 1076, y = 544, camera = nil },        -- front_office
-        { x = 1079, y = 592, camera = nil },        -- office
+        { x = 1064, y = 256, camera = 6 },   -- showstage
+        { x = 950,  y = 431, camera = 1 },   -- arcade
+        { x = 999,  y = 490, camera = 9 },   -- left_hall
+        { x = 1076, y = 544, camera = nil }, -- front_office
+        { x = 1079, y = 592, camera = nil }, -- office
     }
 
     self.moveTime = 5
@@ -41,8 +41,8 @@ function Bonnie:update(elapsed)
 
         NightState.officeState.hasAnimatronicInFrontOffice = self.currentState == 4
     else
-        if not AudioSources["stare"]:isPlaying() then
-            AudioSources["stare"]:play()
+        if not AudioSources["sfx_stare"]:isPlaying() then
+            AudioSources["sfx_stare"]:play()
         end
 
         -- in office --
@@ -62,7 +62,7 @@ function Bonnie:update(elapsed)
                 self.timer = 0
                 self.currentState = 1
                 NightState.officeState.hasAnimatronicInOffice = false
-                AudioSources["stare"]:stop()
+                AudioSources["sfx_stare"]:stop()
                 NightState.officeState.fadealpha = 1
             end
         end

@@ -21,6 +21,7 @@ end
 function Minigame.init()
     MinigameSceneState.displayFace.currentFace = "lockjaw"
     Minigame.statues = require 'src.Modules.Game.Minigame.Statues'
+    Minigame.guard = require 'src.Modules.Game.Minigame.NightGuard'
 
     Minigame.allUnhappy = false
     Minigame.showFace = false
@@ -47,7 +48,6 @@ function Minigame.init()
     local spawns = findByKeyPrefix(MinigameSceneState.spawnAreas, "spawn_box")
     Minigame.boxes = {}
     for _, spawn in ipairs(spawns) do
-        --print(spawn)
         local x = spawn.centerX
         local y = spawn.centerY
         local w = spawn.w
@@ -59,14 +59,27 @@ function Minigame.init()
             x, y, false, true
         )
 
-        prop.hitbox.x = x
-        prop.hitbox.y = y
+        prop.drawOffset.x = -16
+        prop.drawOffset.y = -16
+
+        prop.hitbox.x = spawn.x
+        prop.hitbox.y = spawn.y
         prop.hitbox.w = w
         prop.hitbox.h = h
 
         MinigameSceneState.world:add(prop.hitbox, prop.hitbox.x, prop.hitbox.y, prop.hitbox.w, prop.hitbox.h)
         table.insert(Minigame.boxes, prop)
     end
+
+    local guardImg = love.graphics.newImage("assets/images/game/minigames/vincent.png")
+    local animQuads = love.graphics.getQuads(guardImg, "assets/images/game/minigames/vincent.json", "hash")
+
+    local guard = Minigame.guard:new({ img = guardImg, quads = animQuads },
+        MinigameSceneState.spawnAreas["vincent"].centerX, MinigameSceneState.spawnAreas["vincent"].centerY
+    )
+    guard.flipped = false
+
+    Minigame.chars["vincent"] = guard
     --print(inspect(MinigameSceneState.spawnAreas))
 end
 
