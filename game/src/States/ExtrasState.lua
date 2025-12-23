@@ -38,6 +38,14 @@ function ExtrasState:enter()
         frames = {}
     }
 
+    flux.remove()
+
+    self.fade = {
+        alpha = 1,
+    }
+
+    flux.to(self.fade, 2, { alpha = 0 })
+
     local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static3")
     for s = 1, #statics, 1 do
         table.insert(self.staticAnimationFX.frames, love.graphics.newImage("assets/images/game/effects/static3/" .. statics[s]))
@@ -52,6 +60,12 @@ function ExtrasState:enter()
     self.fxBlurBG.pixelate.size = { 1.5, 1.5 }
 
     self.shd_effect.chromasep.radius = 1.25
+
+    local function doTransition(state)
+        flux.to(self.fade, 2, { alpha = 1 }):oncomplete(function()
+            gamestate.switch(state)
+        end)
+    end
 
     self.menuItems = {
         config = {
@@ -97,22 +111,22 @@ function ExtrasState:enter()
             {
                 text = languageService["extras_options_custom_night"],
                 action = function()
-
+                    doTransition(CustomNightState)
                 end,
             },
-            {
+            --[[{
                 text = languageService["extras_options_credits"],
                 action = function()
 
                 end,
-            },
+            },]]
         }
     }
 
     for _, e in ipairs(self.menuItems.elements) do
         e.meta = {}
         e.meta.offsetX = 0
-        e.hitbox = newButtonHitbox(self.menuItems.config.x, self.menuItems.config.startY, self.fnt_extras:getWidth(e.text) + 8, self.fnt_extras:getHeight() + 8)
+        e.hitbox = newButtonHitbox(self.menuItems.config.x, self.menuItems.config.startY, 256, self.fnt_extras:getHeight() + 8)
         self.menuItems.config.startY = self.menuItems.config.startY + self.menuItems.config.paddingElements
     end
 
@@ -144,6 +158,10 @@ function ExtrasState:draw()
             end
         end
     end)
+
+    love.graphics.setColor(0, 0, 0, self.fade.alpha)
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.setColor(1, 1, 1)
 end
 
 function ExtrasState:update(elapsed)
@@ -175,6 +193,8 @@ function ExtrasState:update(elapsed)
             end
         end
     end
+
+    flux.update(elapsed)
 end
 
 function ExtrasState:mousepressed(x, y, button)
@@ -201,6 +221,8 @@ function ExtrasState:mousepressed(x, y, button)
 end
 
 function ExtrasState:leave()
+    flux.remove()
+
     for k, v in pairs(AudioSources) do
         v:stop()
     end

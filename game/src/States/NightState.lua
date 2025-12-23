@@ -3,6 +3,7 @@ NightState.assets = {}
 NightState.KilledBy = ""
 NightState.killed = false
 NightState.nightID = 1000
+NightState.isSpecialChallenge = false
 NightState.isCustomNight = false
 NightState.nightPassed = false
 NightState.animatronicsAI = {

@@ -1,6 +1,7 @@
 CustomNightState = {}
 
 CustomNightState.presets = require 'src.Modules.Game.Utils.CustomNightPresets'
+CustomNightState.isSpecialChallenge = false
 
 function CustomNightState:enter()
     for k, v in pairs(AudioSources) do
@@ -119,7 +120,9 @@ function CustomNightState:leave()
     end
 
     for _, f in ipairs(self.cnicons) do
-        f:release()
+        if type(f) == "userdata" and f.release then
+            f:release()
+        end
     end
 
     self.menuBG:release()

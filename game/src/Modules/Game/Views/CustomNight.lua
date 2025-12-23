@@ -1,6 +1,6 @@
 local settings = {
     lpadding = 32,
-    blank = function()end,
+    blank = function() end,
     fonts = {
         title = fontcache.getFont("tnr", 50),
         btnfont = fontcache.getFont("tnr", 26),
@@ -12,14 +12,13 @@ local settings = {
         vhsTitle = fontcache.getFont("vcr", 42),
         vhsNameFont = fontcache.getFont("vcr", 24)
     },
-    states = { "video", "audio", "misc" },
 }
 
 local function sortedPairs(t, sort)
     local function collectKey(t, sort)
         local nk = {}
         for k in pairs(t) do
-            nk[#nk + 1] = k 
+            nk[#nk + 1] = k
         end
         table.sort(nk, sort)
         return nk
@@ -36,23 +35,25 @@ local function sortedPairs(t, sort)
 end
 
 return function()
-    local lfskin = loveframes.GetActiveSkin()
+    local lfskin                    = loveframes.GetActiveSkin()
 
-    lfskin.controls = {}
-    lfskin.controls.smallfont = love.graphics.newFont(11)
+    lfskin.controls                 = {}
+    lfskin.controls.smallfont       = love.graphics.newFont(11)
     lfskin.controls.imagebuttonfont = love.graphics.newFont(15)
-    lfskin.controls.color_image  = {lume.color("#FFFFFF")}
-    lfskin.controls.color_back0  = {lume.color("#bcbce4")}
-    lfskin.controls.color_back1  = {lume.color("#7a8bc9")}
-    lfskin.controls.color_back2  = {lume.color("#4b39a1")}
-    lfskin.controls.color_back3  = {lume.color("#5c6eaf")}
-    lfskin.controls.color_fore0  = {lume.color("#9d8cf1")}
-    lfskin.controls.color_fore1  = {lume.color("#4f467d")}
-    lfskin.controls.color_fore2  = {lume.color("#3a3167")}
-    lfskin.controls.color_fore3  = {lume.color("#2c2359")}
-    lfskin.controls.color_active = {lume.color("#1c1c56")}
+    lfskin.controls.color_image     = { lume.color("#FFFFFF") }
+    lfskin.controls.color_back0     = { lume.color("#bcbce4") }
+    lfskin.controls.color_back1     = { lume.color("#7a8bc9") }
+    lfskin.controls.color_back2     = { lume.color("#4b39a1") }
+    lfskin.controls.color_back3     = { lume.color("#5c6eaf") }
+    lfskin.controls.color_fore0     = { lume.color("#9d8cf1") }
+    lfskin.controls.color_fore1     = { lume.color("#4f467d") }
+    lfskin.controls.color_fore2     = { lume.color("#3a3167") }
+    lfskin.controls.color_fore3     = { lume.color("#2c2359") }
+    lfskin.controls.color_active    = { lume.color("#1c1c56") }
 
-    local portraitIcons = {
+    local portraitObjects           = {}
+
+    local portraitIcons             = {
         ["bonnie"] = {
             img = love.graphics.newImage("assets/images/game/night/cn_icons/bonnie.png"),
             color = { lume.color("#545ec1") },
@@ -83,9 +84,9 @@ return function()
         },
     }
 
-    settings.skin = lfskin
+    settings.skin                   = lfskin
 
-    local buttonSkin = function(object)
+    local buttonSkin                = function(object)
         local skin = object:GetSkin()
         local x = object:GetX()
         local y = object:GetY()
@@ -101,24 +102,24 @@ return function()
         local enabled = object:GetEnabled()
         local clickable = object:GetClickable()
         local back, fore, border
-        
+
         love.graphics.setFont(font)
 
         if down or checked then
-            back = {0.3, 0.3, 0.3, 1}
-            fore = {1, 1, 1, 1}
-            border = {1, 1, 0, 1}
+            back = { 0.3, 0.3, 0.3, 1 }
+            fore = { 1, 1, 1, 1 }
+            border = { 1, 1, 0, 1 }
 
             -- button body
             love.graphics.setColor(back)
             love.graphics.rectangle("fill", x + 8, y + 8, width, height)
-            
+
             love.graphics.setColor(fore)
             skin.PrintText(text, (x + width / 2 - twidth / 2) + 8, (y + height / 2 - theight / 2) + 8)
         elseif hover then
-            back = {0.7, 0.7, 0.7, 1}
-            fore = {0, 0, 0, 1}
-            border = love.timer.getTime() % 1 > 0.5 and {1, 1, 0, 1} or {0, 0, 1, 1}
+            back = { 0.7, 0.7, 0.7, 1 }
+            fore = { 0, 0, 0, 1 }
+            border = love.timer.getTime() % 1 > 0.5 and { 1, 1, 0, 1 } or { 0, 0, 1, 1 }
 
             -- button body
             love.graphics.setColor(border)
@@ -126,13 +127,13 @@ return function()
 
             love.graphics.setColor(back)
             love.graphics.rectangle("fill", x, y, width, height)
-            
+
             love.graphics.setColor(fore)
             skin.PrintText(text, x + width / 2 - twidth / 2, y + height / 2 - theight / 2)
         else
-            back = {0.7, 0.7, 0.7, 1}
-            fore = {0, 0, 0, 1}
-            border = {0.3, 0.3, 0.3, 1}
+            back = { 0.7, 0.7, 0.7, 1 }
+            fore = { 0, 0, 0, 1 }
+            border = { 0.3, 0.3, 0.3, 1 }
 
             -- button body
             love.graphics.setColor(border)
@@ -140,7 +141,7 @@ return function()
 
             love.graphics.setColor(back)
             love.graphics.rectangle("fill", x, y, width, height)
-            
+
             love.graphics.setColor(fore)
             skin.PrintText(text, x + width / 2 - twidth / 2, y + height / 2 - theight / 2)
         end
@@ -202,6 +203,11 @@ return function()
     readyButton.OnClick = function(obj)
         NightState.animatronicsAI = CustomNightState.animatronicsAI
         NightState.nightID = 2000
+
+        if CustomNightState.presets[registers.user.currentChallengeID] == "Claustrophobia" then
+            NightState.isSpecialChallenge = true
+        end
+
         gamestate.switch(LoadingState)
     end
 
@@ -209,10 +215,8 @@ return function()
         local i = 1
         if CustomNightState.presets[registers.user.currentChallengeID] then
             for anim, value in spairs(CustomNightState.presets[registers.user.currentChallengeID].values) do
-                --createPortrait(k, r, c)
-                --CustomNightState.animatronicsAI
                 local animatronic = CustomNightState.presets[registers.user.currentChallengeID].values[anim]
-                local child = ptgrid.children[i].children[3]
+                local child = portraitObjects[anim].children[3]
                 child:SetText(animatronic)
                 child:CenterX()
                 CustomNightState.animatronicsAI[anim] = CustomNightState.presets[registers.user.currentChallengeID].values[anim]
@@ -249,9 +253,9 @@ return function()
             ogImgDraw(obj)
 
             love.graphics.setLineWidth(3)
-                love.graphics.setColor(portraitIcons[id].color)
-                    love.graphics.rectangle("line", x, y, w, h)
-                love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.setColor(portraitIcons[id].color)
+            love.graphics.rectangle("line", x, y, w, h)
+            love.graphics.setColor(1, 1, 1, 1)
             love.graphics.setLineWidth(1)
         end
 
@@ -276,7 +280,7 @@ return function()
         AIValue:SetText(tostring(curAILevel))
         AIValue:SetY(portraitPanel:GetHeight() + 4)
         AIValue:CenterX()
-        
+
         local decButton = loveframes.Create("button")
         decButton:SetParent(portraitPanel)
         decButton:SetText("-")
@@ -331,11 +335,16 @@ return function()
         end
 
         --ptgrid:AddItem(portraitPanel, r, c)
+        portraitObjects[tostring(id)] = portraitPanel
+
         if r >= 2 then
             bottomPortraitGrid:AddItem(portraitPanel, r, c)
         else
             topPortraitGrid:AddItem(portraitPanel, r, c)
         end
+
+
+        --table.insert(portraitObjects, portraitPanel)
     end
 
     local r, c = 1, 1

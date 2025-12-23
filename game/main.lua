@@ -1,6 +1,6 @@
 require('src.Modules.System.Run')
 require('src.Modules.System.Utils.ErrHandler')
-local gitstuff = require 'src.Modules.System.GitStuff'  -- super important stuff --
+local gitstuff = require 'src.Modules.System.GitStuff' -- super important stuff --
 local connectGJ = require 'src.Modules.System.InitializeAPI'
 
 languageService = {}
@@ -13,8 +13,8 @@ local function loadSettings()
 
     local winSize = love.window.resolutionModes[gameSave.save.user.settings.video.winsize]
 
-    --love.window.updateMode(winSize.width, winSize.height, { 
-    --    fullscreen = gameSave.save.user.settings.video.fullscreen, 
+    --love.window.updateMode(winSize.width, winSize.height, {
+    --    fullscreen = gameSave.save.user.settings.video.fullscreen,
     --    vsync = gameSave.save.user.settings.video.vsync,
     --})
     --shove.resize(winSize.width, winSize.height)
@@ -45,12 +45,12 @@ function love.initialize()
     love.setDeprecationOutput(false)
 
     fnt_subtitle = fontcache.getFont("tnr", 24)
-    bg_subtitles = love.graphics.newGradient("horizontal", 
-        {0, 0, 0, 0}, 
-        {255, 255, 255, 255},
-        {255, 255, 255, 255}, 
-        {255, 255, 255, 255}, 
-        {0, 0, 0, 0}
+    bg_subtitles = love.graphics.newGradient("horizontal",
+        { 0, 0, 0, 0 },
+        { 255, 255, 255, 255 },
+        { 255, 255, 255, 255 },
+        { 255, 255, 255, 255 },
+        { 0, 0, 0, 0 }
     )
 
     gameSave = save.new("game")
@@ -85,6 +85,7 @@ function love.initialize()
                 }
             },
             progress = {
+                specialCutsceneSee = false,
                 initialCutscene = false,
                 newgame = false,
                 extras = false,
@@ -100,8 +101,8 @@ function love.initialize()
     }
 
     gameSave:initialize()
-    love.keyboard.setTextInput( true )
-    love.keyboard.setKeyRepeat( true )
+    love.keyboard.setTextInput(true)
+    love.keyboard.setKeyRepeat(true)
 
     local Controls = json.decode(love.filesystem.read("Controls.json"))
     Controller = baton.new({
@@ -136,7 +137,7 @@ function love.initialize()
         end
     end)
 
-    gitstuff()      -- still super important --
+    gitstuff() -- still super important --
 
     languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
     languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
@@ -163,14 +164,14 @@ function love.initialize()
     )
 
     heartbeatTimer = timer.new()
-    heartbeatTimer:every(20, function ()
+    heartbeatTimer:every(20, function()
         GJPing:start(
             gameSave.save.user.settings.misc.gamejolt.username,
             gameSave.save.user.settings.misc.gamejolt.usertoken
         )
     end)
 
-    
+
     love.filesystem.createDirectory("screenshots")
 
     gamestate.registerEvents()
