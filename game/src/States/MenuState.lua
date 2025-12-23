@@ -332,6 +332,13 @@ function MenuState:enter()
         self.mainMenuButtons.config.startY = self.mainMenuButtons.config.startY + self.mainMenuButtons.config.paddingElements
     end
 
+    --[[for _, e in ipairs(self.mainMenuButtons.elements) do
+        e.hitbox.x = self.mainMenuButtons.config.targetX
+        e.hitbox.y = self.mainMenuButtons.config.startY
+        e.hitbox.w = self.fnt_menu:getWidth(e.text) + 8
+        e.hitbox.h = self.fnt_menu:getHeight() + 8
+    end]]
+
     -- tweens --
     self.menuText = flux.to(self.mainMenuButtons.config, 2.3, { x = self.mainMenuButtons.config.targetX })
     self.menuText:ease("sineout")
@@ -397,7 +404,9 @@ function MenuState:draw()
         end
         love.graphics.print(e.text, self.fnt_menu, self.mainMenuButtons.config.x + e.meta.offsetX, e.hitbox.y)
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+        if registers.showDebugHitbox then
+            love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+        end
     end
 
     if self.configMenu then
