@@ -3,14 +3,13 @@ local AnimatorController = class:extend("AnimatorController")
 function AnimatorController:__construct(frames, speed, k)
     self.key = k
     self.frames = frames
-    self.tabUp = false
     self.animationRunning = false
     self.acc = 0
     self.speedAnim = speed or 25
     self.frame = 1
     self.visible = true
     self.reverseAnim = false
-    self.loop = true
+    self.loop = false
     self.onComplete = function() end
 end
 
@@ -20,9 +19,6 @@ local function _playAnimation(self, reverse)
     self.reverseAnim = reverse
 
     self.frame = reverse and self.frames.frameCount or 1
-    if reverse then
-        self.tabUp = false
-    end
 
     self.animationRunning = true
 end
@@ -54,21 +50,31 @@ function AnimatorController:update(elapsed)
             end
             self.acc = 0
         end
-        if self.reverseAnim then
-            if self.frame < 1 then
-                self.frame = 1
-                --self.tabUp = false
-                self.animationRunning = false
-                self.visible = false
-                self.onComplete()
+        if self.loop then
+            if self.reverseAnim then
+                if self.frame < 1 then
+                    self.frame = 1
+                end
+            else
+                if self.frame > self.frames.frameCount then
+                    self.frame = self.frames.frameCount
+                end
             end
         else
-            if self.frame > self.frames.frameCount then
-                self.frame = self.frames.frameCount
-                self.tabUp = true
-                self.animationRunning = false
-                self.visible = true
-                self.onComplete()
+            if self.reverseAnim then
+                if self.frame < 1 then
+                    self.frame = 1
+                    self.animationRunning = false
+                    self.visible = false
+                    self.onComplete()
+                end
+            else
+                if self.frame > self.frames.frameCount then
+                    self.frame = self.frames.frameCount
+                    self.animationRunning = false
+                    self.visible = true
+                    self.onComplete()
+                end
             end
         end
     end

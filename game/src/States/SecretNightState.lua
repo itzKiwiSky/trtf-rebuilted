@@ -68,6 +68,16 @@ function SecretNightState:enter()
                 collectgarbage("collect")
             end
         end
+        if Slab.Button("spawn frankburt challenge") then
+            for name, anim in pairs(self.monitorView.animatronics) do
+                if name ~= "frankburt" then
+                    anim.locked = true
+                end
+            end
+            self.monitorView.animatronics["frankburt"].hidden = false
+            self.monitorView:validateSelection()
+            self.monitorView:createNames()
+        end
         Slab.Text('[Animatronic stuff]')
         Slab.Separator()
         Slab.Text('Frankburt')
@@ -150,6 +160,7 @@ function SecretNightState:enter()
         nightStarted = false,
         deathSequence = {
             active = false,
+            dead = false,
             tmr_lockjawWaitToKill = timer.new()
         },
         killed = false,
@@ -306,6 +317,13 @@ function SecretNightState:enter()
     self.jumpscareBack.animationRunning = false
     self.jumpscareFront.onComplete = kill
     self.jumpscareBack.onComplete = kill
+
+    self.lockjawAttackPose = self.animatorController:new(self.assets["ending"]["attack"], 34, "attack")
+    self.lockjawAttackPose.visible = false
+    self.lockjawAttackPose.loop = true
+
+    self.lockjawDeathPose = self.animatorController:new(self.assets["ending"]["dead"], 34, "attack")
+    self.lockjawDeathPose.visible = false
 
     AudioSources["sfx_boiler_amb"]:setLooping(true)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
@@ -700,6 +718,10 @@ function SecretNightState:update(elapsed)
             if self.IA.frankburt.state == "office" then
                 if self.officeState.flashlight.active then
                     self.officeState.killed = true
+                    for k, v in pairs(AudioSources) do
+                        v:stop()
+                    end
+                    AudioSources["sfx_lockjaw_jumpscare"]:play()
                     if self.officeState.lookDir == "front" then
                         self.jumpscareFront:setState(false)
                     else
@@ -750,6 +772,9 @@ function SecretNightState:update(elapsed)
 
     self.jumpscareFront:update(elapsed)
     self.jumpscareBack:update(elapsed)
+
+    self.lockjawAttackPose:update(elapsed)
+    self.lockjawDeathPose:update(elapsed)
 end
 
 function SecretNightState:mousepressed(x, y, button)

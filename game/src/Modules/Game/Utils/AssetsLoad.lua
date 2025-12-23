@@ -244,8 +244,19 @@ return function(night)
             }
         }
 
+        assets["ending"] = {
+            ["attack"] = {},
+            ["dead"] = {},
+            ["phone"] = {}
+        }
 
-        tab = nil
+        loveloader.newImage(assets["ending"], "disabled", "assets/images/game/night8/ending/lockjaw_deactivated.png")
+
+        assets["ending"]["attack"] = loadBulk("attack", "assets/images/game/night8/jumpscares/ending/lockjaw_attack/")
+        assets["ending"]["dead"] = loadBulk("dead", "assets/images/game/night8/jumpscares/ending/lockjaw_dead/")
+
+        assets["ending"]["phone"] = loadBulk("phone", "assets/images/game/night8/jumpscares/ending/phone/")
+
         collectgarbage("collect")
     elseif night == "cutscene" then
         --[[self = {

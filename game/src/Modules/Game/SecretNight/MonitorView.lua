@@ -42,6 +42,16 @@ MonitorView.namesList = {}
 
 local animatronicsMatrixes = {}
 
+local function checkAllLocked(self)
+    for _, name in ipairs(names) do
+        if self.animatronics[name].locked ~= true then
+            return false
+        end
+    end
+
+    return true
+end
+
 ---Generate a matrix with ids 1 to 3
 ---@param matrixSize number
 ---@param tileSize number
@@ -95,7 +105,7 @@ local function matrixAllEquals(matrix, value)
     return true
 end
 
-local function createNames(self)
+function MonitorView:createNames()
     table.clear(self.namesList)
 
     local paddingLeft = 8
@@ -119,26 +129,45 @@ end
 ---@param self MonitorView
 ---@param dir number
 ---@param names table<string>
-local function moveSelection(self, dir, names)
-    local id = self.currentSelectionID
+local function moveSelection(self, dir)
+    local id = self.currentSelectionID or 0
 
-    while true do
+    repeat
         id = id + dir
 
         if id < 1 or id > #names then
-            break
+            return false
         end
 
         local name = names[id]
-        if not self.animatronics[name].hidden then
+        if name and not self.animatronics[name].hidden then
             self.currentSelectionID = id
             self.currentSelection = name
-            return
+            return true
         end
+    until false
+end
+
+---@param self MonitorView
+---@param names table<string>
+function MonitorView:validateSelection()
+    local id = self.currentSelectionID
+    local name = names[id]
+
+    if name and not self.animatronics[name] then
+        return
     end
+
+    if name and not self.animatronics[name].hidden then
+        return
+    end
+
+    self.currentSelectionID = 0
+    moveSelection(self, 1)
 end
 
 function MonitorView:init()
+    self._frankburtHidden = true
     local animatorController = require 'src.Modules.Game.AnimatorController'
     self.gradients = {
         ["body_integrity"] = love.graphics.newGradient("horizontal", { lume.color("#521612") }, { lume.color("#E61E1E") }),
@@ -153,15 +182,6 @@ function MonitorView:init()
     }
 
     print(inspect(self.static))
-    --self.static.
-    --animatorController:new(SecretNightState.assets.effects["static"], 25, "static_")
-    --[[self.static.onComplete = function()
-        print(self.static.frame)
-        self.static.frame = 1
-        self.static.animationRunning = true
-    end
-
-    self.static:setState(false)]]
 
     self.font = fontcache.getFont("ocrx", 24)
     self.fontInt = fontcache.getFont("ocrx", 18)
@@ -193,6 +213,7 @@ function MonitorView:init()
 
         if key == "frankburt" then
             for _, b in ipairs(m) do
+                b.lastCellID = 1
                 b.id = 0
             end
         end
@@ -208,7 +229,7 @@ function MonitorView:init()
         }
     end
 
-    createNames(self)
+    MonitorView:createNames()
 
     self.currentSelection = names[self.currentSelectionID]
 end
@@ -243,25 +264,25 @@ function MonitorView:draw()
 
                 love.graphics.print(languageService["secret_night_monitor_body_integrity"], self.fontInt, startX + 10, self.namesList["sugar"].y + 60)
                 love.graphics.draw(self.gradients["body_integrity"],
-                    startX + self.fontInt:getWidth(languageService["secret_night_monitor_body_integrity"]) + 30,
+                    startX + 330,
                     self.namesList["sugar"].y + 60, 0,
                     math.floor(128 * SecretNightState.officeState.furnace.vincentIntegrity / 100),
                     self.fontInt:getHeight()
                 )
                 love.graphics.rectangle("line",
-                    startX + 512,
+                    startX + 330,
                     self.namesList["sugar"].y + 60, 128, self.fontInt:getHeight()
                 )
 
                 love.graphics.print(languageService["secret_night_monitor_boiler_fuel"], self.fontInt, startX + 10, self.namesList["sugar"].y + 90)
                 love.graphics.draw(self.gradients["fuel"],
-                    startX + self.fontInt:getWidth(languageService["secret_night_monitor_boiler_fuel"]) + 30,
+                    startX + 330,
                     self.namesList["sugar"].y + 90, 0,
                     math.floor(128 * SecretNightState.officeState.furnace.furnaceFuel / 100),
                     self.fontInt:getHeight()
                 )
                 love.graphics.rectangle("line",
-                    startX + self.fontInt:getWidth(languageService["secret_night_monitor_boiler_fuel"]) + 30,
+                    startX + 330,
                     self.namesList["sugar"].y + 90, 128, self.fontInt:getHeight()
                 )
             end,
@@ -325,12 +346,6 @@ function MonitorView:draw()
         })
     end
 
-    local sx = 512 / SecretNightState.assets.effects["static"]["static_1"]:getWidth()
-    local sy = 512 / SecretNightState.assets.effects["static"]["static_1"]:getHeight()
-    love.graphics.setBlendMode("add")
-    love.graphics.draw(self.static.frames["static_" .. self.static.frame], startX - 30, startY, 0, sx, sy)
-    love.graphics.setBlendMode("alpha")
-
     self.glowcnv:renderTo(function()
         love.graphics.clear(0, 0, 0, 0)
         self.glow(function()
@@ -339,6 +354,14 @@ function MonitorView:draw()
     end)
 
     drawShit()
+
+    local sx = 512 / SecretNightState.assets.effects["static"]["static_1"]:getWidth()
+    local sy = 512 / SecretNightState.assets.effects["static"]["static_1"]:getHeight()
+    love.graphics.setBlendMode("add")
+    love.graphics.setColor(1, 1, 1, 0.5)
+    love.graphics.draw(self.static.frames["static_" .. self.static.frame], startX - 30, startY - 50, 0, sx, sy)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setBlendMode("alpha")
 end
 
 function MonitorView:postDraw()
@@ -357,12 +380,25 @@ function MonitorView:update(elapsed)
     local startX, startY = self.game.boardStart.x, self.game.boardStart.y
     local offsetX, offsetY = self.game.boardOffset.x, self.game.boardOffset.y
 
+    self.static.acc = self.static.acc + elapsed
     if self.static.acc >= (1 / self.static.speed) then
         self.static.frame = self.static.frame + 1
+        self.static.acc = 0
         if self.static.frame > self.static.frames.frameCount then
             self.static.frame = 1
         end
     end
+
+    local shouldBeHidden = not checkAllLocked(self)
+
+    if self._frankburtHidden ~= shouldBeHidden then
+        self._frankburtHidden = shouldBeHidden
+        self.animatronics["frankburt"].hidden = shouldBeHidden
+
+        validateSelection(self, names)
+    end
+
+    --MonitorView:validateSelection()
 
     switch(self.currentState, {
         ["minigame"] = function()
@@ -381,7 +417,7 @@ function MonitorView:update(elapsed)
                 self.game.invertCooldown = 0.5
             end
 
-            local multi = 0.20
+            local multi = self.currentSelection == "frankburt" and 0.5 or 0.20
 
             if self.game.inverted then
                 self.game.playerPos.x = self.game.playerPos.x - elapsed * multi
@@ -434,7 +470,7 @@ function MonitorView:update(elapsed)
 
             if matrixAllEquals(animatronicsMatrixes[self.currentSelection].mx, 2) then
                 self.animatronics[self.currentSelection].locked = true
-                createNames(self)
+                MonitorView:createNames()
                 self.currentState = "idle"
             end
         end,
@@ -449,22 +485,29 @@ function MonitorView:keypressed(k)
         ["idle"] = function()
             switch(k, {
                 ["w"] = function()
-                    moveSelection(self, -1, names)
+                    moveSelection(self, -1)
                 end,
                 ["s"] = function()
-                    moveSelection(self, 1, names)
+                    moveSelection(self, 1)
                 end,
                 ["up"] = function()
-                    moveSelection(self, -1, names)
+                    moveSelection(self, -1)
                 end,
 
                 ["down"] = function()
-                    moveSelection(self, 1, names)
+                    moveSelection(self, 1)
                 end,
                 ["return"] = function()
                     local anim = self.animatronics[self.currentSelection]
-                    if not anim.locked then
+                    if not anim.locked and not anim.hidden then
                         self.currentState = "minigame"
+                        if self.currentSelection == "frankburt" then
+                            SecretNightState.officeState.blink.alpha = 1
+                            AudioSources["sfx_kill"]:setLooping(true)
+                            AudioSources["sfx_kill"]:play()
+                            SecretNightState.officeState.deathSequence.active = true
+                            SecretNightState.lockjawAttackPose:setState(false)
+                        end
                     end
                 end
             })
