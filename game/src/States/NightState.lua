@@ -93,6 +93,8 @@ function NightState:enter()
     self.jumpscareController.visible = false
     self.jumpscareController.frames = self.assets
 
+    self.canUpdateAnimatronics = false
+
     self.phoneController:init(NightState.assets.phoneModel, 45, "ph")
     self.phoneController.visible = false
     self.phoneController.hitbox = {
@@ -507,9 +509,9 @@ function NightState:enter()
 
 
     self.tmr_nightEnd:script(function(sleep)
-        sleep(0.5)
+        sleep(2)
         self.officeState._op = true
-        sleep(4)
+        --sleep(4)
         for k, v in pairs(AudioSources) do
             v:stop()
         end
@@ -520,25 +522,28 @@ function NightState:enter()
         gameSave.save.user.progress.newgame = false
         gameSave.save.user.progress.canContinue = gameSave.save.user.progress.night > 1
         gameSave:saveSlot()
-        if registers.isStoryMode then
-            local minigames = {
-                "Bonnie",
-                "Foxy",
-                "Sugar",
-                "Freddy",
-                "Frankburt"
-            }
-            if self.nightID <= #minigames then
-                MinigameSceneState.currentMinigame = minigames[self.nightID]
+        if self.isSpecialChallenge then
+            VideoPlayerState.path = "assets/videos/teaserCutscene.ogv"
+            VideoPlayerState.onSceneComplete = function()
+                gameSave.save.user.progress.specialCutsceneSee = true
             end
+            gamestate.switch(VideoPlayerState)
+        else
+            if registers.isStoryMode then
+                local minigames = {
+                    "Bonnie",
+                    "Foxy",
+                    "Sugar",
+                    "Freddy",
+                    "Frankburt"
+                }
+                if self.nightID <= #minigames then
+                    MinigameSceneState.currentMinigame = minigames[self.nightID]
+                end
+            end
+            gamestate.switch(WinState)
         end
-        gamestate.switch(WinState)
     end)
-
-    for k, v in pairs(NightState.AnimatronicControllers) do
-        --NightState.AnimatronicControllers[k] = v:new()
-        --if v.init then v.init() end
-    end
 
     function NightState.officeState.onAnimatronicInOffice()
         if self.officeState.tabletUp then
@@ -546,6 +551,18 @@ function NightState:enter()
             self.officeState.tabletUp = false
         end
     end
+
+    local function getCooldownByNight(night, defaultValue, values)
+        if values[night] == nil then
+            return defaultValue
+        end
+        return values[night]
+    end
+
+    self.tmr_cooldownUpdateAnimatronics = timer.new()
+    self.tmr_cooldownUpdateAnimatronics:after(getCooldownByNight(self.night, 7, { 100, 90, 80, 60, 40, 20 }), function()
+        self.canUpdateAnimatronics = true
+    end)
 end
 
 function NightState:draw()
@@ -922,7 +939,7 @@ function NightState:update(elapsed)
     end
 
     -- animatronic --
-    if self.officeState.nightRun and not NightState.killed then
+    if self.officeState.nightRun and not NightState.killed and self.canUpdateAnimatronics then
         for k, animatronic in pairs(NightState.AnimatronicControllers) do
             if not self.officeState.isOfficeDisabled and not NightState.nightPassed then
                 animatronic:update(elapsed)
@@ -986,6 +1003,10 @@ function NightState:update(elapsed)
 
     if self.officeState.nightRun and not NightState.nightPassed then
         self.night.time = self.night.time + elapsed
+    end
+
+    if self.officeState.nightRun then
+        self.tmr_cooldownUpdateAnimatronics:update(elapsed)
     end
 
     self.night.h, self.night.m, self.night.s, self.night.period = formatAdjustedTimeAMPM(self.night.time, 72,
