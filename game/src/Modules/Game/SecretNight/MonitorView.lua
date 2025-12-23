@@ -249,7 +249,7 @@ function MonitorView:draw()
                     self.fontInt:getHeight()
                 )
                 love.graphics.rectangle("line",
-                    startX + self.fontInt:getWidth(languageService["secret_night_monitor_body_integrity"]) + 30,
+                    startX + 512,
                     self.namesList["sugar"].y + 60, 128, self.fontInt:getHeight()
                 )
 

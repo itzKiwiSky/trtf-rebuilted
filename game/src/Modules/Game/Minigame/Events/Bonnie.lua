@@ -5,7 +5,7 @@ local Minigame = {
 
 function Minigame.init()
     MinigameSceneState.displayFace.currentFace = "bonnie"
-    Minigame.Child = require 'game.src.Modules.Game.Minigame.Child'
+    Minigame.Child = require 'src.Modules.Game.Minigame.Child'
     Minigame.allUnhappy = false
     Minigame.showFace = false
     Minigame.flashFace = false
@@ -24,10 +24,10 @@ function Minigame.init()
     -- load this custom state --
     Minigame.assets.child = {}
     Minigame.assets.child.img, Minigame.assets.child.quads = love.graphics.newQuadFromImage("hash", "assets/images/game/minigames/kid")
-    
+
     for i = 1, 6, 1 do
         local c = Minigame.Child:new(
-            Minigame.assets.child.img, Minigame.assets.child.quads, 
+            Minigame.assets.child.img, Minigame.assets.child.quads,
             MinigameSceneState.spawnAreas[i > 1 and "child" .. i - 1 or "child"].centerX,
             MinigameSceneState.spawnAreas[i > 1 and "child" .. i - 1 or "child"].centerY, (i % 3 == 0 or i >= 5)
         )
@@ -49,7 +49,6 @@ function Minigame.update(elapsed)
                 MinigameSceneState.player.lastDirection = "misc"
                 MinigameSceneState.player.animation.speed = 1 / 2
                 MinigameSceneState.player.locked = true
-
             end
 
             if MinigameSceneState.player.locked then

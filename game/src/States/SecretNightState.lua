@@ -88,9 +88,8 @@ function SecretNightState:enter()
 
     self.IA = {
         config = {
-            ["frankburt"] = 8,
+            ["frankburt"] = 4,
             ["golden_freddy"] = 8,
-            timerIncrement = 20, -- increment the IA values by 1 every 20 seconds passed
             incrementValue = 0,
             tmr = 0,
         },
@@ -149,6 +148,10 @@ function SecretNightState:enter()
 
     self.officeState = {
         nightStarted = false,
+        deathSequence = {
+            active = false,
+            tmr_lockjawWaitToKill = timer.new()
+        },
         killed = false,
         lookDir = "front",
         blink = {
@@ -309,8 +312,7 @@ function SecretNightState:enter()
     AudioSources["sfx_boiler_amb"]:play()
 
     self.nightTimer = timer.new()
-    self.nightTimer:script(function(sleep)
-        sleep(2)
+    self.nightTimer:after(2, function(sleep)
         self.beeperController:setState(true)
         AudioSources["sfx_beeper_open"]:play()
         AudioSources["sfx_beeper_open"]:setVolume(0.87)
@@ -372,13 +374,13 @@ function SecretNightState:draw()
     end
     love.graphics.setShader()
 
-    love.graphics.setColor(0, 0, 0, self.officeState.blink.alpha)
-    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
-    love.graphics.setColor(1, 1, 1, 1)
-
     self.beeperView:draw()
     self.beeperController:draw()
     self.beeperView:postDraw()
+
+    love.graphics.setColor(0, 0, 0, self.officeState.blink.alpha)
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
 
     self.monitorView:draw()
     if self.officeState.monitor.displayStatic then
