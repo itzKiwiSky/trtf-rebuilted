@@ -280,6 +280,7 @@ function SecretNightState:enter()
     self.cnv_mainCanvas = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight())
     self.cnv_invertedRoom = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight())
     self.cnv_flash = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight())
+    self.cnv_lockjawPoses = love.graphics.newCanvas(shove.getViewportDimensions())
     self.cnv_battery = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight(), { readable = true })
 
     self.maskShader = love.graphics.newShader([[
@@ -389,6 +390,18 @@ function SecretNightState:draw()
         end
     end)
 
+    self.cnv_lockjawPoses:renderTo(function()
+        love.graphics.clear()
+        self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
+        if self.officeState.deathSequence.active then
+            self.lockjawAttackPose:draw()
+        end
+        if self.officeState.deathSequence.dead then
+            self.lockjawDeathPose:draw()
+        end
+        self.gameCam:detach()
+    end)
+
     love.graphics.setShader(self.shd_perspective)
     love.graphics.draw(self.cnv_mainCanvas, 0, 0)
     if not self.officeState.lookingBack and self.officeState.lookDir == "front" then
@@ -396,6 +409,10 @@ function SecretNightState:draw()
         love.graphics.draw(self.cnv_flash, 0, 0)
         love.graphics.setBlendMode("alpha")
     end
+    love.graphics.setShader()
+
+    love.graphics.setShader(self.shd_perspective)
+    love.graphics.draw(self.cnv_lockjawPoses, 0, 0)
     love.graphics.setShader()
 
     self.beeperView:draw()
@@ -624,7 +641,7 @@ function SecretNightState:update(elapsed)
     self.officeState.ambienceBoilerVolume = math.lerp(self.officeState.ambienceBoilerVolume, self.officeState.lookDir == "back" and 0.75 or 0.2, 0.075, 0.4)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
 
-    if self.officeState.nightStarted and not self.officeState.killed then
+    if self.officeState.nightStarted and not self.officeState.killed and not self.officeState.deathSequence.active then
         if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton.hitbox) then
             if self.officeState.lookDir == "front" and not self.officeState.monitor.open and not self.computerAnim.animationRunning then
                 if not self.turnAnim.animationRunning then
@@ -694,6 +711,10 @@ function SecretNightState:update(elapsed)
         end
     end
 
+    if self.officeState.deathSequence.active then
+        self.officeState.flashlight.active = false
+    end
+
     if self.officeState.flashlight.active then
         self.officeState.flashlight.alpha = math.map(math.min(self.officeState.flashlight.battery, 5), 0, 5, 0, 1)
         self.officeState.flashlight.battery = self.officeState.flashlight.battery - elapsed * self.officeState.flashlight.energyConsumeMultiplier
@@ -706,7 +727,7 @@ function SecretNightState:update(elapsed)
         end
     end
 
-    if self.officeState.nightStarted then
+    if self.officeState.nightStarted and not self.officeState.deathSequence.active then
         self.IA.frankburt.moveTimer = self.IA.frankburt.moveTimer - elapsed
 
         if self.IA.config.incrementValue < 5 then
@@ -821,6 +842,9 @@ function SecretNightState:mousepressed(x, y, button)
         and self.officeState.flashlight.battery > 1
         and not self.officeState.monitor.open
         and not self.computerAnim.animationRunning
+        and not self.officeState.deathSequence.dead
+        and not self.officeState.deathSequence.active
+        and self.officeState.lookDir == "back"
         and not collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["box"])
     then
         if AudioSources["sfx_flashlight"]:isPlaying() then

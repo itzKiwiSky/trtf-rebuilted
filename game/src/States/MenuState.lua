@@ -86,6 +86,11 @@ function MenuState:enter()
                 gamestate.switch(EndingState)
             end
 
+            if Slab.Button("Load ending [Night 6]") then
+                EndingState.mode = "night6"
+                gamestate.switch(EndingState)
+            end
+
             Slab.EndWindow()
         end
     end

@@ -44,6 +44,19 @@ function EndingState:enter()
                 end,
             })
         end,
+        ["night6"] = function()
+            AudioSources["msc_ending"]:setLooping(true)
+            AudioSources["msc_ending"]:setVolume(0.67)
+            AudioSources["msc_ending"]:play()
+            switch(lang, {
+                ["default"] = function()
+                    self.bg = love.graphics.newImage("assets/images/game/ending/ending_english_night_6.png")
+                end,
+                ["Espanol"] = function()
+                    self.bg = love.graphics.newImage("assets/images/game/ending/ending_espanol_night_6.png")
+                end,
+            })
+        end,
     })
 
     flux.to(self.fade, 2.5, { alpha = 0 })

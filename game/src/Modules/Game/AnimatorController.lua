@@ -53,11 +53,11 @@ function AnimatorController:update(elapsed)
         if self.loop then
             if self.reverseAnim then
                 if self.frame < 1 then
-                    self.frame = 1
+                    self.frame = self.frames.frameCount
                 end
             else
                 if self.frame > self.frames.frameCount then
-                    self.frame = self.frames.frameCount
+                    self.frame = 1
                 end
             end
         else

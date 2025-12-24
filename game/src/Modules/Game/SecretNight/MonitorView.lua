@@ -13,7 +13,7 @@ MonitorView.currentSelectionID = 1
 MonitorView.currentState = "idle"
 MonitorView.game = {
     boardStart = { x = 480, y = 120 },
-    boardOffset = { x = 60, y = 20 },
+    boardOffset = { x = 40, y = 16 },
     hitbox = { w = 24, h = 24 },
     inverted = false,
     playerPos = { x = -1, y = 1 },
@@ -213,8 +213,8 @@ function MonitorView:init()
 
         if key == "frankburt" then
             for _, b in ipairs(m) do
-                b.lastCellID = 1
-                b.id = 0
+                b.lastCellID = 2
+                b.id = 1
             end
         end
 
