@@ -467,17 +467,28 @@ function MonitorView:update(elapsed)
 
 
             if matrixAllEquals(animatronicsMatrixes[self.currentSelection].mx, 2) then
-                self.animatronics[self.currentSelection].locked = true
-                MonitorView:createNames()
-                self.currentState = "idle"
-
-                if self.currentSelection == "frankburt" and SecretNightState.officeState.furnace.vincentIntegrity <= 0 then
+                if self.currentSelection == "frankburt" then
                     SecretNightState.officeState.deathSequence.finalSequence = true
+                    SecretNightState.officeState.monitor.displayStatic = false
                     SecretNightState.computerAnim:setState(false)
+                    AudioSources["sfx_close_panel"]:setVolume(0.75)
+                    AudioSources["sfx_close_panel"]:play()
+                    SecretNightState.computerAnim.onComplete = function()
+                        SecretNightState.computerAnim.visible = false
+                        SecretNightState.officeState.monitor.open = false
+                    end
+
+                    SecretNightState.officeState.hideAllShit = true
+
                     AudioSources["sfx_close_panel"]:setVolume(0.75)
                     AudioSources["sfx_close_panel"]:play()
 
                     AudioSources["msc_lockjaw_theme"]:stop()
+                else
+                    self.animatronics[self.currentSelection].locked = true
+                    MonitorView:createNames()
+                    MonitorView:validateSelection()
+                    self.currentState = "idle"
                 end
             end
         end,
