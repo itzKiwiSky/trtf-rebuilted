@@ -27,6 +27,8 @@ local function newButtonHitbox(x, y, w, h)
 end
 
 function MenuState:enter()
+    registers.isStoryMode = false
+
     flux.removeAll()
     MenuState.saveState = gameSave.save.user.progress
     self.settingsSubState = require 'src.States.Substates.SettingsSubstate'
@@ -244,9 +246,25 @@ function MenuState:enter()
                 text = "",
                 locked = false,
                 action = function()
-                    registers.isStoryMode = true
-                    gameSave.save.user.progress.newgame = true
-                    gameSave.save.user.progress.night = 1
+                    progress = {
+                        specialCutsceneSee = false,
+                        initialCutscene = false,
+                        newgame = true,
+                        extras = false,
+                        canContinue = false,
+                        night = 1,
+                        playingMinigame = false,
+                        showNight8 = false,
+                        night8 = false,
+                        minigameID = "",
+                        stars = {
+                            beatNight8 = false,
+                            beat20 = false,
+                            beatNight6 = false,
+                        }
+                    }
+
+                    gameSave.save.user.progress = progress
                     self.canUseMenu = false
                     self.journalConfig.active = true
                     NightState.nightID = gameSave.save.user.progress.night

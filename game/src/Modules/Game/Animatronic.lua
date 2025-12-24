@@ -23,7 +23,7 @@ function Animatronic:__construct(id, x, y)
     self.autoUpdatePos = true
     self.animatronicOnSameCamera = false
 
-    self.onMove = function()end
+    self.onMove = function() end
 end
 
 ---Plays a random walk sound
@@ -82,25 +82,24 @@ end
 ---the update
 ---@param elapsed love.timer.getDelta
 function Animatronic:update(elapsed)
-    
     if NightState.tabletCameraSubState.camerasID[self.metadataCameraID] then
         self.animatronicOnSameCamera = NightState.tabletCameraSubState.camerasID[self.metadataCameraID] == NightState.tabletCameraSubState.camID
     end
-    
+
     if self.updateMoveTimer then
         self.timer = self.timer + elapsed
         if self.timer >= self.moveTime then
             self.move = math.random(0, 20)
-            if self.move <= NightState.animatronicsAI[self.id] and NightState.animatronicsAI[self.id] > 0 and not NightState.officeState.hasAnimatronicInOffice then
+            if self.move >= NightState.animatronicsAI[self.id] and NightState.animatronicsAI[self.id] > 0 and not NightState.officeState.hasAnimatronicInOffice then
                 self.onMove()
             end
             self.timer = 0
         end
     end
-    
+
     if #self.path > 0 and self.autoUpdatePos and self.currentState > 0 then
         self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
     end
 end
 
-return Animatronic  ---@type Animatronic
+return Animatronic ---@type Animatronic

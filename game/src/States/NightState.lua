@@ -1496,6 +1496,7 @@ function NightState:leave()
     end
 
     releaseRecursive(self.assets)
+
     LoadingState.isNightLoaded = false
 end
 
