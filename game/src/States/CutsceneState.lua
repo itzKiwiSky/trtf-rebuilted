@@ -133,12 +133,8 @@ function CutsceneState:enter()
         sleep(1)
         flux.to(self.textFX, 2, { alpha = 1 }):oncomplete(function()
             flux.to(self.textFX, 2, { alpha = 0 }):delay(1):oncomplete(function()
-                if registers.isStoryMode then
-                    LoadingState.mode = "normal"
-                    gamestate.switch(LoadingState)
-                else
-                    gamestate.switch(MenuState)
-                end
+                LoadingState.mode = "normal"
+                gamestate.switch(LoadingState)
             end)
         end)
     end)
