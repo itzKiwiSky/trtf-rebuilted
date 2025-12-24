@@ -18,6 +18,12 @@ NightState.animatronicsAI = {
 
 NightState.AnimatronicControllers = {}
 
+local function incrementIA(iaList)
+    for _, name in ipairs(iaList) do
+        NightState.animatronicsAI[name] = NightState.animatronicsAI[name] + 1
+    end
+end
+
 local function mapToRange(input, min, max, step)
     local clampedInput = math.max(min, math.min(max, input))
 
@@ -562,9 +568,66 @@ function NightState:enter()
         return values[night]
     end
 
+    self.incrementCount = 0
     self.tmr_cooldownUpdateAnimatronics = timer.new()
-    self.tmr_cooldownUpdateAnimatronics:after(getCooldownByNight(self.night, 7, { 100, 90, 80, 60, 40, 20 }), function()
-        self.canUpdateAnimatronics = true
+    self.tmr_cooldownUpdateAnimatronics:every(50, function()
+        self.incrementCount = self.incrementCount + 1
+        local t = {
+            {
+                nil,                                                         --12
+                nil,                                                         --1
+                function() incrementIA({ "bonnie", "chica" }) end,           --2
+                nil,                                                         --3
+                function() incrementIA({ "bonnie", "chica", "freddy" }) end, --4
+                function() incrementIA({ "bonnie", "freddy" }) end           --5
+            },
+            {
+                nil,
+                function() incrementIA({ "bonnie", "freddy" }) end,        --1
+                function() incrementIA({ "chica", "foxy" }) end,           --2
+                nil,
+                function() incrementIA({ "bonnie", "chica", "foxy" }) end, --4
+                function() incrementIA({ "bonnie", "freddy" }) end         --5
+            },
+            {
+                nil,
+                nil,
+                function() incrementIA({ "chica", "puppet" }) end,                   --2
+                nil,
+                function() incrementIA({ "bonnie", "chica", "foxy", "freddy" }) end, --4
+                function() incrementIA({ "bonnie", "freddy" }) end                   --5
+            },
+            {
+                nil,
+                nil,
+                function() incrementIA({ "chica", "sugar", "kitty" }) end,           --2
+                nil,
+                function() incrementIA({ "bonnie", "chica", "foxy", "freddy" }) end, --4
+                function() incrementIA({ "bonnie", "chica" }) end                    --5
+            },
+            {
+                nil,
+                nil,
+                function() incrementIA({ "puppet", "sugar", "kitty" }) end,          --2
+                function() incrementIA({ "bonnie", "chica" }) end,                   --3
+                function() incrementIA({ "bonnie", "chica", "foxy", "freddy" }) end, --4
+                function() incrementIA({ "bonnie", "chica", "freddy" }) end          --5
+            },
+            {
+                nil,
+                nil,
+                nil,
+                nil,
+                function() incrementIA({ "bonnie", "chica", "foxy", "freddy" }) end,          --4
+                function() incrementIA({ "bonnie", "chica", "freddy", "kitty", "sugar" }) end --5
+            },
+        }
+
+        if type(t[self.nightID]) == "table" then
+            if type(t[self.nightID][self.incrementCount]) == "function" then
+                t[self.nightID][self.incrementCount]()
+            end
+        end
     end)
 end
 
@@ -1008,7 +1071,7 @@ function NightState:update(elapsed)
         self.night.time = self.night.time + elapsed
     end
 
-    if self.officeState.nightRun then
+    if self.officeState.nightRun and self.incrementCount < 5 then
         self.tmr_cooldownUpdateAnimatronics:update(elapsed)
     end
 
