@@ -3,7 +3,7 @@ SecretNightState.assets = {}
 SecretNightState.forceRestart = false
 
 local function playWalk()
-    local audio = "walk_" .. math.random(1, 7)
+    local audio = "sfx_walk" .. math.random(1, 7)
     AudioSources[audio]:setVolume(0.45)
     AudioSources[audio]:play()
 end
@@ -104,7 +104,7 @@ function SecretNightState:enter()
 
     self.IA = {
         config = {
-            ["frankburt"] = 4,
+            ["frankburt"] = 8,
             ["golden_freddy"] = 8,
             incrementValue = 0,
             tmr = 0,
@@ -557,6 +557,8 @@ function SecretNightState:update(elapsed)
                 end
             end
         end
+    else
+        AudioSources["sfx_collect_wood"]:stop()
     end
 
     if self.officeState.nightStarted then
@@ -719,16 +721,16 @@ function SecretNightState:update(elapsed)
 
             self.IA.frankburt.rng = math.random(1, 20)
 
-            if self.IA.frankburt.rng <= self.IA.config["frankburt"] and self.IA.config["frankburt"] > 0 and self.IA.frankburt.state == "idle" then
+            if self.IA.frankburt.rng >= self.IA.config["frankburt"] and self.IA.config["frankburt"] > 0 and self.IA.frankburt.state == "idle" then
                 playWalk()
                 self.officeState.blink.alpha = 1
                 local s = lume.weightedchoice({ ["front"] = 40, ["right"] = 60, ["office"] = 10 })
                 if s == "office" and not self.officeState.flashlight.active then
                     self.IA.frankburt.state = "office"
-                    self.IA.frankburt.patience = math.random(5, 7) -- reinicia paciência ao entrar no office
+                    self.IA.frankburt.patience = math.random(3, 6) -- reinicia paciência ao entrar no office
                 else
                     self.IA.frankburt.state = s
-                    self.IA.frankburt.patience = math.random(5, 7) -- reinicia paciência em novo estado
+                    self.IA.frankburt.patience = math.random(3, 6) -- reinicia paciência em novo estado
                 end
             end
         end
@@ -830,15 +832,15 @@ function SecretNightState:mousepressed(x, y, button)
 
     if button == 1 then
         if collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["boiler"]) then
-            if self.officeState.furnace.open then
-                AudioSources["sfx_boiler_door_open"]:setVolume(0.75)
-                AudioSources["sfx_boiler_door_open"]:play()
-            else
-                AudioSources["sfx_boiler_door_close"]:setVolume(0.75)
-                AudioSources["sfx_boiler_door_close"]:play()
-            end
             if not self.boilerAnim.animationRunning then
                 if self.officeState.hitboxes["boiler"].condition() then
+                    if self.officeState.furnace.open then
+                        AudioSources["sfx_boiler_door_open"]:setVolume(0.75)
+                        AudioSources["sfx_boiler_door_open"]:play()
+                    else
+                        AudioSources["sfx_boiler_door_close"]:setVolume(0.75)
+                        AudioSources["sfx_boiler_door_close"]:play()
+                    end
                     self.boilerAnim:setState(not self.officeState.furnace.open)
                     self.boilerAnim.onComplete = function()
                         self.officeState.furnace.open = not self.officeState.furnace.open
@@ -846,7 +848,7 @@ function SecretNightState:mousepressed(x, y, button)
                 end
             end
             if self.officeState.furnace.open then
-                if self.officeState.wood.holdingWood then
+                if self.officeState.wood.holdingWood and self.officeState.hitboxes["boiler"].condition() then
                     AudioSources["sfx_add_wood_boiler"]:setVolume(0.56)
                     AudioSources["sfx_add_wood_boiler"]:play()
                     self.officeState.furnace.furnaceFuel = self.officeState.furnace.furnaceFuel + self.officeState.furnace.fuelAdd
