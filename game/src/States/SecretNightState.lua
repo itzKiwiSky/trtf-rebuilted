@@ -2,6 +2,12 @@ SecretNightState = {}
 SecretNightState.assets = {}
 SecretNightState.forceRestart = false
 
+local function playWalk()
+    local audio = "walk_" .. math.random(1, 7)
+    AudioSources[audio]:setVolume(0.45)
+    AudioSources[audio]:play()
+end
+
 function SecretNightState:enter()
     for k, v in pairs(AudioSources) do
         v:stop()
@@ -516,9 +522,11 @@ function SecretNightState:update(elapsed)
         self.officeState.flashlight.x, self.officeState.flashlight.y = vmx, vmy
     end
 
-    self.shd_perspective:send("latitudeVar", self.tuneConfig.latitudeVar)
-    self.shd_perspective:send("longitudeVar", self.tuneConfig.longitudeVar)
-    self.shd_perspective:send("fovVar", self.tuneConfig.fovVar)
+    if FEATURE_FLAGS.developerMode then
+        self.shd_perspective:send("latitudeVar", self.tuneConfig.latitudeVar)
+        self.shd_perspective:send("longitudeVar", self.tuneConfig.longitudeVar)
+        self.shd_perspective:send("fovVar", self.tuneConfig.fovVar)
+    end
 
 
     if not self.beeperController.tabUp and not self.officeState.monitor.open then
@@ -531,9 +539,19 @@ function SecretNightState:update(elapsed)
             if collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["box"]) then
                 if self.officeState.hitboxes["box"].condition() then
                     self.officeState.wood.fuelTakeTime = self.officeState.wood.fuelTakeTime + elapsed
+                    if not AudioSources["sfx_collect_wood"]:isPlaying() then
+                        AudioSources["sfx_collect_wood"]:setVolume(0.45)
+                        AudioSources["sfx_collect_wood"]:play()
+                    end
                 end
 
                 if self.officeState.wood.fuelTakeTime >= self.officeState.wood.fuelMaxTakeTime then
+                    if not AudioSources["sfx_collect_wood"]:isPlaying() then
+                        AudioSources["sfx_collect_wood"]:stop()
+                    end
+                    if self.officeState.wood.holdingWood then
+                        AudioSources["sfx_finish_wood"]:play()
+                    end
                     self.officeState.wood.fuelTakeTime = 0
                     self.officeState.wood.holdingWood = true
                 end
@@ -601,8 +619,7 @@ function SecretNightState:update(elapsed)
         end
     end
 
-    self.officeState.ambienceBoilerVolume = math.lerp(self.officeState.ambienceBoilerVolume,
-        self.officeState.lookDir == "back" and 0.75 or 0.2, 0.075, 0.9 * elapsed)
+    self.officeState.ambienceBoilerVolume = math.lerp(self.officeState.ambienceBoilerVolume, self.officeState.lookDir == "back" and 0.75 or 0.2, 0.075, 0.4)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
 
     if self.officeState.nightStarted and not self.officeState.killed then
@@ -651,11 +668,15 @@ function SecretNightState:update(elapsed)
                         if self.officeState.monitor.open then
                             self.officeState.monitor.displayStatic = false
                             self.computerAnim:setState(false)
+                            AudioSources["sfx_close_panel"]:setVolume(0.75)
+                            AudioSources["sfx_close_panel"]:play()
                             self.computerAnim.onComplete = function()
                                 self.computerAnim.visible = false
                                 self.officeState.monitor.open = false
                             end
                         else
+                            AudioSources["sfx_open_panel"]:setVolume(0.75)
+                            AudioSources["sfx_open_panel"]:play()
                             self.computerAnim:setState(true)
                             self.computerAnim.onComplete = function()
                                 self.computerAnim.visible = false
@@ -699,6 +720,7 @@ function SecretNightState:update(elapsed)
             self.IA.frankburt.rng = math.random(1, 20)
 
             if self.IA.frankburt.rng <= self.IA.config["frankburt"] and self.IA.config["frankburt"] > 0 and self.IA.frankburt.state == "idle" then
+                playWalk()
                 self.officeState.blink.alpha = 1
                 local s = lume.weightedchoice({ ["front"] = 40, ["right"] = 60, ["office"] = 10 })
                 if s == "office" and not self.officeState.flashlight.active then
@@ -730,6 +752,7 @@ function SecretNightState:update(elapsed)
                 else
                     if self.IA.frankburt.patience <= 0 then
                         self.officeState.blink.alpha = 1
+                        playWalk()
                         self.IA.frankburt.state = "idle"
                     end
                 end
@@ -740,9 +763,14 @@ function SecretNightState:update(elapsed)
                     if collision.pointRect({ x = mx, y = my }, self.IA.frankburt.hitboxes[self.IA.frankburt.state]) and self.officeState.flashlight.alpha >= 0.3 then
                         self.officeState.blink.alpha = 1
                         self.IA.frankburt.state = "idle"
+                        playWalk()
                     else
                         -- kill shit -- (mata se a paciência acabar)
                         self.officeState.killed = true
+                        for k, v in pairs(AudioSources) do
+                            v:stop()
+                        end
+                        AudioSources["sfx_lockjaw_jumpscare"]:play()
                         if self.officeState.lookDir == "front" then
                             self.jumpscareFront:setState(false)
                         else
@@ -766,7 +794,7 @@ function SecretNightState:update(elapsed)
 
     self.nightTimer:update(elapsed)
 
-    if self.officeState.nightStarted then
+    if self.officeState.nightStarted and not self.IA.frankburt.active then
         self.activateTmr:update(elapsed)
     end
 
@@ -793,11 +821,22 @@ function SecretNightState:mousepressed(x, y, button)
         and not self.computerAnim.animationRunning
         and not collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["box"])
     then
+        if AudioSources["sfx_flashlight"]:isPlaying() then
+            AudioSources["sfx_flashlight"]:stop()
+        end
+        AudioSources["sfx_flashlight"]:play()
         self.officeState.flashlight.active = not self.officeState.flashlight.active
     end
 
     if button == 1 then
         if collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["boiler"]) then
+            if self.officeState.furnace.open then
+                AudioSources["sfx_boiler_door_open"]:setVolume(0.75)
+                AudioSources["sfx_boiler_door_open"]:play()
+            else
+                AudioSources["sfx_boiler_door_close"]:setVolume(0.75)
+                AudioSources["sfx_boiler_door_close"]:play()
+            end
             if not self.boilerAnim.animationRunning then
                 if self.officeState.hitboxes["boiler"].condition() then
                     self.boilerAnim:setState(not self.officeState.furnace.open)
@@ -808,6 +847,8 @@ function SecretNightState:mousepressed(x, y, button)
             end
             if self.officeState.furnace.open then
                 if self.officeState.wood.holdingWood then
+                    AudioSources["sfx_add_wood_boiler"]:setVolume(0.56)
+                    AudioSources["sfx_add_wood_boiler"]:play()
                     self.officeState.furnace.furnaceFuel = self.officeState.furnace.furnaceFuel + self.officeState.furnace.fuelAdd
                     self.officeState.wood.holdingWood = false
                 end
