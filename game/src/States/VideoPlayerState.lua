@@ -2,7 +2,6 @@ VideoPlayerState = {}
 
 VideoPlayerState.path = ""
 VideoPlayerState.onSceneComplete = function() end
-VideoPlayerState.targetState = nil
 
 function VideoPlayerState:enter()
     self.sceneRun = love.graphics.newVideo(VideoPlayerState.path)
@@ -10,13 +9,7 @@ function VideoPlayerState:enter()
 end
 
 function VideoPlayerState:draw()
-    love.graphics.draw(self.sceneRun, 0, 0)
-end
-
-function VideoPlayerState:update(elapsed)
-    if not self.sceneRun:isPlaying() then
-        gamestate.switch(VideoPlayerState.targetState)
-    end
+    love.graphics.draw(self.sceneRun, 0, 0, 0, self.sceneRun:getWidth() / shove.getViewportWidth(), self.sceneRun:getHeight() / shove.getViewportHeight())
 end
 
 function VideoPlayerState:leave()

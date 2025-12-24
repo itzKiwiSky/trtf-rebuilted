@@ -528,7 +528,7 @@ function NightState:enter()
                 gameSave.save.user.progress.specialCutsceneSee = true
                 gameSave.save.user.progress.stars.beat20 = true
                 gameSave:saveSlot()
-                VideoPlayerState.targetState = MenuState
+                gamestate.switch(MenuState)
             end
             gamestate.switch(VideoPlayerState)
         else

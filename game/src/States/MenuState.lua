@@ -317,8 +317,14 @@ function MenuState:enter()
         self.fadeTween = flux.to(self.journalConfig, 4, { transfade = 1, volSong = 0 })
         self.fadeTween:ease("linear")
         self.fadeTween:oncomplete(function()
-            LoadingState.mode = "cutscene"
-            gamestate.switch(LoadingState)
+            --LoadingState.mode = "cutscene"
+            --gamestate.switch(LoadingState)
+            VideoPlayerState.path = gameSave.save.user.settings.misc.language == "Espanol" and "assets/videos/intro_cutscene_es.ogv" or "assets/videos/intro_cutscene_en.ogv"
+            VideoPlayerState.onSceneComplete = function()
+                LoadingState.mode = "cutscene"
+                gamestate.switch(LoadingState)
+            end
+            gamestate.switch(VideoPlayerState)
         end)
     end)
 
@@ -331,13 +337,6 @@ function MenuState:enter()
         e.hitbox = newButtonHitbox(self.mainMenuButtons.config.targetX, self.mainMenuButtons.config.startY, 180, self.fnt_menu:getHeight() + 8)
         self.mainMenuButtons.config.startY = self.mainMenuButtons.config.startY + self.mainMenuButtons.config.paddingElements
     end
-
-    --[[for _, e in ipairs(self.mainMenuButtons.elements) do
-        e.hitbox.x = self.mainMenuButtons.config.targetX
-        e.hitbox.y = self.mainMenuButtons.config.startY
-        e.hitbox.w = self.fnt_menu:getWidth(e.text) + 8
-        e.hitbox.h = self.fnt_menu:getHeight() + 8
-    end]]
 
     -- tweens --
     self.menuText = flux.to(self.mainMenuButtons.config, 2.3, { x = self.mainMenuButtons.config.targetX })
