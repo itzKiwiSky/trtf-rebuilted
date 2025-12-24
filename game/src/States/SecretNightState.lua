@@ -43,6 +43,7 @@ function SecretNightState:enter()
     self.drawQueue = require 'src.Modules.Game.Utils.DrawQueueBar'
 
     self.fnt_phoneCallName = fontcache.getFont("ocrx", 25)
+    self.fnt_displayKill = fontcache.getFont("ocrx", 40)
     self.fnt_phoneCallFooter = fontcache.getFont("ocrx", 18)
 
     self.forceRestart = false
@@ -409,7 +410,7 @@ function SecretNightState:enter()
     end)
 
     self.tmr_lockjawAttack = timer.new()
-    self.tmr_lockjawAttack:after(37, function()
+    self.tmrH_hand = self.tmr_lockjawAttack:after(37, function()
         self.officeState.killed = true
         for k, v in pairs(AudioSources) do
             v:stop()
@@ -418,9 +419,13 @@ function SecretNightState:enter()
         self.jumpscareFront:setState(false)
     end)
 
+
+    self.monitorView:init()
+
     self.tmr_finalScript = timer.new()
     self.tmr_finalScript:script(function(sleep)
         sleep(2)
+        self.fearLevel = 0
         AudioSources["sfx_kill"]:stop()
         self.lockjawAttackPose.animationRunning = false
         self.lockjawAttackPose.visible = false
@@ -452,8 +457,6 @@ function SecretNightState:enter()
             gamestate.switch(EndingState)
         end)
     end)
-
-    self.monitorView:init()
 end
 
 function SecretNightState:draw()
@@ -544,6 +547,44 @@ function SecretNightState:draw()
     self.computerAnim:draw()
     self.monitorView:postDraw()
 
+    self.cnv_phone:renderTo(function()
+        love.graphics.clear(0, 0, 0, 0)
+        local posX = 557
+        local posY = 460
+        local bg = self.assets["phone"]["phone_bg"]
+        local btn_refuse = self.assets["phone"]["phone_refuse"]
+        local btn_accept = self.assets["phone"]["phone_accept"]
+        love.graphics.draw(bg, posX, shove.getViewportHeight() / 2 + 50, 0, 168 / bg:getWidth(), 200 / bg:getHeight())
+
+        local tm, ts = convertTime(self.assets.calls["callEnd"]:tell("seconds"))
+        if self.phoneState == "incoming" then
+            love.graphics.printf(languageService["game_misc_call_incoming"], self.fnt_phoneCallFooter, posX, posY + 80, 159, "center")
+        else
+            love.graphics.printf(string.format("%02d:%02d", tm, ts), self.fnt_phoneCallFooter, posX, posY + 60, 159, "center")
+        end
+        love.graphics.printf("Carl", self.fnt_phoneCallName, posX, posY + 30, 159, "center")
+
+        love.graphics.setColor(0, 0, 0, 1)
+        love.graphics.printf(languageService["game_misc_buttons_exit"], self.fnt_phoneCallFooter, posX, posY + 160, 159, "left")
+        love.graphics.printf(languageService["game_misc_buttons_options"], self.fnt_phoneCallFooter, posX, posY + 160, 159, "right")
+        love.graphics.setColor(1, 1, 1, 1)
+    end)
+
+    self.cnv_blurPhone:renderTo(function()
+        love.graphics.clear(0, 0, 0, 0)
+        self.blurPhoneFX(function()
+            love.graphics.draw(self.cnv_phone, 0, 0)
+        end)
+    end)
+
+    if self.officeState.deathSequence.active and not self.officeState.hideAllShit then
+        local value = math.map(
+            self.tmr_lockjawAttack:getTime(self.tmrH_hand),
+            1, self.tmr_lockjawAttack:getLimit(self.tmrH_hand),
+            self.tmr_lockjawAttack:getLimit(self.tmrH_hand), 1
+        )
+        love.graphics.printf(string.format("%.1f", value), self.fnt_displayKill, 0, 75, shove.getViewportWidth(), "center")
+    end
 
     --[[self.cnv_phone:renderTo(function()
         love.graphics.clear(0, 0, 0, 0)
@@ -618,27 +659,27 @@ function SecretNightState:draw()
         love.graphics.setBlendMode("alpha")
     end
 
-    if self.officeState.nightStarted then
-        if self.officeState.hideAllShit then goto skip_draw end
+    if not self.officeState.hideAllShit then
+        if self.officeState.nightStarted then
+            local rangeStart = 20
+            local rangeEnd = 300
+            local finalOpacity = 0.5
+            if self.officeState.lookDir == "back" then
+                local dist = math.distance(vmx, vmy, self.hoverBackLookButton.x, self.hoverBackLookButton.y)
+                love.graphics.setColor(1, 1, 1, math.map(dist, rangeStart, rangeEnd, 1, finalOpacity))
+                self.hoverBackLookButton:draw()
+                love.graphics.setColor(1, 1, 1, 1)
+            else
+                local distHoverLook = math.distance(vmx, vmy, self.hoverLookButton.x, self.hoverLookButton.y)
+                love.graphics.setColor(1, 1, 1, math.map(distHoverLook, rangeStart, rangeEnd, 1, finalOpacity))
+                self.hoverLookButton:draw()
+                love.graphics.setColor(1, 1, 1, 1)
 
-        local rangeStart = 20
-        local rangeEnd = 300
-        local finalOpacity = 0.5
-        if self.officeState.lookDir == "back" then
-            local dist = math.distance(vmx, vmy, self.hoverBackLookButton.x, self.hoverBackLookButton.y)
-            love.graphics.setColor(1, 1, 1, math.map(dist, rangeStart, rangeEnd, 1, finalOpacity))
-            self.hoverBackLookButton:draw()
-            love.graphics.setColor(1, 1, 1, 1)
-        else
-            local distHoverLook = math.distance(vmx, vmy, self.hoverLookButton.x, self.hoverLookButton.y)
-            love.graphics.setColor(1, 1, 1, math.map(distHoverLook, rangeStart, rangeEnd, 1, finalOpacity))
-            self.hoverLookButton:draw()
-            love.graphics.setColor(1, 1, 1, 1)
-
-            local distHoverPC = math.distance(vmx, vmy, self.computerHackButton.x, self.computerHackButton.y)
-            love.graphics.setColor(1, 1, 1, math.map(distHoverPC, rangeStart, rangeEnd, 1, finalOpacity))
-            self.computerHackButton:draw()
-            love.graphics.setColor(1, 1, 1, 1)
+                local distHoverPC = math.distance(vmx, vmy, self.computerHackButton.x, self.computerHackButton.y)
+                love.graphics.setColor(1, 1, 1, math.map(distHoverPC, rangeStart, rangeEnd, 1, finalOpacity))
+                self.computerHackButton:draw()
+                love.graphics.setColor(1, 1, 1, 1)
+            end
         end
     end
 
@@ -665,68 +706,37 @@ function SecretNightState:draw()
     end
 
     if self.officeState.nightStarted then
-        if self.officeState.hideAllShit then goto skip_draw end
-        local icoX, icoY = 96, shove.getViewportHeight() - 96
+        if not self.officeState.hideAllShit then
+            local icoX, icoY = 96, shove.getViewportHeight() - 96
 
-        love.graphics.setColor(lume.color('#0D1F42'))
-        love.graphics.draw(
-            self.assets.ui["flashlight_bg"], icoX, icoY, 0,
-            128 / self.assets.ui["flashlight_bg"]:getWidth(), 64 / self.assets.ui["flashlight_bg"]:getHeight()
-        )
-        love.graphics.setColor(1, 1, 1, 1)
-
-        love.graphics.stencil(function()
-            love.graphics.setShader(self.maskShader)
+            love.graphics.setColor(lume.color('#0D1F42'))
             love.graphics.draw(
-                self.assets.ui["flashlight_mask"], icoX, icoY, 0,
-                128 / self.assets.ui["flashlight_mask"]:getWidth(), 64 / self.assets.ui["flashlight_mask"]:getHeight()
+                self.assets.ui["flashlight_bg"], icoX, icoY, 0,
+                128 / self.assets.ui["flashlight_bg"]:getWidth(), 64 / self.assets.ui["flashlight_bg"]:getHeight()
             )
-            love.graphics.setShader()
-        end, "replace", 1)
+            love.graphics.setColor(1, 1, 1, 1)
 
-        love.graphics.setStencilTest("equal", 1)
-        love.graphics.draw(self.assets.grd_battery, icoX, icoY, 0,
-            math.floor(128 * (self.officeState.flashlight.battery / self.officeState.flashlight.maxBattery)), 64)
+            love.graphics.stencil(function()
+                love.graphics.setShader(self.maskShader)
+                love.graphics.draw(
+                    self.assets.ui["flashlight_mask"], icoX, icoY, 0,
+                    128 / self.assets.ui["flashlight_mask"]:getWidth(), 64 / self.assets.ui["flashlight_mask"]:getHeight()
+                )
+                love.graphics.setShader()
+            end, "replace", 1)
 
-        love.graphics.setStencilTest()
+            love.graphics.setStencilTest("equal", 1)
+            love.graphics.draw(self.assets.grd_battery, icoX, icoY, 0,
+                math.floor(128 * (self.officeState.flashlight.battery / self.officeState.flashlight.maxBattery)), 64)
 
-        love.graphics.draw(
-            self.assets.ui["flashlight_icon"], icoX, icoY, 0,
-            128 / self.assets.ui["flashlight_icon"]:getWidth(), 64 / self.assets.ui["flashlight_icon"]:getHeight()
-        )
-    end
+            love.graphics.setStencilTest()
 
-    ::skip_draw::
-
-    self.cnv_phone:renderTo(function()
-        love.graphics.clear(0, 0, 0, 0)
-        local posX = 557
-        local posY = 460
-        local bg = self.assets["phone"]["phone_bg"]
-        local btn_refuse = self.assets["phone"]["phone_refuse"]
-        local btn_accept = self.assets["phone"]["phone_accept"]
-        love.graphics.draw(bg, posX, shove.getViewportHeight() / 2 + 50, 0, 168 / bg:getWidth(), 200 / bg:getHeight())
-
-        local tm, ts = convertTime(self.assets.calls["callEnd"]:tell("seconds"))
-        if self.phoneState == "incoming" then
-            love.graphics.printf(languageService["game_misc_call_incoming"], self.fnt_phoneCallFooter, posX, posY + 80, 159, "center")
-        else
-            love.graphics.printf(string.format("%02d:%02d", tm, ts), self.fnt_phoneCallFooter, posX, posY + 60, 159, "center")
+            love.graphics.draw(
+                self.assets.ui["flashlight_icon"], icoX, icoY, 0,
+                128 / self.assets.ui["flashlight_icon"]:getWidth(), 64 / self.assets.ui["flashlight_icon"]:getHeight()
+            )
         end
-        love.graphics.printf("Carl", self.fnt_phoneCallName, posX, posY + 30, 159, "center")
-
-        love.graphics.setColor(0, 0, 0, 1)
-        love.graphics.printf(languageService["game_misc_buttons_exit"], self.fnt_phoneCallFooter, posX, posY + 160, 159, "left")
-        love.graphics.printf(languageService["game_misc_buttons_options"], self.fnt_phoneCallFooter, posX, posY + 160, 159, "right")
-        love.graphics.setColor(1, 1, 1, 1)
-    end)
-
-    self.cnv_blurPhone:renderTo(function()
-        love.graphics.clear(0, 0, 0, 0)
-        self.blurPhoneFX(function()
-            love.graphics.draw(self.cnv_phone, 0, 0)
-        end)
-    end)
+    end
 
     self.jumpscareFront:draw()
     self.jumpscareBack:draw()
@@ -823,7 +833,12 @@ function SecretNightState:update(elapsed)
                 self.officeState.deathSequence.active = true
                 self.lockjawAttackPose:setState(false)
             end
+            self.fearLevel = 12
         end
+    end
+
+    if self.officeState.deathSequence.active and not self.officeState.deathSequence.finalSequence then
+        self.tmr_lockjawAttack:update(elapsed)
     end
 
     -- camera bounds --
