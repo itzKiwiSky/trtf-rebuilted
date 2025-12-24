@@ -8,6 +8,14 @@ local function playWalk()
     AudioSources[audio]:play()
 end
 
+local function convertTime(sc, offset)
+    local tSeconds = sc + (offset or 0)
+    local minutes = math.floor(tSeconds / 60)
+    local leftSecs = tSeconds % 60
+    return minutes, leftSecs
+end
+
+
 function SecretNightState:enter()
     for k, v in pairs(AudioSources) do
         v:stop()
@@ -18,6 +26,9 @@ function SecretNightState:enter()
     self.buttonsUI = require 'src.Modules.Game.SecretNight.ButtonUI'
     self.animatorController = require 'src.Modules.Game.AnimatorController'
     self.drawQueue = require 'src.Modules.Game.Utils.DrawQueueBar'
+
+    self.fnt_phoneCallName = fontcache.getFont("ocrx", 25)
+    self.fnt_phoneCallFooter = fontcache.getFont("ocrx", 18)
 
     self.forceRestart = false
 
@@ -75,12 +86,14 @@ function SecretNightState:enter()
             end
         end
         if Slab.Button("spawn frankburt challenge") then
+            self.officeState.blink.alpha = 1
             for name, anim in pairs(self.monitorView.animatronics) do
                 if name ~= "frankburt" then
                     anim.locked = true
                 end
             end
             self.monitorView.animatronics["frankburt"].hidden = false
+            self.officeState.furnace.vincentIntegrity = 0
             self.monitorView:validateSelection()
             self.monitorView:createNames()
         end
@@ -99,8 +112,24 @@ function SecretNightState:enter()
         if Slab.Button("right") then
             self.IA.frankburt.state = "right"
         end
+        if Slab.Button("trigger end sequence") then
+            self.officeState.nightStarted = false
+            self.officeState.blink.alpha = 1
+            self.lockjawAttackPose:setState(false)
+            SecretNightState.officeState.deathSequence.active = true
+            SecretNightState.officeState.deathSequence.finalSequence = true
+            self.computerAnim:setState(false)
+            AudioSources["sfx_close_panel"]:setVolume(0.75)
+            AudioSources["sfx_close_panel"]:play()
+
+            AudioSources["msc_lockjaw_theme"]:stop()
+        end
         Slab.EndWindow()
     end
+
+    self.phoneState = "incoming"
+    self.blurPhoneFX = moonshine(moonshine.effects.gaussianblur)
+    self.blurPhoneFX.gaussianblur.sigma = 5
 
     self.IA = {
         config = {
@@ -167,7 +196,9 @@ function SecretNightState:enter()
         deathSequence = {
             active = false,
             dead = false,
-            tmr_lockjawWaitToKill = timer.new()
+            tmr_lockjawWaitToKill = timer.new(),
+            finalSequence = false,
+            showStatic = false,
         },
         killed = false,
         lookDir = "front",
@@ -316,6 +347,10 @@ function SecretNightState:enter()
         gamestate.switch(DeathState)
     end
 
+    self.fadeTransition = {
+        alpha = 0,
+    }
+
     self.jumpscareFront = self.animatorController:new(self.assets["jumpscares"]["frankburt"]["front"], 35, "frankburt_jmp")
     self.jumpscareBack = self.animatorController:new(self.assets["jumpscares"]["frankburt"]["back"], 35, "frankburt_jmp")
     self.jumpscareFront.visible = false
@@ -329,8 +364,19 @@ function SecretNightState:enter()
     self.lockjawAttackPose.visible = false
     self.lockjawAttackPose.loop = true
 
-    self.lockjawDeathPose = self.animatorController:new(self.assets["ending"]["dead"], 34, "attack")
+    self.lockjawDeathPose = self.animatorController:new(self.assets["ending"]["dead"], 34, "dead")
     self.lockjawDeathPose.visible = false
+
+    self.cnv_phone = love.graphics.newCanvas(shove.getViewportDimensions())
+    self.cnv_blurPhone = love.graphics.newCanvas(shove.getViewportDimensions())
+
+    self.phoneAnimFinal = self.animatorController:new(self.assets["ending"]["phone"], 28, "phone")
+    self.phoneAnimFinal.visible = false
+    self.phoneAnimFinal.loop = false
+    self.phoneAnimFinal.onComplete = function()
+        self.phoneAnimFinal.visible = true
+        self.phoneAnimFinal.frame = 1
+    end
 
     AudioSources["sfx_boiler_amb"]:setLooping(true)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
@@ -341,6 +387,40 @@ function SecretNightState:enter()
         self.beeperController:setState(true)
         AudioSources["sfx_beeper_open"]:play()
         AudioSources["sfx_beeper_open"]:setVolume(0.87)
+    end)
+
+    self.tmr_finalScript = timer.new()
+    self.tmr_finalScript:script(function(sleep)
+        sleep(2)
+        self.lockjawAttackPose.animationRunning = false
+        self.lockjawAttackPose.visible = false
+        self.officeState.deathSequence.dead = true
+        self.lockjawDeathPose.visible = true
+        self.lockjawDeathPose:setState(true)
+        AudioSources["sfx_lockjaw_deactivate"]:play()
+        sleep(3)
+        AudioSources["sfx_phone_pickup"]:play()
+        self.phoneAnimFinal:setState(false)
+        self.phoneState = "incoming"
+        sleep(2)
+        AudioSources["sfx_ringphone"]:play()
+        sleep(6.75)
+        self.phoneState = "call"
+        self.assets.calls["callEnd"]:play()
+        sleep(self.assets.calls["callEnd"]:getDuration())
+        self.phoneState = "end"
+        AudioSources["sfx_callend"]:play()
+        sleep(0.5)
+        self.phoneAnimFinal:setState(false)
+        self.phoneAnimFinal.onComplete = function()
+            self.phoneAnimFinal.visible = false
+        end
+        AudioSources["sfx_phone_pickup"]:play()
+        sleep(1)
+        flux.to(self.fadeTransition, 3, { alpha = 1 }):oncomplete(function()
+            EndingState.mode = "secret"
+            gamestate.switch(EndingState)
+        end)
     end)
 
     self.monitorView:init()
@@ -399,6 +479,10 @@ function SecretNightState:draw()
         if self.officeState.deathSequence.dead then
             self.lockjawDeathPose:draw()
         end
+
+        if self.officeState.deathSequence.showStatic then
+            love.graphics.draw(self.assets["ending"].disabled, 0, 0)
+        end
         self.gameCam:detach()
     end)
 
@@ -429,6 +513,65 @@ function SecretNightState:draw()
     end
     self.computerAnim:draw()
     self.monitorView:postDraw()
+
+
+    --[[self.cnv_phone:renderTo(function()
+        love.graphics.clear(0, 0, 0, 0)
+        local posX = 557
+        local posY = 460
+        if self.phoneAnimFinal.visible and self.phoneAnimFinal.frame == 1 then
+            local btn_refuse = self.assets["phone_refuse"]
+            local btn_accept = self.assets["phone_accept"]
+            love.graphics.draw(self.assets["phone_bg"], 1010, 375, 0,
+                200 / self.assets["phone_bg"]:getWidth(), 236 / self.assets["phone_bg"]:getHeight())
+            if self.officeState.phoneCallNotRefused then
+                love.graphics.draw(btn_refuse, 1090, 540, 0, 48 / btn_refuse:getWidth(), 48 / btn_refuse:getHeight())
+            end
+            love.graphics.printf(languageService["game_misc_call_name"], self.fnt_phoneCallName, posX, posY - 300, 193, "center")
+            if self.officeState.phoneCallNotRefused then
+                local tm, ts = convertTime(self.assets.calls["sfx_call_night" .. self.nightID]:tell(
+                    "seconds"))
+                love.graphics.printf(string.format("%02d:%02d", tm, ts), self.fnt_phoneCallFooter, posX, posY - 100, 193,
+                    "center")
+            else
+                love.graphics.printf(languageService["game_misc_call_incoming"], self.fnt_phoneCallFooter, posX, posY - 260, 193,
+                    "center")
+            end
+            love.graphics.setColor(0, 0, 0, 1)
+            love.graphics.printf(languageService["game_misc_buttons_exit"], self.fnt_phoneCallFooter, posX, posY, 193,
+                "left")
+            love.graphics.printf(languageService["game_misc_buttons_options"], self.fnt_phoneCallFooter, posX, posY, 193,
+                "right")
+            love.graphics.setColor(1, 1, 1, 1)
+        end
+    end)
+
+    self.cnv_blurPhone:renderTo(function()
+        love.graphics.clear(0, 0, 0, 0)
+        self.blurPhoneFX(function()
+            love.graphics.draw(self.cnv_phone, 0, 0)
+        end)
+    end)
+    ]]
+
+    self.cnv_phone:renderTo(function()
+        love.graphics.clear(0, 0, 0, 0)
+        local posX = 557
+        local posY = 460
+        local bg = self.assets["phone"]["phone_bg"]
+        love.graphics.draw(bg, posX, shove.getViewportHeight() / 2 + 50, 0, 168 / bg:getWidth(), 200 / bg:getHeight())
+        love.graphics.setColor(0, 0, 0, 1)
+        love.graphics.printf(languageService["game_misc_buttons_exit"], self.fnt_phoneCallFooter, posX, posY + 160, 159, "left")
+        love.graphics.printf(languageService["game_misc_buttons_options"], self.fnt_phoneCallFooter, posX, posY + 160, 159, "right")
+        love.graphics.setColor(1, 1, 1, 1)
+    end)
+
+    self.cnv_blurPhone:renderTo(function()
+        love.graphics.clear(0, 0, 0, 0)
+        self.blurPhoneFX(function()
+            love.graphics.draw(self.cnv_phone, 0, 0)
+        end)
+    end)
 
     if registers.showDebugHitbox then
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
@@ -484,6 +627,18 @@ function SecretNightState:draw()
         end
     end
 
+    if self.phoneAnimFinal.frame == 1 and self.phoneAnimFinal.visible then
+        love.graphics.draw(self.cnv_phone)
+    end
+    self.phoneAnimFinal:draw()
+    if self.phoneAnimFinal.frame == 1 and self.phoneAnimFinal.visible then
+        love.graphics.setBlendMode("add")
+        love.graphics.setColor(1, 1, 1, 0.75)
+        love.graphics.draw(self.cnv_blurPhone)
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setBlendMode("alpha")
+    end
+
 
     if self.nightTextDisplay.displayNightText then
         local txt = languageService["game_night_announce"]:format(8)
@@ -494,37 +649,44 @@ function SecretNightState:draw()
         love.graphics.setColor(1, 1, 1, 1)
     end
 
-    local icoX, icoY = 96, shove.getViewportHeight() - 96
+    if self.officeState.nightStarted then
+        local icoX, icoY = 96, shove.getViewportHeight() - 96
 
-    love.graphics.setColor(lume.color('#0D1F42'))
-    love.graphics.draw(
-        self.assets.ui["flashlight_bg"], icoX, icoY, 0,
-        128 / self.assets.ui["flashlight_bg"]:getWidth(), 64 / self.assets.ui["flashlight_bg"]:getHeight()
-    )
-    love.graphics.setColor(1, 1, 1, 1)
-
-    love.graphics.stencil(function()
-        love.graphics.setShader(self.maskShader)
+        love.graphics.setColor(lume.color('#0D1F42'))
         love.graphics.draw(
-            self.assets.ui["flashlight_mask"], icoX, icoY, 0,
-            128 / self.assets.ui["flashlight_mask"]:getWidth(), 64 / self.assets.ui["flashlight_mask"]:getHeight()
+            self.assets.ui["flashlight_bg"], icoX, icoY, 0,
+            128 / self.assets.ui["flashlight_bg"]:getWidth(), 64 / self.assets.ui["flashlight_bg"]:getHeight()
         )
-        love.graphics.setShader()
-    end, "replace", 1)
+        love.graphics.setColor(1, 1, 1, 1)
 
-    love.graphics.setStencilTest("equal", 1)
-    love.graphics.draw(self.assets.grd_battery, icoX, icoY, 0,
-        math.floor(128 * (self.officeState.flashlight.battery / self.officeState.flashlight.maxBattery)), 64)
+        love.graphics.stencil(function()
+            love.graphics.setShader(self.maskShader)
+            love.graphics.draw(
+                self.assets.ui["flashlight_mask"], icoX, icoY, 0,
+                128 / self.assets.ui["flashlight_mask"]:getWidth(), 64 / self.assets.ui["flashlight_mask"]:getHeight()
+            )
+            love.graphics.setShader()
+        end, "replace", 1)
 
-    love.graphics.setStencilTest()
+        love.graphics.setStencilTest("equal", 1)
+        love.graphics.draw(self.assets.grd_battery, icoX, icoY, 0,
+            math.floor(128 * (self.officeState.flashlight.battery / self.officeState.flashlight.maxBattery)), 64)
 
-    love.graphics.draw(
-        self.assets.ui["flashlight_icon"], icoX, icoY, 0,
-        128 / self.assets.ui["flashlight_icon"]:getWidth(), 64 / self.assets.ui["flashlight_icon"]:getHeight()
-    )
+        love.graphics.setStencilTest()
+
+        love.graphics.draw(
+            self.assets.ui["flashlight_icon"], icoX, icoY, 0,
+            128 / self.assets.ui["flashlight_icon"]:getWidth(), 64 / self.assets.ui["flashlight_icon"]:getHeight()
+        )
+    end
+
 
     self.jumpscareFront:draw()
     self.jumpscareBack:draw()
+
+    love.graphics.setColor(0, 0, 0, self.fadeTransition.alpha)
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
 end
 
 function SecretNightState:update(elapsed)
@@ -590,9 +752,30 @@ function SecretNightState:update(elapsed)
         end
 
         -- boiler update --
-        if self.officeState.furnace.furnaceFuel > 0 then
+        if self.officeState.furnace.furnaceFuel > 0 and self.officeState.furnace.vincentIntegrity < 0 then
             self.officeState.furnace.vincentIntegrity = self.officeState.furnace.vincentIntegrity - elapsed * self.officeState.furnace.vincentIntegrityPenault
             self.officeState.furnace.furnaceFuel = self.officeState.furnace.furnaceFuel - elapsed * self.officeState.furnace.fuelPenalty
+        end
+
+        if self.officeState.furnace.vincentIntegrity <= 0 and not self.officeState.deathSequence.active then
+            if self.officeState.lookDir == "back" then
+                self.turnAnim:setState(false)
+                self.turnAnim.onComplete = function()
+                    self.officeState.blink.alpha = 1
+                    self.officeState.lookDir = "front"
+                    --self.turnAnim.visible = false
+                    self.officeState.lookingBack = false
+                    AudioSources["sfx_kill"]:setLooping(true)
+                    AudioSources["sfx_kill"]:play()
+                    self.officeState.deathSequence.active = true
+                    self.lockjawAttackPose:setState(false)
+                end
+            else
+                AudioSources["sfx_kill"]:setLooping(true)
+                AudioSources["sfx_kill"]:play()
+                self.officeState.deathSequence.active = true
+                self.lockjawAttackPose:setState(false)
+            end
         end
     end
 
@@ -641,8 +824,8 @@ function SecretNightState:update(elapsed)
     self.officeState.ambienceBoilerVolume = math.lerp(self.officeState.ambienceBoilerVolume, self.officeState.lookDir == "back" and 0.75 or 0.2, 0.075, 0.4)
     AudioSources["sfx_boiler_amb"]:setVolume(self.officeState.ambienceBoilerVolume)
 
-    if self.officeState.nightStarted and not self.officeState.killed and not self.officeState.deathSequence.active then
-        if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton.hitbox) then
+    if self.officeState.nightStarted and not self.officeState.killed then
+        if collision.pointRect({ x = vmx, y = vmy }, self.hoverLookButton.hitbox) and not self.officeState.deathSequence.active then
             if self.officeState.lookDir == "front" and not self.officeState.monitor.open and not self.computerAnim.animationRunning then
                 if not self.turnAnim.animationRunning then
                     if not self.hoverLookButton.isHover then
@@ -660,7 +843,7 @@ function SecretNightState:update(elapsed)
         else
             self.hoverLookButton.isHover = false
         end
-        if collision.pointRect({ x = vmx, y = vmy }, self.hoverBackLookButton.hitbox) then
+        if collision.pointRect({ x = vmx, y = vmy }, self.hoverBackLookButton.hitbox) and not self.officeState.deathSequence.active then
             if self.officeState.lookDir == "back" and not self.officeState.furnace.open and not self.boilerAnim.animationRunning then
                 if not self.turnAnim.animationRunning then
                     if not self.hoverBackLookButton.isHover then
@@ -727,7 +910,7 @@ function SecretNightState:update(elapsed)
         end
     end
 
-    if self.officeState.nightStarted and not self.officeState.deathSequence.active then
+    if self.officeState.nightStarted and not (self.officeState.deathSequence.active or self.officeState.deathSequence.dead or self.officeState.deathSequence.finalSequence) then
         self.IA.frankburt.moveTimer = self.IA.frankburt.moveTimer - elapsed
 
         if self.IA.config.incrementValue < 5 then
@@ -826,6 +1009,14 @@ function SecretNightState:update(elapsed)
 
     self.lockjawAttackPose:update(elapsed)
     self.lockjawDeathPose:update(elapsed)
+
+    self.phoneAnimFinal:update(elapsed)
+
+    if self.officeState.deathSequence.finalSequence then
+        self.tmr_finalScript:update(elapsed)
+    end
+
+    flux.update(elapsed)
 end
 
 function SecretNightState:mousepressed(x, y, button)
@@ -844,7 +1035,7 @@ function SecretNightState:mousepressed(x, y, button)
         and not self.computerAnim.animationRunning
         and not self.officeState.deathSequence.dead
         and not self.officeState.deathSequence.active
-        and self.officeState.lookDir == "back"
+        and self.officeState.lookDir == "front"
         and not collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["box"])
     then
         if AudioSources["sfx_flashlight"]:isPlaying() then

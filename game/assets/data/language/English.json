@@ -1,7 +1,7 @@
 {
     "__ENGINE__": {
         "voicelinePath": "assets/sounds/night/calls/EN",
-        "voiceLineLockjawCall": "assets/sounds/night8/calls/night8_call_en.ogg",
+        "voiceLineLockjawCall": "assets/sounds/night8/calls/sfx_night8_call_en.ogg",
         "creditsPath": "assets/data/language/en_credits.txt",
         "classicModePath": "assets/data/language/classic_mode_english.txt",
         "freeRoamPath": "assets/data/language/free_roam_english.txt",

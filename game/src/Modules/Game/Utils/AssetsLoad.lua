@@ -181,6 +181,10 @@ return function(night)
             end
         end
     elseif night == "secret" then
+        assets.calls = {}
+        assets["phone"] = {}
+        loveloader.newSource(assets.calls, "callEnd", languageRaw["__ENGINE__"].voiceLineLockjawCall, "stream")
+
         assets.effects = {
             light = {},
             static = {},
@@ -196,6 +200,10 @@ return function(night)
             hallu = {},
             animated = {}
         }
+
+        loveloader.newImage(assets["phone"], "phone_bg", "assets/images/game/night/phone/UI/bg.png")
+        loveloader.newImage(assets["phone"], "phone_refuse", "assets/images/game/night/phone/UI/phone_refuse_button.png")
+        loveloader.newImage(assets["phone"], "phone_accept", "assets/images/game/night/phone/UI/phone_accept_button.png")
 
         loveloader.newImage(assets.ui, "flashlight_mask", "assets/images/game/night8/flashlight_mask.png")
         loveloader.newImage(assets.ui, "flashlight_icon", "assets/images/game/night8/flashlight_icon.png")

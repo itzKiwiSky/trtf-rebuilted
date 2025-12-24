@@ -181,8 +181,6 @@ function MonitorView:init()
         acc = 0,
     }
 
-    print(inspect(self.static))
-
     self.font = fontcache.getFont("ocrx", 24)
     self.fontInt = fontcache.getFont("ocrx", 18)
     local startX, startY = self.game.boardStart.x, self.game.boardStart.y
@@ -389,13 +387,13 @@ function MonitorView:update(elapsed)
         end
     end
 
-    local shouldBeHidden = not checkAllLocked(self)
+    local shouldBeHidden = not (checkAllLocked(self) and SecretNightState.officeState.furnace.vincentIntegrity <= 0)
 
     if self._frankburtHidden ~= shouldBeHidden then
         self._frankburtHidden = shouldBeHidden
         self.animatronics["frankburt"].hidden = shouldBeHidden
 
-        validateSelection(self, names)
+        MonitorView:validateSelection()
     end
 
     --MonitorView:validateSelection()
@@ -417,7 +415,7 @@ function MonitorView:update(elapsed)
                 self.game.invertCooldown = 0.5
             end
 
-            local multi = self.currentSelection == "frankburt" and 0.5 or 0.20
+            local multi = self.currentSelection == "frankburt" and 0.75 or 0.20
 
             if self.game.inverted then
                 self.game.playerPos.x = self.game.playerPos.x - elapsed * multi
@@ -472,6 +470,15 @@ function MonitorView:update(elapsed)
                 self.animatronics[self.currentSelection].locked = true
                 MonitorView:createNames()
                 self.currentState = "idle"
+
+                if self.currentSelection == "frankburt" and SecretNightState.officeState.furnace.vincentIntegrity <= 0 then
+                    SecretNightState.officeState.deathSequence.finalSequence = true
+                    SecretNightState.computerAnim:setState(false)
+                    AudioSources["sfx_close_panel"]:setVolume(0.75)
+                    AudioSources["sfx_close_panel"]:play()
+
+                    AudioSources["msc_lockjaw_theme"]:stop()
+                end
             end
         end,
     })
@@ -501,13 +508,6 @@ function MonitorView:keypressed(k)
                     local anim = self.animatronics[self.currentSelection]
                     if not anim.locked and not anim.hidden then
                         self.currentState = "minigame"
-                        if self.currentSelection == "frankburt" then
-                            SecretNightState.officeState.blink.alpha = 1
-                            AudioSources["sfx_kill"]:setLooping(true)
-                            AudioSources["sfx_kill"]:play()
-                            SecretNightState.officeState.deathSequence.active = true
-                            SecretNightState.lockjawAttackPose:setState(false)
-                        end
                     end
                 end
             })
