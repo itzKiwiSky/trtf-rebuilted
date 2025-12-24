@@ -1003,7 +1003,7 @@ function NightState:update(elapsed)
     end
 
     -- animatronic --
-    if self.officeState.nightRun and not NightState.killed and self.canUpdateAnimatronics then
+    if self.officeState.nightRun and not NightState.killed then
         for k, animatronic in pairs(NightState.AnimatronicControllers) do
             if not self.officeState.isOfficeDisabled and not NightState.nightPassed then
                 animatronic:update(elapsed)
