@@ -138,9 +138,9 @@ function SecretNightState:enter()
             self.IA["golden_shower"].state = "front"
         end
         Slab.SameLine()
-        if Slab.Button("office") then
+        if Slab.Button("back") then
             self.officeState.blink.alpha = 1
-            self.IA["golden_shower"].state = "office"
+            self.IA["golden_shower"].state = "back"
         end
         Slab.SameLine()
         if Slab.Button("right") then
@@ -218,7 +218,7 @@ function SecretNightState:enter()
             },
             rng = 0,
             moveTimer = 0,
-            moveTimerMax = 10,
+            moveTimerMax = 16,
             state = "idle",
             patience = 3,
         },
@@ -526,7 +526,7 @@ function SecretNightState:draw()
                 love.graphics.draw(self.assets.office.animatronic[state], 0, 0)
             elseif self.IA["golden_shower"].state ~= "idle" then
                 local state = self.IA["golden_shower"].state
-                love.graphics.draw(self.assets.office.animatronic[state], 0, 0)
+                love.graphics.draw(self.assets.office.hallu[state], 0, 0)
             else
                 love.graphics.draw(self.assets.office.states["idle"]["front_light"], 0, 0)
             end
@@ -537,7 +537,7 @@ function SecretNightState:draw()
         if self.officeState.lookDir == "back" then
             if self.IA["golden_shower"].state ~= "idle" then
                 local state = self.IA["golden_shower"].state
-                love.graphics.draw(self.assets.office.animatronic[state], 0, 0)
+                love.graphics.draw(self.assets.office.hallu["back"], 0, 0)
             else
                 self.boilerAnim:draw()
             end
@@ -1055,8 +1055,8 @@ function SecretNightState:update(elapsed)
                 if self.IA["golden_shower"].patience <= 0 then
                     if collision.pointRect({ x = mx, y = my }, self.IA["golden_shower"].hitboxes[self.IA["golden_shower"].state]) and self.officeState.flashlight.alpha >= 0.3 then
                         self.officeState.blink.alpha = 1
-                        self.IA["golden_shower"].state.state = "idle"
-                        self.IA["golden_shower"].state.attacking = false
+                        self.IA["golden_shower"].state = "idle"
+                        self.IA["golden_shower"].attacking = false
                         playWalk()
                     else
                         self.IA["golden_shower"].attacking = false

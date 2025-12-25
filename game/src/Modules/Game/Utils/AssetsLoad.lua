@@ -234,7 +234,7 @@ return function(night)
         loveloader.newImage(assets.office.animatronic, "office_light", "assets/images/game/night8/lockjaw_states/near_on.png")
 
         loveloader.newImage(assets.office.hallu, "back", "assets/images/game/night8/golden_freddy/golden_freddy_behind.png")
-        loveloader.newImage(assets.office.hallu, "front", "assets/images/game/night8/golden_freddy/golden_freddy_state_front.png")
+        loveloader.newImage(assets.office.hallu, "front", "assets/images/game/night8/golden_freddy/golden_freddy_front.png")
         loveloader.newImage(assets.office.hallu, "right", "assets/images/game/night8/golden_freddy/golden_freddy_right.png")
 
         loveloader.newImage(assets.office.hallu, "jmp_fade", "assets/images/game/night8/golden_freddy/fredbear_jumpscare.png")
