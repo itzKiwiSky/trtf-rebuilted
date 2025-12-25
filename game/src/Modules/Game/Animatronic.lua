@@ -90,7 +90,7 @@ function Animatronic:update(elapsed)
         self.timer = self.timer + elapsed
         if self.timer >= self.moveTime then
             self.move = math.random(0, 20)
-            if self.move >= NightState.animatronicsAI[self.id] and NightState.animatronicsAI[self.id] > 0 and not NightState.officeState.hasAnimatronicInOffice then
+            if NightState.animatronicsAI[self.id] >= self.move and NightState.animatronicsAI[self.id] > 0 and not NightState.officeState.hasAnimatronicInOffice then
                 self.onMove()
             end
             self.timer = 0

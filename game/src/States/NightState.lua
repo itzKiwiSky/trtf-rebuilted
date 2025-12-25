@@ -18,11 +18,15 @@ NightState.animatronicsAI = {
 
 NightState.AnimatronicControllers = {}
 
-local function incrementIA(iaList)
-    for _, name in ipairs(iaList) do
-        NightState.animatronicsAI[name] = NightState.animatronicsAI[name] + 1
+
+local function incrementIA(list)
+    return function()
+        for _, name in ipairs(iaList) do
+            NightState.animatronicsAI[name] = NightState.animatronicsAI[name] + 1
+        end
     end
 end
+
 
 local function mapToRange(input, min, max, step)
     local clampedInput = math.max(min, math.min(max, input))
@@ -573,53 +577,53 @@ function NightState:enter()
     self.tmr_cooldownUpdateAnimatronics:every(50, function()
         self.incrementCount = self.incrementCount + 1
         local t = {
-            {
-                nil,                                                         --12
-                nil,                                                         --1
-                function() incrementIA({ "bonnie", "chica" }) end,           --2
-                nil,                                                         --3
-                function() incrementIA({ "bonnie", "chica", "freddy" }) end, --4
-                function() incrementIA({ "bonnie", "freddy" }) end           --5
+            [1] = {
+                nil,                                          --12
+                nil,                                          --1
+                incrementIA({ "bonnie", "chica", "puppet" }), --2
+                nil,                                          --3
+                incrementIA({ "bonnie", "chica" }),           --4
+                incrementIA({ "bonnie", "puppet" })           --5
             },
-            {
-                nil,
-                function() incrementIA({ "bonnie", "freddy" }) end,        --1
-                function() incrementIA({ "chica", "foxy" }) end,           --2
-                nil,
-                function() incrementIA({ "bonnie", "chica", "foxy" }) end, --4
-                function() incrementIA({ "bonnie", "freddy" }) end         --5
+            [2] = {
+                nil,                                                  --12
+                incrementIA({ "bonnie", "foxy" }),                    --1
+                nil,                                                  --2
+                incrementIA({ "bonnie", "foxy", "chica", "puppet" }), --3
+                nil,                                                  --4
+                incrementIA({ "foxy", "chica" })                      --5
             },
-            {
-                nil,
-                nil,
-                function() incrementIA({ "chica", "puppet" }) end,                   --2
-                nil,
-                function() incrementIA({ "bonnie", "chica", "foxy", "freddy" }) end, --4
-                function() incrementIA({ "bonnie", "freddy" }) end                   --5
+            [3] = {
+                nil,                                        --12
+                incrementIA({ "bonnie", "puppet" }),        --1
+                incrementIA({ "bonnie", "chica", "foxy" }), --2
+                nil,                                        --3
+                incrementIA({ "freddy", "chica", "foxy" }), --4
+                incrementIA({ "bonnie", "chica" })          --5
             },
-            {
-                nil,
-                nil,
-                function() incrementIA({ "chica", "sugar", "kitty" }) end,           --2
-                nil,
-                function() incrementIA({ "bonnie", "chica", "foxy", "freddy" }) end, --4
-                function() incrementIA({ "bonnie", "chica" }) end                    --5
+            [4] = {
+                nil,                                                   --12
+                nil,                                                   --1
+                incrementIA({ "bonnie", "chica", "kitty" }),           --2
+                incrementIA({ "freddy", "sugar", "puppet", "kitty" }), --3
+                nil,                                                   --4
+                incrementIA({ "freddy", "chica", "bonnie" })           --5
             },
-            {
-                nil,
-                nil,
-                function() incrementIA({ "puppet", "sugar", "kitty" }) end,          --2
-                function() incrementIA({ "bonnie", "chica" }) end,                   --3
-                function() incrementIA({ "bonnie", "chica", "foxy", "freddy" }) end, --4
-                function() incrementIA({ "bonnie", "chica", "freddy" }) end          --5
+            [5] = {
+                nil,                              --12
+                nil,                              --1
+                nil,                              --2
+                incrementIA({ "foxy", "chica" }), --3
+                incrementIA({ "foxy", "chica" }), --4
+                incrementIA({ "foxy", "chica" })  --5
             },
-            {
-                nil,
-                nil,
-                nil,
-                nil,
-                function() incrementIA({ "bonnie", "chica", "foxy", "freddy" }) end,          --4
-                function() incrementIA({ "bonnie", "chica", "freddy", "kitty", "sugar" }) end --5
+            [6] = {
+                nil,                                                 --12
+                incrementIA({ "freddy", "chica" }),                  --1
+                nil,                                                 --2
+                incrementIA({ "foxy", "chica", "puppet", "kitty" }), --3
+                nil,                                                 --4
+                incrementIA({ "foxy", "chica", "bonnie", "sugar" })  --5
             },
         }
 
@@ -627,6 +631,10 @@ function NightState:enter()
             if type(t[self.nightID][self.incrementCount]) == "function" then
                 t[self.nightID][self.incrementCount]()
             end
+        end
+
+        for k, animatronic in pairs(NightState.AnimatronicControllers) do
+            self.animatronicsAI[k] = math.clamp(self.animatronicsAI[k])
         end
     end)
 end
@@ -1001,6 +1009,7 @@ function NightState:update(elapsed)
     else
         self.blurVisionFX.enable("boxblur")
     end
+
 
     -- animatronic --
     if self.officeState.nightRun and not NightState.killed then

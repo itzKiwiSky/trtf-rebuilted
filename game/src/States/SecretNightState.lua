@@ -202,6 +202,7 @@ function SecretNightState:enter()
         frankburt = {
             active = false,
             attacking = false,
+            tmr_move = timer.new(),
             hitboxes = {
                 ["front"] = {
                     x = 890,
@@ -224,17 +225,35 @@ function SecretNightState:enter()
         },
     }
 
-    self.tmr_iaIncrement = timer.new()
-    self.tmr_iaIncrement:after(27, function()
-        self.IA.config.incrementValue = self.IA.config.incrementValue + 1
-        self.IA.config["frankburt"] = self.IA.config["frankburt"] + math.random(1, 3)
-        self.IA.config["golden_freddy"] = self.IA.config["golden_freddy"] + math.random(1, 2)
+    --self.tmr_iaIncrement = timer.new()
+    --self.tmr_iaIncrement:after(27, function()
+    --    self.IA.config.incrementValue = self.IA.config.incrementValue + 1
+    --    self.IA.config["frankburt"] = self.IA.config["frankburt"] + math.random(1, 3)
+    --    self.IA.config["golden_freddy"] = self.IA.config["golden_freddy"] + math.random(1, 2)
+    --end)
+
+    self.IA.frankburt.tmr_move:every(8, function()
+        self.IA.frankburt.rng = math.random(1, 20)
+
+        if self.IA.config["frankburt"] >= self.IA.frankburt.rng and self.IA.config["frankburt"] > 0 and self.IA.frankburt.state == "idle" and self.IA["golden_shower"].state == "idle" then
+            playWalk()
+            self.officeState.blink.alpha = 1
+            local s = lume.weightedchoice({ ["front"] = 40, ["right"] = 60, ["office"] = 10 })
+            if s == "office" and not self.officeState.flashlight.active then
+                self.IA.frankburt.state = "office"
+                self.IA.frankburt.patience = math.random(3, 6) -- reinicia paciência ao entrar no office
+            else
+                self.IA.frankburt.state = s
+                self.IA.frankburt.patience = math.random(3, 6) -- reinicia paciência em novo estado
+            end
+            self.IA.frankburt.attacking = true
+        end
     end)
 
-    self.IA["golden_shower"].tmr_move:after(10, function()
+    self.IA["golden_shower"].tmr_move:every(10, function()
         self.IA["golden_shower"].rng = math.random(1, 20)
 
-        if self.IA["golden_shower"].rng >= self.IA.config["golden_freddy"] and not self.IA.frankburt.attacking then
+        if self.IA.config["golden_freddy"] >= self.IA["golden_shower"].rng and not self.IA.frankburt.state == "idle" then
             self.IA["golden_shower"].attacking = true
             self.officeState.blink.alpha = 1
             self.IA["golden_shower"].state = lume.weightedchoice({ ["front"] = 40, ["right"] = 60, ["back"] = 10 })
@@ -1007,9 +1026,13 @@ function SecretNightState:update(elapsed)
     if self.officeState.nightStarted and not (self.officeState.deathSequence.active or self.officeState.deathSequence.dead or self.officeState.deathSequence.finalSequence) then
         self.IA.frankburt.moveTimer = self.IA.frankburt.moveTimer - elapsed
 
-        if self.IA.config.incrementValue < 5 then
-            self.tmr_iaIncrement:update(elapsed)
-        end
+        self.IA.config["frankburt"] = math.floor(
+            math.map(self.officeState.furnace.vincentIntegrity, 100, 0, 8, 16)
+        )
+
+        self.IA.config["golden_freddy"] = math.floor(
+            math.map(self.officeState.furnace.vincentIntegrity, 100, 0, 8, 20)
+        )
 
         self.IA.config["frankburt"] = math.clamp(self.IA.config["frankburt"], 0, 20)
         self.IA.config["golden_freddy"] = math.clamp(self.IA.config["golden_freddy"], 0, 20)
@@ -1018,22 +1041,6 @@ function SecretNightState:update(elapsed)
 
         if self.IA.frankburt.moveTimer <= 0 and self.IA.frankburt.active then
             self.IA.frankburt.moveTimer = self.IA.frankburt.moveTimerMax
-
-            self.IA.frankburt.rng = math.random(1, 20)
-
-            if self.IA.frankburt.rng >= self.IA.config["frankburt"] and self.IA.config["frankburt"] > 0 and self.IA.frankburt.state == "idle" and not self.IA["golden_shower"].attacking then
-                playWalk()
-                self.officeState.blink.alpha = 1
-                local s = lume.weightedchoice({ ["front"] = 40, ["right"] = 60, ["office"] = 10 })
-                if s == "office" and not self.officeState.flashlight.active then
-                    self.IA.frankburt.state = "office"
-                    self.IA.frankburt.patience = math.random(3, 6) -- reinicia paciência ao entrar no office
-                else
-                    self.IA.frankburt.state = s
-                    self.IA.frankburt.patience = math.random(3, 6) -- reinicia paciência em novo estado
-                end
-                self.IA.frankburt.attacking = true
-            end
         end
 
         if self.IA["golden_shower"].state ~= "idle" then

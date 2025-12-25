@@ -3,17 +3,17 @@ local animatronic = require 'src.Modules.Game.Animatronic'
 local Foxy = animatronic:extend("Foxy")
 
 function Foxy:__construct()
-    Foxy.super.__construct(self, "foxy", 0, 0)  -- wtf outside the map XDDD
+    Foxy.super.__construct(self, "foxy", 0, 0) -- wtf outside the map XDDD
 
     self.id = "foxy"
 
     self.path = {
-        {x = 906, y = 339, camera = 4},  -- pirate_cove
-        {x = 1076, y = 544, camera = nil},        -- front_office
-        {x = 1076, y = 544, camera = nil},        -- front_office
-        {x = 1076, y = 544, camera = nil},        -- front_office
-        {x = 1076, y = 544, camera = nil},        -- front_office
-        {x = 1079, y = 592, camera = nil},        -- office
+        { x = 906,  y = 339, camera = 4 },   -- pirate_cove
+        { x = 1076, y = 544, camera = nil }, -- front_office
+        { x = 1076, y = 544, camera = nil }, -- front_office
+        { x = 1076, y = 544, camera = nil }, -- front_office
+        { x = 1076, y = 544, camera = nil }, -- front_office
+        { x = 1079, y = 592, camera = nil }, -- office
     }
 
     self.position = 1
@@ -35,9 +35,9 @@ end
 function Foxy:update(elapsed)
     if self.currentState <= 1 then
         self.timer = self.timer + elapsed
-        if self.timer >= 7.3 then
+        if self.timer >= 7.6 then
             self.move = math.random(0, 20)
-            if self.move <= NightState.animatronicsAI.foxy and NightState.animatronicsAI.foxy > 0 and not NightState.officeState.hasAnimatronicInOffice then
+            if self.move >= NightState.animatronicsAI.foxy and NightState.animatronicsAI.foxy > 0 and not NightState.officeState.hasAnimatronicInOffice then
                 self:interference()
                 self.currentState = 2
                 self.playWalk()
