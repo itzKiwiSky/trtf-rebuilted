@@ -2,6 +2,7 @@
     "__ENGINE__": {
         "voicelinePath": "assets/sounds/night/calls/EN",
         "voiceLineLockjawCall": "assets/sounds/night8/calls/sfx_night8_call_en.ogg",
+        "myMomMemeAudio": "assets/sounds/night/meme/sfx_muscleman_meme_en.ogg",
         "creditsPath": "assets/data/language/en_credits.txt",
         "classicModePath": "assets/data/language/classic_mode_english.txt",
         "freeRoamPath": "assets/data/language/free_roam_english.txt",
@@ -9,6 +10,7 @@
     },
     "cutscene_day": "5 days earlier",
     "credits_speed": "Hold the mouse to speed up",
+    "video_click_to_jump": "Click to skip the cutscene",
     "warn": {
         "warn_title": "[WARNING]",
         "warn_text": "This game contains loud sounds, flashing\nlights, mild swearing, and many jumpscares!"

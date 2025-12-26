@@ -238,9 +238,10 @@ function ExtrasState:leave()
         if value.release ~= nil then
             value:release()
         end
+        value.loaded = false
     end
 
-    loveView.ignoreRegisteredEvents = true
+
     loveView.unloadView()
 end
 

@@ -1,7 +1,6 @@
 local BTS = {} -- is not reference to the korean pop band :angry: --
 BTS.assets = {}
-
--- do this shit later --
+BTS.loaded = false
 
 function BTS:load()
     self.fnt_animatronics = fontcache.getFont("ocrx", 32)
@@ -22,24 +21,20 @@ function BTS:load()
     }
     self.lockjawdance.image, self.lockjawdance.quads = love.graphics.newQuadFromImage("array", "assets/images/game/loading_lockjaw")
 
-    self.loaded = false
-
     if not self.loaded then
-        local jmps = fsutil.scanFolder("assets/images/game/extras/bts", true)
-        for _, j in ipairs(jmps) do
+        local files = fsutil.scanFolder("assets/images/game/extras/bts", true)
+        for _, j in ipairs(files) do
             local isFolder = love.filesystem.getInfo(j).type == "directory"
             local folderName = j:match("[^/]+$")
             if isFolder then
                 local fls = love.filesystem.getDirectoryItems(j)
                 self.assets[folderName] = {}
+                self.filesCatNames[folderName] = {}
                 for f, v in ipairs(fls) do
                     local filename = (fls[f]:gsub("%.[^.]+$", "")):match("[^/]+$")
                     local ext = fls[f]:match("[^.]+$")
-                    if ext == "txt" then
-                        self.assets[folderName].containExplain = true
-                    end
+                    self.assets[folderName][f] = filename
                     loveloader.newImage(self.assets[folderName], filename, j .. "/" .. fls[f])
-                    self.assets[folderName].frameCount = f
                 end
             end
         end
@@ -61,6 +56,10 @@ function BTS:draw()
         local percent = 0
         if loveloader.resourceCount > 0 then percent = loveloader.loadedCount / loveloader.resourceCount end
         love.graphics.printf(languageService["extras_category_bts_loading"] .. string.format("\n%s%%", math.floor(percent * 100)), self.fnt_warn, 0, shove.getViewportHeight() / 2 + 160, shove.getViewportWidth(), "center")
+    else
+        if self.currentCategory == "" then
+
+        end
     end
 end
 

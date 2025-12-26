@@ -89,6 +89,8 @@ function NightState:enter()
         v:stop()
     end
 
+    self.myMom = love.audio.newSource(languageRaw["__ENGINE__"]["myMomMemeAudio"], "stream")
+
     self.doorController = require 'src.Modules.Game.DoorController'
     self.tabletController = require 'src.Modules.Game.TabletController'
     self.buttonsUI = require 'src.Modules.Game.Utils.ButtonUI'
@@ -402,6 +404,7 @@ function NightState:enter()
     }
 
     self.officeState = {
+        minhaMaeToco = false,
         _op = false,
         _fc = 0.04,
         _t = 0,
@@ -449,7 +452,7 @@ function NightState:enter()
             left = false,
             right = false,
             timerAcc = 0,
-            ventMaxTimer = 3.6,
+            ventMaxTimer = 5,
         },
         toxicmeter = 100,
         hasAnimatronicInOffice = false,
@@ -484,6 +487,18 @@ function NightState:enter()
                     y = 220,
                     w = 512,
                     h = 360,
+                },
+                ["freddy"] = {
+                    x = self.roomSize.width / 2 - 150,
+                    y = 350,
+                    w = 48,
+                    h = 32,
+                },
+                ["lockjaw"] = {
+                    x = self.roomSize.width / 2 - 210,
+                    y = 390,
+                    w = 100,
+                    h = 100,
                 },
             }
         }
@@ -1100,13 +1115,10 @@ function NightState:update(elapsed)
         not self.officeState.tabletUp and not self.officeState.isOfficeDisabled
     -- mouse --
     if love.mouse.isDown(1) then
-        for k, h in pairs(self.officeState.doors.hitboxes) do
-            if not self.officeState.maskUp and not self.officeState.tabletUp and not self.officeState.isOfficeDisabled then
-                if k == "center" then
-                    if collision.pointRect({ x = mx, y = my }, h) then
-                        self.officeState.flashlight.state = true
-                    end
-                end
+        local hbox = self.officeState.doors.hitboxes.center
+        if not self.officeState.maskUp and not self.officeState.tabletUp and not self.officeState.isOfficeDisabled then
+            if collision.pointRect({ x = mx, y = my }, hbox) then
+                self.officeState.flashlight.state = true
             end
         end
     end
@@ -1501,36 +1513,49 @@ function NightState:mousepressed(x, y, button)
     -- door buttons --officeState.maskUp
     if button == 1 then
         if not self.officeState.isOfficeDisabled then
-            for k, h in pairs(self.officeState.doors.hitboxes) do
-                if not self.officeState.maskUp and not self.officeState.tabletUp then
-                    if k == "left" and self.officeState.doors.canUseDoorL then
-                        if collision.pointRect({ x = mx, y = my }, h) then
-                            if not self.doorL.animationRunning then
-                                if AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
-                                    AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]
-                                        :seek(0)
-                                end
-                                AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:play()
-                                self.officeState.doors.left = not self.officeState.doors.left
-                                self.doorL:setState(self.officeState.doors.left)
+            --for k, h in pairs(self.officeState.doors.hitboxes) do
+            if not self.officeState.maskUp and not self.officeState.tabletUp then
+                if k == "left" and self.officeState.doors.canUseDoorL then
+                    if collision.pointRect({ x = mx, y = my }, self.officeState.doors.hitboxes.left) then
+                        if not self.doorL.animationRunning then
+                            if AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
+                                AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]
+                                    :seek(0)
                             end
-                        end
-                    end
-                    if k == "right" and self.officeState.doors.canUseDoorR then
-                        if collision.pointRect({ x = mx, y = my }, h) then
-                            if not self.doorR.animationRunning then
-                                if AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
-                                    AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]
-                                        :seek(0)
-                                end
-                                AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:play()
-                                self.officeState.doors.right = not self.officeState.doors.right
-                                self.doorR:setState(self.officeState.doors.right)
-                            end
+                            AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:play()
+                            self.officeState.doors.left = not self.officeState.doors.left
+                            self.doorL:setState(self.officeState.doors.left)
                         end
                     end
                 end
+                if k == "right" and self.officeState.doors.canUseDoorR then
+                    if collision.pointRect({ x = mx, y = my }, self.officeState.doors.hitboxes.right) then
+                        if not self.doorR.animationRunning then
+                            if AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
+                                AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]
+                                    :seek(0)
+                            end
+                            AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:play()
+                            self.officeState.doors.right = not self.officeState.doors.right
+                            self.doorR:setState(self.officeState.doors.right)
+                        end
+                    end
+                end
+                if collision.pointRect({ x = mx, y = my }, self.officeState.doors.hitboxes["freddy"]) then
+                    if not AudioSources["sfx_freddy_nose"]:isPlaying() then
+                        AudioSources["sfx_freddy_nose"]:setVolume(0.5)
+                        AudioSources["sfx_freddy_nose"]:play()
+                    end
+                end
+                if collision.pointRect({ x = mx, y = my }, self.officeState.doors.hitboxes["lockjaw"]) then
+                    local sfx = lume.weightedchoice({ ["sfx_lockjaw_plush"] = 90, ["sfx_lockjaw_bruh"] = 10 })
+                    if not AudioSources[sfx]:isPlaying() then
+                        AudioSources[sfx]:setVolume(0.35)
+                        AudioSources[sfx]:play()
+                    end
+                end
             end
+            --end
 
             if self.phoneController.visible and self.officeState.phoneCallNotRefused and not self.nightTextDisplay.displayNightText then
                 if collision.pointRect({ x = vmx, y = vmy }, self.phoneController.hitbox) then

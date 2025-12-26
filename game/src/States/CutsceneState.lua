@@ -26,6 +26,17 @@ function CutsceneState:enter()
     self.blinkAlpha = 1
     self.cutsceneEnd = false
 
+    self.cutsceneJumped = false
+    self.fnt_jump = fontcache.getFont("ocrx", 28)
+
+    self.fade = { alpha = 0, volume = 1 }
+    self.fadetext = { alpha = 0 }
+
+    self.timerFade = timer.new()
+    self.timerFade:after(3, function()
+        flux.to(self.fadetext, 3, { alpha = 0.5 })
+    end)
+
     self.roomSize = {
         width = 2000,
         height = 960,
@@ -193,6 +204,14 @@ function CutsceneState:draw()
     love.graphics.setColor(1, 1, 1, self.textFX.alpha)
     love.graphics.printf(self.textFX.text, self.font, 0, shove.getViewportHeight() / 2, shove.getViewportWidth(), "center")
     love.graphics.setColor(1, 1, 1, 1)
+
+    love.graphics.setColor(1, 1, 1, self.fadetext.alpha)
+    love.graphics.printf(languageService["video_click_to_jump"], self.fnt_jump, -32, shove.getViewportHeight() - (self.fnt_jump:getHeight() + 16), shove.getViewportWidth(), "right")
+    love.graphics.setColor(1, 1, 1, 1)
+
+    love.graphics.setColor(0, 0, 0, self.fade.alpha)
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
 end
 
 function CutsceneState:update(elapsed)
@@ -244,8 +263,31 @@ function CutsceneState:update(elapsed)
         end
     end
 
-    self.scr_cutscene:update(elapsed)
+    if not self.cutsceneJumped then
+        self.scr_cutscene:update(elapsed)
+    end
     flux.update(elapsed)
+    self.timerFade:update(elapsed)
+end
+
+function CutsceneState:mousepressed(x, y, button)
+    if not self.cutsceneJumped then
+        self.cutsceneJumped = true
+        flux.to(self.fade, 3, { alpha = 1, volume = 0 }):oncomplete(function()
+            LoadingState.mode = "normal"
+            gamestate.switch(LoadingState)
+        end)
+    end
+end
+
+function CutsceneState:keypressed(k)
+    if not self.cutsceneJumped then
+        self.cutsceneJumped = true
+        flux.to(self.fade, 3, { alpha = 1, volume = 0 }):oncomplete(function()
+            LoadingState.mode = "normal"
+            gamestate.switch(LoadingState)
+        end)
+    end
 end
 
 function CutsceneState:leave()
