@@ -525,6 +525,8 @@ function NightState:enter()
             self.officeState.phoneCall = true
             self.phoneController.hitbox.x = 1090
             sleep(self.assets.calls["sfx_call_night" .. self.nightID]:getDuration("seconds") - 0.015)
+            sleep(3)
+            self.phoneController:setState(true)
         elseif self.nightID >= 6 then
             sleep(3)
             self.nightTextDisplay.displayNightText = true
@@ -578,13 +580,6 @@ function NightState:enter()
             self.tabletController:setState(false)
             self.officeState.tabletUp = false
         end
-    end
-
-    local function getCooldownByNight(night, defaultValue, values)
-        if values[night] == nil then
-            return defaultValue
-        end
-        return values[night]
     end
 
     self.incrementCount = 0
@@ -649,7 +644,7 @@ function NightState:enter()
         end
 
         for k, animatronic in pairs(NightState.AnimatronicControllers) do
-            self.animatronicsAI[k] = math.clamp(self.animatronicsAI[k])
+            self.animatronicsAI[k] = math.clamp(self.animatronicsAI[k], 0, 20)
         end
     end)
 end

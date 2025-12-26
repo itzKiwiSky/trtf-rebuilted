@@ -129,7 +129,7 @@ function ExtrasState:enter()
     for _, e in ipairs(self.menuItems.elements) do
         e.meta = {}
         e.meta.offsetX = 0
-        e.hitbox = newButtonHitbox(self.menuItems.config.x, self.menuItems.config.startY, 256, self.fnt_extras:getHeight() + 8)
+        e.hitbox = newButtonHitbox(self.menuItems.config.x, self.menuItems.config.startY, 300, self.fnt_extras:getHeight() + 8)
         self.menuItems.config.startY = self.menuItems.config.startY + self.menuItems.config.paddingElements
     end
 

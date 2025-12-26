@@ -143,6 +143,8 @@ function MenuState:enter()
         alpha = 0,
         acc = 0,
         size = 1,
+        left = false,
+        journalText = 0,
     }
 
     -- timers --
@@ -180,6 +182,7 @@ function MenuState:enter()
     self.fnt_mainLogo = fontcache.getFont("tnr", 310)
     self.fnt_textWarn = fontcache.getFont("ocrx", 35)
     self.fnt_menu = fontcache.getFont("tnr", 35)
+    self.fnt_menu_low = fontcache.getFont("tnr", 20)
 
     self.menuBackground = loadRandomBackground()
 
@@ -328,6 +331,7 @@ function MenuState:enter()
         zoom = 1,
         angle = 0,
         active = false,
+        clicked = false,
         timer = timer.new(),
         transfade = 0,
         volSong = 1,
@@ -338,17 +342,15 @@ function MenuState:enter()
     self.fadeTween = {}
     self.journalConfig.timer:after(3.75, function()
         self.fadeTween = flux.to(self.journalConfig, 4, { transfade = 1, volSong = 0 })
-        self.fadeTween:ease("linear")
-        self.fadeTween:oncomplete(function()
-            --LoadingState.mode = "cutscene"
-            --gamestate.switch(LoadingState)
-            VideoPlayerState.path = gameSave.save.user.settings.misc.language == "Espanol" and "assets/videos/intro_cutscene_es.ogv" or "assets/videos/intro_cutscene_en.ogv"
-            VideoPlayerState.onSceneComplete = function()
-                LoadingState.mode = "cutscene"
-                gamestate.switch(LoadingState)
-            end
-            gamestate.switch(VideoPlayerState)
-        end)
+            :ease("linear")
+            :oncomplete(function()
+                VideoPlayerState.path = gameSave.save.user.settings.misc.language == "Espanol" and "assets/videos/intro_cutscene_es.ogv" or "assets/videos/intro_cutscene_en.ogv"
+                VideoPlayerState.onSceneComplete = function()
+                    LoadingState.mode = "cutscene"
+                    gamestate.switch(LoadingState)
+                end
+                gamestate.switch(VideoPlayerState)
+            end)
     end)
 
 
@@ -436,13 +438,20 @@ function MenuState:draw()
     end
 
     -- journal --
+    love.graphics.printf("@ 2025 BrightSmileTeam", self.fnt_menu_low, -32, shove.getViewportHeight() - (self.fnt_menu_low:getHeight() + 5), shove.getViewportWidth(), "right")
+
     love.graphics.setColor(1, 1, 1, self.journalConfig.alpha)
     love.graphics.draw(self.newGameJournal, shove.getViewportWidth() / 2, shove.getViewportHeight() / 2, math.rad(self.journalConfig.angle), self.journalConfig.zoom, self.journalConfig.zoom, self.newGameJournal:getWidth() / 2, self.newGameJournal:getHeight() / 2)
+    love.graphics.printf("Click to continue", self.fnt_menu_low, -32, shove.getViewportHeight() - (self.fnt_menu_low:getHeight() + 5), shove.getViewportWidth(), "right")
     love.graphics.setColor(1, 1, 1, 1)
 
     love.graphics.setColor(0, 0, 0, self.journalConfig.transfade)
     love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
     love.graphics.setColor(1, 1, 1, 1)
+
+    --if gamejolt.isLoggedIn then
+    --    love.graphics.printf("Connected as " .. gamejolt.username, self.fnt_menu_low, -32, shove.getViewportHeight() - (self.fnt_menu_low:getHeight() * 2.3), shove.getViewportWidth(), "right")
+    --end
 
     -- trans fade rectangle --
     love.graphics.setColor(0, 0, 0, self.transitionFade.fade)
@@ -504,10 +513,12 @@ function MenuState:update(elapsed)
         if self.journalConfig.alpha <= 1 then
             self.journalConfig.alpha = self.journalConfig.alpha + 1 * elapsed
         end
-        self.journalConfig.zoom = self.journalConfig.zoom + 0.0075 * elapsed
-        self.journalConfig.angle = self.journalConfig.angle - 0.2 * elapsed
+        --self.journalConfig.zoom = self.journalConfig.zoom + 0.0075 * elapsed
+        --self.journalConfig.angle = self.journalConfig.angle - 0.2 * elapsed
 
-        self.journalConfig.timer:update(elapsed)
+
+
+        --self.journalConfig.timer:update(elapsed)
     end
 
     if self.transitionFade.active then
@@ -550,6 +561,20 @@ function MenuState:mousepressed(x, y, button)
                 self.configMenu = not self.configMenu
                 self.canUseMenu = self.configMenu and false or true
             end
+        end
+    else
+        if self.journalConfig.active then
+            self.journalConfig.clicked = true
+            self.fadeTween = flux.to(self.journalConfig, 4, { transfade = 1, volSong = 0 })
+            self.fadeTween:ease("linear")
+            self.fadeTween:oncomplete(function()
+                VideoPlayerState.path = gameSave.save.user.settings.misc.language == "Espanol" and "assets/videos/intro_cutscene_es.ogv" or "assets/videos/intro_cutscene_en.ogv"
+                VideoPlayerState.onSceneComplete = function()
+                    LoadingState.mode = "cutscene"
+                    gamestate.switch(LoadingState)
+                end
+                gamestate.switch(VideoPlayerState)
+            end)
         end
     end
 end

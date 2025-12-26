@@ -58,7 +58,9 @@ function BTS:draw()
         love.graphics.printf(languageService["extras_category_bts_loading"] .. string.format("\n%s%%", math.floor(percent * 100)), self.fnt_warn, 0, shove.getViewportHeight() / 2 + 160, shove.getViewportWidth(), "center")
     else
         if self.currentCategory == "" then
-
+            for k, value in pairs(self.filesCatNames) do
+                love.graphics.print()
+            end
         end
     end
 end
