@@ -1,0 +1,5 @@
+Este era eu, Eu fui outra programadora chamada pelo ElEternaut para ajudar a criar o jogo.
+A primeira versao ficou pronta em 2 meses, mesmo depois de meu computador explodir devido a bateria vazando.
+O jogo estava funcionando perfeitamente, o unico problema era que a engine antiga nao suportava resolucao
+ou seja, monitores menores que 1920x1080 ficava ruim. Tive que desistir do projeto devido coisas da faculdade.
+Mas agora, secretamente nomeado "plano K" pelo Eternaut, nos finalizamos este projeto.

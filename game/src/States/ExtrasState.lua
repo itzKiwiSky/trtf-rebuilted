@@ -17,7 +17,7 @@ function ExtrasState:enter()
         ["animatronics"] = require 'src.States.Substates.ExtraSubStates.Animatronics',
         ["jumpscares"] = require 'src.States.Substates.ExtraSubStates.Jumpscares',
         ["bts"] = require 'src.States.Substates.ExtraSubStates.BehindTheScenes',
-        ["minigames"] = require 'src.States.Substates.ExtraSubStates.Minigames'
+        ["minigames"] = require 'src.States.Substates.ExtraSubStates.Minigames',
     }
 
     AudioSources["msc_extras_bg"]:play()
@@ -93,12 +93,15 @@ function ExtrasState:enter()
                     self.categories[self.currentCategory]:load()
                 end,
             },
-            --[[{
+            {
                 text = languageService["extras_options_dev_content"],
                 action = function()
+                    if self.currentCategory == "bts" then return end
 
+                    self.currentCategory = "bts"
+                    self.categories[self.currentCategory]:load()
                 end,
-            },]]
+            },
             {
                 text = languageService["extras_options_minigames"],
                 action = function()
@@ -154,7 +157,7 @@ function ExtrasState:draw()
             for _, e in ipairs(self.menuItems.elements) do
                 love.graphics.print(e.text, self.fnt_extras, self.menuItems.config.x + e.meta.offsetX, e.hitbox.y)
                 love.graphics.setColor(1, 1, 1, 1)
-                --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+                love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
             end
         end
     end)
@@ -229,6 +232,12 @@ function ExtrasState:leave()
 
     for _, f in ipairs(self.staticAnimationFX.frames) do
         f:release()
+    end
+
+    for key, value in pairs(self.categories) do
+        if value.release ~= nil then
+            value:release()
+        end
     end
 
     loveView.ignoreRegisteredEvents = true

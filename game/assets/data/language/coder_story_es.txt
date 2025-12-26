@@ -1,0 +1,8 @@
+Este soy yo, otro programador al que ElEternaut contactó para ayudarles a crear este juego.
+La primera versión se completó en casi dos meses, a pesar de que mi ordenador casi explota debido a una fuga en la batería. 
+El juego funcionaba muy bien y estaba a punto de pasar a la fase de pruebas beta cerrada, hasta que 
+ocurrió algo. La versión antigua del motor no era compatible con la escala de pantalla, por lo que en monitores con una resolución superior a 1920x1080,
+ el juego se bloqueaba por completo. Tuve que abandonar el desarrollo, especialmente por motivos escolares.
+Pero ahora, en secreto y bajo el nombre de «Plan K» de Eternaut, hemos terminado este proyecto.
+
+Traducción realizada con la versión gratuita del traductor DeepL.com

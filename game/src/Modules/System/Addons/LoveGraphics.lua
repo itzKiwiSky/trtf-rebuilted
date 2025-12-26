@@ -145,6 +145,18 @@ function love.graphics.newGradient(dir, ...)
     return love.graphics.newMesh(meshData, "strip", "static")
 end
 
+function love.graphics.release(tbl)
+    for key, value in pairs(tbl) do
+        if type(value) == "table" then
+            releaseRecursive(value)
+        else
+            if type(value) == "userdata" and value.release then
+                value:release()
+            end
+        end
+    end
+end
+
 --[[
 function love.graphics.setHexColor(_r, _g, _b, _a)
 

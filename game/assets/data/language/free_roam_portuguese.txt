@@ -1,0 +1,5 @@
+Originalmente, planejávamos incluir seções de “movimento livre” após cada noite. 
+Mais tarde, essa ideia foi descartada e decidimos reutilizá-la apenas no final do jogo, 
+adicionando também uma câmera de vídeo para que o protagonista gravasse o que via. 
+No fim, essa ideia foi descartada devido a limitações de tempo e porque 
+parecia desnecessária para um jogo dessa magnitude.

@@ -51,7 +51,7 @@ function Jumpscares:load()
             frame = 1
         }
     }
-    self.lockjawdance.image,self.lockjawdance.quads = love.graphics.newQuadFromImage("array", "assets/images/game/loading_lockjaw")
+    self.lockjawdance.image, self.lockjawdance.quads = love.graphics.newQuadFromImage("array", "assets/images/game/loading_lockjaw")
 
     if not self.loaded then
         local jmps = fsutil.scanFolder("assets/images/game/night/jumpscares", true)
@@ -128,7 +128,7 @@ function Jumpscares:draw()
         love.graphics.printf(self.display[self.animatronicNames[self.animatronicCurrentID]], self.fnt_animatronics, 0, shove.getViewportHeight() / 2 + 276, shove.getViewportWidth(), "center")
 
         loveView.draw()
-        
+
         for _, e in pairs(self.buttons) do
             --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
             love.graphics.print(e.text, self.fnt_UI, e.x, e.y)
@@ -182,6 +182,10 @@ function Jumpscares:mousepressed(x, y, button)
             end
         end
     end
+end
+
+function Jumpscares:release()
+    love.graphics.release(self.assets)
 end
 
 return Jumpscares

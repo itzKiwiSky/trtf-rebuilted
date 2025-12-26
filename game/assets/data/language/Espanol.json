@@ -3,9 +3,9 @@
         "voicelinePath": "assets/sounds/night/calls/ES",
         "voiceLineLockjawCall": "assets/sounds/night8/calls/sfx_night8_call_es.ogg",
         "creditsPath": "assets/data/language/en_credits.txt",
-        "classicModePath": "assets/data/language/classic_mode_english.txt",
-        "freeRoamPath": "assets/data/language/free_roam_english.txt",
-        "explainCoderPath": "assets/data/language/coder_story_en.txt"
+        "classicModePath": "assets/data/language/classic_mode_spanish.txt",
+        "freeRoamPath": "assets/data/language/free_roam_spanish.txt",
+        "explainCoderPath": "assets/data/language/coder_story_es.txt"
     },
     "cutscene_day": "5 días antes",
     "credits_speed": "Manten clickeado para adelantar",
@@ -168,6 +168,9 @@
             "extras_category_jumpscares_loading": "Cargando Jumpscares",
             "extras_category_jumpscares_allow_sound": "Reproducir sonido",
             "extras_category_jumpscares_show_UI": "Mostrar interfaz"
+        },
+        "extras_category_bts": {
+            "extras_category_bts_loading": "Loading assets"
         }
     },
     "secret_night": {
