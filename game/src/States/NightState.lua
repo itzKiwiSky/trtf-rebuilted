@@ -21,7 +21,7 @@ NightState.AnimatronicControllers = {}
 
 local function incrementIA(list)
     return function()
-        for _, name in ipairs(iaList) do
+        for _, name in ipairs(list) do
             NightState.animatronicsAI[name] = NightState.animatronicsAI[name] + 1
         end
     end
@@ -525,8 +525,10 @@ function NightState:enter()
             self.officeState.phoneCall = true
             self.phoneController.hitbox.x = 1090
             sleep(self.assets.calls["sfx_call_night" .. self.nightID]:getDuration("seconds") - 0.015)
+            AudioSources["sfx_callend"]:play()
             sleep(3)
-            self.phoneController:setState(true)
+            AudioSources["sfx_phone_pickup"]:play()
+            self.phoneController:setState(false)
         elseif self.nightID >= 6 then
             sleep(3)
             self.nightTextDisplay.displayNightText = true
@@ -588,12 +590,12 @@ function NightState:enter()
         self.incrementCount = self.incrementCount + 1
         local t = {
             [1] = {
-                nil,                                          --12
-                nil,                                          --1
-                incrementIA({ "bonnie", "chica", "puppet" }), --2
-                nil,                                          --3
-                incrementIA({ "bonnie", "chica" }),           --4
-                incrementIA({ "bonnie", "puppet" })           --5
+                nil,                                 --12
+                nil,                                 --1
+                incrementIA({ "bonnie", "puppet" }), --2
+                nil,                                 --3
+                incrementIA({ "bonnie", "chica" }),  --4
+                incrementIA({ "bonnie", "puppet" })  --5
             },
             [2] = {
                 nil,                                                  --12
@@ -994,7 +996,7 @@ function NightState:update(elapsed)
     end
 
     if self.officeState.maskUp then
-        self.officeState.toxicmeter = self.officeState.toxicmeter - 12 * elapsed
+        self.officeState.toxicmeter = self.officeState.toxicmeter - 10 * elapsed
 
         if self.officeState.toxicmeter <= 0 then
             self.officeState.toxicmeter = 0
@@ -1004,7 +1006,7 @@ function NightState:update(elapsed)
             gamestate.switch(DeathState)
         end
     else
-        self.officeState.toxicmeter = self.officeState.toxicmeter + 12 * elapsed
+        self.officeState.toxicmeter = self.officeState.toxicmeter + 9 * elapsed
 
         if self.officeState.toxicmeter >= 100 then
             self.officeState.toxicmeter = 100
@@ -1418,29 +1420,27 @@ function NightState:update(elapsed)
     -- door shit --
     if not self.officeState.isOfficeDisabled then
         for k, h in pairs(self.officeState.doors.hitboxes) do
-            if not self.officeState.maskUp and not self.officeState.tabletUp then
-                if Controller:pressed("game_close_door_right") then
-                    if k == "left" and self.officeState.doors.canUseDoorL then
-                        if not self.doorL.animationRunning then
-                            if AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
-                                AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:seek(0)
-                            end
-                            AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:play()
-                            self.officeState.doors.left = not self.officeState.doors.left
-                            self.doorL:setState(self.officeState.doors.left)
+            if Controller:pressed("game_close_door_right") then
+                if k == "left" and self.officeState.doors.canUseDoorL then
+                    if not self.doorL.animationRunning then
+                        if AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
+                            AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:seek(0)
                         end
+                        AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:play()
+                        self.officeState.doors.left = not self.officeState.doors.left
+                        self.doorL:setState(self.officeState.doors.left)
                     end
                 end
-                if Controller:pressed("game_close_door_left") then
-                    if k == "right" and self.officeState.doors.canUseDoorR then
-                        if not self.doorR.animationRunning then
-                            if AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
-                                AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:seek(0)
-                            end
-                            AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:play()
-                            self.officeState.doors.right = not self.officeState.doors.right
-                            self.doorR:setState(self.officeState.doors.right)
+            end
+            if Controller:pressed("game_close_door_left") then
+                if k == "right" and self.officeState.doors.canUseDoorR then
+                    if not self.doorR.animationRunning then
+                        if AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
+                            AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:seek(0)
                         end
+                        AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:play()
+                        self.officeState.doors.right = not self.officeState.doors.right
+                        self.doorR:setState(self.officeState.doors.right)
                     end
                 end
             end
@@ -1510,12 +1510,11 @@ function NightState:mousepressed(x, y, button)
         if not self.officeState.isOfficeDisabled then
             --for k, h in pairs(self.officeState.doors.hitboxes) do
             if not self.officeState.maskUp and not self.officeState.tabletUp then
-                if k == "left" and self.officeState.doors.canUseDoorL then
+                if self.officeState.doors.canUseDoorL then
                     if collision.pointRect({ x = mx, y = my }, self.officeState.doors.hitboxes.left) then
                         if not self.doorL.animationRunning then
                             if AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
-                                AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]
-                                    :seek(0)
+                                AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:seek(0)
                             end
                             AudioSources[self.officeState.doors.left and "sfx_door_open" or "sfx_door_close"]:play()
                             self.officeState.doors.left = not self.officeState.doors.left
@@ -1523,12 +1522,11 @@ function NightState:mousepressed(x, y, button)
                         end
                     end
                 end
-                if k == "right" and self.officeState.doors.canUseDoorR then
+                if self.officeState.doors.canUseDoorR then
                     if collision.pointRect({ x = mx, y = my }, self.officeState.doors.hitboxes.right) then
                         if not self.doorR.animationRunning then
                             if AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:isPlaying() then
-                                AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]
-                                    :seek(0)
+                                AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:seek(0)
                             end
                             AudioSources[self.officeState.doors.right and "sfx_door_open" or "sfx_door_close"]:play()
                             self.officeState.doors.right = not self.officeState.doors.right
@@ -1554,13 +1552,13 @@ function NightState:mousepressed(x, y, button)
 
             if self.phoneController.visible and self.officeState.phoneCallNotRefused and not self.nightTextDisplay.displayNightText then
                 if collision.pointRect({ x = vmx, y = vmy }, self.phoneController.hitbox) then
+                    timer.cancel(self.tmr_nightStartPhone)
                     --NightState.assets.calls["call_night" .. NightState.nightID]:seek(NightState.assets.calls["call_night" .. NightState.nightID]:getDuration("seconds") - 0.015)
                     NightState.assets.calls["sfx_call_night" .. NightState.nightID]:stop()
                     self.phoneController:setState(false)
                     AudioSources["sfx_phone_pickup"]:play()
                     self.nightTextDisplay.displayNightText = true
                     self.officeState.phoneCall = false
-                    timer.cancel(self.tmr_nightStartPhone)
                 end
             end
         end

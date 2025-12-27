@@ -4,13 +4,14 @@
         "voiceLineLockjawCall": "assets/sounds/night8/calls/sfx_night8_call_es.ogg",
         "myMomMemeAudio": "assets/sounds/night/meme/sfx_muscleman_meme_es.ogg",
         "creditsPath": "assets/data/language/en_credits.txt",
-        "classicModePath": "assets/data/language/classic_mode_spanish.txt",
-        "freeRoamPath": "assets/data/language/free_roam_spanish.txt",
+        "classicModePath": "assets/images/game/extras/bts/Scrapped Classic mode/classic_mode_spanish.txt",
+        "freeRoamPath": "assets/images/game/extras/bts/Scrapped post night/free_roam_spanish.txt",
         "explainCoderPath": "assets/data/language/coder_story_es.txt"
     },
     "cutscene_day": "5 días antes",
     "credits_speed": "Manten clickeado para adelantar",
     "video_click_to_jump": "Clickea para saltar cinematica",
+    "type_his_name": "Si quieres jugar la noche secreta, escribe SU nombre en el menu",
     "warn": {
         "warn_title": "[WARNING]",
         "warn_text": "¡Este juego contiene sonidos fuertes, luces intermitentes,\nlenguaje moderado y muchos jumpscares!"
@@ -114,7 +115,7 @@
         "game_vent_state_open": "Estado del conducto: Abierto",
         "game_energy_usage": "Consumo de energía",
         "game_energy": "Energía: %d%%",
-        "game_btn_rewind_box": "Rebobinar caja de música",
+        "game_btn_rewind_box": "Cargar Caja",
         "game_btn_seal_vent": "Sellar conducto",
         "game_btn_unseal_vent": "Abrir conducto",
         "misc": {
@@ -172,7 +173,8 @@
             "extras_category_jumpscares_show_UI": "Mostrar interfaz"
         },
         "extras_category_bts": {
-            "extras_category_bts_loading": "Loading assets"
+            "extras_category_bts_loading": "Loading assets",
+            "extras_category_bts_back": "Volver"
         }
     },
     "secret_night": {

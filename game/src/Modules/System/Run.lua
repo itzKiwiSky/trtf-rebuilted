@@ -143,6 +143,17 @@ function love.run()
     SlabStyle.API.SetStyle("Pinky")
     Slab.Initialize({ "NoDocks" })
 
+    local cursor = love.graphics.newImage("assets/images/system/cursor.png")
+    local fakeCursor = {
+        x = love.graphics.getWidth() / 2,
+        y = love.graphics.getHeight() / 2,
+        speed = 1 -- opcional
+    }
+
+    love.mouse.setRelativeMode(true)
+    fakeCursor.x = love.graphics.getWidth() / 2
+    fakeCursor.y = love.graphics.getHeight() / 2
+
     local fpsfont = love.graphics.newFont(16)
 
     if love.initialize then
@@ -192,6 +203,7 @@ function love.run()
         if love.update then
             love.update(elapsed)
             --flux.update(elapsed)
+
             Controller:update()
             if FEATURE_FLAGS.developerMode then
                 Slab.Update(elapsed)
@@ -236,6 +248,10 @@ function love.run()
             --    end
             --shove.endLayer()
             shove.endDraw()
+
+            if love.mouse.isVisible() then
+                love.graphics.draw(cursor, love.mouse.getX() - 4, love.mouse.getY() - 1, 0, 20 / cursor:getWidth(), 20 / cursor:getHeight())
+            end
             love.graphics.present()
         end
 

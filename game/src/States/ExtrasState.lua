@@ -117,6 +117,12 @@ function ExtrasState:enter()
                     doTransition(CustomNightState)
                 end,
             },
+            {
+                text = languageService["gameover_button_exit"],
+                action = function()
+                    doTransition(MenuState)
+                end,
+            },
             --[[{
                 text = languageService["extras_options_credits"],
                 action = function()
@@ -220,7 +226,15 @@ function ExtrasState:mousepressed(x, y, button)
         end
     end
 
-    self.categories[self.currentCategory]:mousepressed(x, y, button)
+    if self.categories[self.currentCategory].mousepressed then
+        self.categories[self.currentCategory]:mousepressed(x, y, button)
+    end
+end
+
+function ExtrasState:wheelmoved(x, y)
+    if self.categories[self.currentCategory].wheelmoved then
+        self.categories[self.currentCategory]:wheelmoved(x, y)
+    end
 end
 
 function ExtrasState:leave()

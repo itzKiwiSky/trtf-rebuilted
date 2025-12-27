@@ -177,7 +177,6 @@ function love.initialize()
         )
     end)
 
-
     love.filesystem.createDirectory("screenshots")
 
     gamestate.registerEvents()

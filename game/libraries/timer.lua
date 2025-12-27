@@ -61,6 +61,7 @@ end
 
 function Timer:cancel(handle)
     self.functions[handle] = nil
+    collectgarbage("collect")
 end
 
 function Timer:getTime(handle)

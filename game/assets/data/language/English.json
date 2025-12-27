@@ -4,13 +4,14 @@
         "voiceLineLockjawCall": "assets/sounds/night8/calls/sfx_night8_call_en.ogg",
         "myMomMemeAudio": "assets/sounds/night/meme/sfx_muscleman_meme_en.ogg",
         "creditsPath": "assets/data/language/en_credits.txt",
-        "classicModePath": "assets/data/language/classic_mode_english.txt",
-        "freeRoamPath": "assets/data/language/free_roam_english.txt",
+        "classicModePath": "assets/images/game/extras/bts/Scrapped Classic mode/classic_mode_english.txt",
+        "freeRoamPath": "assets/images/game/extras/bts/Scrapped post night/free_roam_english.txt",
         "explainCoderPath": "assets/data/language/coder_story_en.txt"
     },
     "cutscene_day": "5 days earlier",
     "credits_speed": "Hold the mouse to speed up",
     "video_click_to_jump": "Click to skip the cutscene",
+    "type_his_name": "If you want to play the secret night, type HIS name in the menu",
     "warn": {
         "warn_title": "[WARNING]",
         "warn_text": "This game contains loud sounds, flashing\nlights, mild swearing, and many jumpscares!"
@@ -172,7 +173,8 @@
             "extras_category_jumpscares_show_UI": "Show UI"
         },
         "extras_category_bts": {
-            "extras_category_bts_loading": "Loading assets"
+            "extras_category_bts_loading": "Loading assets",
+            "extras_category_bts_back": "Back"
         }
     },
     "secret_night": {

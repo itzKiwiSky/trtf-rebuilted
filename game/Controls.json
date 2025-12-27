@@ -18,5 +18,6 @@
     "player_move_right" : ["key:right", "key:d", "axis:leftx+"],
     "player_move_up" : ["key:up", "key:w", "axis:lefty-"],
     "player_move_down" : ["key:down", "key:s", "axis:lefty+"],
-    "player_action" : ["key:e", "key:space", "key:return", "button:a"]
+    "player_action" : ["key:e", "key:space", "key:return", "button:a"],
+    "player_mouse_click": ["mouse:1"]
 }

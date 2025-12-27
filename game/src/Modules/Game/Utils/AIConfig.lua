@@ -28,8 +28,8 @@ return {
     },
     [4] = {
         ["freddy"] = 3,
-        ["bonnie"] = 10,
-        ["chica"] = 9,
+        ["bonnie"] = 9,
+        ["chica"] = 8,
         ["foxy"] = 6,
         ["sugar"] = 3,
         ["kitty"] = 3,
