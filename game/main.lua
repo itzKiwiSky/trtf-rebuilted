@@ -28,6 +28,12 @@ local function loadSettings()
         gameSave.save.user.settings.video.filter and "linear" or "nearest"
     )
 
+    if gameSave.save.user.settings.misc.lockCursor then
+        love.mouse.setRelativeMode(true)
+        fakeCursor.x = love.graphics.getWidth() / 2
+        fakeCursor.y = love.graphics.getHeight() / 2
+    end
+
     -- audio --
     love.audio.setVolume(gameSave.save.user.settings.audio.masterVolume * 0.01)
 
@@ -82,6 +88,7 @@ function love.initialize()
                     discordRichPresence = true,
                     gamepadSupport = false,
                     cacheNight = false,
+                    lockCursor = false,
                 }
             },
             progress = {
@@ -176,6 +183,12 @@ function love.initialize()
             gameSave.save.user.settings.misc.gamejolt.usertoken
         )
     end)
+
+    if gameSave.save.user.settings.misc.lockCursor then
+        love.mouse.setRelativeMode(true)
+        fakeCursor.x = love.graphics.getWidth() / 2
+        fakeCursor.y = love.graphics.getHeight() / 2
+    end
 
     love.filesystem.createDirectory("screenshots")
 

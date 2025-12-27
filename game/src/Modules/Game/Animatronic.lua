@@ -23,6 +23,15 @@ function Animatronic:__construct(id, x, y)
     self.autoUpdatePos = true
     self.animatronicOnSameCamera = false
 
+    self.animatronicTimer = timer.new()
+
+    self.animatronicTimer:after(self.moveTime, function()
+        self.move = math.random(0, 20)
+        if self.move >= NightState.animatronicsAI[self.id] and NightState.animatronicsAI[self.id] > 0 and not NightState.officeState.hasAnimatronicInOffice then
+            self.onMove()
+        end
+    end)
+
     self.onMove = function() end
 end
 
@@ -87,15 +96,10 @@ function Animatronic:update(elapsed)
     end
 
     if self.updateMoveTimer then
-        self.timer = self.timer + elapsed
-        if self.timer >= self.moveTime then
-            self.move = math.random(0, 20)
-            if NightState.animatronicsAI[self.id] >= self.move and NightState.animatronicsAI[self.id] > 0 and not NightState.officeState.hasAnimatronicInOffice then
-                self.onMove()
-            end
-            self.timer = 0
-        end
+        self.animatronicTimer:update(elapsed)
     end
+
+
 
     if #self.path > 0 and self.autoUpdatePos and self.currentState > 0 then
         self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera

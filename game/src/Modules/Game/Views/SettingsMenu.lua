@@ -1,7 +1,7 @@
 local languageManager = require 'src.Modules.System.Utils.LanguageManager'
-local settings = {--
+local settings = { --
     lpadding = 16,
-    blank = function()end,
+    blank = function() end,
     fonts = {
         title = fontcache.getFont("tnr", 50),
         btnfont = fontcache.getFont("tnr", 26),
@@ -14,25 +14,25 @@ local settings = {--
 }
 
 return function()
-    local lfskin = loveframes.GetActiveSkin()
+    local lfskin                    = loveframes.GetActiveSkin()
 
-    lfskin.controls = {}
-    lfskin.controls.smallfont = love.graphics.newFont(11)
+    lfskin.controls                 = {}
+    lfskin.controls.smallfont       = love.graphics.newFont(11)
     lfskin.controls.imagebuttonfont = love.graphics.newFont(15)
-    lfskin.controls.color_image  = {lume.color("#FFFFFF")}
-    lfskin.controls.color_back0  = {lume.color("#bcbce4")}
-    lfskin.controls.color_back1  = {lume.color("#7a8bc9")}
-    lfskin.controls.color_back2  = {lume.color("#4b39a1")}
-    lfskin.controls.color_back3  = {lume.color("#5c6eaf")}
-    lfskin.controls.color_fore0  = {lume.color("#9d8cf1")}
-    lfskin.controls.color_fore1  = {lume.color("#4f467d")}
-    lfskin.controls.color_fore2  = {lume.color("#3a3167")}
-    lfskin.controls.color_fore3  = {lume.color("#2c2359")}
-    lfskin.controls.color_active = {lume.color("#1c1c56")}
+    lfskin.controls.color_image     = { lume.color("#FFFFFF") }
+    lfskin.controls.color_back0     = { lume.color("#bcbce4") }
+    lfskin.controls.color_back1     = { lume.color("#7a8bc9") }
+    lfskin.controls.color_back2     = { lume.color("#4b39a1") }
+    lfskin.controls.color_back3     = { lume.color("#5c6eaf") }
+    lfskin.controls.color_fore0     = { lume.color("#9d8cf1") }
+    lfskin.controls.color_fore1     = { lume.color("#4f467d") }
+    lfskin.controls.color_fore2     = { lume.color("#3a3167") }
+    lfskin.controls.color_fore3     = { lume.color("#2c2359") }
+    lfskin.controls.color_active    = { lume.color("#1c1c56") }
 
-    settings.skin = lfskin
+    settings.skin                   = lfskin
 
-    local panelSkin = function(object)
+    local panelSkin                 = function(object)
         local skin = object:GetSkin()
         local x = object:GetX()
         local y = object:GetY()
@@ -41,14 +41,14 @@ return function()
 
         love.graphics.setColor(skin.controls.color_fore2)
         love.graphics.rectangle("fill", x, y, w, h)
-        
+
         love.graphics.setColor(skin.controls.color_fore0)
         love.graphics.setLineWidth(3)
         love.graphics.rectangle("line", x, y, w, h)
         love.graphics.setLineWidth(1)
     end
 
-    local window = loveframes.Create("panel")
+    local window                    = loveframes.Create("panel")
     window:SetSize(shove.getViewportWidth(), shove.getViewportHeight())
     window.drawfunc = settings.blank
 
@@ -76,24 +76,24 @@ return function()
                 local y = object:GetY()
                 local w = object:GetWidth()
                 local h = object:GetHeight()
-        
+
                 love.graphics.setColor(0, 0, 0, 0.4)
                 love.graphics.rectangle("fill", x, y, w, h)
             end
-        
+
             mainList.drawoverfunc = function(object)
                 local skin = object:GetSkin()
                 local x = object:GetX()
                 local y = object:GetY()
                 local w = object:GetWidth()
                 local h = object:GetHeight()
-        
+
                 love.graphics.setColor(skin.controls.color_fore0)
                 love.graphics.setLineWidth(3)
                 love.graphics.rectangle("line", x, y, w, h)
                 love.graphics.setLineWidth(1)
             end
-    
+
             mainList:SetRetainSize(true)
             mainList:SetSpacing(16)
             mainList:SetPadding(8)
@@ -101,9 +101,9 @@ return function()
             mainList:Center()
             mainList:SetAlwaysUpdate(true)
             mainList:SetMouseWheelScrollAmount(6)
-    
+
             local options = statesFunc[registers.user.currentSettingsTab](settings)
-    
+
             for i = 1, #options, 1 do
                 local itemGrid = loveframes.Create("grid")
                 itemGrid:SetWidth(mainList:GetWidth() - 8)
@@ -116,7 +116,7 @@ return function()
                 itemGrid:SetAlwaysUpdate(true)
                 itemGrid.drawfunc = settings.blank
                 options[i](itemGrid)
-    
+
                 mainList:CalculateSize()
                 mainList:RedoLayout()
                 mainList:AddItem(itemGrid)
@@ -215,6 +215,12 @@ return function()
         --love.audio.setVolume(0.001)
         --SoundController.getChannel("music"):setVolume(gameSave.save.user.settings.audio.musicVolume * 0.01)
         --SoundController.getChannel("sfx"):setVolume(gameSave.save.user.settings.audio.sfxVolume * 0.01)
+
+        if gameSave.save.user.settings.misc.lockCursor then
+            love.mouse.setRelativeMode(true)
+            fakeCursor.x = love.graphics.getWidth() / 2
+            fakeCursor.y = love.graphics.getHeight() / 2
+        end
 
         -- misc stuff --
         languageService = languageManager.getData(gameSave.save.user.settings.misc.language)

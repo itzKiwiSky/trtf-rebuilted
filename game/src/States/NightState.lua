@@ -420,6 +420,7 @@ function NightState:enter()
         tabletBootProgress = 0,
         tabletBootProgressAlpha = 1,
         phoneCall = false,
+        phoneCallRefused = false,
         phoneCallNotRefused = false,
         power = {
             officeFlick = false,
@@ -1282,7 +1283,9 @@ function NightState:update(elapsed)
     end
 
 
-    self.tmr_nightStartPhone:update(elapsed)
+    if not self.officeState.phoneCallRefused then
+        self.tmr_nightStartPhone:update(elapsed)
+    end
 
     if self.nightTextDisplay.displayNightText and not self.nightTextDisplay.invert then
         if not AudioSources["sfx_bells"]:isPlaying() then
@@ -1559,6 +1562,7 @@ function NightState:mousepressed(x, y, button)
                     AudioSources["sfx_phone_pickup"]:play()
                     self.nightTextDisplay.displayNightText = true
                     self.officeState.phoneCall = false
+                    self.officeState.phoneCallRefused = true
                 end
             end
         end

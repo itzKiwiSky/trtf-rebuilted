@@ -34,6 +34,7 @@ function Minigame.init()
 
     Minigame.currentGift = 1
     Minigame.showSauce = false
+    Minigame.stopAll = false
 
     Minigame.gifts = {}
     Minigame.assets["gifts"] = { img = nil, quads = {} }
@@ -211,6 +212,12 @@ function Minigame.update(elapsed)
         end
 
         if Minigame.currentGift > #Minigame.gifts then
+            for k, v in pairs(AudioSources) do
+                if not Minigame.stopAll then
+                    v:stop()
+                end
+            end
+            Minigame.stopAll = true
             Minigame.showSauce = true
             MinigameSceneState.isShuttingDown = true
             MinigameSceneState.interferenceIntensity = 60

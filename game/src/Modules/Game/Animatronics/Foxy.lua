@@ -52,7 +52,7 @@ function Foxy:update(elapsed)
         self.timer = self.timer + elapsed
         if self.timer >= 14.8 then
             self.move = math.random(0, 20)
-            if self.move <= NightState.animatronicsAI.foxy and NightState.animatronicsAI.foxy > 0 and not NightState.officeState.hasAnimatronicInOffice then
+            if self.move >= NightState.animatronicsAI.foxy and NightState.animatronicsAI.foxy > 0 and not NightState.officeState.hasAnimatronicInOffice then
                 if NightState.officeState.flashlight.state then
                     NightState.officeState.flashlight.isFlicking = true
                 end

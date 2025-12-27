@@ -144,15 +144,12 @@ function love.run()
     Slab.Initialize({ "NoDocks" })
 
     local cursor = love.graphics.newImage("assets/images/system/cursor.png")
-    local fakeCursor = {
+    fakeCursor = {
         x = love.graphics.getWidth() / 2,
         y = love.graphics.getHeight() / 2,
         speed = 1 -- opcional
     }
 
-    love.mouse.setRelativeMode(true)
-    fakeCursor.x = love.graphics.getWidth() / 2
-    fakeCursor.y = love.graphics.getHeight() / 2
 
     local fpsfont = love.graphics.newFont(16)
 
@@ -249,7 +246,7 @@ function love.run()
             --shove.endLayer()
             shove.endDraw()
 
-            if love.mouse.isVisible() then
+            if love.mouse.isVisible() and love.mouse.getRelativeMode() then
                 love.graphics.draw(cursor, love.mouse.getX() - 4, love.mouse.getY() - 1, 0, 20 / cursor:getWidth(), 20 / cursor:getHeight())
             end
             love.graphics.present()
