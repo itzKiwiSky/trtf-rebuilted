@@ -187,6 +187,7 @@ return function()
         -- rest configs and close menu --
         registers.user.virtualSettings = gameSave.save.user.settings
         MenuState.configMenu = false
+        MenuState.canUseMenu = true
     end
 
     local saveButton = loveframes.Create("button")
