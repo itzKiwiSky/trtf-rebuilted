@@ -3,18 +3,18 @@ local animatronic = require 'src.Modules.Game.Animatronic'
 local Sugar = animatronic:extend("Sugar")
 
 function Sugar:__construct()
-    Sugar.super.__construct(self, "sugar", 0, 0)  -- wtf outside the map XDDD
+    Sugar.super.__construct(self, "sugar", 0, 0) -- wtf outside the map XDDD
 
     self.id = "sugar"
     self.active = false
     self.path = {
-        { x = 898, y =  267, camera = 5 },         -- storage
-        { x = 1064, y =  323, camera = 3 },         -- dining_area
-        { x = 906, y =  339, camera = 4 },
-        { x = 1116, y =  636, camera = 12 },        -- left_vent
-        { x = 1116, y =  636, camera = 12 },        -- office
+        { x = 898,  y = 267,  camera = 5 },  -- storage
+        { x = 1064, y = 323,  camera = 3 },  -- dining_area
+        { x = 906,  y = 339,  camera = 4 },
+        { x = 1116, y = 636,  camera = 12 }, -- left_vent
+        { x = 1116, y = 636,  camera = 12 }, -- office
     }
-    
+
     self.moveTime = 4.3
     self.nextMoveTime = 7.45
     self.patienceTimer = 0
@@ -46,7 +46,7 @@ function Sugar:update(elapsed)
                 self.patienceTimer = 0
                 self.patience = self.patience + 1
             end
-    
+
             if not NightState.officeState.hasAnimatronicInOffice then
                 if self.patience >= 350 and not NightState.officeState.vent.right then
                     if not NightState.killed then

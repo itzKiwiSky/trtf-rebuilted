@@ -19,9 +19,9 @@ return {
     },
     [3] = {
         ["freddy"] = 1,
-        ["bonnie"] = 5,
-        ["chica"] = 6,
-        ["foxy"] = 5,
+        ["bonnie"] = 4,
+        ["chica"] = 5,
+        ["foxy"] = 4,
         ["sugar"] = 0,
         ["kitty"] = 0,
         ["puppet"] = 6,

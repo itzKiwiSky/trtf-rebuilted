@@ -9,18 +9,18 @@ function Freddy:__construct()
     self.currentState = 1
     self.path = {
         {
-            { x = 1064, y = 256, camera = 6 }, -- showstage
-            { x = 1064, y = 323, camera = 3 }, -- dining_area
-            { x = 950,  y = 431, camera = 1 }, -- arcade
-            { x = 999,  y = 490, camera = 9 }, -- left_hall
+            { x = 1064, y = 256, camera = 6 },   -- showstage
+            { x = 1064, y = 323, camera = 3 },   -- dining_area
+            { x = 950,  y = 431, camera = 1 },   -- arcade
+            { x = 999,  y = 490, camera = 9 },   -- left_hall
             { x = 1154, y = 569, camera = nil }, -- freddy_hall
             { x = 1079, y = 592, camera = nil }, -- office
         },
         {
-            { x = 1064, y = 256, camera = 6 }, -- showstage
-            { x = 1064, y = 323, camera = 3 }, -- dining_area
-            { x = 1165, y = 432, camera = 2 }, -- storage
-            { x = 1127, y = 490, camera = 10 }, -- right_hall
+            { x = 1064, y = 256, camera = 6 },   -- showstage
+            { x = 1064, y = 323, camera = 3 },   -- dining_area
+            { x = 1165, y = 432, camera = 2 },   -- storage
+            { x = 1127, y = 490, camera = 10 },  -- right_hall
             { x = 1154, y = 569, camera = nil }, -- freddy_hall
             { x = 1079, y = 592, camera = nil }, -- office
         }

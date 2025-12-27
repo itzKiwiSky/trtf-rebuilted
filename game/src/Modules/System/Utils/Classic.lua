@@ -7,55 +7,58 @@
 -- the terms of the MIT license. See LICENSE for details.
 --
 
+local Class = { __class = "Class" }
+Class.__index = Class
 
-local Object = {}
-Object.__index = Object
+function Class:__construct(...) end
 
-function Object:__construct()end
-
-function Object:extend(class)
+function Class:extend(type, path)
     local cls = {}
+
     for k, v in pairs(self) do
-        if k:find("__") == 1 then
-        cls[k] = v
-        end
+        if k:sub(1, 2) == "__" then cls[k] = v end
     end
+
+    cls.__class = type or ("Unknown(" .. self.__class .. ")")
+    cls.__path = path
     cls.__index = cls
     cls.super = self
-    cls.type = class or "Object"
     setmetatable(cls, self)
+
     return cls
 end
 
-function Object:implement(...)
-    for _, cls in pairs({...}) do
+function Class:implement(...)
+    for _, cls in pairs({ ... }) do
         for k, v in pairs(cls) do
-            if self[k] == nil and type(v) == "function" then
+            if self[k] == nil and type(v) == "function" and k ~= "__construct" and k ~= "new" and k:sub(1, 2) ~= "__" then
                 self[k] = v
             end
         end
     end
 end
 
-function Object:is(T)
-    local mt = getmetatable(self)
-    while mt do
-        if mt == T then
-        return true
-        end
-        mt = getmetatable(mt)
+function Class:exclude(...)
+    for i = 1, select("#", ...) do
+        self[select(i, ...)] = nil
     end
+end
+
+function Class:is(T)
+    local mt = self
+    repeat
+        mt = getmetatable(mt)
+        if mt == T then return true end
+    until mt == nil
     return false
 end
 
-function Object:__tostring()
-    return self.type
-end
+function Class:__tostring() return self.__class end
 
-function Object:new(...)
+function Class:new(...)
     local obj = setmetatable({}, self)
     obj:__construct(...)
     return obj
 end
 
-return Object
+return Class

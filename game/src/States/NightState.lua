@@ -127,11 +127,15 @@ function NightState:enter()
     for _, a in ipairs(aif) do
         local filename = a:gsub("%.[^.]+$", "")
         if love.filesystem.getInfo("src/Modules/Game/Animatronics/" .. a).type ~= "directory" then
-            self.AnimatronicControllers[filename:lower()] = require("src.Modules.Game.Animatronics." .. filename):new()
+            self.AnimatronicControllers[filename:lower()] = require("src.Modules.Game.Animatronics." .. filename)
         end
     end
     aif = nil
     collectgarbage("collect")
+
+    for key, value in pairs(self.animatronicsAI) do
+        self.AnimatronicControllers[key] = self.AnimatronicControllers[key]:new()
+    end
 
     -- dev mode --
     if FEATURE_FLAGS.developerMode then
@@ -171,6 +175,7 @@ function NightState:enter()
             Slab.Text("Debug")
             Slab.Text("interferenceIntensity: " .. self.tabletCameraSubState.interferenceIntensity)
             Slab.Text("interferenceISpeed: " .. self.tabletCameraSubState.interferenceSpeed)
+            Slab.Text("animatronicInOffice: " .. tostring(self.officeState.hasAnimatronicInOffice))
             Slab.Separator()
             Slab.Text("IA Settings")
             for name in spairs(NightState.animatronicsAI) do
@@ -218,12 +223,13 @@ function NightState:enter()
                 if Slab.Button("move backwards") then
                     --NightState.animatronicsAI[name] = 0
                     if NightState.AnimatronicControllers[name].currentState > 1 then
-                        NightState.AnimatronicControllers[name].currentState = NightState.AnimatronicControllers[name]
-                            .currentState - 1
+                        NightState.AnimatronicControllers[name].currentState = NightState.AnimatronicControllers[name].currentState - 1
                     end
                 end
                 Slab.SameLine()
                 Slab.Text("  State: " .. NightState.AnimatronicControllers[name].currentState)
+                Slab.SameLine()
+                Slab.Text("  RNG: " .. NightState.AnimatronicControllers[name].move .. " | " .. self.animatronicsAI[name])
             end
             Slab.EndWindow()
         end
@@ -790,7 +796,7 @@ function NightState:draw()
         if self.officeState.maskUp then
             love.graphics.rectangle("line", 16, 48, 256, 32)
 
-            love.graphics.print(languageService["game_mask_toxic"], fnt_boldtnr, 16, 24)
+            love.graphics.print(languageService["game_mask_toxic"], self.fnt_boldtnr, 16, 24)
 
             love.graphics.setColor(236 / 255, 56 / 255, 41 / 255, 1)
             love.graphics.draw(NightState.assets.grd_toxicmeter, 16 + 3, 48 + 3, 0,
