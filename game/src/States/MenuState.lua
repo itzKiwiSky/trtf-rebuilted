@@ -125,6 +125,8 @@ function MenuState:enter()
         frames = {}
     }
 
+    self.textAcc = ""
+
     self.logoMenu = {
         x = 200,
         y = 200,
@@ -513,12 +515,15 @@ function MenuState:update(elapsed)
         if self.journalConfig.alpha <= 1 then
             self.journalConfig.alpha = self.journalConfig.alpha + 1 * elapsed
         end
-        --self.journalConfig.zoom = self.journalConfig.zoom + 0.0075 * elapsed
-        --self.journalConfig.angle = self.journalConfig.angle - 0.2 * elapsed
+    end
 
+    if gameSave.save.user.progress.night > 5 then
+        if self.textAcc == "lockjaw" then
+            gameSave.save.user.progress.showNight8 = true
+            gameSave:saveSlot()
 
-
-        --self.journalConfig.timer:update(elapsed)
+            gamestate.switch(MenuState)
+        end
     end
 
     if self.transitionFade.active then
@@ -577,6 +582,10 @@ function MenuState:mousepressed(x, y, button)
             end)
         end
     end
+end
+
+function MenuState:textinput(t)
+    self.textAcc = self.textAcc .. t
 end
 
 function MenuState:leave()
