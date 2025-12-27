@@ -64,7 +64,8 @@ function VideoPlayerState:keypressed(k)
     if not self.jumpScene then
         VideoPlayerState.jumpScene = true
         flux.to(self.fade, 3, { alpha = 1, volume = 0 }):oncomplete(function()
-            self.sceneRun:stop()
+            self.sceneRun:pause()
+            self.sceneRun:seek(0)
             VideoPlayerState.onSceneComplete()
         end)
     end

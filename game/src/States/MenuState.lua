@@ -211,7 +211,7 @@ function MenuState:enter()
     self.logoMenu.sprWidth = math.floor(self.logoMenu.scale * self.spr_logo:getWidth())
     self.logoMenu.sprHeight = math.floor(self.logoMenu.scale * self.spr_logo:getHeight())
 
-    self.newGameJournal = gameSave.save.user.settings.misc.language == "English" and love.graphics.newImage("assets/images/game/menu/news/en.png") or love.graphics.newImage("assets/images/game/menu/news/es.png")
+    self.newGameJournal = gameSave.save.user.settings.misc.language == "Espanol" and love.graphics.newImage("assets/images/game/menu/news/es.png") or love.graphics.newImage("assets/images/game/menu/news/en.png")
 
     local statics = love.filesystem.getDirectoryItems("assets/images/game/effects/static")
     for s = 1, #statics, 1 do
