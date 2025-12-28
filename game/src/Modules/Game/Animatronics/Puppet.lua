@@ -3,7 +3,7 @@ local animatronic = require 'src.Modules.Game.Animatronic'
 local Puppet = animatronic:extend("Puppet")
 
 function Puppet:__construct()
-    Puppet.super.__construct(self, "puppet", 0, 0)  -- wtf outside the map XDDD
+    Puppet.super.__construct(self, "puppet", 0, 0) -- wtf outside the map XDDD
 
     self.id = "puppet"
 
@@ -15,19 +15,19 @@ function Puppet:__construct()
     self.musicBoxTimer = self.maxRewind
     self.musicAcc = 0
     self.path = {
-        { x = 950, y = 431, camera = 1},          -- arcade
-        { x = 1165, y = 432, camera = 2},         -- storage
-        { x = 1064, y = 323, camera = 3},         -- dining_area
-        { x = 906, y = 339, camera = 4},          -- pirate_cove
-        { x = 898, y = 267, camera = 5},          -- parts_and_service
-        { x = 1064, y = 256, camera = 6},         -- showstage
-        { x = 1018, y = 195, camera = 7},         -- kitchen
-        { x = 1168, y = 362, camera = 8},         -- prize_corner
-        { x = 999, y = 490, camera = 9},          -- left_hall
-        { x = 1127, y = 490, camera = 10},         -- right_hall
+        { x = 950,  y = 431, camera = 1 }, -- arcade
+        { x = 1165, y = 432, camera = 2 }, -- storage
+        { x = 1064, y = 323, camera = 3 }, -- dining_area
+        { x = 906,  y = 339, camera = 4 }, -- pirate_cove
+        { x = 898,  y = 267, camera = 5 }, -- parts_and_service
+        { x = 1064, y = 256, camera = 6 }, -- showstage
+        { x = 1018, y = 195, camera = 7 }, -- kitchen
+        { x = 1168, y = 362, camera = 8 }, -- prize_corner
+        { x = 999,  y = 490, camera = 9 }, -- left_hall
+        { x = 1127, y = 490, camera = 10 }, -- right_hall
     }
 
-    self.moveTime = 7.4
+    self.moveTime = 8.32
     self.releaseTimer = 8.4
 
     self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
@@ -59,7 +59,7 @@ function Puppet:update(elapsed)
             AudioSources["msc_puppet_music_box"]:setPosition(0, 0, 0)
             AudioSources["msc_puppet_music_box"]:setVolume(0)
         end
-        
+
         self.onMove = function()
             if self.musicBoxTimer >= 0 then
                 self.position = math.random(1, 3)
@@ -80,7 +80,7 @@ function Puppet:update(elapsed)
                 AudioSources["sfx_jackbox"]:setLooping(true)
                 AudioSources["sfx_jackbox"]:play()
             end
-    
+
             self.timer = self.timer + elapsed
             if self.timer >= 0.02 then
                 self.timer = 0

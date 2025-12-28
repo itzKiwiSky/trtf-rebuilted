@@ -17,7 +17,7 @@ function Kitty:__construct()
         { x = 1004, y = 636, camera = 11 }, -- office
     }
 
-    self.moveTime = 4.3
+    self.moveTime = 7.64
     self.nextMoveTime = 7.45
     self.patienceTimer = 0
     self.patience = 0
@@ -52,12 +52,12 @@ function Kitty:update(elapsed)
             end
 
 
-            if self.patience >= 350 and not NightState.officeState.vent.left then
+            if self.patience >= 450 and not NightState.officeState.vent.left then
                 self.currentState = 5
                 if not NightState.killed then
                     self:kill()
                 end
-            elseif self.patience >= 350 and NightState.officeState.vent.left then
+            elseif self.patience >= 450 and NightState.officeState.vent.left then
                 AudioSources["sfx_vent_amb2"]:seek(0)
                 AudioSources["sfx_vent_amb2"]:play()
                 self.patience = 0

@@ -8,12 +8,19 @@ local function normalizedLerp(a, b, speed, dt)
     return a + (b - a) * t
 end
 
-local function changeCamFX()
+local function changeCamFX(self)
     TabletCameraSubState:doInterference(0.09, 120, 100, 1.5)
+
     if AudioSources["sfx_cam_switch"]:isPlaying() then
         AudioSources["sfx_cam_switch"]:seek(0)
     end
     AudioSources["sfx_cam_switch"]:play()
+
+    flux.removeAll()
+    flux.to(self, 0.25, {
+        interferenceIntensity = 0.012,
+        pixelationInterference = 1.5
+    })
 end
 
 ---Create a intereference in the camera
@@ -362,9 +369,6 @@ function TabletCameraSubState:update(elapsed)
     self.interferenceFX:send("speed", self.interferenceSpeed)
     self.fxTV.pixelate.size = { self.pixelationInterference, self.pixelationInterference }
 
-    self.interferenceIntensity = math.lerp(self.interferenceIntensity, 0.012, self.interferenceData.timer)
-    self.pixelationInterference = math.lerp(self.pixelationInterference, 1.5, self.interferenceData.timer)
-
     self.camID = self.camerasID[self.camButtonID]
 
     if NightState.officeState.tabletFirstBoot then
@@ -420,16 +424,17 @@ function TabletCameraSubState:update(elapsed)
     end
 
     -- yay --
-    NightState.officeState.lightCam.isFlicking = not (love.timer.getTime() % math.random(2, 5) > 0.6)
+    --00.012
+    NightState.officeState.lightCam.isFlicking = not (love.timer.getTime() % love.math.random(2, 5) > 0.8)
 
     -- controllers --
     if Controller:pressed("game_change_cam_left") then
         self.camButtonID = self.camButtonID - 1
-        changeCamFX()
+        changeCamFX(self)
     end
     if Controller:pressed("game_change_cam_right") then
         self.camButtonID = self.camButtonID + 1
-        changeCamFX()
+        changeCamFX(self)
     end
 
     if self.camButtonID < 1 then
@@ -438,6 +443,8 @@ function TabletCameraSubState:update(elapsed)
     if self.camButtonID > #self.camerasID then
         self.camButtonID = 1
     end
+
+    flux.update(elapsed)
 
     -- render camera --
     self.cameraController(self)
@@ -450,7 +457,7 @@ function TabletCameraSubState:mousepressed(x, y, button)
         for _, b in ipairs(self.buttons) do
             if collision.pointRect({ x = mx, y = my }, b.btn) then
                 self.camButtonID = _
-                changeCamFX()
+                changeCamFX(self)
             end
         end
 

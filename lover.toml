@@ -7,7 +7,7 @@ version = "1.0.0"
 icon = "game/icon.png"
 
 [build]
-default = ["win64", "linux"]
+default = ["win64"]
 
 [directories]
 source = "game"

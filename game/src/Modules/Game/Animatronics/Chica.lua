@@ -34,7 +34,9 @@ function Chica:update(elapsed)
                 self:interference()
             end
 
-            self.currentState = self.currentState + 1
+            if not NightState.officeState.hasAnimatronicInOffice then
+                self.currentState = self.currentState + 1
+            end
             if NightState.officeState.flashlight.state then
                 if self.currentState == 5 then
                     NightState.officeState.flashlight.isFlicking = true
@@ -42,7 +44,7 @@ function Chica:update(elapsed)
             end
         end
 
-        NightState.officeState.hasAnimatronicInFrontOffice = self.currentState == 4
+        NightState.officeState.hasAnimatronicInFrontOffice = self.currentState == 5
     else
         if not AudioSources["sfx_stare"]:isPlaying() then
             AudioSources["sfx_stare"]:play()

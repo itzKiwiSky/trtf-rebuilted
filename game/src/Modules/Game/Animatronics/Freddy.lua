@@ -103,7 +103,7 @@ function Freddy:update(elapsed)
         end
     else
         Freddy.super.update(self, elapsed)
-        if self.currentState <= 4 then
+        if self.currentState <= 4 and not NightState.officeState.hasAnimatronicInOffice then
             if self.currentState > 2 then
                 if self.animatronicOnSameCamera then
                     if NightState.officeState.lightCam.state then

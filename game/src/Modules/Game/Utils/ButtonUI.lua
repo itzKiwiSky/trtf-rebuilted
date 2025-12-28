@@ -13,11 +13,11 @@ function ButtonUI:__construct(image, x, y, r, sx, sy, centerOrigin)
     self.image = image
     self.x = x
     self.y = y
-    self.w = image:getWidth()
-    self.h = image:getHeight() + 64
-    self.r = r or 0
     self.sx = sx or 1
     self.sy = sy or 1
+    self.w = image:getWidth() * self.sx
+    self.h = (image:getHeight() + 64) * self.sy
+    self.r = r or 0
     self.isHover = false
 end
 

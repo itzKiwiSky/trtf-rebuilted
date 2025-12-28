@@ -31,7 +31,10 @@ function Bonnie:update(elapsed)
                 self:moveAnimatronic()
             end
 
-            self.currentState = self.currentState + 1
+            if not NightState.officeState.hasAnimatronicInOffice then
+                self.currentState = self.currentState + 1
+            end
+
             if NightState.officeState.flashlight.state then
                 if self.currentState == 4 then
                     NightState.officeState.flashlight.isFlicking = true
@@ -54,7 +57,7 @@ function Bonnie:update(elapsed)
             NightState.officeState.onAnimatronicInOffice()
         end
 
-        if NightState.officeState.hasAnimatronicInOffice then
+        if not NightState.officeState.hasAnimatronicInOffice then
             if self.patience >= 150 and not NightState.officeState.maskUp then
                 self:kill()
             elseif self.patience >= 150 and NightState.officeState.maskUp then

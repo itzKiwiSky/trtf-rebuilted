@@ -83,7 +83,7 @@ function Foxy:update(elapsed)
             self.patience = 0
             self.currentState = 6
         end
-    elseif self.currentState == 5 then
+    elseif self.currentState == 5 and not NightState.officeState.hasAnimatronicInOffice then
         self.position = 4
         self.timer = self.timer + elapsed
         if self.timer >= 0.02 then

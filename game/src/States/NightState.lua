@@ -353,11 +353,18 @@ function NightState:enter()
     self.maskController.timeout = 0.2
     self.maskController.acc = 0
 
-    self.maskBtn = self.buttonsUI:new(NightState.assets.maskButton, 96,
-        (shove.getViewportHeight() - NightState.assets.maskButton:getHeight()) - 24)
-    self.camBtn = self.buttonsUI:new(NightState.assets.camButton,
-        (shove.getViewportWidth() - NightState.assets.camButton:getWidth()) - 96,
-        (shove.getViewportHeight() - NightState.assets.camButton:getHeight()) - 24)
+    self.maskBtn = self.buttonsUI:new(
+        NightState.assets.maskButton,
+        96,
+        (shove.getViewportHeight() - NightState.assets.maskButton:getHeight()) - 24,
+        0, 0.70, 0.70
+    )
+    self.camBtn = self.buttonsUI:new(
+        NightState.assets.camButton,
+        (shove.getViewportWidth() - NightState.assets.camButton:getWidth()) + 96,
+        (shove.getViewportHeight() - NightState.assets.camButton:getHeight()) - 24,
+        0, 0.70, 0.70
+    )
 
     self.X_LEFT_FRAME = self.mainCam.x - 72
     self.X_RIGHT_FRAME = self.mainCam.x + self.roomSize.width
@@ -460,7 +467,7 @@ function NightState:enter()
             left = false,
             right = false,
             timerAcc = 0,
-            ventMaxTimer = 5,
+            ventMaxTimer = 2.35,
         },
         toxicmeter = 100,
         hasAnimatronicInOffice = false,
@@ -632,12 +639,12 @@ function NightState:enter()
                 incrementIA({ "freddy", "chica", "bonnie" })           --5
             },
             [5] = {
-                nil,                              --12
-                nil,                              --1
-                nil,                              --2
-                incrementIA({ "foxy", "chica" }), --3
-                incrementIA({ "foxy", "chica" }), --4
-                incrementIA({ "foxy", "chica" })  --5
+                nil,                                         --12
+                nil,                                         --1
+                nil,                                         --2
+                incrementIA({ "foxy", "chica", "sugar" }),   --3
+                incrementIA({ "foxy", "puppet", "freddy" }), --4
+                incrementIA({ "foxy", "chica" })             --5
             },
             [6] = {
                 nil,                                                 --12

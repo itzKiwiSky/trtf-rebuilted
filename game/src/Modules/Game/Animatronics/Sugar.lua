@@ -9,13 +9,12 @@ function Sugar:__construct()
     self.active = false
     self.path = {
         { x = 898,  y = 267, camera = 5 },  -- storage
-        { x = 1064, y = 323, camera = 3 },  -- dining_area
         { x = 906,  y = 339, camera = 4 },
-        { x = 1116, y = 636, camera = 12 }, -- left_vent
-        { x = 1116, y = 636, camera = 12 }, -- office
+        { x = 1004, y = 636, camera = 12 }, -- right_vent
+        { x = 1004, y = 636, camera = 12 }, -- office
     }
 
-    self.moveTime = 4.3
+    self.moveTime = 7.63
     self.nextMoveTime = 7.45
     self.patienceTimer = 0
     self.patience = 0
@@ -50,12 +49,12 @@ function Sugar:update(elapsed)
                 self.patience = self.patience + 1
             end
 
-            if self.patience >= 350 and not NightState.officeState.vent.right then
+            if self.patience >= 450 and not NightState.officeState.vent.right then
                 self.currentState = 5
                 if not NightState.killed then
                     self:kill()
                 end
-            elseif self.patience >= 350 and NightState.officeState.vent.right then
+            elseif self.patience >= 450 and NightState.officeState.vent.right then
                 AudioSources["sfx_vent_amb2"]:seek(0)
                 AudioSources["sfx_vent_amb2"]:play()
                 self.patience = 0
