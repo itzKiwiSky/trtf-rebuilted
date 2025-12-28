@@ -40,6 +40,7 @@ function TabletCameraSubState:load()
     self.marker = require 'src.Modules.Game.Utils.Marker'
     self.buttonCamera = require 'src.Modules.Game.Utils.ButtonCamera'
     self.cameraController = require 'src.Modules.Game.CameraController'
+    self.animatorController = require 'src.Modules.Game.AnimatorController'
 
     self.interferenceData = {
         acc = 0,
@@ -143,6 +144,12 @@ function TabletCameraSubState:load()
         { btn = self.buttonCamera(1116, 636, 72, 40) },
     }
 
+    self.ventKitty = self.animatorController:new(NightState.assets.vents["vent_kitty"], 30, "vent_")
+    self.ventKitty.visible = false
+
+    self.ventSugar = self.animatorController:new(NightState.assets.vents["vent_sugar"], 30, "vent_")
+    self.ventSugar.visible = false
+
     self.reloadTimer = 0
     self.miscButtons = {
         reload = {
@@ -210,6 +217,11 @@ function TabletCameraSubState:draw()
             if NightState.officeState.lightCam.state then
                 if not NightState.officeState.lightCam.isFlicking then
                     love.graphics.draw(NightState.assets.cameras[self.camID]["cs_" .. self.cameraMeta[self.camID].frame], 0, 0)
+                    if self.camID == "vent_sugar" then
+                        self.ventSugar:draw()
+                    elseif self.camID == "vent_kitty" then
+                        self.ventKitty:draw()
+                    end
                     if self.camerasID[NightState.AnimatronicControllers["puppet"].metadataCameraID] == self.camID and NightState.AnimatronicControllers["puppet"].released then
                         love.graphics.draw(NightState.assets.cameras["puppet"]["cs_" .. NightState.AnimatronicControllers["puppet"].position], 0, 0)
                     end
@@ -256,12 +268,6 @@ function TabletCameraSubState:draw()
         love.graphics.clear(0, 0, 0, 0)
         self.fxTV(function()
             love.graphics.draw(self.fxCanvas, 0, 0)
-            --love.graphics.setBlendMode("add")
-            --    love.graphics.setColor(1, 1, 1, 0.14)
-            --        love.graphics.draw(NightState.assets.staticfx["static_" .. NightState.staticfx.frameid], 0, 0)
-            --    love.graphics.setColor(1, 1, 1, 1)
-            --love.graphics.setBlendMode("alpha")
-
             if NightState.officeState.tabletFirstBoot then
                 love.graphics.setColor(1, 1, 1, NightState.officeState.tabletBootProgressAlpha)
                 love.graphics.draw(self.loadingCanvas, 0, 0)
@@ -287,15 +293,13 @@ function TabletCameraSubState:draw()
             love.graphics.setColor(1, 1, 1, 1)
         end
 
-        --love.graphics.setColor(0.5, 0.5, 0.5, 1)
-        --love.graphics.printf(self.camerasName[self.camButtonID], NightState.fnt_camName, 2, 34, shove.getViewportWidth(), "center")
+
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.printf(self.camerasName[self.camButtonID],
             NightState.fnt_camName, shove.getViewportWidth() - 370,
             150, NightState.assets.camMap:getWidth(), "center"
         )
-        love.graphics.printf(NightState.night.text, NightState.fnt_timerfnt, 0, 37,
-            shove.getViewportWidth(), "center")
+        love.graphics.printf(NightState.night.text, NightState.fnt_timerfnt, 0, 37, shove.getViewportWidth(), "center")
 
 
         love.graphics.rectangle("line", 64, shove.getViewportHeight() - 110, 128, 48)
@@ -425,7 +429,7 @@ function TabletCameraSubState:update(elapsed)
 
     -- yay --
     --00.012
-    NightState.officeState.lightCam.isFlicking = not (love.timer.getTime() % love.math.random(2, 5) > 0.8)
+    --NightState.officeState.lightCam.isFlicking = not (love.timer.getTime() % love.math.random(2, 5) > 0.8)
 
     -- controllers --
     if Controller:pressed("game_change_cam_left") then
@@ -443,6 +447,9 @@ function TabletCameraSubState:update(elapsed)
     if self.camButtonID > #self.camerasID then
         self.camButtonID = 1
     end
+
+    self.ventKitty:update(elapsed)
+    self.ventSugar:update(elapsed)
 
     flux.update(elapsed)
 

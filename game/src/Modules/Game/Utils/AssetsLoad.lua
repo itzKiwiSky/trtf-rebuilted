@@ -16,6 +16,7 @@ return function(night)
 
     if night == "normal" then
         -- calls --
+        assets.vents = {}
         assets.calls = {}
         local callsF = fsutil.scanFolder(languageRaw["__ENGINE__"].voicelinePath)
         for c = 1, #callsF, 1 do
@@ -159,6 +160,9 @@ return function(night)
         loveloader.newImage(assets, "phone_bg", "assets/images/game/night/phone/UI/bg.png")
         loveloader.newImage(assets, "phone_refuse", "assets/images/game/night/phone/UI/phone_refuse_button.png")
         loveloader.newImage(assets, "phone_accept", "assets/images/game/night/phone/UI/phone_accept_button.png")
+
+        assets.vents["vent_kitty"] = loadBulk("vent_", "assets/images/game/night/vent_door_kitty/")
+        assets.vents["vent_sugar"] = loadBulk("vent_", "assets/images/game/night/vent_door_sugar/")
 
         -- jumpscares --
         local jmps = fsutil.scanFolder("assets/images/game/night/jumpscares", true)

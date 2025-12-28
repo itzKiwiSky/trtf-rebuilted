@@ -1240,13 +1240,17 @@ function NightState:update(elapsed)
 
                 if self.officeState.vent.direction == "left" then
                     self.officeState.vent["left"] = not self.officeState.vent["left"]
+                    self.tabletCameraSubState.ventKitty:setState(self.officeState.vent["left"])
                     if self.officeState.vent["right"] then
                         self.officeState.vent["right"] = false
+                        self.tabletCameraSubState.ventSugar:setState(true)
                     end
                 elseif self.officeState.vent.direction == "right" then
                     self.officeState.vent["right"] = not self.officeState.vent["right"]
+                    self.tabletCameraSubState.ventSugar:setState(self.officeState.vent["right"])
                     if self.officeState.vent["left"] then
                         self.officeState.vent["left"] = false
+                        self.tabletCameraSubState.ventKitty:setState(true)
                     end
                 end
 

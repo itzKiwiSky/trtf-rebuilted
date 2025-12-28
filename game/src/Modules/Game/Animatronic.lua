@@ -23,6 +23,8 @@ function Animatronic:__construct(id, x, y)
     self.autoUpdatePos = true
     self.animatronicOnSameCamera = false
 
+    self.moveAccumulator = 0
+
     self.onMove = function() end
 end
 
@@ -69,6 +71,11 @@ function Animatronic:interference()
             AudioSources["sfx_cam_animatronic_interference"]:seek(0)
             NightState.tabletCameraSubState:doInterference(0.1, 200, 200, 6)
             AudioSources["sfx_cam_animatronic_interference"]:play()
+            flux.removeAll()
+            flux.to(self, 0.25, {
+                interferenceIntensity = 0.012,
+                pixelationInterference = 1.5
+            })
         end
     end
 end
@@ -90,9 +97,15 @@ function Animatronic:update(elapsed)
         self.timer = self.timer + elapsed
 
         if self.timer >= self.moveTime then
-            self.move = love.math.random(20, 0)
-            if self.move <= NightState.animatronicsAI[self.id] and NightState.animatronicsAI[self.id] > 0 and not NightState.officeState.hasAnimatronicInOffice then
-                self.onMove()
+            local ia = NightState.animatronicsAI[self.id]
+            if ia > 0 and not NightState.officeState.hasAnimatronicInOffice then
+                self.moveAccumulator = self.moveAccumulator + (ia / 20)
+
+                self.moveAccumulator = math.min(self.moveAccumulator, 1)
+                if love.math.random() < self.moveAccumulator then
+                    self.onMove()
+                    self.moveAccumulator = 0
+                end
             end
             self.timer = 0
         end
