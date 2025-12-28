@@ -8,11 +8,11 @@ function Sugar:__construct()
     self.id = "sugar"
     self.active = false
     self.path = {
-        { x = 898,  y = 267,  camera = 5 },  -- storage
-        { x = 1064, y = 323,  camera = 3 },  -- dining_area
-        { x = 906,  y = 339,  camera = 4 },
-        { x = 1116, y = 636,  camera = 12 }, -- left_vent
-        { x = 1116, y = 636,  camera = 12 }, -- office
+        { x = 898,  y = 267, camera = 5 },  -- storage
+        { x = 1064, y = 323, camera = 3 },  -- dining_area
+        { x = 906,  y = 339, camera = 4 },
+        { x = 1116, y = 636, camera = 12 }, -- left_vent
+        { x = 1116, y = 636, camera = 12 }, -- office
     }
 
     self.moveTime = 4.3
@@ -33,8 +33,11 @@ function Sugar:update(elapsed)
         self.onMove = function()
             if self.currentState <= 3 then
                 self.currentState = self.currentState + 1
-                self:moveAnimatronic()
+                if not NightState.officeState.hasAnimatronicInOffice and not NightState.officeState.someoneInVent then
+                    self:moveAnimatronic()
+                end
             elseif self.currentState == 4 then
+                NightState.officeState.someoneInVent = true
                 AudioSources["sfx_vent_walk"]:seek(0)
                 AudioSources["sfx_vent_walk"]:play()
             end
@@ -47,18 +50,18 @@ function Sugar:update(elapsed)
                 self.patience = self.patience + 1
             end
 
-            if not NightState.officeState.hasAnimatronicInOffice then
-                if self.patience >= 350 and not NightState.officeState.vent.right then
-                    if not NightState.killed then
-                        self:kill()
-                    end
-                elseif self.patience >= 350 and NightState.officeState.vent.right then
-                    AudioSources["sfx_vent_amb2"]:seek(0)
-                    AudioSources["sfx_vent_amb2"]:play()
-                    self.patience = 0
-                    self.timer = 0
-                    self.currentState = 2
+            if self.patience >= 350 and not NightState.officeState.vent.right then
+                self.currentState = 5
+                if not NightState.killed then
+                    self:kill()
                 end
+            elseif self.patience >= 350 and NightState.officeState.vent.right then
+                AudioSources["sfx_vent_amb2"]:seek(0)
+                AudioSources["sfx_vent_amb2"]:play()
+                self.patience = 0
+                self.timer = 0
+                self.currentState = 2
+                NightState.officeState.someoneInVent = false
             end
         end
     else

@@ -19,8 +19,8 @@ return {
     },
     [3] = {
         ["freddy"] = 1,
-        ["bonnie"] = 4,
-        ["chica"] = 5,
+        ["bonnie"] = 7,
+        ["chica"] = 7,
         ["foxy"] = 4,
         ["sugar"] = 0,
         ["kitty"] = 0,
@@ -28,7 +28,7 @@ return {
     },
     [4] = {
         ["freddy"] = 3,
-        ["bonnie"] = 9,
+        ["bonnie"] = 8,
         ["chica"] = 8,
         ["foxy"] = 6,
         ["sugar"] = 3,
@@ -37,8 +37,8 @@ return {
     },
     [5] = {
         ["freddy"] = 9,
-        ["bonnie"] = 13,
-        ["chica"] = 12,
+        ["bonnie"] = 10,
+        ["chica"] = 10,
         ["foxy"] = 10,
         ["sugar"] = 9,
         ["kitty"] = 10,

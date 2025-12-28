@@ -1,7 +1,7 @@
 --[[------------------------------------------------
     -- Love Frames - A GUI library for LOVE --
     -- Copyright (c) 2012-2014 Kenny Shields --
---]]------------------------------------------------
+--]] ------------------------------------------------
 
 local path = ...
 
@@ -69,17 +69,16 @@ love.keyboard.setKeyRepeat(true)
 --[[---------------------------------------------------------
     - func: update(deltatime)
     - desc: updates all library objects
---]]---------------------------------------------------------
+--]] ---------------------------------------------------------
 function loveframes.update(dt)
-
     local base = loveframes.base
     local input_cursor_set = loveframes.input_cursor_set
-    
+
     loveframes.collisioncount = 0
     loveframes.objectcount = 0
     loveframes.hover = false
     loveframes.hoverobject = false
-    
+
     local downobject = loveframes.downobject
     if #loveframes.collisions > 0 then
         local top = loveframes.collisions[#loveframes.collisions]
@@ -91,8 +90,8 @@ function loveframes.update(dt)
             end
         end
     end
-    
-    if loveframes.config["ENABLE_SYSTEM_CURSORS"] then 
+
+    if loveframes.config["ENABLE_SYSTEM_CURSORS"] then
         local hoverobject = loveframes.hoverobject
         local arrow = love.mouse.getSystemCursor("arrow")
         local curcursor = love.mouse.getCursor()
@@ -173,47 +172,43 @@ function loveframes.update(dt)
             end
         end
     end
-    
+
     loveframes.collisions = {}
     base:update(dt)
-
 end
 
 --[[---------------------------------------------------------
     - func: draw()
     - desc: draws all library objects
---]]---------------------------------------------------------
+--]] ---------------------------------------------------------
 function loveframes.draw()
-
     local base = loveframes.base
     local r, g, b, a = love.graphics.getColor()
     local font = love.graphics.getFont()
-    
+
     base:draw()
-    
+
     loveframes.drawcount = 0
-    
+
     if loveframes.config["DEBUG"] then
         loveframes.DebugDraw()
     end
-    
+
     love.graphics.setColor(r, g, b, a)
-    
+
     if font then
         love.graphics.setFont(font)
     end
-    
 end
 
 --[[---------------------------------------------------------
     - func: mousepressed(x, y, button)
     - desc: called when the player presses a mouse button
---]]---------------------------------------------------------
+--]] ---------------------------------------------------------
 function loveframes.mousepressed(x, y, button)
-
     local base = loveframes.base
     base:mousepressed(x, y, button)
-    
+
     -- close open menus
     local bchildren = base.children
     local hoverobject = loveframes.hoverobject
@@ -231,18 +226,16 @@ function loveframes.mousepressed(x, y, button)
             end
         end
     end
-    
 end
 
 --[[---------------------------------------------------------
     - func: mousereleased(x, y, button)
     - desc: called when the player releases a mouse button
---]]---------------------------------------------------------
+--]] ---------------------------------------------------------
 function loveframes.mousereleased(x, y, button)
-
     local base = loveframes.base
     base:mousereleased(x, y, button)
-    
+
     -- reset the hover object
     loveframes.downobject = false
     loveframes.selectedobject = false
@@ -251,47 +244,38 @@ end
 --[[---------------------------------------------------------
     - func: wheelmoved(x, y)
     - desc: called when the player moves a mouse wheel
---]]---------------------------------------------------------
+--]] ---------------------------------------------------------
 function loveframes.wheelmoved(x, y)
-
     local base = loveframes.base
     base:wheelmoved(x, y)
-
 end
 
 --[[---------------------------------------------------------
     - func: keypressed(key, isrepeat)
     - desc: called when the player presses a key
---]]---------------------------------------------------------
+--]] ---------------------------------------------------------
 function loveframes.keypressed(key, isrepeat)
-
     local base = loveframes.base
     base:keypressed(key, isrepeat)
-    
 end
 
 --[[---------------------------------------------------------
     - func: keyreleased(key)
     - desc: called when the player releases a key
---]]---------------------------------------------------------
+--]] ---------------------------------------------------------
 function loveframes.keyreleased(key)
-
     local base = loveframes.base
     base:keyreleased(key)
-    
 end
 
 --[[---------------------------------------------------------
     - func: textinput(text)
     - desc: called when the user inputs text
---]]---------------------------------------------------------
+--]] ---------------------------------------------------------
 function loveframes.textinput(text)
-
     local base = loveframes.base
     base:textinput(text)
-    
 end
-
 
 loveframes.LoadObjects(dir .. "/objects")
 loveframes.LoadTemplates(dir .. "/templates")

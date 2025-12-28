@@ -277,6 +277,7 @@ function MenuState:enter()
                     gameSave.save.user.progress = progress
                     self.canUseMenu = false
                     self.journalConfig.active = true
+                    registers.isStoryMode = true
                     NightState.nightID = gameSave.save.user.progress.night
                     gameSave:saveSlot()
                 end,

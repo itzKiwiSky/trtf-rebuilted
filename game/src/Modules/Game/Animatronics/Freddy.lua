@@ -108,11 +108,11 @@ function Freddy:update(elapsed)
                 if self.animatronicOnSameCamera then
                     if NightState.officeState.lightCam.state then
                         self.flash = self.flash + elapsed
+                        if not AudioSources["sfx_freddy_move_away"]:isPlaying() then
+                            AudioSources["sfx_freddy_move_away"]:setVolume(0.65)
+                            AudioSources["sfx_freddy_move_away"]:play()
+                        end
                         if self.flash >= self.flashMax then
-                            self.laughRand = math.random(1, 5)
-                            if self.laughRand == 2 then
-                                playLaugh(self)
-                            end
                             self.currentState = self.currentState - 1
                             self.timer = 0
                             self.flash = 0
@@ -131,6 +131,7 @@ function Freddy:update(elapsed)
                         self.pathID = math.random(1, 2)
                     end
                     self.currentState = self.currentState + 1
+                    playLaugh(self)
                     self:moveAnimatronic()
                 elseif self.currentState == 5 then
                     if NightState.officeState.tabletUp then

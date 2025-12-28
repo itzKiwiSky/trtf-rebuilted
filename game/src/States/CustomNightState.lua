@@ -66,6 +66,8 @@ function CustomNightState:enter()
     self.Y_TOP_FRAME = self.menuCam.y
     self.Y_BOTTOM_FRAME = self.menuCam.y + self.roomSize.height
 
+    loveView.unloadView()
+
     loveView.registerLoveframesEvents()
     loveView.loadView("src/Modules/Game/Views/CustomNight.lua")
 end
@@ -125,6 +127,8 @@ function CustomNightState:leave()
             f:release()
         end
     end
+
+    loveView.unloadView()
 
     self.menuBG:release()
     self.crtOverlay:release()

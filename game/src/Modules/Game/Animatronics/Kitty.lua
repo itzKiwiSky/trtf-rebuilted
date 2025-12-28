@@ -3,18 +3,18 @@ local animatronic = require 'src.Modules.Game.Animatronic'
 local Kitty = animatronic:extend("Kitty")
 
 function Kitty:__construct()
-    Kitty.super.__construct(self, "kitty", -128, -128)  -- wtf outside the map XDDD
+    Kitty.super.__construct(self, "kitty", -128, -128) -- wtf outside the map XDDD
 
     self.id = "kitty"
 
     self.currentState = 0
     self.active = false
     self.path = {
-        { x = 1165, y = 440, camera = 2 },         -- storage
-        { x = 1064, y = 323, camera = 3 },         -- dining_area
-        { x = 906, y = 339, camera = 4 },
-        { x = 1116, y = 636, camera = 11 },        -- left_vent
-        { x = 1004, y = 636, camera = 11 },        -- office
+        { x = 1165, y = 440, camera = 2 },  -- storage
+        { x = 1064, y = 323, camera = 3 },  -- dining_area
+        { x = 906,  y = 339, camera = 4 },
+        { x = 1116, y = 636, camera = 11 }, -- left_vent
+        { x = 1004, y = 636, camera = 11 }, -- office
     }
 
     self.moveTime = 4.3
@@ -35,7 +35,9 @@ function Kitty:update(elapsed)
         self.onMove = function()
             if self.currentState <= 3 then
                 self.currentState = self.currentState + 1
-                self:moveAnimatronic()
+                if not NightState.officeState.hasAnimatronicInOffice and not NightState.officeState.someoneInVent then
+                    self:moveAnimatronic()
+                end
             elseif self.currentState == 4 then
                 AudioSources["sfx_vent_walk"]:seek(0)
                 AudioSources["sfx_vent_walk"]:play()
@@ -48,19 +50,20 @@ function Kitty:update(elapsed)
                 self.patienceTimer = 0
                 self.patience = self.patience + 1
             end
-    
-            if not NightState.officeState.hasAnimatronicInOffice then
-                if self.patience >= 350 and not NightState.officeState.vent.left then
-                    if not NightState.killed then
-                        self:kill()
-                    end
-                elseif self.patience >= 350 and NightState.officeState.vent.left then
-                    AudioSources["sfx_vent_amb2"]:seek(0)
-                    AudioSources["sfx_vent_amb2"]:play()
-                    self.patience = 0
-                    self.timer = 0
-                    self.currentState = 2
+
+
+            if self.patience >= 350 and not NightState.officeState.vent.left then
+                self.currentState = 5
+                if not NightState.killed then
+                    self:kill()
                 end
+            elseif self.patience >= 350 and NightState.officeState.vent.left then
+                AudioSources["sfx_vent_amb2"]:seek(0)
+                AudioSources["sfx_vent_amb2"]:play()
+                self.patience = 0
+                self.timer = 0
+                self.currentState = 2
+                NightState.officeState.someoneInVent = false
             end
         end
     else

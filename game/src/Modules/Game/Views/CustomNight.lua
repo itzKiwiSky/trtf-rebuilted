@@ -145,12 +145,10 @@ return function()
             love.graphics.setColor(fore)
             skin.PrintText(text, x + width / 2 - twidth / 2, y + height / 2 - theight / 2)
         end
+
+        --love.graphics.rectangle("line", x, y, width, height)
     end
 
-
-    local window = loveframes.Create("panel")
-    window:SetSize(shove.getViewportWidth(), shove.getViewportHeight())
-    window.drawfunc = settings.blank
 
     local title = loveframes.Create("text")
     title:SetText(languageService["custom_night_menu_title"])
@@ -159,12 +157,13 @@ return function()
     title:SetFont(settings.fonts.title)
     title:CenterX()
 
-    local ptgrid = loveframes.Create("grid")
-    ptgrid:SetRows(2)
-    ptgrid:SetColumns(4)
-    ptgrid:SetItemAutoSize(false)
-    ptgrid:SetCellPadding(96)
-    ptgrid.drawfunc = settings.blank
+    local bottomPortraitGrid = loveframes.Create("grid")
+    bottomPortraitGrid:CenterWithinArea(180, 100, 450, 300)
+    bottomPortraitGrid:SetRows(1)
+    bottomPortraitGrid:SetColumns(3)
+    bottomPortraitGrid:SetItemAutoSize(false)
+    bottomPortraitGrid:SetCellPadding(86)
+    --bottomPortraitGrid.drawfunc = settings.blank
 
     local topPortraitGrid = loveframes.Create("grid")
     topPortraitGrid:SetPos(228, 128)
@@ -172,17 +171,8 @@ return function()
     topPortraitGrid:SetColumns(4)
     topPortraitGrid:SetItemAutoSize(false)
     topPortraitGrid:SetCellPadding(90)
-    topPortraitGrid.drawfunc = settings.blank
+    --topPortraitGrid.drawfunc = settings.blank
 
-    local bottomPortraitGrid = loveframes.Create("grid")
-    bottomPortraitGrid:CenterWithinArea(180, 100, 450, 300)
-    bottomPortraitGrid:SetRows(1)
-    bottomPortraitGrid:SetColumns(3)
-    bottomPortraitGrid:SetItemAutoSize(false)
-    bottomPortraitGrid:SetCellPadding(86)
-    bottomPortraitGrid.drawfunc = settings.blank
-    --ptgrid:ColSpanAt(2, 1, 2)
-    --ptgrid:RowSpanAt(2, 2, 3)
 
     local exitButton = loveframes.Create("button")
     exitButton:SetFont(settings.fonts.vhsFont)
@@ -203,6 +193,8 @@ return function()
     readyButton.OnClick = function(obj)
         NightState.animatronicsAI = CustomNightState.animatronicsAI
         NightState.nightID = 2000
+
+        NightState.isCustomNight = true
 
         if CustomNightState.presets[registers.user.currentChallengeID] == "Claustrophobia" then
             NightState.isSpecialChallenge = true
@@ -232,6 +224,10 @@ return function()
     challengeGrid:SetCellPadding(128)
     challengeGrid:Center()
     challengeGrid:SetY(challengeGrid:GetY() + shove.getViewportHeight() / 2 - challengeGrid:GetCellPadding() + settings.lpadding)
+    challengeGrid.Update = function(obj)
+        obj.hover = false
+    end
+    --print(inspect(challengeGrid))
     challengeGrid.drawfunc = settings.blank
 
     local textChallenge = loveframes.Create("text")
@@ -289,8 +285,9 @@ return function()
         decButton:SetParent(portraitPanel)
         decButton:SetY(portraitPanel:GetHeight())
         decButton.drawfunc = buttonSkin
-        decButton.OnClick = function(obj)
-            if curAILevel > 0 then
+        decButton.OnClick = function(obj, x, y)
+            print(x, y)
+            if CustomNightState.animatronicsAI[id] > 0 then
                 CustomNightState.animatronicsAI[id] = CustomNightState.animatronicsAI[id] - 1
                 AIValue:SetText(tostring(CustomNightState.animatronicsAI[id]))
                 AIValue:CenterX()
@@ -317,7 +314,7 @@ return function()
         incButton:SetY(portraitPanel:GetHeight())
         incButton.drawfunc = buttonSkin
         incButton.OnClick = function(obj)
-            if curAILevel < 20 then
+            if CustomNightState.animatronicsAI[id] < 20 then
                 CustomNightState.animatronicsAI[id] = CustomNightState.animatronicsAI[id] + 1
                 AIValue:SetText(tostring(CustomNightState.animatronicsAI[id]))
                 AIValue:CenterX()
@@ -358,8 +355,6 @@ return function()
         end
     end
 
-    ptgrid:Center()
-    ptgrid:SetY(ptgrid:GetY() - 64)
 
     local challengeLeftButton = loveframes.Create("button")
     challengeLeftButton:SetFont(settings.fonts.vhsFont)

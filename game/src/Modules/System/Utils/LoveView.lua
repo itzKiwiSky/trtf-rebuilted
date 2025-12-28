@@ -1,11 +1,10 @@
-
 ---@class LoveView
 local LoveView = {}
 
-LoveView.isEventRegistered = false  ---@type boolean
+LoveView.isEventRegistered = false ---@type boolean
 LoveView.ignoreRegisteredEvents = false ---@type boolean
 
-LoveView.views = {}     ---@type table<loveView.view>
+LoveView.views = {} ---@type table<loveView.view>
 
 ---@private
 local function reloadView(path)
@@ -56,11 +55,11 @@ function LoveView.loadView(path)
         local viewstruct = {}
 
         local ok, res, errmsg = pcall(love.filesystem.load, path)
-        if not ok or type(res) == "nil" then 
-            print("[ERROR] : Failed to load. " .. res) 
+        if not ok or type(res) == "nil" then
+            print("[ERROR] : Failed to load. " .. res)
             return
         end
-        
+
         local viewfile = res
 
         viewstruct.path = path
@@ -99,7 +98,7 @@ function LoveView.registerLoveframesEvents()
     local ogFuncs = {}
     for _, event in ipairs(allowedEvents) do
         ogFuncs[event] = love[event] or blank
-        love[event] = function (...)
+        love[event] = function(...)
             ogFuncs[event](...)
             if loveframes[event] and not loveView.ignoreRegisteredEvents then
                 local sucess, err = pcall(loveframes[event], ...)

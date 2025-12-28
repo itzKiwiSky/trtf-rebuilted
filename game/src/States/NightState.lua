@@ -421,6 +421,7 @@ function NightState:enter()
         nightRun = false,
         jumpscareRunning = false,
         dead = false,
+        someoneInVent = false,
         fadealpha = 1,
         tabletFirstBoot = true,
         tabletBootProgress = 0,
@@ -536,6 +537,8 @@ function NightState:enter()
             sleep(3)
             AudioSources["sfx_phone_pickup"]:play()
             self.phoneController:setState(false)
+            self.nightTextDisplay.displayNightText = true
+            self.officeState.phoneCall = false
         elseif self.nightID >= 6 then
             sleep(3)
             self.nightTextDisplay.displayNightText = true
