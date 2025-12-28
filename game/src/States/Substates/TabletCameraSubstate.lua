@@ -144,10 +144,10 @@ function TabletCameraSubState:load()
         { btn = self.buttonCamera(1116, 636, 72, 40) },
     }
 
-    self.ventKitty = self.animatorController:new(NightState.assets.vents["vent_kitty"], 30, "vent_")
+    self.ventKitty = self.animatorController:new(NightState.assets.vents["vent_kitty"], 20, "vent_")
     self.ventKitty.visible = false
 
-    self.ventSugar = self.animatorController:new(NightState.assets.vents["vent_sugar"], 30, "vent_")
+    self.ventSugar = self.animatorController:new(NightState.assets.vents["vent_sugar"], 20, "vent_")
     self.ventSugar.visible = false
 
     self.reloadTimer = 0
