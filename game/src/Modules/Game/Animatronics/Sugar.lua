@@ -66,8 +66,7 @@ function Sugar:update(elapsed)
     else
         Sugar.super.update(self, elapsed)
         self.onMove = function()
-            self:moveAnimatronic()
-            self.moveTime = 9.52
+            self.moveTime = 12.2
             self.active = true
             self.timer = 0
         end

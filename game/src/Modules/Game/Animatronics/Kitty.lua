@@ -33,7 +33,7 @@ function Kitty:update(elapsed)
     if self.active then
         Kitty.super.update(self, elapsed)
         self.onMove = function()
-            if self.currentState <= 3 then
+            if self.currentState <= 4 then
                 self.currentState = self.currentState + 1
                 if not NightState.officeState.hasAnimatronicInOffice and not NightState.officeState.someoneInVent then
                     self:moveAnimatronic()
@@ -69,8 +69,7 @@ function Kitty:update(elapsed)
     else
         Kitty.super.update(self, elapsed)
         self.onMove = function()
-            self:moveAnimatronic()
-            self.moveTime = 7.35
+            self.moveTime = 13.3
             self.active = true
             self.timer = 0
         end
