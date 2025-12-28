@@ -3,11 +3,11 @@ name = "TRTF_Rebuilted"
 display_name = "RebuiltedAgain"
 description = "TRTF Fangame"
 author = "BrightSmileTeam and EclipseTeam"
-version = "0.0.1"
+version = "1.0.0"
 icon = "game/icon.png"
 
 [build]
-default = ["win64"]
+default = ["win64", "linux"]
 
 [directories]
 source = "game"
