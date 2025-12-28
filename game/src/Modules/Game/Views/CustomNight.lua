@@ -163,7 +163,7 @@ return function()
     bottomPortraitGrid:SetColumns(3)
     bottomPortraitGrid:SetItemAutoSize(false)
     bottomPortraitGrid:SetCellPadding(86)
-    --bottomPortraitGrid.drawfunc = settings.blank
+    bottomPortraitGrid.drawfunc = settings.blank
 
     local topPortraitGrid = loveframes.Create("grid")
     topPortraitGrid:SetPos(228, 128)
@@ -171,7 +171,7 @@ return function()
     topPortraitGrid:SetColumns(4)
     topPortraitGrid:SetItemAutoSize(false)
     topPortraitGrid:SetCellPadding(90)
-    --topPortraitGrid.drawfunc = settings.blank
+    topPortraitGrid.drawfunc = settings.blank
 
 
     local exitButton = loveframes.Create("button")

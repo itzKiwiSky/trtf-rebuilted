@@ -2,12 +2,6 @@ local TabletCameraSubState = {}
 
 local drawQueue = require 'src.Modules.Game.Utils.DrawQueueBar'
 
-local function normalizedLerp(a, b, speed, dt)
-    -- speed é "quantas vezes por segundo" vai aproximar de b
-    local t = 1 - math.exp(-speed * dt)
-    return a + (b - a) * t
-end
-
 local function changeCamFX(self)
     TabletCameraSubState:doInterference(0.09, 120, 100, 1.5)
 

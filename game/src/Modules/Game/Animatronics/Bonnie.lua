@@ -43,7 +43,7 @@ function Bonnie:update(elapsed)
         end
 
         NightState.officeState.hasAnimatronicInFrontOffice = self.currentState == 4
-    else
+    elseif self.currentState == 5 then
         if not AudioSources["sfx_stare"]:isPlaying() then
             AudioSources["sfx_stare"]:play()
         end
@@ -57,17 +57,15 @@ function Bonnie:update(elapsed)
             NightState.officeState.onAnimatronicInOffice()
         end
 
-        if not NightState.officeState.hasAnimatronicInOffice then
-            if self.patience >= 150 and not NightState.officeState.maskUp then
-                self:kill()
-            elseif self.patience >= 150 and NightState.officeState.maskUp then
-                self.patience = 0
-                self.timer = 0
-                self.currentState = 1
-                NightState.officeState.hasAnimatronicInOffice = false
-                AudioSources["sfx_stare"]:stop()
-                NightState.officeState.fadealpha = 1
-            end
+        if self.patience >= 150 and not NightState.officeState.maskUp then
+            self:kill()
+        elseif self.patience >= 150 and NightState.officeState.maskUp then
+            self.patience = 0
+            self.timer = 0
+            self.currentState = 1
+            NightState.officeState.hasAnimatronicInOffice = false
+            AudioSources["sfx_stare"]:stop()
+            NightState.officeState.fadealpha = 1
         end
     end
 end

@@ -1,4 +1,5 @@
 local Animatronic = class:extend("Animatronic")
+local TabletViewSubstate = require 'src.States.Substates.TabletCameraSubstate'
 
 ---@class Animatronic
 ---@id string the animatronic id
@@ -72,7 +73,7 @@ function Animatronic:interference()
             NightState.tabletCameraSubState:doInterference(0.1, 200, 200, 6)
             AudioSources["sfx_cam_animatronic_interference"]:play()
             flux.removeAll()
-            flux.to(self, 0.25, {
+            flux.to(TabletViewSubstate, 0.25, {
                 interferenceIntensity = 0.012,
                 pixelationInterference = 1.5
             })
@@ -99,10 +100,10 @@ function Animatronic:update(elapsed)
         if self.timer >= self.moveTime then
             local ia = NightState.animatronicsAI[self.id]
             if ia > 0 and not NightState.officeState.hasAnimatronicInOffice then
-                self.moveAccumulator = self.moveAccumulator + (ia / 20)
+                self.moveAccumulator = self.moveAccumulator + (ia / 20) * 0.25
 
                 self.moveAccumulator = math.min(self.moveAccumulator, 1)
-                if love.math.random() < self.moveAccumulator then
+                if love.math.random() <= self.moveAccumulator then
                     self.onMove()
                     self.moveAccumulator = 0
                 end

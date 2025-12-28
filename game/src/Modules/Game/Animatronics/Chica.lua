@@ -45,7 +45,7 @@ function Chica:update(elapsed)
         end
 
         NightState.officeState.hasAnimatronicInFrontOffice = self.currentState == 5
-    else
+    elseif self.currentState == 6 then
         if not AudioSources["sfx_stare"]:isPlaying() then
             AudioSources["sfx_stare"]:play()
         end
@@ -58,17 +58,15 @@ function Chica:update(elapsed)
             NightState.officeState.hasAnimatronicInOffice = true
         end
 
-        if NightState.officeState.hasAnimatronicInOffice then
-            if self.patience >= 160 and not NightState.officeState.maskUp then
-                self:kill()
-            elseif self.patience >= 160 and NightState.officeState.maskUp then
-                self.patience = 0
-                self.timer = 0
-                self.currentState = 1
-                NightState.officeState.hasAnimatronicInOffice = false
-                AudioSources["sfx_stare"]:stop()
-                NightState.officeState.fadealpha = 1
-            end
+        if self.patience >= 160 and not NightState.officeState.maskUp then
+            self:kill()
+        elseif self.patience >= 160 and NightState.officeState.maskUp then
+            self.patience = 0
+            self.timer = 0
+            self.currentState = 1
+            NightState.officeState.hasAnimatronicInOffice = false
+            AudioSources["sfx_stare"]:stop()
+            NightState.officeState.fadealpha = 1
         end
     end
 end
