@@ -99,3 +99,18 @@ Changelog for The return to freddy's Rebuilt Again
         - Bonnie and chica will not enter the office if both doors are closed, this is not a permanent solution 
             for they, but will allow you to have more time to think what to do, 
             at cost of energy.
+[1.0.0]
+    - release
+
+[2.0.0]
+
+    - Changed sugar path towards you
+    - Increased patience for kitty and sugar
+    - Decreased their AI levels to be less aggressive
+    - interference speed on camera may now be consistent across computers
+    - flashlight flicker is less annoying I guess
+    - most of the animatronics now wait to the animatronic finish the attack to do any action
+    - UI has been scaled down a bit
+    - updated core IA controllers
+    - new order of events
+    - added a tutorial section in the menu

@@ -562,7 +562,7 @@ function NightState:enter()
             v:stop()
         end
 
-        if gameSave.save.user.progress.night < 6 then
+        if gameSave.save.user.progress.night < 7 then
             gameSave.save.user.progress.night = gameSave.save.user.progress.night + 1
         end
         gameSave.save.user.progress.newgame = false

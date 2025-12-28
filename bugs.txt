@@ -1,0 +1,7 @@
+[.] Gamejolt crashes
+[.] Lockjaw Minigame softlock
+[.] night 6 don't save
+[.] Sugar and Kitty rebalance
+[.] add instruction on menu
+[.] add a text when beat night 7/20
+[.] add warning screen

@@ -118,6 +118,7 @@
         "game_btn_rewind_box": "Cargar Caja",
         "game_btn_seal_vent": "Sellar conducto",
         "game_btn_unseal_vent": "Abrir conducto",
+        "game_night_finish_challenge_message": "Hora de ir a la caldera",
         "misc": {
             "game_misc_camera_error": "No se pudo obtener la señal de la cámara...",
             "game_misc_camera_error_id": "Informa este error al equipo especializado\ny proporciona este código:",

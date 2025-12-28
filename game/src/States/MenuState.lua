@@ -382,10 +382,8 @@ function MenuState:enter()
         AudioSources["sfx_rainleak"]:setVolume(0.3)
     end
 
-    if not AudioSources["msc_menu_theme_again"]:isPlaying() then
-        AudioSources["msc_menu_theme_again"]:setLooping(true)
-        AudioSources["msc_menu_theme_again"]:play()
-    end
+    AudioSources["msc_menu_theme_again"]:setLooping(true)
+    AudioSources["msc_menu_theme_again"]:play()
 end
 
 function MenuState:draw()

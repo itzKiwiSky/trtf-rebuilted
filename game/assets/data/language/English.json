@@ -118,6 +118,7 @@
         "game_btn_rewind_box": "Rewind Music Box",
         "game_btn_seal_vent": "Seal vent",
         "game_btn_unseal_vent": "Unseal vent",
+        "game_night_finish_challenge_message": "Time to go to The Boiler Room",
         "misc": {
             "game_misc_camera_error": "Failed to fetch camera footage...",
             "game_misc_camera_error_id": "Report this error to specialized team\nand give them this code:",

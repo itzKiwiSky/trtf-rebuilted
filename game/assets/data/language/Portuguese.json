@@ -118,6 +118,7 @@
         "game_btn_rewind_box": "Rebobinar Caixa de Música",
         "game_btn_seal_vent": "Fechar o duto",
         "game_btn_unseal_vent": "Abrir duto",
+        "game_night_finish_challenge_message": "Hora de ir para a caldeira",
         "misc": {
             "game_misc_camera_error": "Falha ao obter as imagens da câmera...",
             "game_misc_camera_error_id": "Reporte este erro à equipe especializada e forneça este código:",

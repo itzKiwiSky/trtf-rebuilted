@@ -34,8 +34,8 @@ function Kitty:update(elapsed)
         Kitty.super.update(self, elapsed)
         self.onMove = function()
             if self.currentState <= 4 then
-                self.currentState = self.currentState + 1
                 if not NightState.officeState.hasAnimatronicInOffice and not NightState.officeState.someoneInVent then
+                    self.currentState = self.currentState + 1
                     self:moveAnimatronic()
                 end
             elseif self.currentState == 4 then
@@ -52,14 +52,15 @@ function Kitty:update(elapsed)
             end
 
 
-            if self.patience >= 450 and not NightState.officeState.vent.left then
+            if self.patience >= 500 and not NightState.officeState.vent.left then
                 self.currentState = 5
                 if not NightState.killed then
                     self:kill()
                 end
-            elseif self.patience >= 450 and NightState.officeState.vent.left then
+            elseif self.patience >= 200 and NightState.officeState.vent.left then
                 AudioSources["sfx_vent_amb2"]:seek(0)
                 AudioSources["sfx_vent_amb2"]:play()
+                self:moveAnimatronic()
                 self.patience = 0
                 self.timer = 0
                 self.currentState = 2
