@@ -100,7 +100,7 @@ function Animatronic:update(elapsed)
         if self.timer >= self.moveTime then
             local ia = NightState.animatronicsAI[self.id]
             if ia > 0 and not NightState.officeState.hasAnimatronicInOffice then
-                self.moveAccumulator = self.moveAccumulator + (ia / 20) * 0.25
+                self.moveAccumulator = self.moveAccumulator + (ia / 20)
 
                 self.moveAccumulator = math.min(self.moveAccumulator, 1)
                 if love.math.random() <= self.moveAccumulator then

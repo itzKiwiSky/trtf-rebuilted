@@ -114,3 +114,4 @@ Changelog for The return to freddy's Rebuilt Again
     - updated core IA controllers
     - new order of events
     - added a tutorial section in the menu
+    - added keyboard tutorial

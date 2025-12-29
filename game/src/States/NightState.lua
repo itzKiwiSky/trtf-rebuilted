@@ -230,6 +230,8 @@ function NightState:enter()
                 Slab.Text("  State: " .. NightState.AnimatronicControllers[name].currentState)
                 Slab.SameLine()
                 Slab.Text("  RNG: " .. NightState.AnimatronicControllers[name].moveAccumulator .. " | " .. self.animatronicsAI[name])
+                Slab.SameLine()
+                Slab.Text("  Patience: " .. NightState.AnimatronicControllers[name].patience)
             end
             Slab.EndWindow()
         end
