@@ -5,3 +5,4 @@
 [.] add instruction on menu
 [.] add a text when beat night 7/20
 [.] add warning screen
+[.] rework settings menu

@@ -12,10 +12,13 @@
     "credits_speed": "Manten clickeado para adelantar",
     "video_click_to_jump": "Clickea para saltar cinematica",
     "type_his_name": "Si quieres jugar la noche secreta, escribe SU nombre en el menu",
-    "warn": {
-        "warn_title": "[WARNING]",
-        "warn_text": "¡Este juego contiene sonidos fuertes, luces intermitentes,\nlenguaje moderado y muchos jumpscares!"
-    },
+    "warn": [
+        "[WARNING]\n\n\n",
+        "This game contains loud sounds, flashing\n",
+        "lights, mild swearing, and many jumpscares!\n\n",
+        "press [SPACE] to continue or press [ENTER] to not show on next boot\n\n",
+        "Have fun :)"
+    ],
     "menu": {
         "menu_button": {
             "menu_button_new_game": "Nuevo juego",

@@ -163,6 +163,8 @@ function love.run()
 
     -- Main loop time.
     return function()
+        local startT = love.timer.getTime()
+
         -- Process events.
         if love.event then
             love.event.pump()
@@ -230,20 +232,20 @@ function love.run()
                 shove.endLayer()
             end
 
-            --shove.beginLayer("fps")
-            --    love.graphics.print("FPS : " .. love.timer.getFPS(), fpsfont, 5, 5)
-            --    if FEATURE_FLAGS.videoStats then
-            --        local strs = {}
-            --        for k = 1, #love.keys.videoStats, 1 do
-            --            local st = love.keys.videoStats[k] .. " = " .. love.graphics.getStats()[love.keys.videoStats[k]]
-            --            if love.keys.videoStats[k] == "texturememory" then
-            --                st = love.keys.videoStats[k] .. " = " .. string.format("%.2f mb", love.graphics.getStats()["texturememory"] / 1024 / 1024)
-            --            end
-            --            strs[k] = st
-            --        end
-            --        love.graphics.print(table.concat(strs, "\n"), fpsfont, 5, 20)
-            --    end
-            --shove.endLayer()
+            shove.beginLayer("fps")
+            love.graphics.print("FPS : " .. love.timer.getFPS(), fpsfont, 5, 5)
+            if FEATURE_FLAGS.videoStats then
+                local strs = {}
+                for k = 1, #love.keys.videoStats, 1 do
+                    local st = love.keys.videoStats[k] .. " = " .. love.graphics.getStats()[love.keys.videoStats[k]]
+                    if love.keys.videoStats[k] == "texturememory" then
+                        st = love.keys.videoStats[k] .. " = " .. string.format("%.2f mb", love.graphics.getStats()["texturememory"] / 1024 / 1024)
+                    end
+                    strs[k] = st
+                end
+                love.graphics.print(table.concat(strs, "\n"), fpsfont, 5, 20)
+            end
+            shove.endLayer()
             shove.endDraw()
 
             if love.mouse.isVisible() and love.mouse.getRelativeMode() then
@@ -254,6 +256,9 @@ function love.run()
 
         collectgarbage("collect")
 
-        if love.timer then love.timer.sleep(1 / fpsCap - elapsed) end
+        if love.timer then
+            local endT = love.timer.getTime()
+            love.timer.sleep(1 / fpsCap - (endT - startT))
+        end
     end
 end

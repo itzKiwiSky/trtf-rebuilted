@@ -6,43 +6,8 @@ local connectGJ = require 'src.Modules.System.InitializeAPI'
 languageService = {}
 languageRaw = {}
 
-local function loadSettings()
-    local languageManager = require 'src.Modules.System.Utils.LanguageManager'
-    -- commit all changes from virtual settings to the actual settings --
-    gameSave.save.user.settings = registers.user.virtualSettings
-
-    local winSize = love.window.resolutionModes[gameSave.save.user.settings.video.winsize]
-
-    --love.window.updateMode(winSize.width, winSize.height, {
-    --    fullscreen = gameSave.save.user.settings.video.fullscreen,
-    --    vsync = gameSave.save.user.settings.video.vsync,
-    --})
-    --shove.resize(winSize.width, winSize.height)
-
-    love.window.setVSync(gameSave.save.user.settings.video.vsync and 1 or 0)
-    love.window.setFullscreen(gameSave.save.user.settings.video.fullscreen)
-
-    love._FPSCap = gameSave.save.user.settings.video.fpsCap
-    love.graphics.setDefaultFilter(
-        gameSave.save.user.settings.video.filter and "linear" or "nearest",
-        gameSave.save.user.settings.video.filter and "linear" or "nearest"
-    )
-
-    if gameSave.save.user.settings.misc.lockCursor then
-        love.mouse.setRelativeMode(true)
-        fakeCursor.x = love.graphics.getWidth() / 2
-        fakeCursor.y = love.graphics.getHeight() / 2
-    end
-
-    -- audio --
-    love.audio.setVolume(gameSave.save.user.settings.audio.masterVolume * 0.01)
-
-    -- misc stuff --
-    languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
-    languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
-end
-
 function love.initialize()
+    local settingsController = require 'src.Modules.Game.Utils.SettingsController'
     local languageManager = require 'src.Modules.System.Utils.LanguageManager'
     SoundManager = require 'src.Modules.System.Utils.Sound'
     AudioSources = {}
@@ -86,12 +51,11 @@ function love.initialize()
                     },
                     subtitles = true,
                     discordRichPresence = true,
-                    gamepadSupport = false,
-                    cacheNight = false,
                     lockCursor = false,
                 }
             },
             progress = {
+                warningIgnored = false,
                 specialCutsceneSee = false,
                 initialCutscene = false,
                 newgame = false,
@@ -152,10 +116,11 @@ function love.initialize()
 
     gitstuff() -- still super important --
 
+    settingsController.syncInternal()
+    settingsController.applySettings()
+
     languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
     languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
-
-    loadSettings()
 
     -- autoload states --
     local states = love.filesystem.getDirectoryItems("src/States")
@@ -193,7 +158,7 @@ function love.initialize()
     love.filesystem.createDirectory("screenshots")
 
     gamestate.registerEvents()
-    gamestate.switch(SplashState)
+    gamestate.switch(WarningState)
 end
 
 function love.quit()

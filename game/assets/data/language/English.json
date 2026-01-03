@@ -12,10 +12,13 @@
     "credits_speed": "Hold the mouse to speed up",
     "video_click_to_jump": "Click to skip the cutscene",
     "type_his_name": "If you want to play the secret night, type HIS name in the menu",
-    "warn": {
-        "warn_title": "[WARNING]",
-        "warn_text": "This game contains loud sounds, flashing\nlights, mild swearing, and many jumpscares!"
-    },
+    "warn": [
+        "[WARNING]\n\n\n",
+        "This game contains loud sounds, flashing\n",
+        "lights, mild swearing, and many jumpscares!\n\n",
+        "press [SPACE] to continue or press [ENTER] to not show on next boot\n\n",
+        "Have fun :)"
+    ],
     "menu": {
         "menu_button": {
             "menu_button_new_game": "New Game",
