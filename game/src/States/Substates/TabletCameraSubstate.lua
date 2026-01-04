@@ -149,7 +149,7 @@ function TabletCameraSubState:load()
         reload = {
             text = languageService["game_btn_rewind_box"],
             type = "hold",
-            hitbox = self.buttonCamera(546, shove.getViewportHeight() - 110, 128, 48),
+            hitbox = self.buttonCamera((shove.getViewportWidth() / 2 - 280), shove.getViewportHeight() - 220, 160, 54),
             visible = false,
             action = function()
                 if not NightState.officeState.nightRun then return end

@@ -23,12 +23,12 @@ return function(this)
         end
     end
 
-    drawQueue(64, shove.getViewportHeight() - 110, 128, 48, NightState.officeState.power.powerQueue, 7, 5, 5, {{0, 255, 0}, {255, 0, 0}})
-    
+    drawQueue(64, shove.getViewportHeight() - 110, 128, 48, NightState.officeState.power.powerQueue, 7, 5, 5, { { 0, 255, 0 }, { 255, 0, 0 } })
+
     if NightState.AnimatronicControllers["puppet"] ~= nil then
         if tabletCameraSubState.camerasID[NightState.AnimatronicControllers["puppet"].metadataCameraID] == tabletCameraSubState.camID and NightState.AnimatronicControllers["puppet"].released then
-            love.graphics.rectangle("line", 360, shove.getViewportHeight() - 110, 128, 50)
-            drawQueue(360, shove.getViewportHeight() - 110, 128, 48, math.map(NightState.AnimatronicControllers["puppet"].musicBoxTimer, 0, 2485, 0, 10), 10, 3, 3, {{255,0, 0}, {200, 86, 255}})
+            love.graphics.rectangle("line", 360, shove.getViewportHeight() - 140, 160, 66)
+            drawQueue(360, shove.getViewportHeight() - 140, 160, 64, math.map(NightState.AnimatronicControllers["puppet"].musicBoxTimer, 0, 2485, 0, 10), 10, 3, 3, { { 255, 0, 0 }, { 200, 86, 255 } })
         end
     end
-end 
+end

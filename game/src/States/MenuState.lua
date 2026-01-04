@@ -308,7 +308,7 @@ function MenuState:enter()
             {
                 key = "menu_button_continue",
                 text = "",
-                locked = gameSave.save.user.progress.canContinue,
+                locked = not gameSave.save.user.progress.canContinue,
                 action = function()
                     registers.isStoryMode = true
                     NightState.nightID = gameSave.save.user.progress.night
