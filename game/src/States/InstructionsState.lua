@@ -10,6 +10,23 @@ function InstructionsState:enter()
         .chain(moonshine.effects.pixelate)
         .chain(moonshine.effects.chromasep)
 
+    AudioSources["msc_arcade"]:play()
+    AudioSources["msc_arcade"]:setLooping(true)
+
+    self.roomSize = {
+        windowWidth = shove.getViewportWidth(),
+        windowHeight = shove.getViewportHeight(),
+        width = 1600,
+        height = 900,
+    }
+
+    self.instIcons = {}
+    local icfls = love.filesystem.getDirectoryItems("assets/images/game/instructions/icons")
+    for c = 1, #icfls, 1 do
+        local name = icfls[c]:gsub("%.[^.]+$", "")
+        self.instIcons[name] = love.graphics.newImage("assets/images/game/instructions/icons/" .. icfls[c])
+    end
+
     self.shdFXScreen.pixelate.feedback = 0.1
     self.shdFXScreen.pixelate.size = { 1.5, 1.5 }
 
@@ -23,6 +40,11 @@ function InstructionsState:enter()
     self.X_RIGHT_FRAME = self.menuCam.x + self.roomSize.width
     self.Y_TOP_FRAME = self.menuCam.y
     self.Y_BOTTOM_FRAME = self.menuCam.y + self.roomSize.height
+
+    loveView.unloadView()
+
+    loveView.registerLoveframesEvents()
+    loveView.loadView("src/Modules/Game/Views/InstructionView.lua")
 end
 
 function InstructionsState:draw()
@@ -30,22 +52,38 @@ function InstructionsState:draw()
     love.graphics.setColor(1, 1, 1, 1)
     self.shdFXScreen(function()
         self.fxBlurBG(function()
-            self.menuCam:attach()
             love.graphics.draw(self.bg, shove.getViewportWidth() / self.bg:getWidth(), shove.getViewportHeight() / self.bg:getHeight())
-            self.menuCam:detach()
         end)
 
-        love.graphics.draw(self.crtOverlay, 0, 0, 0, shove.getViewportWidth() / self.crtOverlay:getWidth(), shove.getViewportHeight() / self.crtOverlay:getHeight())
         loveView.draw()
+
+        love.graphics.draw(self.crtOverlay, 0, 0, 0, shove.getViewportWidth() / self.crtOverlay:getWidth(), shove.getViewportHeight() / self.crtOverlay:getHeight())
     end)
 end
 
 function InstructionsState:update(elapsed)
+    local smx, smy = shove.mouseToViewport()
+    local mx, my = self.menuCam:mousePosition()
 
+    loveView.update(elapsed)
 end
 
 function InstructionsState:leave()
+    flux.removeAll()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
 
+    for _, f in ipairs(self.cnicons) do
+        if type(f) == "userdata" and f.release then
+            f:release()
+        end
+    end
+
+    loveView.unloadView()
+
+    self.bg:release()
+    self.crtOverlay:release()
 end
 
 return InstructionsState

@@ -210,6 +210,7 @@
     },
     "tutorial": {
         "tutorial_title": "¡Antes de empezar a jugar!",
-        "tutorial_office": "Tienes dos puertas a los lados, puedes cerrarlas, al cabo de unos segundos se abriran automaticamente (Tambien puedes cerrarlas apretando A y D respectivamente). Tambien apretando CTRL puedes encender la luz de la ventana, la misma te sirve para encender las luces en las camaras"
+        "tutorial_office": "Tienes dos puertas a los lados, puedes cerrarlas, al cabo de unos segundos se abriran automaticamente (Tambien puedes cerrarlas apretando A y D respectivamente). Tambien apretando CTRL puedes encender la luz de la ventana, la misma te sirve para encender las luces en las camaras",
+        "tutorial_title_book": "Fazbear manual guide"
     }
 }

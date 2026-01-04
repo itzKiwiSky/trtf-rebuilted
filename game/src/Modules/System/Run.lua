@@ -11,7 +11,6 @@ moonshine = require 'src.Modules.System.Moonshine'
 loveloader = require 'src.Modules.System.Utils.loveloader'
 loveframes = require 'src.Modules.System.Utils.loveframes'
 bump = require 'src.Modules.System.Utils.BumpPhysics'
-rzsmaze = require 'libraries.RZSMaze'
 termite = require 'libraries.Termite'
 
 love._FPSCap = 1000
@@ -81,6 +80,11 @@ end
 
 function love.run()
     FEATURE_FLAGS = require 'src.Modules.System.FeatureFlags'
+
+    -- make sure the joke work --
+    if love.filesystem.getInfo("assets/images/game/coconut.png") == nil then
+        love.event.quit()
+    end
 
     love.keys = {}
     love.keys.videoStats = getKeys()

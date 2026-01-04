@@ -393,7 +393,6 @@ function MenuState:enter()
     self.menuText = flux.to(self.mainMenuButtons.config, 2.3, { x = self.mainMenuButtons.config.targetX })
     self.menuText:ease("sineout")
     self.menuText:oncomplete(function()
-        --textItems.tween.itemsVisible = true
         self.canUseMenu = true
     end)
 
@@ -467,9 +466,6 @@ function MenuState:draw()
         end
         love.graphics.print(e.text, self.fnt_menu, self.mainMenuButtons.config.x + e.meta.offsetX, e.hitbox.y)
         love.graphics.setColor(1, 1, 1, 1)
-        --if registers.showDebugHitbox then
-        --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
-        --end
     end
 
     if self.configMenu then
@@ -488,20 +484,10 @@ function MenuState:draw()
     love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
     love.graphics.setColor(1, 1, 1, 1)
 
-    --if gamejolt.isLoggedIn then
-    --    love.graphics.printf("Connected as " .. gamejolt.username, self.fnt_menu_low, -32, shove.getViewportHeight() - (self.fnt_menu_low:getHeight() * 2.3), shove.getViewportWidth(), "right")
-    --end
-
     -- trans fade rectangle --
     love.graphics.setColor(0, 0, 0, self.transitionFade.fade)
     love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
     love.graphics.setColor(1, 1, 1, 1)
-
-    --love.graphics.setColor(0, 0, 0, self.journalScreen.alpha)
-    --love.graphics.rectangle("fill", 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
-    --love.graphics.setColor(1, 1, 1, 1)
-
-    --love.graphics.print(("%s, %s"):format(love.mouse.getPosition()), 20, 20)
 end
 
 function MenuState:update(elapsed)
@@ -613,8 +599,10 @@ function MenuState:mousepressed(x, y, button)
                 self.canUseMenu = false
             end
             if collision.pointRect({ x = mx, y = my }, self.instructionsIcon.hitbox) then
-                self.configMenu = not self.configMenu
+                --self.configMenu = not self.configMenu
                 self.canUseMenu = false
+                self.transitionFade.target = InstructionsState
+                self.transitionFade.active = true
             end
         end
     else

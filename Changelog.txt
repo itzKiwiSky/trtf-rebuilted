@@ -113,6 +113,7 @@ Changelog for The return to freddy's Rebuilt Again
     - updated core IA controllers
     - new order of events
     - added a tutorial section in the menu
+    - added a tutorial on keyboard before the night starts, this tutorial appear only once
     - Kitty and Sugar IAs now waits for each other to enter in the same camera and on the vent, this prevents cases where the two girls are on same camera but the game renders only one of those.
     - added warning state
     - reworked how settings are saved and applied
