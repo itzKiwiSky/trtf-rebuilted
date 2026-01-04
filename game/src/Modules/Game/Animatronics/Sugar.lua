@@ -1,4 +1,5 @@
 local animatronic = require 'src.Modules.Game.Animatronic'
+local kitty = require 'src.Modules.Game.Animatronics.Kitty'
 
 local Sugar = animatronic:extend("Sugar")
 
@@ -29,7 +30,7 @@ function Sugar:update(elapsed)
     if self.active then
         Sugar.super.update(self, elapsed)
         self.onMove = function()
-            if self.currentState <= 2 and not NightState.officeState.someoneInVent then
+            if self.currentState <= 2 and not NightState.officeState.someoneInVent and kitty.currentState < 4 then
                 self.currentState = self.currentState + 1
                 self:moveAnimatronic()
                 if self.currentState == 3 then

@@ -1,0 +1,2 @@
+[.] Config menu
+    [.] Update all objects to have the translated text

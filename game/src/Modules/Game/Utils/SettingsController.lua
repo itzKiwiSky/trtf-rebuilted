@@ -47,7 +47,11 @@ function SettingsController.applySettings()
         fullscreen = gameSave.save.user.settings.video.fullscreen,
         vsync = gameSave.save.user.settings.video.vsync,
     })]]
-    shove.resize(winSize.width, winSize.height)
+    ---shove.resize(winSize.width, winSize.height)
+    shove.updateWindowMode(winSize.width, winSize.height, {
+        fullscreen = gameSave.save.user.settings.video.fullscreen,
+        vsync = gameSave.save.user.settings.video.vsync,
+    })
 
     love._FPSCap = gameSave.save.user.settings.video.fpsCap
     love.graphics.setDefaultFilter(
@@ -59,6 +63,8 @@ function SettingsController.applySettings()
         love.mouse.setRelativeMode(true)
         fakeCursor.x = love.graphics.getWidth() / 2
         fakeCursor.y = love.graphics.getHeight() / 2
+    else
+        love.mouse.setRelativeMode(false)
     end
     -- audio --
     love.audio.setVolume(gameSave.save.user.settings.audio.masterVolume * 0.01)

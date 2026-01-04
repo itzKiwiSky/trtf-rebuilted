@@ -4,5 +4,6 @@
 [.] Sugar and Kitty rebalance
 [.] add instruction on menu
 [.] add a text when beat night 7/20
-[.] add warning screen
+[X] add warning screen
 [.] rework settings menu
+[X] removed gamejolt

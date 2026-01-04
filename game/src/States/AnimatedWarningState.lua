@@ -1,6 +1,6 @@
-WarningState = {}
+AnimatedWarningState = {}
 
-function WarningState:enter()
+function AnimatedWarningState:enter()
     self.assets = {
         ["head"] = love.graphics.newImage("assets/images/game/menu/logo_new_feddy.png"),
         ["num"] = love.graphics.newImage("assets/images/game/menu/logo_new_num.png"),
@@ -18,49 +18,63 @@ function WarningState:enter()
     local textColor = { lume.color("#6475C8") }
     self.objects = {
         ["head"] = {
-            alpha = 1,
+            alpha = 0,
             scale = 0.4,
             posX = shove.getViewportWidth() / 2,
-            posY = 180,
+            posY = height,
             finalPosY = 180,
             angle = 0,
             color = objColor
         },
         ["num"] = {
-            alpha = 1,
+            alpha = 0,
             scale = 0.4,
             posX = shove.getViewportWidth() / 2,
-            posY = 180,
+            posY = height,
             finalPosY = 180,
             angle = 0,
             color = objColor
         },
         ["back"] = {
-            alpha = 1,
+            alpha = 0,
             scale = 0.4,
             posX = shove.getViewportWidth() / 2,
-            posY = 180,
+            posY = height,
             finalPosY = 180,
             angle = 0,
             color = objColor
         },
         ["text"] = {
             text = languageRaw["warn"],
-            alpha = 1,
-            posY = 400,
+            alpha = 0,
+            posY = height,
             finalPosY = 400,
             color = textColor
         }
     }
 
     self.fadeTrans = {
-        alpha = 1,
+        alpha = 0,
     }
 
-    flux.to(self.fadeTrans, 1.4, { alpha = 0 })
+    flux.to(self.objects["head"], 1, { posY = self.objects["head"].finalPosY, alpha = 1 })
+        :delay(0.25)
+        :ease("backinout")
         :oncomplete(function()
-            self.canPress = true
+            self.objects["num"].posY = self.objects["num"].finalPosY
+            flux.to(self.objects["back"], 1, { posY = self.objects["back"].finalPosY, alpha = 1 })
+                :delay(0.1)
+                :ease("backinout")
+                :after(self.objects["num"], 1, { alpha = 1 })
+                :oncomplete(function()
+                    flux.to(self.objects["back"], 1, { angle = 360 }):ease("sineinout"):delay(0.3)
+                end)
         end)
+
+    flux.to(self.objects["text"], 1, { posY = self.objects["text"].finalPosY, alpha = 1 })
+        :ease("backinout")
+        :delay(3)
+        :oncomplete(function() self.canPress = true end)
 
     self.ignored = false
 
@@ -74,19 +88,19 @@ function WarningState:enter()
     end
 end
 
-function WarningState:draw()
+function AnimatedWarningState:draw()
     --love.graphics.draw(self.assets["head"])
     local function render()
         for key, obj in pairs(self.objects) do
             if key ~= "text" then
                 love.graphics.setColor(obj.color[1], obj.color[2], obj.color[3], obj.alpha)
-                love.graphics.draw(self.assets[key], obj.posX, 180, math.rad(obj.angle), obj.scale, obj.scale, 256, 256)
+                love.graphics.draw(self.assets[key], obj.posX, obj.posY, math.rad(obj.angle), obj.scale, obj.scale, 256, 256)
                 love.graphics.setColor(1, 1, 1, 1)
             end
         end
 
         love.graphics.setColor(self.objects["text"].color[1], self.objects["text"].color[2], self.objects["text"].color[3], self.objects["text"].alpha)
-        love.graphics.printf(table.concat(self.objects["text"].text, ""), self.fnt_warn, 0, 400, shove.getViewportWidth(), "center")
+        love.graphics.printf(table.concat(self.objects["text"].text, ""), self.fnt_warn, 0, self.objects["text"].posY, shove.getViewportWidth(), "center")
         love.graphics.setColor(1, 1, 1, 1)
     end
 
@@ -107,11 +121,11 @@ function WarningState:draw()
     love.graphics.setColor(1, 1, 1, 1)
 end
 
-function WarningState:update(elapsed)
+function AnimatedWarningState:update(elapsed)
     flux.update(elapsed)
 end
 
-function WarningState:keypressed(k)
+function AnimatedWarningState:keypressed(k)
     if not self.canPress then return end
     if self.ignored then return end
     if k == "return" then
@@ -127,7 +141,7 @@ function WarningState:keypressed(k)
         end)
 end
 
-function WarningState:leave()
+function AnimatedWarningState:leave()
     flux.removeAll()
     for k, v in pairs(AudioSources) do
         v:stop()
@@ -148,4 +162,4 @@ function WarningState:leave()
     releaseRecursive(self.assets)
 end
 
-return WarningState
+return AnimatedWarningState

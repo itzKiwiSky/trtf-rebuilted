@@ -24,6 +24,15 @@ function love.initialize()
         { 0, 0, 0, 0 }
     )
 
+    local function findDefault()
+        for index, value in ipairs(love.window.resolutionModes) do
+            if value.width == 1280 and value.height == 800 then
+                return index
+            end
+        end
+        return 1
+    end
+
     gameSave = save.new("game")
 
     gameSave.save = {
@@ -31,7 +40,7 @@ function love.initialize()
         user = {
             settings = {
                 video = {
-                    winsize = 1,
+                    winsize = findDefault(),
                     fullscreen = false,
                     vsync = false,
                     fpsCap = 200,
@@ -119,8 +128,8 @@ function love.initialize()
     settingsController.syncInternal()
     settingsController.applySettings()
 
-    languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
-    languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
+    --languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
+    --languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
 
     -- autoload states --
     local states = love.filesystem.getDirectoryItems("src/States")
@@ -131,23 +140,6 @@ function love.initialize()
             table.insert(registers.statesName, strName)
         end
     end
-
-    -- create a thread for ping into gamejolt --
-    local GJPing = love.thread.newThread("src/Modules/Game/Utils/ThreadPing.lua")
-    local channel = love.thread.newChannel()
-
-    GJPing:start(
-        gameSave.save.user.settings.misc.gamejolt.username,
-        gameSave.save.user.settings.misc.gamejolt.usertoken
-    )
-
-    heartbeatTimer = timer.new()
-    heartbeatTimer:every(20, function()
-        GJPing:start(
-            gameSave.save.user.settings.misc.gamejolt.username,
-            gameSave.save.user.settings.misc.gamejolt.usertoken
-        )
-    end)
 
     if gameSave.save.user.settings.misc.lockCursor then
         love.mouse.setRelativeMode(true)

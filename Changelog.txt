@@ -103,7 +103,6 @@ Changelog for The return to freddy's Rebuilt Again
     - release
 
 [2.0.0]
-
     - Changed sugar path towards you
     - Increased patience for kitty and sugar
     - Decreased their AI levels to be less aggressive
@@ -114,4 +113,6 @@ Changelog for The return to freddy's Rebuilt Again
     - updated core IA controllers
     - new order of events
     - added a tutorial section in the menu
-    - added keyboard tutorial
+    - Kitty and Sugar IAs now waits for each other to enter in the same camera and on the vent, this prevents cases where the two girls are on same camera but the game renders only one of those.
+    - added warning state
+    - reworked how settings are saved and applied

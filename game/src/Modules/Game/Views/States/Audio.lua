@@ -1,5 +1,6 @@
 return function(settings)
     local lfskin = settings.skin
+    local settingsController = settings.settingsController
     return {
         function(grid)
             local optionTitle = loveframes.Create("text")
@@ -11,9 +12,9 @@ return function(settings)
             masterVolSlider:SetPos(5, 30)
             masterVolSlider:SetWidth(164)
             masterVolSlider:SetMinMax(0, 100)
-            masterVolSlider:SetValue(registers.user.virtualSettings.audio.masterVolume)
+            masterVolSlider:SetValue(settingsController.virtualSettings.audio.masterVolume)
             masterVolSlider.OnValueChanged = function(obj, value)
-                registers.user.virtualSettings.audio.masterVolume = math.floor(value)
+                settingsController.virtualSettings.audio.masterVolume = math.floor(value)
             end
 
             grid:AddItem(optionTitle, 1, 1, "left")

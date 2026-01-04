@@ -3,6 +3,7 @@ local languageManager = require 'src.Modules.System.Utils.LanguageManager'
 
 return function(settings)
     local lfskin = settings.skin
+    local settingsController = settings.settingsController
     return {
         function(grid)
             -- resolution controller
@@ -30,11 +31,11 @@ return function(settings)
             end
 
             -- set UI to current value state --
-            local curRes = love.window.resolutionModes[registers.user.virtualSettings.video.resolution]
-            resmultichoice:SetChoice(registers.user.virtualSettings.misc.language)
+            local curRes = love.window.resolutionModes[settingsController.virtualSettings.video.resolution]
+            resmultichoice:SetChoice(settingsController.virtualSettings.misc.language)
 
             resmultichoice.OnChoiceSelected = function(object, choice)
-                registers.user.virtualSettings.misc.language = resmultichoice:GetValue()
+                settingsController.virtualSettings.misc.language = resmultichoice:GetValue()
                 languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
                 languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
             end
@@ -51,36 +52,17 @@ return function(settings)
 
             local choiceButton = loveframes.Create("button")
             choiceButton:SetSize(128, 38)
-            choiceButton:SetText(registers.user.virtualSettings.misc.discordRichPresence and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
+            choiceButton:SetText(settingsController.virtualSettings.misc.discordRichPresence and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
             choiceButton:SetFont(settings.fonts["mainButtons"])
             choiceButton.OnClick = function(obj)
-                registers.user.virtualSettings.misc.discordRichPresence = not registers.user.virtualSettings.misc.discordRichPresence
-                choiceButton:SetText(registers.user.virtualSettings.misc.discordRichPresence and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
+                settingsController.virtualSettings.misc.discordRichPresence = not settingsController.virtualSettings.misc.discordRichPresence
+                choiceButton:SetText(settingsController.virtualSettings.misc.discordRichPresence and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
             end
 
             grid:AddItem(optionTitle, 1, 1, "left")
             grid:AddItem(choiceButton, 1, 14, "left")
         end,]] --
-        function(grid)
-            -- Antialiasing --
-            local optionTitle = loveframes.Create("text")
-            optionTitle:SetDefaultColor(1, 1, 1, 1)
-            optionTitle:SetFont(settings.fonts.optionFont)
-            optionTitle:SetText("Lock cursor on window")
-
-            local choiceButton = loveframes.Create("button")
-            choiceButton:SetSize(128, 38)
-            choiceButton:SetText(registers.user.virtualSettings.misc.lockCursor and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
-            choiceButton:SetFont(settings.fonts["mainButtons"])
-            choiceButton.OnClick = function(obj)
-                registers.user.virtualSettings.misc.lockCursor = not registers.user.virtualSettings.misc.lockCursor
-                choiceButton:SetText(registers.user.virtualSettings.misc.lockCursor and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
-            end
-
-            grid:AddItem(optionTitle, 1, 1, "left")
-            grid:AddItem(choiceButton, 1, 14, "left")
-        end,
-        function(grid)
+        --[[function(grid)
             -- Antialiasing --
             local optionTitle = loveframes.Create("text")
             optionTitle:SetDefaultColor(1, 1, 1, 1)
@@ -93,6 +75,7 @@ return function(settings)
             choiceButton:SetText(gamejolt.isLoggedIn and languageService["menu_settings_misc_gamejolt_connected"] or languageService["menu_settings_misc_gamejolt_not_connected"])
             choiceButton:SetFont(settings.fonts["mainButtons"])
             choiceButton.Update = function(obj, elapsed)
+                print(tostring(gamejolt.isLoggedIn) .. "is connect")
                 obj:SetText(gamejolt.isLoggedIn and languageService["menu_settings_misc_gamejolt_connected"] or languageService["menu_settings_misc_gamejolt_not_connected"])
             end
             choiceButton.OnClick = function(obj)
@@ -108,12 +91,13 @@ return function(settings)
                 else
                     gameSave.save.user.settings.misc.gamejolt.username = ""
                     gameSave.save.user.settings.misc.gamejolt.usertoken = ""
+                    gamejolt.closeSession()
                     gameSave:saveSlot()
                 end
             end
 
             grid:AddItem(optionTitle, 1, 1, "left")
             grid:AddItem(choiceButton, 1, 14, "left")
-        end
+        end]]
     }
 end

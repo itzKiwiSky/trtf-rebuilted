@@ -16,18 +16,6 @@ function SplashState:enter()
     for k, v in pairs(AudioSources) do
         v:stop()
     end
-    if FEATURE_FLAGS.developerMode then
-        registers.devWindowContent = function()
-            Slab.BeginWindow("menuNightDev", { Title = "Development" })
-            Slab.Text("State teleport")
-
-            if Slab.Button("Minigame State") then
-                gamestate.switch(MinigameSceneState)
-            end
-
-            Slab.EndWindow()
-        end
-    end
 
     self.AUDIO_LOADED = false
     preloadAudio()
@@ -40,7 +28,7 @@ function SplashState:enter()
         end
     end)
 
-    local introID = lume.weightedchoice({ ["trtl_meme.ogv"] = 25, ["new_intro.ogv"] = 75 }) -- new_intro.ogv
+    local introID = lume.weightedchoice({ ["trtl_meme.ogv"] = 10, ["new_intro.ogv"] = 90 }) -- new_intro.ogv
     self.introVideo = love.graphics.newVideo("assets/videos/" .. introID)
     self.canContinue = false
 

@@ -1,6 +1,9 @@
 local languageManager = require 'src.Modules.System.Utils.LanguageManager'
+local settingsController = require 'src.Modules.Game.Utils.SettingsController'
+
 local settings = { --
     lpadding = 16,
+    settingsController = settingsController,
     blank = function() end,
     fonts = {
         title = fontcache.getFont("tnr", 50),
@@ -196,7 +199,7 @@ return function()
     saveButton:SetFont(settings.fonts["mainButtons"])
     saveButton:SetPos((exitButton:GetX() + exitButton:GetWidth()) + settings.lpadding, shove.getViewportHeight() - (saveButton:GetHeight() + settings.lpadding))
     saveButton.OnClick = function(obj)
-        -- commit all changes from virtual settings to the actual settings --
+        --[[-- commit all changes from virtual settings to the actual settings --
         gameSave.save.user.settings = registers.user.virtualSettings
 
         -- video first cause why not :) --
@@ -227,6 +230,10 @@ return function()
         languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
         languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
 
+        gameSave:saveSlot()]]
+
+        settingsController.syncSave()
+        settingsController.applySettings()
         gameSave:saveSlot()
     end
 end
