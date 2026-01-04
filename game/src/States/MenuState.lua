@@ -207,6 +207,25 @@ function MenuState:enter()
         self.settingsGear.y - self.settingsGear.offsetY, 78, 78
     )
 
+    self.instructionsIcon = {
+        x = shove.getViewportWidth() + 128,
+        y = 270,
+        offsetX = 40,
+        offsetY = 40,
+        hitbox = {},
+        hovered = false,
+        angle = 0,
+        alpha = 0,
+        size = 128,
+        ico = love.graphics.newImage("assets/images/game/menu/UI/instruction_icon.png"),
+        glow = love.graphics.newImage("assets/images/game/menu/UI/instruction_icon_glow.png")
+    }
+
+    self.instructionsIcon.hitbox = newButtonHitbox(
+        self.instructionsIcon.x - self.instructionsIcon.offsetX,
+        self.instructionsIcon.y - self.instructionsIcon.offsetY, 78, 78
+    )
+
     self.spr_logo = love.graphics.newImage("assets/images/game/menu/logo.png")
     self.logoMenu.sprWidth = math.floor(self.logoMenu.scale * self.spr_logo:getWidth())
     self.logoMenu.sprHeight = math.floor(self.logoMenu.scale * self.spr_logo:getHeight())
@@ -289,7 +308,7 @@ function MenuState:enter()
             {
                 key = "menu_button_continue",
                 text = "",
-                locked = gameSave.save.user.progress.night <= 1 or gameSave.save.user.progress.canContinue,
+                locked = gameSave.save.user.progress.canContinue,
                 action = function()
                     registers.isStoryMode = true
                     NightState.nightID = gameSave.save.user.progress.night
@@ -379,6 +398,7 @@ function MenuState:enter()
     end)
 
     self.settingsIconTween = flux.to(self.settingsGear, 1.5, { x = shove.getViewportWidth() - 128 })
+    self.instructionTween = flux.to(self.instructionsIcon, 1.5, { x = shove.getViewportWidth() - 128 })
 
     if not AudioSources["sfx_rainleak"]:isPlaying() then
         AudioSources["sfx_rainleak"]:play()
@@ -418,6 +438,20 @@ function MenuState:draw()
         self.settingsGear.ico, self.settingsGear.x, self.settingsGear.y, math.rad(self.settingsGear.angle),
         self.settingsGear.size / self.settingsGear.ico:getWidth(), self.settingsGear.size / self.settingsGear.ico:getHeight(),
         self.settingsGear.ico:getWidth() / 2, self.settingsGear.ico:getHeight() / 2
+    )
+
+    love.graphics.setColor(1, 1, 1, self.instructionsIcon.alpha)
+    love.graphics.draw(
+        self.instructionsIcon.glow, self.instructionsIcon.x, self.instructionsIcon.y, math.rad(self.instructionsIcon.angle),
+        self.instructionsIcon.size / self.instructionsIcon.glow:getWidth(), self.instructionsIcon.size / self.instructionsIcon.glow:getHeight(),
+        self.instructionsIcon.glow:getWidth() / 2, self.instructionsIcon.glow:getHeight() / 2
+    )
+    love.graphics.setColor(1, 1, 1, 1)
+
+    love.graphics.draw(
+        self.instructionsIcon.ico, self.instructionsIcon.x, self.instructionsIcon.y, math.rad(self.instructionsIcon.angle),
+        self.instructionsIcon.size / self.instructionsIcon.ico:getWidth(), self.instructionsIcon.size / self.instructionsIcon.ico:getHeight(),
+        self.instructionsIcon.ico:getWidth() / 2, self.instructionsIcon.ico:getHeight() / 2
     )
 
     -- static overlay --
@@ -512,6 +546,15 @@ function MenuState:update(elapsed)
         self.settingsGear.angle = math.lerp(self.settingsGear.angle, 0, 0.05)
     end
 
+    self.instructionsIcon.hovered = collision.pointRect({ x = mx, y = my }, self.instructionsIcon.hitbox)
+    self.instructionsIcon.hitbox.x = self.instructionsIcon.x - self.instructionsIcon.offsetX
+
+    if self.instructionsIcon.hovered and self.canUseMenu then
+        self.instructionsIcon.alpha = math.lerp(self.instructionsIcon.alpha, 1, 0.05)
+    else
+        self.instructionsIcon.alpha = math.lerp(self.instructionsIcon.alpha, 0, 0.05)
+    end
+
     if self.journalConfig.active then
         --self.warnItems.songVol = self.journalConfig.volSong
         AudioSources["msc_menu_theme_again"]:setVolume(self.journalConfig.volSong)
@@ -566,6 +609,10 @@ function MenuState:mousepressed(x, y, button)
         end
         if button == 1 then
             if collision.pointRect({ x = mx, y = my }, self.settingsGear.hitbox) then
+                self.configMenu = not self.configMenu
+                self.canUseMenu = false
+            end
+            if collision.pointRect({ x = mx, y = my }, self.instructionsIcon.hitbox) then
                 self.configMenu = not self.configMenu
                 self.canUseMenu = false
             end
