@@ -6,7 +6,8 @@
         "creditsPath": "assets/data/language/en_credits.txt",
         "classicModePath": "assets/images/game/extras/bts/Scrapped Classic mode/classic_mode_portuguese.txt",
         "freeRoamPath": "assets/images/game/extras/bts/Scrapped post night/free_roam_portuguese.txt",
-        "explainCoderPath": "assets/data/language/coder_story_pt.txt"
+        "explainCoderPath": "assets/data/language/coder_story_pt.txt",
+        "tutorialKeyboardTexture": "assets/images/game/instructions/tutorial_english.png"
     },
     "cutscene_day": "5 dias atras",
     "credits_speed": "Mantenha o botao pressionado para acelerar",
@@ -206,5 +207,9 @@
         "secret_night_monitor_permission_write": "Permission denied to write to this file!",
         "secret_night_monitor_body_integrity": "Boiler flame increase",
         "secret_night_monitor_boiler_fuel": "Boiler fuel"
+    },
+    "tutorial": {
+        "tutorial_title": "Antes de você começar a jogar!",
+        "tutorial_office": "You have two doors on each side; you can close them, and after a few seconds they will open automatically (you can also close them by pressing A and D respectively). By pressing CTRL, you can turn on the window light, which also activates the lights in the cameras."
     }
 }

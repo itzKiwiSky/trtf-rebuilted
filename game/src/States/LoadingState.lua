@@ -121,9 +121,6 @@ function LoadingState:update(elapsed)
                 end
             end
         end,
-        ["cutscene"] = function()
-
-        end
     })
 
     if not self.ready then
@@ -135,7 +132,11 @@ function LoadingState:update(elapsed)
     if self.ready and self.pressToGO and self.screen_fade > 1 then
         if self.mode == "normal" then
             NightState.assets = self._tempAssets
-            gamestate.switch(NightState)
+            if gameSave.save.user.progress.checkedTutorial then
+                gamestate.switch(NightState)
+            else
+                gamestate.switch(PreNightState)
+            end
         elseif self.mode == "secret" then
             SecretNightState.assets = self._tempAssets
             gamestate.switch(SecretNightState)

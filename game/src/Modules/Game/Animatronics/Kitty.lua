@@ -1,5 +1,5 @@
 local animatronic = require 'src.Modules.Game.Animatronic'
-local sugar = require 'src.Modules.Game.Animatronics.Sugar'
+local sugar = NightState.AnimatronicControllers["sugar"]
 
 local Kitty = animatronic:extend("Kitty")
 
@@ -23,6 +23,10 @@ function Kitty:__construct()
     self.patience = 0
 
     --self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
+end
+
+function Kitty:requireSugar()
+    sugar = NightState.AnimatronicControllers["sugar"]
 end
 
 function Kitty:draw()

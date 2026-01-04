@@ -64,6 +64,7 @@ function love.initialize()
                 }
             },
             progress = {
+                checkedTutorial = false,
                 warningIgnored = false,
                 specialCutsceneSee = false,
                 initialCutscene = false,

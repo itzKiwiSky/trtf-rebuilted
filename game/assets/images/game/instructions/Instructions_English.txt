@@ -1,0 +1,23 @@
+Office:
+You have two doors on each side; you can close them, and after a few seconds they will open automatically (you can also close them by pressing A and D respectively). By pressing CTRL, you can turn on the window light, which also activates the lights in the cameras.
+
+Bonnie:
+Bonnie will approach your office. You must put on the mask to make him leave, but not for too long or you could suffocate.
+
+Chica:
+Same as Bonnie, put on the mask.
+
+Foxy:
+He will be in front of the office. When you hear him running or see which side he is positioned on, close the door.
+
+Puppet:
+She will move around the restaurant. You must activate the music box on the camera where she is to calm her down.
+
+Freddy:
+You need to shine the camera lights on him to make him retreat. He will make a robotic noise when this happens.
+
+Sugar:
+Sugar will enter the ventilation system. You must close the vents so she doesn’t get into your office. If you leave the vent closed, it will consume energy.
+
+Kitty:
+Same as Sugar, but in another ventilation duct (she is usually more aggressive than Sugar).

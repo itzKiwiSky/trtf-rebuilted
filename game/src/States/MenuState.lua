@@ -274,7 +274,11 @@ function MenuState:enter()
                         }
                     }
 
-                    gameSave.save.user.progress = progress
+                    for key, value in pairs(progress) do
+                        gameSave.save.user.progress[key] = value
+                    end
+
+                    --gameSave.save.user.progress = progress
                     self.canUseMenu = false
                     self.journalConfig.active = true
                     registers.isStoryMode = true
@@ -285,7 +289,7 @@ function MenuState:enter()
             {
                 key = "menu_button_continue",
                 text = "",
-                locked = gameSave.save.user.progress.night <= 1,
+                locked = gameSave.save.user.progress.night <= 1 or gameSave.save.user.progress.canContinue,
                 action = function()
                     registers.isStoryMode = true
                     NightState.nightID = gameSave.save.user.progress.night
@@ -575,6 +579,8 @@ function MenuState:mousepressed(x, y, button)
                 VideoPlayerState.path = gameSave.save.user.settings.misc.language == "Espanol" and "assets/videos/intro_cutscene_es.ogv" or "assets/videos/intro_cutscene_en.ogv"
                 VideoPlayerState.onSceneComplete = function()
                     LoadingState.mode = "cutscene"
+                    gameSave.save.user.progress.canContinue = true
+                    gameSave:saveSlot()
                     gamestate.switch(LoadingState)
                 end
                 gamestate.switch(VideoPlayerState)

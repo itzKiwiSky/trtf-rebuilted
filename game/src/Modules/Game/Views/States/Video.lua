@@ -61,8 +61,6 @@ return function(settings)
                 registers.user.videoSettingsChanged = true
             end
 
-            print(inspect(choiceButton))
-
             choiceButton.Update = (function(self, elapsed)
                 self:SetText(settingsController.virtualSettings.video.fullscreen and languageService["menu_settings_buttons_modes_fullscreen"] or languageService["menu_settings_buttons_modes_windowed"])
             end)

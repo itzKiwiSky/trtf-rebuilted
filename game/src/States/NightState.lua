@@ -135,6 +135,11 @@ function NightState:enter()
 
     for key, value in pairs(self.animatronicsAI) do
         self.AnimatronicControllers[key] = self.AnimatronicControllers[key]:new()
+        if key == "kitty" then
+            self.AnimatronicControllers[key]:requireSugar()
+        elseif key == "sugar" then
+            self.AnimatronicControllers[key]:requireKitty()
+        end
     end
 
     -- dev mode --

@@ -6,18 +6,19 @@
         "creditsPath": "assets/data/language/en_credits.txt",
         "classicModePath": "assets/images/game/extras/bts/Scrapped Classic mode/classic_mode_spanish.txt",
         "freeRoamPath": "assets/images/game/extras/bts/Scrapped post night/free_roam_spanish.txt",
-        "explainCoderPath": "assets/data/language/coder_story_es.txt"
+        "explainCoderPath": "assets/data/language/coder_story_es.txt",
+        "tutorialKeyboardTexture": "assets/images/game/instructions/tutorial_english.png"
     },
     "cutscene_day": "5 días antes",
     "credits_speed": "Manten clickeado para adelantar",
     "video_click_to_jump": "Clickea para saltar cinematica",
     "type_his_name": "Si quieres jugar la noche secreta, escribe SU nombre en el menu",
     "warn": [
-        "[WARNING]\n\n\n",
-        "This game contains loud sounds, flashing\n",
-        "lights, mild swearing, and many jumpscares!\n\n",
-        "press any key to continue or press [ENTER] to not show on next boot\n\n",
-        "Have fun :)"
+        "[ADVERTENCIA]\n\n\n",
+        "Este juego contiene sonidos fuertes, luces\n",
+        "intermitentes, lenguaje leve y muchos jumpscares!\n\n",
+        "presione cualquier tecla para continuar o presione [ENTER] para no mostrar en el próximo inicio\n\n",
+        "¡Disfrútalo! :)"
     ],
     "menu": {
         "menu_button": {
@@ -201,10 +202,14 @@
         "Utiliza el comando `help` para ver la lista de todos los comandos"
     ],
     "secret_night_monitor": {
-        "secret_night_monitor_title": "Select a animatronic to modify",
-        "secret_night_monitor_instruction": "Corrupt all bytes",
-        "secret_night_monitor_permission_write": "Permission denied to write to this file!",
-        "secret_night_monitor_body_integrity": "Boiler flame increase",
-        "secret_night_monitor_boiler_fuel": "Boiler fuel"
+        "secret_night_monitor_title": "Selecciona un animatrónico para modificarlo.",
+        "secret_night_monitor_instruction": "Corromper todos los bytes",
+        "secret_night_monitor_permission_write": "¡Se ha denegado el permiso para escribir en este archivo!",
+        "secret_night_monitor_body_integrity": "Aumento de la llama",
+        "secret_night_monitor_boiler_fuel": "combustible"
+    },
+    "tutorial": {
+        "tutorial_title": "¡Antes de empezar a jugar!",
+        "tutorial_office": "Tienes dos puertas a los lados, puedes cerrarlas, al cabo de unos segundos se abriran automaticamente (Tambien puedes cerrarlas apretando A y D respectivamente). Tambien apretando CTRL puedes encender la luz de la ventana, la misma te sirve para encender las luces en las camaras"
     }
 }

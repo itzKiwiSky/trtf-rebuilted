@@ -1,2 +1,2 @@
-[.] Config menu
-    [.] Update all objects to have the translated text
+[X] Config menu
+    [X] Update all objects to have the translated text
