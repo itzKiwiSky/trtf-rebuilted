@@ -9,6 +9,9 @@ return function(settings)
             optionTitle:SetDefaultColor(1, 1, 1, 1)
             optionTitle:SetFont(settings.fonts.optionFont)
             optionTitle:SetText(languageService["menu_settings_video_resolution"])
+            optionTitle.Update = function(obj)
+                obj:SetText(languageService["menu_settings_video_resolution"])
+            end
 
             local resmultichoice = loveframes.Create("multichoice")
             resmultichoice:SetPadding(5)
@@ -42,11 +45,15 @@ return function(settings)
             optionTitle:SetDefaultColor(1, 1, 1, 1)
             optionTitle:SetFont(settings.fonts.optionFont)
             optionTitle:SetText(languageService["menu_settings_video_fullscreen"])
+            optionTitle.Update = function(obj)
+                obj:SetText(languageService["menu_settings_video_fullscreen"])
+            end
 
             local choiceButton = loveframes.Create("button")
             choiceButton:SetSize(128, 38)
             choiceButton:SetText(settingsController.virtualSettings.video.fullscreen and languageService["menu_settings_buttons_modes_fullscreen"] or languageService["menu_settings_buttons_modes_windowed"])
             choiceButton:SetFont(settings.fonts["mainButtons"])
+            choiceButton:SetAlwaysUpdate(true)
             choiceButton.OnClick = function(obj)
                 settingsController.virtualSettings.video.fullscreen = not settingsController.virtualSettings.video.fullscreen
                 choiceButton:SetText(settingsController.virtualSettings.video.fullscreen and languageService["menu_settings_buttons_modes_fullscreen"] or languageService["menu_settings_buttons_modes_windowed"])
@@ -54,8 +61,10 @@ return function(settings)
                 registers.user.videoSettingsChanged = true
             end
 
-            choiceButton.Update(function(obj, elapsed)
-                obj:SetText(settingsController.virtualSettings.video.fullscreen and languageService["menu_settings_buttons_modes_fullscreen"] or languageService["menu_settings_buttons_modes_windowed"])
+            print(inspect(choiceButton))
+
+            choiceButton.Update = (function(self, elapsed)
+                self:SetText(settingsController.virtualSettings.video.fullscreen and languageService["menu_settings_buttons_modes_fullscreen"] or languageService["menu_settings_buttons_modes_windowed"])
             end)
 
             grid:AddItem(optionTitle, 1, 1, "left")
@@ -67,16 +76,25 @@ return function(settings)
             optionTitle:SetDefaultColor(1, 1, 1, 1)
             optionTitle:SetFont(settings.fonts.optionFont)
             optionTitle:SetText(languageService["menu_settings_video_vsync"])
+            optionTitle.Update = function(obj)
+                obj:SetText(languageService["menu_settings_video_vsync"])
+            end
+
 
             local choiceButton = loveframes.Create("button")
             choiceButton:SetSize(128, 38)
             choiceButton:SetText(settingsController.virtualSettings.video.vsync and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
             choiceButton:SetFont(settings.fonts["mainButtons"])
+            choiceButton:SetAlwaysUpdate(true)
             choiceButton.OnClick = function(obj)
                 --settingsController.virtualSettings.video.vsync = not settingsController.virtualSettings.video.vsync
                 settingsController.virtualSettings.video.vsync = not settingsController.virtualSettings.video.vsync
                 choiceButton:SetText(settingsController.virtualSettings.video.vsync and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
             end
+
+            choiceButton.Update = (function(obj, elapsed)
+                obj:SetText(settingsController.virtualSettings.video.vsync and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
+            end)
 
             grid:AddItem(optionTitle, 1, 1, "left")
             grid:AddItem(choiceButton, 1, 14, "left")
@@ -88,6 +106,9 @@ return function(settings)
             optionTitle:SetDefaultColor(1, 1, 1, 1)
             optionTitle:SetFont(settings.fonts.optionFont)
             optionTitle:SetText(languageService["menu_settings_video_fpsCap"])
+            optionTitle.Update = function(obj)
+                obj:SetText(languageService["menu_settings_video_fpsCap"])
+            end
 
             local numberFPS = loveframes.Create("numberbox")
             numberFPS:SetIncreaseAmount(4)
@@ -121,14 +142,22 @@ return function(settings)
             optionTitle:SetDefaultColor(1, 1, 1, 1)
             optionTitle:SetFont(settings.fonts.optionFont)
             optionTitle:SetText(languageService["menu_settings_video_display_fps"])
+            optionTitle.Update = function(obj)
+                obj:SetText(languageService["menu_settings_video_display_fps"])
+            end
 
             local choiceButton = loveframes.Create("button")
             choiceButton:SetSize(128, 38)
             choiceButton:SetText(settingsController.virtualSettings.video.displayFPS and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
             choiceButton:SetFont(settings.fonts["mainButtons"])
+            choiceButton:SetAlwaysUpdate(true)
             choiceButton.OnClick = function(obj)
                 settingsController.virtualSettings.video.displayFPS = not settingsController.virtualSettings.video.displayFPS
                 choiceButton:SetText(settingsController.virtualSettings.video.displayFPS and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
+            end
+
+            choiceButton.Update = function(obj)
+                obj:SetText(settingsController.virtualSettings.video.displayFPS and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
             end
 
             grid:AddItem(optionTitle, 1, 1, "left")
@@ -139,14 +168,22 @@ return function(settings)
             local optionTitle = loveframes.Create("text")
             optionTitle:SetDefaultColor(1, 1, 1, 1)
             optionTitle:SetFont(settings.fonts.optionFont)
-            optionTitle:SetText("Lock cursor on window")
+            optionTitle:SetText(languageService["menu_settings_video_mouse_window"])
+            optionTitle.Update = function(obj)
+                obj:SetText(languageService["menu_settings_video_mouse_window"])
+            end
 
             local choiceButton = loveframes.Create("button")
             choiceButton:SetSize(128, 38)
             choiceButton:SetText(settingsController.virtualSettings.misc.lockCursor and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
             choiceButton:SetFont(settings.fonts["mainButtons"])
+            choiceButton:SetAlwaysUpdate(true)
             choiceButton.OnClick = function(obj)
                 settingsController.virtualSettings.misc.lockCursor = not settingsController.virtualSettings.misc.lockCursor
+                choiceButton:SetText(settingsController.virtualSettings.misc.lockCursor and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
+            end
+
+            choiceButton.Update = function(obj)
                 choiceButton:SetText(settingsController.virtualSettings.misc.lockCursor and languageService["menu_settings_buttons_modes_turn_on"] or languageService["menu_settings_buttons_modes_turn_off"])
             end
 

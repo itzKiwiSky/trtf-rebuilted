@@ -164,6 +164,9 @@ return function()
         buttonCol:AddItem(btn, 1, b, "center")
         btn:SetFont(settings.fonts["btnfont"])
         btn:SetText(languageService["menu_settings_categories_" .. settings.states[b]])
+        btn.Update = function(self)
+            self:SetText(languageService["menu_settings_categories_" .. settings.states[b]])
+        end
 
         btn.OnClick = function()
             local objs = optionPanel:GetChildren()
@@ -176,6 +179,11 @@ return function()
             --print(settings.states[b])
             subtxt:SetText(languageService["menu_settings_categories_subtext_" .. registers.user.currentSettingsTab])
             subtxt:CenterX()
+
+            subtxt.Update = function(self)
+                self:SetText(languageService["menu_settings_categories_subtext_" .. registers.user.currentSettingsTab])
+                self:CenterX()
+            end
         end
     end
     --SettingsMenu["video"]()
@@ -184,11 +192,15 @@ return function()
     local exitButton = loveframes.Create("button")
     exitButton:SetSize(96, 48)
     exitButton:SetText(languageService["menu_settings_buttons_exit"])
+    exitButton.Update = function(self)
+        self:SetText(languageService["menu_settings_buttons_exit"])
+    end
     exitButton:SetFont(settings.fonts["mainButtons"])
     exitButton:SetPos(settings.lpadding, shove.getViewportHeight() - (exitButton:GetHeight() + settings.lpadding))
     exitButton.OnClick = function(obj)
         -- rest configs and close menu --
-        registers.user.virtualSettings = gameSave.save.user.settings
+        --registers.user.virtualSettings = gameSave.save.user.settings
+        settingsController.syncInternal()
         MenuState.configMenu = false
         MenuState.canUseMenu = true
     end
@@ -196,42 +208,12 @@ return function()
     local saveButton = loveframes.Create("button")
     saveButton:SetSize(148, 48)
     saveButton:SetText(languageService["menu_settings_buttons_save"])
+    saveButton.Update = function(self)
+        self:SetText(languageService["menu_settings_buttons_save"])
+    end
     saveButton:SetFont(settings.fonts["mainButtons"])
     saveButton:SetPos((exitButton:GetX() + exitButton:GetWidth()) + settings.lpadding, shove.getViewportHeight() - (saveButton:GetHeight() + settings.lpadding))
     saveButton.OnClick = function(obj)
-        --[[-- commit all changes from virtual settings to the actual settings --
-        gameSave.save.user.settings = registers.user.virtualSettings
-
-        -- video first cause why not :) --
-        if registers.user.videoSettingsChanged then
-            love.window.setVSync(gameSave.save.user.settings.video.vsync and 1 or 0)
-            love.window.setFullscreen(gameSave.save.user.settings.video.fullscreen)
-        end
-
-        love._FPSCap = gameSave.save.user.settings.video.fpsCap
-        love.graphics.setDefaultFilter(
-            gameSave.save.user.settings.video.filter and "linear" or "nearest",
-            gameSave.save.user.settings.video.filter and "linear" or "nearest"
-        )
-
-        -- audio --
-        love.audio.setVolume(gameSave.save.user.settings.audio.masterVolume * 0.01)
-        --love.audio.setVolume(0.001)
-        --SoundController.getChannel("music"):setVolume(gameSave.save.user.settings.audio.musicVolume * 0.01)
-        --SoundController.getChannel("sfx"):setVolume(gameSave.save.user.settings.audio.sfxVolume * 0.01)
-
-        if gameSave.save.user.settings.misc.lockCursor then
-            love.mouse.setRelativeMode(true)
-            fakeCursor.x = love.graphics.getWidth() / 2
-            fakeCursor.y = love.graphics.getHeight() / 2
-        end
-
-        -- misc stuff --
-        languageService = languageManager.getData(gameSave.save.user.settings.misc.language)
-        languageRaw = languageManager.getRawData(gameSave.save.user.settings.misc.language)
-
-        gameSave:saveSlot()]]
-
         settingsController.syncSave()
         settingsController.applySettings()
         gameSave:saveSlot()

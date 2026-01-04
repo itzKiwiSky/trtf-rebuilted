@@ -62,7 +62,8 @@
                         "menu_settings_video_filter": "Filtro de renderização",
                         "menu_settings_video_fpsCap": "Limite de FPS",
                         "menu_settings_video_display_fps": "Exibir FPS",
-                        "menu_settings_video_effect_density": "Densidade de efeito"
+                        "menu_settings_video_effect_density": "Densidade de efeito",
+                        "menu_settings_video_mouse_window": "Lock mouse in window"
                     },
                     "menu_settings_audio": {
                         "menu_settings_audio_master": "Volume principal",

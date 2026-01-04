@@ -43,15 +43,13 @@ function SettingsController.applySettings()
     love.window.setVSync(gameSave.save.user.settings.video.vsync and 1 or 0)
     love.window.setFullscreen(gameSave.save.user.settings.video.fullscreen)
 
-    --[[love.window.updateMode(winSize.width, winSize.height, {
-        fullscreen = gameSave.save.user.settings.video.fullscreen,
-        vsync = gameSave.save.user.settings.video.vsync,
-    })]]
     ---shove.resize(winSize.width, winSize.height)
     shove.updateWindowMode(winSize.width, winSize.height, {
         fullscreen = gameSave.save.user.settings.video.fullscreen,
         vsync = gameSave.save.user.settings.video.vsync,
     })
+
+    love._showFPS = gameSave.save.user.settings.video.showFPS
 
     love._FPSCap = gameSave.save.user.settings.video.fpsCap
     love.graphics.setDefaultFilter(

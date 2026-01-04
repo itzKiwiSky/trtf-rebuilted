@@ -7,6 +7,9 @@ return function(settings)
             optionTitle:SetDefaultColor(1, 1, 1, 1)
             optionTitle:SetFont(settings.fonts.optionFont)
             optionTitle:SetText(languageService["menu_settings_audio_master"])
+            optionTitle.Update = function(obj)
+                obj:SetText(languageService["menu_settings_audio_master"])
+            end
 
             local masterVolSlider = loveframes.Create("slider")
             masterVolSlider:SetPos(5, 30)

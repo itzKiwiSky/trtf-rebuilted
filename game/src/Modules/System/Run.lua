@@ -17,6 +17,7 @@ termite = require 'libraries.Termite'
 love._FPSCap = 1000
 love._unfocusedFPSCap = 60
 local flashOpacity = 0
+love._showFPS = true
 
 local modes = love.window.getFullscreenModes()
 table.insert(modes, {
@@ -95,7 +96,7 @@ function love.run()
     copyLib()
 
     --discordRPC = require 'src.Modules.System.Utils.DiscordRPC'
-    https = require 'https'
+    --https = require 'https'
 
     fontcache.init()
     subtitlesController = require 'src.Modules.System.Utils.Subtitles'
@@ -233,7 +234,9 @@ function love.run()
             end
 
             shove.beginLayer("fps")
-            love.graphics.print("FPS : " .. love.timer.getFPS(), fpsfont, 5, 5)
+            if love._showFPS then
+                love.graphics.print("FPS : " .. love.timer.getFPS(), fpsfont, 5, 5)
+            end
             if FEATURE_FLAGS.videoStats then
                 local strs = {}
                 for k = 1, #love.keys.videoStats, 1 do
