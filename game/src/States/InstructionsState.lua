@@ -74,7 +74,7 @@ function InstructionsState:leave()
         v:stop()
     end
 
-    for _, f in ipairs(self.cnicons) do
+    for _, f in ipairs(self.instIcons) do
         if type(f) == "userdata" and f.release then
             f:release()
         end
