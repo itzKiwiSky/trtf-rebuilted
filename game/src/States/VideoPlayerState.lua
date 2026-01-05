@@ -5,20 +5,29 @@ VideoPlayerState.triggered = false
 VideoPlayerState.jumpScene = false
 VideoPlayerState.onSceneComplete = function() end
 
+function VideoPlayerState:preload()
+    self.sceneRun = love.graphics.newVideo(VideoPlayerState.path)
+end
+
 function VideoPlayerState:enter()
     self.triggered = false
     self.jumpScene = false
-    self.sceneRun = love.graphics.newVideo(VideoPlayerState.path)
+    self.started = false
+
+    if type(self.sceneRun) == nil then
+        self.sceneRun = love.graphics.newVideo(VideoPlayerState.path, {
+            audio = true,
+            dpi = love.graphics.getDPIScale()
+        })
+    end
 
     self.fnt_jump = fontcache.getFont("ocrx", 28)
 
     self.fade = { alpha = 0, volume = 1 }
     self.fadetext = { alpha = 0 }
 
-    self.timerFade = timer.new()
-    self.timerFade:after(3, function()
-        flux.to(self.fadetext, 3, { alpha = 1 })
-    end)
+    flux.to(self.fadetext, 3, { alpha = 1 }):delay(3)
+    flux.to(self.fadetext, 3, { alpha = 1 }):delay(3)
 
     self.sceneRun:seek(0)
     print("video play")
@@ -41,8 +50,11 @@ end
 
 function VideoPlayerState:update(elapsed)
     self.sceneRun:getSource():setVolume(self.fade.volume)
-    print("fguck")
-    if not self.sceneRun:isPlaying() and not self.triggered then
+    if self.sceneRun:isPlaying() then
+        self.started = true
+    end
+
+    if self.started and not self.sceneRun:isPlaying() and not self.triggered then
         self.triggered = true
         VideoPlayerState.onSceneComplete()
     end

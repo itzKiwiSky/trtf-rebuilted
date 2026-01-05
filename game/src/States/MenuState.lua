@@ -509,9 +509,9 @@ function MenuState:update(elapsed)
         self.settingsSubState:update(elapsed)
     end
 
-    if not self.canUseMenu then
-        flux.update(elapsed)
-    end
+    --if not self.canUseMenu then
+    flux.update(elapsed)
+    --end
 
     -- update all texts --
     updateTexts(self.mainMenuButtons.elements)
@@ -545,7 +545,7 @@ function MenuState:update(elapsed)
         --self.warnItems.songVol = self.journalConfig.volSong
         AudioSources["msc_menu_theme_again"]:setVolume(self.journalConfig.volSong)
         if self.journalConfig.alpha <= 1 then
-            self.journalConfig.alpha = self.journalConfig.alpha + 1 * elapsed
+            self.journalConfig.alpha = self.journalConfig.alpha + 3 * elapsed
         end
     end
 
@@ -559,7 +559,7 @@ function MenuState:update(elapsed)
     end
 
     if self.transitionFade.active then
-        self.transitionFade.fade = self.transitionFade.fade + 0.5 * elapsed
+        self.transitionFade.fade = self.transitionFade.fade + 4 * elapsed
 
         if self.transitionFade.fade >= 1 then
             gamestate.switch(self.transitionFade.target)

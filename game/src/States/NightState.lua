@@ -593,6 +593,7 @@ function NightState:enter()
                 gamestate.switch(MenuState)
             end
             VideoPlayerState.path = "assets/videos/teaser.ogv"
+            VideoPlayerState:preload()
 
             flux.to(self.textFinal, 2, { alpha = 1 })
                 :delay(2)
