@@ -20,6 +20,7 @@
         "press any key to continue or press [ENTER] to not show on next boot\n\n",
         "Have fun :)"
     ],
+    "night7_talk": "Time to go to The Boiler Room",
     "menu": {
         "menu_button": {
             "menu_button_new_game": "New Game",

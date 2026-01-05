@@ -196,7 +196,7 @@ return function()
 
         NightState.isCustomNight = true
 
-        if CustomNightState.presets[registers.user.currentChallengeID] == "Claustrophobia" then
+        if CustomNightState.presets[registers.user.currentChallengeID].displayName == "Claustrophobia" then
             NightState.isSpecialChallenge = true
         end
 

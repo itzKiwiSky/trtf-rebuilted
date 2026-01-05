@@ -7,8 +7,8 @@ VideoPlayerState.onSceneComplete = function() end
 
 function VideoPlayerState:enter()
     self.triggered = false
+    self.jumpScene = false
     self.sceneRun = love.graphics.newVideo(VideoPlayerState.path)
-    self.sceneRun:play()
 
     self.fnt_jump = fontcache.getFont("ocrx", 28)
 
@@ -20,11 +20,9 @@ function VideoPlayerState:enter()
         flux.to(self.fadetext, 3, { alpha = 1 })
     end)
 
-    --[[
-    flux.to(self.fade, 3, { alpha = 1, volume = 0 }):oncomplete(function()
-            VideoPlayerState.onSceneComplete()
-        end)
-        ]]
+    self.sceneRun:seek(0)
+    print("video play")
+    self.sceneRun:play()
 end
 
 function VideoPlayerState:draw()
@@ -43,18 +41,20 @@ end
 
 function VideoPlayerState:update(elapsed)
     self.sceneRun:getSource():setVolume(self.fade.volume)
-    if (not self.sceneRun:isPlaying() and not self.triggered) then
+    print("fguck")
+    if not self.sceneRun:isPlaying() and not self.triggered then
         self.triggered = true
         VideoPlayerState.onSceneComplete()
     end
     flux.update(elapsed)
-    self.timerFade:update(elapsed)
 end
 
 function VideoPlayerState:mousepressed(x, y, button)
     if not self.jumpScene then
         VideoPlayerState.jumpScene = true
         flux.to(self.fade, 3, { alpha = 1, volume = 0 }):oncomplete(function()
+            self.sceneRun:pause()
+            self.sceneRun:seek(0)
             VideoPlayerState.onSceneComplete()
         end)
     end
@@ -73,8 +73,8 @@ end
 
 function VideoPlayerState:leave()
     flux.removeAll()
-    VideoPlayerState.jumpScene = false
-    self.sceneRun:release()
+    self.jumpScene = false
+    --self.sceneRun:release()
 end
 
 return VideoPlayerState

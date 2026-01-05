@@ -181,6 +181,7 @@ function NightState:enter()
             Slab.Text("interferenceIntensity: " .. self.tabletCameraSubState.interferenceIntensity)
             Slab.Text("interferenceISpeed: " .. self.tabletCameraSubState.interferenceSpeed)
             Slab.Text("animatronicInOffice: " .. tostring(self.officeState.hasAnimatronicInOffice))
+            Slab.Text("Is Special Challenge: " .. tostring(self.isSpecialChallenge))
             Slab.Separator()
             Slab.Text("IA Settings")
             for name in spairs(NightState.animatronicsAI) do
@@ -256,6 +257,7 @@ function NightState:enter()
     self.fnt_camName = fontcache.getFont("vcr", 24)
     self.fnt_boldtnr = fontcache.getFont("tnr", 20)
     self.fnt_nightDisplay = fontcache.getFont("tnr", 60)
+    self.fnt_finalText = fontcache.getFont("tnr", 35)
 
     self.fnt_phoneCallName = fontcache.getFont("ocrx", 25)
     self.fnt_phoneCallFooter = fontcache.getFont("ocrx", 18)
@@ -534,6 +536,12 @@ function NightState:enter()
     self.officeState.doors.lDoorTimer = self.officeState.doors.maxDoorTime
     self.officeState.doors.rDoorTimer = self.officeState.doors.maxDoorTime
 
+    self.textFinal = {
+        alpha = 0
+    }
+    self.isEnd = false
+    self.final7tmr = timer.new()
+
     self.tmr_nightStartPhone:script(function(sleep)
         if self.nightID >= 1 and self.nightID <= 5 then
             sleep(3)
@@ -569,21 +577,33 @@ function NightState:enter()
             v:stop()
         end
 
-        if gameSave.save.user.progress.night < 7 then
+        if gameSave.save.user.progress.night < 6 then
             gameSave.save.user.progress.night = gameSave.save.user.progress.night + 1
         end
         gameSave.save.user.progress.newgame = false
-        gameSave.save.user.progress.canContinue = gameSave.save.user.progress.night > 1
         gameSave:saveSlot()
         if self.isSpecialChallenge then
-            VideoPlayerState.path = "assets/videos/teaserCutscene.ogv"
+            self.isEnd = true
+
             VideoPlayerState.onSceneComplete = function()
+                print(VideoPlayerState.path)
                 gameSave.save.user.progress.specialCutsceneSee = true
                 gameSave.save.user.progress.stars.beat20 = true
                 gameSave:saveSlot()
                 gamestate.switch(MenuState)
             end
-            gamestate.switch(VideoPlayerState)
+            VideoPlayerState.path = "assets/videos/teaser.ogv"
+
+            flux.to(self.textFinal, 2, { alpha = 1 })
+                :delay(2)
+                :oncomplete(function()
+                    flux.to(self.textFinal, 2, { alpha = 0 })
+                        :delay(2)
+                        :oncomplete(function()
+                            --VideoPlayerState.sceneRun = love.graphics.newVideo(VideoPlayerState.path)
+                            gamestate.switch(VideoPlayerState)
+                        end)
+                end)
         else
             if registers.isStoryMode then
                 local minigames = {
@@ -892,13 +912,13 @@ function NightState:draw()
     end
     self.shakeController:clear()
 
+
+    love.graphics.setColor(1, 1, 1, self.textFinal.alpha)
+    love.graphics.printf(languageService["night7_talk"], self.fnt_finalText, 0, shove.getViewportHeight() / 2 - 100, shove.getViewportWidth(), "center")
+    love.graphics.setColor(1, 1, 1, 1)
+
     -- debug shit --
     if FEATURE_FLAGS.developerMode then
-        --love.graphics.print(debug.formattable(officeState), 90, 90)
-        --local mx, my = love.mouse.getPosition() --gameCam:mousePosition()
-        --love.graphics.print(string.format("%s, %s", mx, my), 90, 90)
-        --love.graphics.print(NightState.AnimatronicControllers["puppet"].musicBoxTimer, 20, 20)
-        --love.graphics.print(debug.formattable(NightState.animatronicsAI), 10, 10)
         local inside, mx, my = shove.mouseToViewport()
         mx, my = self.mainCam:worldCoords(mx, my, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
 
@@ -1046,9 +1066,8 @@ function NightState:update(elapsed)
         self.blurVisionFX.enable("boxblur")
     end
 
-
     -- animatronic --
-    if self.officeState.nightRun and not NightState.killed then
+    if self.officeState.nightRun and not NightState.killed and not NightState.nightPassed then
         for k, animatronic in pairs(NightState.AnimatronicControllers) do
             if not self.officeState.isOfficeDisabled and not NightState.nightPassed then
                 animatronic:update(elapsed)
@@ -1321,7 +1340,7 @@ function NightState:update(elapsed)
         self.nightTextDisplay.acc = self.nightTextDisplay.acc + elapsed
         if self.nightTextDisplay.acc >= 0.1 then
             self.nightTextDisplay.acc = 0
-            self.nightTextDisplay.fade = self.nightTextDisplay.fade + 8.5 * elapsed
+            self.nightTextDisplay.fade = self.nightTextDisplay.fade + 12 * elapsed
             self.nightTextDisplay.scale = self.nightTextDisplay.scale + 0.4 * elapsed
 
             if self.nightTextDisplay.fade >= 1.4 then
@@ -1333,7 +1352,7 @@ function NightState:update(elapsed)
         self.nightTextDisplay.acc = self.nightTextDisplay.acc + elapsed
         if self.nightTextDisplay.acc >= 0.3 then
             self.nightTextDisplay.acc = 0
-            self.nightTextDisplay.fade = self.nightTextDisplay.fade - 9.75 * elapsed
+            self.nightTextDisplay.fade = self.nightTextDisplay.fade - 17 * elapsed
             self.nightTextDisplay.scale = self.nightTextDisplay.scale + 0.37 * elapsed
 
             if self.nightTextDisplay.fade <= 0 then
@@ -1442,6 +1461,11 @@ function NightState:update(elapsed)
         self.officeState.isOfficeDisabled = true
     end
 
+    if self.isSpecialChallenge and self.isEnd then
+        self.final7tmr:update(elapsed)
+        flux.update(elapsed)
+    end
+
     self.officeState.power.powerDisplay = math.floor(self.officeState.power.powerStat / 10)
 
 
@@ -1498,6 +1522,7 @@ function NightState:update(elapsed)
             end
         end
     end
+
 
     if Controller:pressed("game_mask") then
         if not self.officeState.tabletUp then

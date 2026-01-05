@@ -163,7 +163,7 @@ function ExtrasState:draw()
             for _, e in ipairs(self.menuItems.elements) do
                 love.graphics.print(e.text, self.fnt_extras, self.menuItems.config.x + e.meta.offsetX, e.hitbox.y)
                 love.graphics.setColor(1, 1, 1, 1)
-                love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
+                --love.graphics.rectangle("line", e.hitbox.x, e.hitbox.y, e.hitbox.w, e.hitbox.h)
             end
         end
     end)
