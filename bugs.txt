@@ -2,8 +2,8 @@
 [X] Continue after see cutscenes
 [X] night 6 don't save
 [X] Sugar and Kitty rebalance
-[.] add instruction on menu
-[.] add a text when beat night 7/20
+[X] add instruction on menu
+[X] add a text when beat night 7/20
 [X] add warning screen
 [X] rework settings menu
 [X] removed gamejolt
