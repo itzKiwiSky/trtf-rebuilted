@@ -33,7 +33,7 @@ function Freddy:__construct()
     self.maxPatience = math.random(180, 280)
     self.updateMoveTimer = true
     self.autoUpdatePos = false
-    self.moveTime = 8.5
+    self.moveTime = NightState.isSpecialChallenge and 10.23 or 8.5
     self.flashMax = 1.2
 
     self.x, self.y, self.metadataCameraID = self.path[self.pathID][self.currentState].x + 26, self.path[self.pathID][self.currentState].y + 26, self.path[self.pathID][self.currentState].camera

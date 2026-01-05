@@ -15,7 +15,7 @@ function Sugar:__construct()
         { x = 1004, y = 636, camera = 12 }, -- office
     }
 
-    self.moveTime = 3.87
+    self.moveTime = 8.87
     self.patienceTimer = 0
     self.patience = 0
 

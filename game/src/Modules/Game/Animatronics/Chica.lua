@@ -16,7 +16,7 @@ function Chica:__construct()
         { x = 1079, y = 592, camera = nil }, -- office
     }
 
-    self.moveTime = 7.3
+    self.moveTime = NightState.isSpecialChallenge and 8.75 or 6.4
 
     self.x, self.y, self.metadataCameraID = self.path[self.currentState].x + 3, self.path[self.currentState].y + 3, self.path[self.currentState].camera
 end

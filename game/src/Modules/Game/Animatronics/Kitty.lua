@@ -18,7 +18,7 @@ function Kitty:__construct()
         { x = 1004, y = 636, camera = 11 }, -- office
     }
 
-    self.moveTime = 3.64
+    self.moveTime = 6.64
     self.patienceTimer = 0
     self.patience = 0
 
