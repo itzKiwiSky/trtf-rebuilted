@@ -6,6 +6,8 @@ NightState.nightID = 1000
 NightState.isSpecialChallenge = false
 NightState.isCustomNight = false
 NightState.nightPassed = false
+NightState.challengeName = ""
+NightState.challengeID = ""
 NightState.animatronicsAI = {
     freddy = 0,
     bonnie = 0,
@@ -580,6 +582,7 @@ function NightState:enter()
         if gameSave.save.user.progress.night < 6 then
             gameSave.save.user.progress.night = gameSave.save.user.progress.night + 1
         end
+        gameSave.save.user.progress.challenges[self.challengeID] = true
         gameSave.save.user.progress.newgame = false
         gameSave:saveSlot()
         if self.isSpecialChallenge then
@@ -601,7 +604,6 @@ function NightState:enter()
                     flux.to(self.textFinal, 2, { alpha = 0 })
                         :delay(2)
                         :oncomplete(function()
-                            --VideoPlayerState.sceneRun = love.graphics.newVideo(VideoPlayerState.path)
                             gamestate.switch(VideoPlayerState)
                         end)
                 end)
@@ -1623,6 +1625,8 @@ function NightState:mousepressed(x, y, button)
 end
 
 function NightState:leave()
+    self.challengeName = ""
+    self.challengeID = ""
     flux.removeAll()
     for k, v in pairs(AudioSources) do
         v:stop()

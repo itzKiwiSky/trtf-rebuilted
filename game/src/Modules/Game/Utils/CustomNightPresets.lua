@@ -1,6 +1,7 @@
 return {
     {
         displayName = "Fazbear Crew",
+        ingameID = "fazcrew",
         values = {
             bonnie = 12,
             chica = 12,
@@ -13,6 +14,7 @@ return {
     },
     {
         displayName = "Claustrophobia",
+        ingameID = "vsall",
         values = {
             bonnie = 20,
             chica = 20,
@@ -25,6 +27,7 @@ return {
     },
     {
         displayName = "Ladies turn",
+        ingameID = "ladies_night",
         values = {
             bonnie = 0,
             chica = 15,
@@ -37,6 +40,7 @@ return {
     },
     {
         displayName = "Double trouble",
+        ingameID = "double_trouble",
         values = {
             bonnie = 0,
             chica = 0,
@@ -49,6 +53,7 @@ return {
     },
     {
         displayName = "Reaction Test",
+        ingameID = "reaction_test",
         values = {
             bonnie = 12,
             chica = 12,

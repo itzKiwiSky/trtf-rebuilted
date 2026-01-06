@@ -200,6 +200,9 @@ return function()
             NightState.isSpecialChallenge = true
         end
 
+        NightState.challengeName = CustomNightState.presets[registers.user.currentChallengeID].displayName
+        NightState.challengeID = CustomNightState.presets[registers.user.currentChallengeID].ingameID
+
         gamestate.switch(LoadingState)
     end
 

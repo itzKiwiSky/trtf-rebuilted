@@ -80,6 +80,13 @@ function love.initialize()
                     beatNight8 = false,
                     beat20 = false,
                     beatNight6 = false,
+                },
+                challenges = {
+                    ["fazcrew"] = false,
+                    ["vsall"] = false,
+                    ["ladies_night"] = false,
+                    ["double_trouble"] = false,
+                    ["reaction_test"] = false,
                 }
             }
 
