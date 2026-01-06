@@ -141,7 +141,7 @@
             "minigame_display_sugar_find_key": "Encontre a chave",
             "minigame_display_sugar_boiler_room": "Vá para a Sala de Caldeiras",
             "minigame_display_freddy_collect_gift": "Colete 5 presentes",
-            "minigame_display_lockjaw_kill_purple": "Encontre ele"
+            "minigame_display_lockjaw_kill_purple": "Encontre-o"
         }
     },
     "gameover": {
@@ -162,12 +162,13 @@
     },
     "extras": {
         "extras_options": {
-            "extras_options_animatronics": "Animatrônicos",
+            "extras_options_animatronics": "Personagens",
             "extras_options_jumpscares": "Jumpscares",
             "extras_options_dev_content": "Por trás das Cameras",
             "extras_options_minigames": "Minigames",
             "extras_options_cutscenes": "Cenas",
             "extras_options_custom_night": "Noite Personalizada",
+            "extras_options_evidences": "Evidências",
             "extras_options_credits": "Créditos"
         },
         "extras_category_animatronics": {

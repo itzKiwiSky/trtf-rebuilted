@@ -118,6 +118,12 @@ function ExtrasState:enter()
                 end,
             },
             {
+                text = languageService["extras_options_evidences"],
+                action = function()
+                    --doTransition(CustomNightState)
+                end,
+            },
+            {
                 text = languageService["gameover_button_exit"],
                 action = function()
                     doTransition(MenuState)
