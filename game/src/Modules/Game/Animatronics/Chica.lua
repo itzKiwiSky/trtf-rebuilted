@@ -34,7 +34,7 @@ function Chica:update(elapsed)
                 self:interference()
             end
 
-            if not NightState.officeState.hasAnimatronicInOffice then
+            if not NightState.officeState.hasAnimatronicInOffice and not NightState.officeState.hasAnimatronicInFrontOffice then
                 self.currentState = self.currentState + 1
             end
             if NightState.officeState.flashlight.state then
@@ -52,7 +52,7 @@ function Chica:update(elapsed)
 
         -- in office --
         self.timer = self.timer + elapsed
-        if self.timer >= 0.025 then
+        if self.timer >= 0.023 then
             self.timer = 0
             self.patience = self.patience + 1
             NightState.officeState.hasAnimatronicInOffice = true

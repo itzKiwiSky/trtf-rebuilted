@@ -21,8 +21,47 @@ ps:setSpin(1.6669819355011, 10.200451850891)
 ps:setSpinVariation(1)
 ps:setSpread(0.71807831525803)
 ps:setTangentialAcceleration(0, 0)
-ps:setQuads(love.graphics.newQuad(0, 0, 13, 13, 91, 78), love.graphics.newQuad(13, 0, 13, 13, 91, 78), love.graphics.newQuad(26, 0, 13, 13, 91, 78), love.graphics.newQuad(39, 0, 13, 13, 91, 78), love.graphics.newQuad(52, 0, 13, 13, 91, 78), love.graphics.newQuad(65, 0, 13, 13, 91, 78), love.graphics.newQuad(78, 0, 13, 13, 91, 78), love.graphics.newQuad(0, 13, 13, 13, 91, 78), love.graphics.newQuad(13, 13, 13, 13, 91, 78), love.graphics.newQuad(26, 13, 13, 13, 91, 78), love.graphics.newQuad(39, 13, 13, 13, 91, 78), love.graphics.newQuad(52, 13, 13, 13, 91, 78), love.graphics.newQuad(65, 13, 13, 13, 91, 78), love.graphics.newQuad(78, 13, 13, 13, 91, 78), love.graphics.newQuad(0, 26, 13, 13, 91, 78), love.graphics.newQuad(13, 26, 13, 13, 91, 78), love.graphics.newQuad(26, 26, 13, 13, 91, 78), love.graphics.newQuad(39, 26, 13, 13, 91, 78), love.graphics.newQuad(52, 26, 13, 13, 91, 78), love.graphics.newQuad(65, 26, 13, 13, 91, 78), love.graphics.newQuad(78, 26, 13, 13, 91, 78), love.graphics.newQuad(0, 39, 13, 13, 91, 78), love.graphics.newQuad(13, 39, 13, 13, 91, 78), love.graphics.newQuad(26, 39, 13, 13, 91, 78), love.graphics.newQuad(39, 39, 13, 13, 91, 78), love.graphics.newQuad(52, 39, 13, 13, 91, 78), love.graphics.newQuad(65, 39, 13, 13, 91, 78), love.graphics.newQuad(78, 39, 13, 13, 91, 78), love.graphics.newQuad(0, 52, 13, 13, 91, 78), love.graphics.newQuad(13, 52, 13, 13, 91, 78), love.graphics.newQuad(26, 52, 13, 13, 91, 78), love.graphics.newQuad(39, 52, 13, 13, 91, 78), love.graphics.newQuad(52, 52, 13, 13, 91, 78), love.graphics.newQuad(65, 52, 13, 13, 91, 78), love.graphics.newQuad(78, 52, 13, 13, 91, 78), love.graphics.newQuad(0, 65, 13, 13, 91, 78), love.graphics.newQuad(13, 65, 13, 13, 91, 78), love.graphics.newQuad(26, 65, 13, 13, 91, 78), love.graphics.newQuad(39, 65, 13, 13, 91, 78), love.graphics.newQuad(52, 65, 13, 13, 91, 78), love.graphics.newQuad(65, 65, 13, 13, 91, 78))
--- At draw time:
--- love.graphics.setBlendMode("add")
--- love.graphics.draw(ps, 8+0, -334+0)
+ps:setQuads(
+    love.graphics.newQuad(0, 0, 13, 13, 91, 78),
+    love.graphics.newQuad(13, 0, 13, 13, 91, 78),
+    love.graphics.newQuad(26, 0, 13, 13, 91, 78),
+    love.graphics.newQuad(39, 0, 13, 13, 91, 78),
+    love.graphics.newQuad(52, 0, 13, 13, 91, 78),
+    love.graphics.newQuad(65, 0, 13, 13, 91, 78),
+    love.graphics.newQuad(78, 0, 13, 13, 91, 78),
+    love.graphics.newQuad(0, 13, 13, 13, 91, 78),
+    love.graphics.newQuad(13, 13, 13, 13, 91, 78),
+    love.graphics.newQuad(26, 13, 13, 13, 91, 78),
+    love.graphics.newQuad(39, 13, 13, 13, 91, 78),
+    love.graphics.newQuad(52, 13, 13, 13, 91, 78),
+    love.graphics.newQuad(65, 13, 13, 13, 91, 78),
+    love.graphics.newQuad(78, 13, 13, 13, 91, 78),
+    love.graphics.newQuad(0, 26, 13, 13, 91, 78),
+    love.graphics.newQuad(13, 26, 13, 13, 91, 78),
+    love.graphics.newQuad(26, 26, 13, 13, 91, 78),
+    love.graphics.newQuad(39, 26, 13, 13, 91, 78),
+    love.graphics.newQuad(52, 26, 13, 13, 91, 78),
+    love.graphics.newQuad(65, 26, 13, 13, 91, 78),
+    love.graphics.newQuad(78, 26, 13, 13, 91, 78),
+    love.graphics.newQuad(0, 39, 13, 13, 91, 78),
+    love.graphics.newQuad(13, 39, 13, 13, 91, 78),
+    love.graphics.newQuad(26, 39, 13, 13, 91, 78),
+    love.graphics.newQuad(39, 39, 13, 13, 91, 78),
+    love.graphics.newQuad(52, 39, 13, 13, 91, 78),
+    love.graphics.newQuad(65, 39, 13, 13, 91, 78),
+    love.graphics.newQuad(78, 39, 13, 13, 91, 78),
+    love.graphics.newQuad(0, 52, 13, 13, 91, 78),
+    love.graphics.newQuad(13, 52, 13, 13, 91, 78),
+    love.graphics.newQuad(26, 52, 13, 13, 91, 78),
+    love.graphics.newQuad(39, 52, 13, 13, 91, 78),
+    love.graphics.newQuad(52, 52, 13, 13, 91, 78),
+    love.graphics.newQuad(65, 52, 13, 13, 91, 78),
+    love.graphics.newQuad(78, 52, 13, 13, 91, 78),
+    love.graphics.newQuad(0, 65, 13, 13, 91, 78),
+    love.graphics.newQuad(13, 65, 13, 13, 91, 78),
+    love.graphics.newQuad(26, 65, 13, 13, 91, 78),
+    love.graphics.newQuad(39, 65, 13, 13, 91, 78),
+    love.graphics.newQuad(52, 65, 13, 13, 91, 78),
+    love.graphics.newQuad(65, 65, 13, 13, 91, 78)
+)
 return ps

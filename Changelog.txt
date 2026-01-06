@@ -117,3 +117,6 @@ Changelog for The return to freddy's Rebuilt Again
     - Kitty and Sugar IAs now waits for each other to enter in the same camera and on the vent, this prevents cases where the two girls are on same camera but the game renders only one of those.
     - added warning state
     - reworked how settings are saved and applied
+    - Added stars on menu
+    - Added "evidences" options on extras
+    - New custom night challenge

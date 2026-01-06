@@ -13,7 +13,7 @@ local function renderDigit(img, quads, x, y, ...)
 end
 
 function WinState:enter()
-    self.ps_confetti = require 'src.Modules.Game.Utils.confettiParticles'
+    self.ps_confetti = require 'src.Modules.Game.Utils.ConfettiParticles'
     for k, v in pairs(AudioSources) do
         v:stop()
     end
