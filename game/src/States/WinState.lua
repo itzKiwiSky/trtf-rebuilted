@@ -30,8 +30,7 @@ function WinState:enter()
         glow = {}
     }
     self.digits.img, self.digits.quads = love.graphics.newQuadFromImage("array", "assets/images/game/display")
-    self.digits.glow.img, self.digits.glow.quads = love.graphics.newQuadFromImage("array",
-        "assets/images/game/display_glow")
+    self.digits.glow.img, self.digits.glow.quads = love.graphics.newQuadFromImage("array", "assets/images/game/display_glow")
 
     self.curNumbers = {
         { 1, 1, 1, 1, 1, 1, 1 },
@@ -141,7 +140,7 @@ function WinState:update(elapsed)
 
     if self.fadeSC then
         self.fadeAcc = self.fadeAcc + elapsed
-        if self.fadeAcc >= 0.07 then
+        if self.fadeAcc >= 0.035 then
             self.fadeOp = self.fadeOp + 0.56 * elapsed
             if self.fadeOp >= 1 then
                 if registers.isStoryMode then
