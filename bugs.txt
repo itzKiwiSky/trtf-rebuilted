@@ -1,4 +1,4 @@
-[.] Lockjaw Minigame softlock
+[X] Lockjaw Minigame softlock
 [X] Continue after see cutscenes
 [X] night 6 don't save
 [X] Sugar and Kitty rebalance
@@ -7,3 +7,4 @@
 [X] add warning screen
 [X] rework settings menu
 [X] removed gamejolt
+[X] Bonnie and Chica merging in your office
