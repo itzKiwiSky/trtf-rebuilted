@@ -120,7 +120,7 @@ function ExtrasState:enter()
             {
                 text = languageService["extras_options_evidences"],
                 action = function()
-                    --doTransition(CustomNightState)
+                    --doTransition(EvidencesState)
                 end,
             },
             {

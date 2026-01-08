@@ -12,6 +12,7 @@ loveloader = require 'src.Modules.System.Utils.loveloader'
 loveframes = require 'src.Modules.System.Utils.loveframes'
 bump = require 'src.Modules.System.Utils.BumpPhysics'
 termite = require 'libraries.Termite'
+eclipseObject = require 'src.Modules.System.EclipseObject'
 
 love._FPSCap = 1000
 love._unfocusedFPSCap = 60
