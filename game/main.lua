@@ -87,9 +87,9 @@ function love.initialize()
                     ["ladies_night"] = false,
                     ["double_trouble"] = false,
                     ["reaction_test"] = false,
+                    ["strings_of_the_past"] = false,
                 }
             }
-
         }
     }
 
