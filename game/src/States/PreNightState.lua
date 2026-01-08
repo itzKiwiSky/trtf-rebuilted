@@ -20,9 +20,9 @@ end
 
 function PreNightState:draw()
     love.graphics.draw(self.bg, 0, 0)
-    love.graphics.draw(self.texture, 0, 130)
+    love.graphics.draw(self.texture, 0, 50)
 
-    love.graphics.printf(languageService["tutorial_title"], self.fnt_title, 0, 96, shove.getViewportWidth(), "center")
+    love.graphics.printf(string.format("%s\n%s", languageService["tutorial_title"], languageService["tutorial_press"]), self.fnt_title, 0, shove.getViewportHeight() - 128, shove.getViewportWidth(), "center")
 
     love.graphics.setColor(0, 0, 0, self.transition.alpha)
     love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
@@ -34,6 +34,17 @@ function PreNightState:update(elapsed)
 end
 
 function PreNightState:keypressed(k)
+    if not self.canPress then return end
+
+    flux.to(self.transition, 1.5, { alpha = 1 })
+        :oncomplete(function()
+            gameSave.save.user.progress.checkedTutorial = true
+            gameSave:saveSlot()
+            gamestate.switch(NightState)
+        end)
+end
+
+function PreNightState:mousepressed(k)
     if not self.canPress then return end
 
     flux.to(self.transition, 1.5, { alpha = 1 })

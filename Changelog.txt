@@ -119,4 +119,4 @@ Changelog for The return to freddy's Rebuilt Again
     - reworked how settings are saved and applied
     - Added stars on menu
     - Added "evidences" options on extras
-    - New custom night challenge
+    - New custom night challenge "Strings of the Past""

@@ -212,6 +212,7 @@
     },
     "tutorial": {
         "tutorial_title": "Before you start playing!",
+        "tutorial_press": "Press any key to continue",
         "tutorial_office": "You have two doors on each side; you can close them, and after a few seconds they will open automatically (you can also close them by pressing A and D respectively). By pressing CTRL, you can turn on the window light, which also activates the lights in the cameras.",
         "tutorial_title_book": "Fazbear guide"
     }

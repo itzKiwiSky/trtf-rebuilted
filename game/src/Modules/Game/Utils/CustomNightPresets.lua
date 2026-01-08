@@ -64,4 +64,17 @@ return {
             sugar = 10,
         }
     },
+    {
+        displayName = "Strings of the Past",
+        ingameID = "strings_of_the_past",
+        values = {
+            bonnie = 6,
+            chica = 6,
+            foxy = 8,
+            freddy = 16,
+            kitty = 10,
+            puppet = 20,
+            sugar = 4,
+        }
+    }
 }
