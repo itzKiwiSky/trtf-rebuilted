@@ -289,7 +289,6 @@ return function()
         decButton:SetY(portraitPanel:GetHeight())
         decButton.drawfunc = buttonSkin
         decButton.OnClick = function(obj, x, y)
-            print(x, y)
             if CustomNightState.animatronicsAI[id] > 0 then
                 CustomNightState.animatronicsAI[id] = CustomNightState.animatronicsAI[id] - 1
                 AIValue:SetText(tostring(CustomNightState.animatronicsAI[id]))

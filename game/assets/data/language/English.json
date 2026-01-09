@@ -215,5 +215,12 @@
         "tutorial_press": "Press any key to continue",
         "tutorial_office": "You have two doors on each side; you can close them, and after a few seconds they will open automatically (you can also close them by pressing A and D respectively). By pressing CTRL, you can turn on the window light, which also activates the lights in the cameras.",
         "tutorial_title_book": "Fazbear guide"
+    },
+    "evidences": {
+        "evidences_need_beat_challenge": "Beat %s to unlock this trophy",
+        "evidences_beat_challenge": "Awarded after beating %s!",
+        "evidences_trophies": {
+            "evidences_trophies_contract": "Remodelling Contract 1990"
+        }
     }
 }

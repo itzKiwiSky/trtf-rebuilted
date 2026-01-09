@@ -1,7 +1,7 @@
 return {
     {
         displayName = "Fazbear Crew",
-        ingameID = "fazcrew",
+        ingameID = "fazbear_crew",
         values = {
             bonnie = 12,
             chica = 12,

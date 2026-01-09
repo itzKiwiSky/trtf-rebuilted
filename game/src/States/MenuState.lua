@@ -39,22 +39,29 @@ function MenuState:enter()
             Slab.BeginWindow("menuNightDev", { Title = "Development" })
             Slab.Text("Save editor | progress")
 
-            for key, value in spairs(gameSave.save.user.progress) do
-                switch(type(value), {
-                    ["boolean"] = function()
-                        if Slab.CheckBox(value, tostring(key)) then
-                            gameSave.save.user.progress[key] = not gameSave.save.user.progress[key]
+            local function getOptions(tbl)
+                for key, value in spairs(tbl) do
+                    switch(type(value), {
+                        ["boolean"] = function()
+                            if Slab.CheckBox(value, tostring(key)) then
+                                tbl[key] = not tbl[key]
+                            end
+                        end,
+                        ["number"] = function()
+                            Slab.Text(key)
+                            Slab.SameLine()
+                            if Slab.Input("inputNumberKey_" .. tostring(key), { Text = tostring(value), ReturnOnText = false, NumbersOnly = true }) then
+                                tbl[key] = Slab.GetInputNumber()
+                            end
+                        end,
+                        ["table"] = function()
+                            getOptions(value)
                         end
-                    end,
-                    ["number"] = function()
-                        Slab.Text(key)
-                        Slab.SameLine()
-                        if Slab.Input("inputNumberKey_" .. tostring(key), { Text = tostring(value), ReturnOnText = false, NumbersOnly = true }) then
-                            gameSave.save.user.progress[key] = Slab.GetInputNumber()
-                        end
-                    end
-                })
+                    })
+                end
             end
+
+            getOptions(gameSave.save.user.progress)
 
             if Slab.Button("Save slot") then
                 gameSave:saveSlot()

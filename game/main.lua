@@ -82,8 +82,7 @@ function love.initialize()
                     beatNight6 = false,
                 },
                 challenges = {
-                    ["fazcrew"] = false,
-                    ["vsall"] = false,
+                    ["fazbear_crew"] = false,
                     ["ladies_night"] = false,
                     ["double_trouble"] = false,
                     ["reaction_test"] = false,

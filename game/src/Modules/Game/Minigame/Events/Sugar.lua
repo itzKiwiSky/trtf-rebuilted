@@ -18,14 +18,14 @@ function Minigame.init()
     AudioSources["msc_bg_sugar"]:setLooping(true)
     AudioSources["msc_bg_sugar"]:setVolume(0.75)
 
-    MinigameSceneState.displayDate = "10-21-2005"
+    MinigameSceneState.displayDate = "10-21-2000"
     MinigameSceneState.displayText = languageService["minigame_display_sugar_find_key"]
 
     local charsPos = { "freddy", "bonnie", "chica", "foxy" }
 
     for _, c in ipairs(charsPos) do
-        local char = Minigame.statues:new(MinigameSceneState.animatronicSprites, 
-        MinigameSceneState.animSets[c]["idle"],
+        local char = Minigame.statues:new(MinigameSceneState.animatronicSprites,
+            MinigameSceneState.animSets[c]["idle"],
             MinigameSceneState.spawnAreas[c].centerX, MinigameSceneState.spawnAreas[c].centerY, false, true
         )
 
@@ -41,7 +41,7 @@ function Minigame.init()
     end
 
     -- add the barrier statue --
-    local barrier = Minigame.statues:new(MinigameSceneState.barrierSprites, MinigameSceneState.animSets["barrier"]["door"], 
+    local barrier = Minigame.statues:new(MinigameSceneState.barrierSprites, MinigameSceneState.animSets["barrier"]["door"],
         MinigameSceneState.spawnAreas["barrier_big"].centerX, MinigameSceneState.spawnAreas["barrier_big"].centerY, false, false, 1
     )
     barrier.drawOffset.x = -8
@@ -75,7 +75,7 @@ function Minigame.init()
     local guardImg = love.graphics.newImage("assets/images/game/minigames/vincent.png")
     local animQuads = love.graphics.getQuads(guardImg, "assets/images/game/minigames/vincent.json", "hash")
 
-    local guard = Minigame.guard:new({ img = guardImg, quads = animQuads }, 
+    local guard = Minigame.guard:new({ img = guardImg, quads = animQuads },
         MinigameSceneState.spawnAreas["vincent"].centerX, MinigameSceneState.spawnAreas["vincent"].centerY
     )
     guard.flipped = false

@@ -215,5 +215,12 @@
         "tutorial_press": "Presione cualquier tecla para continuar",
         "tutorial_office": "Tienes dos puertas a los lados, puedes cerrarlas, al cabo de unos segundos se abriran automaticamente (Tambien puedes cerrarlas apretando A y D respectivamente). Tambien apretando CTRL puedes encender la luz de la ventana, la misma te sirve para encender las luces en las camaras",
         "tutorial_title_book": "Manual guía Fazbear"
+    },
+    "evidences": {
+        "evidences_need_beat_challenge": "Completa %s para desbloquear este trofeo",
+        "evidences_beat_challenge": "Premio por completar %s!",
+        "evidences_trophies": {
+            "evidences_trophies_contract": "Contrato de remodelacion 1990"
+        }
     }
 }
