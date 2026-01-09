@@ -7,17 +7,23 @@ function EvidencesState:enter()
     self.lock = love.graphics.newImage("assets/images/game/lock.png")
     self.light = love.graphics.newImage("assets/images/game/night8/lantern_light.png")
 
+    self.currentZoom = 1
+    self.targetZoom = 1
+
     self.assets = {}
+    self.currentSelection = ""
 
     self.buttons = {
         config = {
             startX = 72,
             startY = 120,
             padding = 72,
-            scale = 0.15,
+            scale = 0.143,
         },
         elements = {},
     }
+
+    self.camera = camera(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
 
     AudioSources["msc_evidences_bg"]:setLooping(true)
     AudioSources["msc_evidences_bg"]:play()
@@ -49,6 +55,7 @@ function EvidencesState:enter()
     for name, challenge in spairs(gameSave.save.user.progress.challenges) do
         local image = self.assets[name]
         self.buttons.elements[name] = {
+            id = name,
             x = self.buttons.config.startX + x,
             y = self.buttons.config.startY + y,
             w = 0,
@@ -96,6 +103,17 @@ function EvidencesState:draw()
     love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
     love.graphics.setColor(1, 1, 1, 1)
 
+    love.graphics.setBlendMode("add")
+    love.graphics.draw(self.light, shove.getViewportWidth() - 350, 32, math.rad(-90), 0.75, 0.75, self.light:getWidth() / 2, self.light:getHeight() / 2)
+    love.graphics.setBlendMode("alpha")
+
+    if self.currentSelection ~= "" then
+        self.camera:attach()
+        local sprite = self.assets[self.currentSelection]
+        love.graphics.draw(sprite, shove.getViewportWidth() - 350, shove.getViewportHeight() / 2, 0, self.currentZoom, self.currentZoom, sprite:getWidth() / 2, sprite:getHeight() / 2)
+        self.camera:detach()
+    end
+
     love.graphics.draw(self.crtOverlay, 0, 0, 0, shove.getViewportWidth() / self.crtOverlay:getWidth(), shove.getViewportHeight() / self.crtOverlay:getHeight())
     for name, btn in spairs(self.buttons.elements) do
         local scaleGlow = 1.5
@@ -111,12 +129,67 @@ function EvidencesState:draw()
         love.graphics.draw(btn.img, btn.x, btn.y, 0, self.buttons.config.scale, self.buttons.config.scale)
         love.graphics.setColor(1, 1, 1, 1)
 
-        --love.graphics.rectangle("line", btn.x, btn.y, btn.w, btn.h)
+        love.graphics.rectangle("line", btn.x, btn.y, btn.w, btn.h)
     end
 end
 
 function EvidencesState:update(elapsed)
+    self.currentZoom = math.lerp(self.currentZoom, self.targetZoom, 0.05)
 
+    self.camera.x = math.clamp(self.camera.x, shove.getViewportWidth() / 2, shove.getViewportWidth())
+    self.camera.y = math.clamp(self.camera.y, shove.getViewportHeight() / 2, shove.getViewportHeight())
+end
+
+function EvidencesState:mousepressed(x, y, button)
+    local inside, vmx, vmy = shove.mouseToViewport()
+
+    if button == 1 then
+        for name, btn in spairs(self.buttons.elements) do
+            if collision.pointRect({ x = vmx, y = vmy }, btn) then
+                self.currentSelection = btn.id
+            end
+        end
+    end
+end
+
+function EvidencesState:wheelmoved(x, y)
+    if y < 0 then
+        if self.targetZoom > 0.45 then
+            self.targetZoom = self.targetZoom - 0.05
+        end
+    elseif y > 0 then
+        if self.targetZoom < 1.8 then
+            self.targetZoom = self.targetZoom + 0.05
+        end
+    end
+end
+
+function EvidencesState:mousemoved(x, y, dx, dy)
+    if love.mouse.isDown(3) then
+        self.camera.x = self.camera.x - dx / self.camera.scale
+        self.camera.y = self.camera.y - dy / self.camera.scale
+    end
+end
+
+function EvidencesState:leave()
+    flux.removeAll()
+    for k, v in pairs(AudioSources) do
+        v:stop()
+    end
+
+    local function releaseRecursive(tbl)
+        for key, value in pairs(tbl) do
+            if type(value) == "table" then
+                releaseRecursive(value)
+            else
+                if type(value) == "userdata" and value.release then
+                    value:release()
+                end
+            end
+        end
+    end
+
+    releaseRecursive(self.assets)
 end
 
 return EvidencesState
