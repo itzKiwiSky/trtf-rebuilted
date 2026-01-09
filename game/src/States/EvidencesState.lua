@@ -7,6 +7,8 @@ function EvidencesState:enter()
     self.lock = love.graphics.newImage("assets/images/game/lock.png")
     self.light = love.graphics.newImage("assets/images/game/night8/lantern_light.png")
 
+    self.fnt_text = fontcache.getFont("ocrx", 28)
+
     self.currentZoom = 1
     self.targetZoom = 1
 
@@ -33,8 +35,6 @@ function EvidencesState:enter()
         local name = (value:gsub("%.[^.]+$", "")):match("[^/]+$")
         self.assets[name] = love.graphics.newImage(value)
     end
-
-    print(inspect(self.assets))
 
     self.fxBlurBG = moonshine(moonshine.effects.gaussianblur)
     self.fxBlurBG.gaussianblur.sigma = 15
@@ -64,8 +64,6 @@ function EvidencesState:enter()
             img = self.assets[name]
         }
 
-        print(name)
-
         self.buttons.elements[name].w = self.assets[name]:getWidth() * self.buttons.config.scale
         self.buttons.elements[name].h = self.assets[name]:getHeight() * self.buttons.config.scale
 
@@ -79,6 +77,10 @@ function EvidencesState:enter()
             y = (y + self.assets[name]:getHeight() * self.buttons.config.scale) + self.buttons.config.padding
         end
     end
+
+    loveView.unloadView()
+    loveView.registerLoveframesEvents()
+    loveView.loadView("src/Modules/Game/Views/Shared.lua")
 end
 
 function EvidencesState:draw()
@@ -110,8 +112,20 @@ function EvidencesState:draw()
     if self.currentSelection ~= "" then
         self.camera:attach()
         local sprite = self.assets[self.currentSelection]
+
+        if self.buttons.elements[self.currentSelection].unlocked then
+            love.graphics.setColor(1, 1, 1, 1)
+        else
+            love.graphics.setColor(0, 0, 0, 1)
+        end
         love.graphics.draw(sprite, shove.getViewportWidth() - 350, shove.getViewportHeight() / 2, 0, self.currentZoom, self.currentZoom, sprite:getWidth() / 2, sprite:getHeight() / 2)
+        love.graphics.setColor(1, 1, 1, 1)
         self.camera:detach()
+
+        love.graphics.setColor(0, 0, 0, 1)
+        love.graphics.draw(self.shadowGlow, -64, shove.getViewportHeight() - 68, 0, self.shadowGlow:getWidth() / self.fnt_text:getWidth(languageService["evidences_mouse_drag"]) + 32, self.fnt_text:getHeight() + 8, self.shadowGlow:getWidth())
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.printf(languageService["evidences_mouse_drag"], self.fnt_text, -32, shove.getViewportHeight() - 64, shove.getViewportWidth() - 32, "right")
     end
 
     love.graphics.draw(self.crtOverlay, 0, 0, 0, shove.getViewportWidth() / self.crtOverlay:getWidth(), shove.getViewportHeight() / self.crtOverlay:getHeight())
@@ -131,6 +145,8 @@ function EvidencesState:draw()
 
         love.graphics.rectangle("line", btn.x, btn.y, btn.w, btn.h)
     end
+
+    loveView.draw()
 end
 
 function EvidencesState:update(elapsed)
@@ -138,6 +154,8 @@ function EvidencesState:update(elapsed)
 
     self.camera.x = math.clamp(self.camera.x, shove.getViewportWidth() / 2, shove.getViewportWidth())
     self.camera.y = math.clamp(self.camera.y, shove.getViewportHeight() / 2, shove.getViewportHeight())
+
+    loveView.update(elapsed)
 end
 
 function EvidencesState:mousepressed(x, y, button)
@@ -153,6 +171,7 @@ function EvidencesState:mousepressed(x, y, button)
 end
 
 function EvidencesState:wheelmoved(x, y)
+    if self.currentSelection == "" then return end
     if y < 0 then
         if self.targetZoom > 0.45 then
             self.targetZoom = self.targetZoom - 0.05
@@ -165,7 +184,8 @@ function EvidencesState:wheelmoved(x, y)
 end
 
 function EvidencesState:mousemoved(x, y, dx, dy)
-    if love.mouse.isDown(3) then
+    if self.currentSelection == "" then return end
+    if love.mouse.isDown(1) then
         self.camera.x = self.camera.x - dx / self.camera.scale
         self.camera.y = self.camera.y - dy / self.camera.scale
     end
@@ -176,6 +196,8 @@ function EvidencesState:leave()
     for k, v in pairs(AudioSources) do
         v:stop()
     end
+
+    loveView.unloadView()
 
     local function releaseRecursive(tbl)
         for key, value in pairs(tbl) do

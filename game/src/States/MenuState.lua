@@ -480,7 +480,7 @@ function MenuState:draw()
     end
 
     -- journal --
-    love.graphics.printf("@ 2025 BrightSmileTeam", self.fnt_menu_low, -32, shove.getViewportHeight() - (self.fnt_menu_low:getHeight() + 5), shove.getViewportWidth(), "right")
+    love.graphics.printf("@ 2024-2026 BrightSmileTeam", self.fnt_menu_low, -32, shove.getViewportHeight() - (self.fnt_menu_low:getHeight() + 5), shove.getViewportWidth(), "right")
 
     love.graphics.setColor(1, 1, 1, self.journalConfig.alpha)
     love.graphics.draw(self.newGameJournal, shove.getViewportWidth() / 2, shove.getViewportHeight() / 2, math.rad(self.journalConfig.angle), self.journalConfig.zoom, self.journalConfig.zoom, self.newGameJournal:getWidth() / 2, self.newGameJournal:getHeight() / 2)

@@ -219,8 +219,9 @@
     "evidences": {
         "evidences_need_beat_challenge": "Completa %s para desbloquear este trofeo",
         "evidences_beat_challenge": "Premio por completar %s!",
+        "evidences_mouse_drag": "Haga clic con el botón izquierdo del ratón para desplazarse.",
         "evidences_trophies": {
-            "evidences_trophies_contract": "Contrato de remodelacion 1990"
+            "evidences_trophies_fazbear_crew": "Contrato de remodelacion 1990"
         }
     }
 }

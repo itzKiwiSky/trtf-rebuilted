@@ -219,8 +219,9 @@
     "evidences": {
         "evidences_need_beat_challenge": "Beat %s to unlock this trophy",
         "evidences_beat_challenge": "Awarded after beating %s",
+        "evidences_mouse_drag": "Click with left mouse button to move around",
         "evidences_trophies": {
-            "evidences_trophies_contract": "Contrato de remodelacion 1990"
+            "evidences_trophies_fazbear_crew": "Contrato de remodelacion 1990"
         }
     }
 }
