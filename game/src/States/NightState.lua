@@ -435,6 +435,7 @@ function NightState:enter()
         _f = 0,
         _d = false,
         _tabletisDown = false,
+        canUseTablet = true,
         onAnimatronicInOffice = function() end,
         nightRun = false,
         jumpscareRunning = false,
@@ -582,7 +583,9 @@ function NightState:enter()
         if gameSave.save.user.progress.night < 6 then
             gameSave.save.user.progress.night = gameSave.save.user.progress.night + 1
         end
-        gameSave.save.user.progress.challenges[self.challengeID] = true
+        if self.challengeID ~= "vsall" then
+            gameSave.save.user.progress.challenges[self.challengeID] = true
+        end
         gameSave.save.user.progress.newgame = false
         gameSave:saveSlot()
         if self.isSpecialChallenge then
@@ -628,6 +631,7 @@ function NightState:enter()
         if self.officeState.tabletUp then
             self.tabletController:setState(false)
             self.officeState.tabletUp = false
+            self.officeState.canUseTablet = false
         end
     end
 
@@ -985,7 +989,7 @@ function NightState:update(elapsed)
     -- camera --
     if not self.officeState.isOfficeDisabled then
         if collision.pointRect({ x = vmx, y = vmy }, self.camBtn) then
-            if not self.officeState.maskUp then
+            if not self.officeState.maskUp and self.officeState.canUseTablet then
                 if not self.camBtn.isHover then
                     self.camBtn.isHover = true
                     if not self.tabletController.animationRunning then

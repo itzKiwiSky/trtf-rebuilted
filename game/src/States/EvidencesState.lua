@@ -109,6 +109,8 @@ function EvidencesState:draw()
     love.graphics.draw(self.light, shove.getViewportWidth() - 350, 32, math.rad(-90), 0.75, 0.75, self.light:getWidth() / 2, self.light:getHeight() / 2)
     love.graphics.setBlendMode("alpha")
 
+    love.graphics.draw(self.crtOverlay, 0, 0, 0, shove.getViewportWidth() / self.crtOverlay:getWidth(), shove.getViewportHeight() / self.crtOverlay:getHeight())
+
     if self.currentSelection ~= "" then
         self.camera:attach()
         local sprite = self.assets[self.currentSelection]
@@ -128,7 +130,6 @@ function EvidencesState:draw()
         love.graphics.printf(languageService["evidences_mouse_drag"], self.fnt_text, -32, shove.getViewportHeight() - 64, shove.getViewportWidth() - 32, "right")
     end
 
-    love.graphics.draw(self.crtOverlay, 0, 0, 0, shove.getViewportWidth() / self.crtOverlay:getWidth(), shove.getViewportHeight() / self.crtOverlay:getHeight())
     for name, btn in spairs(self.buttons.elements) do
         local scaleGlow = 1.5
         love.graphics.setBlendMode("add")
@@ -163,7 +164,7 @@ function EvidencesState:mousepressed(x, y, button)
 
     if button == 1 then
         for name, btn in spairs(self.buttons.elements) do
-            if collision.pointRect({ x = vmx, y = vmy }, btn) then
+            if collision.pointRect({ x = vmx, y = vmy }, btn) and btn.unlocked then
                 self.currentSelection = btn.id
             end
         end

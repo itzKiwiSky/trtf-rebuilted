@@ -64,6 +64,7 @@ function Chica:update(elapsed)
             self.patience = 0
             self.timer = 0
             self.currentState = 1
+            NightState.officeState.canUseTablet = true
             NightState.officeState.hasAnimatronicInOffice = false
             AudioSources["sfx_stare"]:stop()
             NightState.officeState.fadealpha = 1
