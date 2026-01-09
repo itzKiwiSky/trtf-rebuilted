@@ -92,6 +92,10 @@ function EvidencesState:draw()
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.setBlendMode("alpha")
 
+    love.graphics.setColor(0, 0, 0, 0.5)
+    love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
+    love.graphics.setColor(1, 1, 1, 1)
+
     love.graphics.draw(self.crtOverlay, 0, 0, 0, shove.getViewportWidth() / self.crtOverlay:getWidth(), shove.getViewportHeight() / self.crtOverlay:getHeight())
     for name, btn in spairs(self.buttons.elements) do
         local scaleGlow = 1.5
