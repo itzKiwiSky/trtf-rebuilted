@@ -619,6 +619,7 @@ function MenuState:mousepressed(x, y, button)
             self.fadeTween:ease("linear")
             self.fadeTween:oncomplete(function()
                 VideoPlayerState.path = gameSave.save.user.settings.misc.language == "Espanol" and "assets/videos/intro_cutscene_es.ogv" or "assets/videos/intro_cutscene_en.ogv"
+                VideoPlayerState:preload()
                 VideoPlayerState.onSceneComplete = function()
                     LoadingState.mode = "cutscene"
                     gameSave.save.user.progress.canContinue = true

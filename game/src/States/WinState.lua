@@ -118,13 +118,13 @@ function WinState:draw()
     self.winCamera:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
     for d = 1, #self.curNumbers, 1 do
         local c = d >= 3 and 64 or 0
-        renderDigit(self.digits.img, self.digits.quads, 50 + (172 * d) + c, 100, unpack(self.curNumbers[d]))
+        renderDigit(self.digits.img, self.digits.quads, 50 + (172 * d) + c, 170, unpack(self.curNumbers[d]))
         love.graphics.setBlendMode("add")
-        renderDigit(self.digits.glow.img, self.digits.glow.quads, 50 + (172 * d) + c, 100, unpack(self.curNumbers[d]))
+        renderDigit(self.digits.glow.img, self.digits.glow.quads, 50 + (172 * d) + c, 170, unpack(self.curNumbers[d]))
         love.graphics.setBlendMode("alpha")
     end
-    love.graphics.circle("fill", shove.getViewportWidth() / 2, shove.getViewportHeight() / 2 - 178, 8)
-    love.graphics.circle("fill", shove.getViewportWidth() / 2, shove.getViewportHeight() / 2 - 64, 8)
+    love.graphics.circle("fill", shove.getViewportWidth() / 2, shove.getViewportHeight() / 2 - 138, 8)
+    love.graphics.circle("fill", shove.getViewportWidth() / 2, shove.getViewportHeight() / 2 + 32, 8)
     self.winCamera:detach()
     love.graphics.setColor(1, 1, 1, 1)
 

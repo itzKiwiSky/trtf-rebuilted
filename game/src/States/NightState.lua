@@ -612,15 +612,17 @@ function NightState:enter()
                 end)
         else
             if registers.isStoryMode then
-                local minigames = {
-                    "Bonnie",
-                    "Foxy",
-                    "Sugar",
-                    "Freddy",
-                    "Frankburt"
-                }
-                if self.nightID <= #minigames then
-                    MinigameSceneState.currentMinigame = minigames[self.nightID]
+                if self.night < 6 then
+                    local minigames = {
+                        "Bonnie",
+                        "Foxy",
+                        "Sugar",
+                        "Freddy",
+                        "Frankburt"
+                    }
+                    if self.nightID <= #minigames then
+                        MinigameSceneState.currentMinigame = minigames[self.nightID]
+                    end
                 end
             end
             gamestate.switch(WinState)

@@ -221,7 +221,11 @@
         "evidences_beat_challenge": "Premio por completar %s!",
         "evidences_mouse_drag": "Haga clic con el botón izquierdo del ratón para desplazarse.",
         "evidences_trophies": {
-            "evidences_trophies_fazbear_crew": "Contrato de remodelacion 1990"
+            "evidences_trophies_fazbear_crew": "Contrato de remodelacion 1990",
+            "evidences_trophies_double_trouble": "La desaparición de Otto Spencer",
+            "evidences_trophies_ladies_night": "",
+            "evidences_trophies_strings_from_the_past": "",
+            "evidences_trophies_reaction_test": ""
         }
     }
 }

@@ -8,6 +8,7 @@ function EvidencesState:enter()
     self.light = love.graphics.newImage("assets/images/game/night8/lantern_light.png")
 
     self.fnt_text = fontcache.getFont("ocrx", 28)
+    self.fnt_title = fontcache.getFont("ocrx", 36)
 
     self.currentZoom = 1
     self.targetZoom = 1
@@ -18,7 +19,7 @@ function EvidencesState:enter()
     self.buttons = {
         config = {
             startX = 72,
-            startY = 120,
+            startY = 200,
             padding = 72,
             scale = 0.143,
         },
@@ -60,9 +61,24 @@ function EvidencesState:enter()
             y = self.buttons.config.startY + y,
             w = 0,
             h = 0,
+            isCollection = false,
+            collection = {},
             unlocked = challenge,
-            img = self.assets[name]
+            img = self.assets[name],
         }
+
+        if table.contains({ "double_trouble" }, name) then
+            self.buttons.elements[name].isCollection = true
+            -- iterate over assets and get all "evidence" prefixed files --
+
+            for assetName, imgData in pairs(self.assets) do
+                if assetName:match("^evidence_") then
+                    table.push(self.buttons.elements[name].collection, imgData)
+                end
+            end
+        end
+
+
 
         self.buttons.elements[name].w = self.assets[name]:getWidth() * self.buttons.config.scale
         self.buttons.elements[name].h = self.assets[name]:getHeight() * self.buttons.config.scale
@@ -114,6 +130,7 @@ function EvidencesState:draw()
     if self.currentSelection ~= "" then
         self.camera:attach()
         local sprite = self.assets[self.currentSelection]
+        local isCollection = self.buttons.elements[self.currentSelection].isCollection
 
         if self.buttons.elements[self.currentSelection].unlocked then
             love.graphics.setColor(1, 1, 1, 1)
@@ -124,10 +141,44 @@ function EvidencesState:draw()
         love.graphics.setColor(1, 1, 1, 1)
         self.camera:detach()
 
+        local fontPos = shove.getViewportWidth() - self.fnt_text:getWidth(languageService["evidences_mouse_drag"])
+
         love.graphics.setColor(0, 0, 0, 1)
-        love.graphics.draw(self.shadowGlow, -64, shove.getViewportHeight() - 68, 0, self.shadowGlow:getWidth() / self.fnt_text:getWidth(languageService["evidences_mouse_drag"]) + 32, self.fnt_text:getHeight() + 8, self.shadowGlow:getWidth())
+        love.graphics.draw(
+            self.shadowGlow,
+            fontPos + 128,
+            shove.getViewportHeight() - 64, math.rad(-90),
+            (self.shadowGlow:getWidth() / self.fnt_text:getWidth(languageService["evidences_mouse_drag"])) * 2.5,
+            (self.shadowGlow:getHeight() / self.fnt_text:getHeight() * 1.5),
+            self.shadowGlow:getWidth() / 2, self.shadowGlow:getHeight() / 2
+        )
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(languageService["evidences_mouse_drag"], self.fnt_text, -32, shove.getViewportHeight() - 64, shove.getViewportWidth() - 32, "right")
+
+        love.graphics.print(
+            languageService["evidences_mouse_drag"],
+            self.fnt_text, fontPos + 128, shove.getViewportHeight() - 68, 0, 1, 1,
+            self.fnt_text:getWidth(languageService["evidences_mouse_drag"]) / 2,
+            self.fnt_text:getHeight() / 2
+        )
+
+        local fontPosTitle = shove.getViewportWidth() - self.fnt_title:getWidth(languageService["evidences_trophies_" .. self.currentSelection])
+
+        love.graphics.setColor(0, 0, 0, 1)
+        love.graphics.draw(
+            self.shadowGlow,
+            fontPosTitle - 48, 96, math.rad(-90),
+            (self.shadowGlow:getWidth() / self.fnt_title:getWidth(languageService["evidences_trophies_" .. self.currentSelection])) * 2.5,
+            (self.shadowGlow:getHeight() / self.fnt_title:getHeight() * 3.5),
+            self.shadowGlow:getWidth() / 2, self.shadowGlow:getHeight() / 2
+        )
+        love.graphics.setColor(1, 1, 1, 1)
+
+        love.graphics.print(
+            languageService["evidences_trophies_" .. self.currentSelection],
+            self.fnt_title, fontPosTitle - 48, 96, 0, 1, 1,
+            self.fnt_title:getWidth(languageService["evidences_trophies_" .. self.currentSelection]) / 2,
+            self.fnt_title:getHeight() / 2
+        )
     end
 
     for name, btn in spairs(self.buttons.elements) do
@@ -144,7 +195,7 @@ function EvidencesState:draw()
         love.graphics.draw(btn.img, btn.x, btn.y, 0, self.buttons.config.scale, self.buttons.config.scale)
         love.graphics.setColor(1, 1, 1, 1)
 
-        love.graphics.rectangle("line", btn.x, btn.y, btn.w, btn.h)
+        --love.graphics.rectangle("line", btn.x, btn.y, btn.w, btn.h)
     end
 
     loveView.draw()

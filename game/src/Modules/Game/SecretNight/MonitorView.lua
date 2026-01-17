@@ -65,7 +65,7 @@ local function generateMatrix(matrixSize, tileSize)
                 pos = { x = x, y = y },
                 lastCellID = 0,
                 wasColliding = false,
-                id = tonumber(lume.weightedchoice({ ["1"] = 80, ["2"] = 20 })),
+                id = tonumber(lume.weightedchoice({ ["1"] = 90, ["2"] = 10 })),
                 hitbox = {
                     x = 0,
                     y = 0,

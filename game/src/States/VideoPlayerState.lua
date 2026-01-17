@@ -5,6 +5,17 @@ VideoPlayerState.triggered = false
 VideoPlayerState.jumpScene = false
 VideoPlayerState.onSceneComplete = function() end
 
+local function tryJump(self)
+    if self.jumpScene then return end
+    if not self.canJump then return end
+    VideoPlayerState.jumpScene = true
+    flux.to(self.fade, 3, { alpha = 1, volume = 0 }):oncomplete(function()
+        self.sceneRun:pause()
+        self.sceneRun:seek(0)
+        VideoPlayerState.onSceneComplete()
+    end)
+end
+
 function VideoPlayerState:preload()
     self.sceneRun = love.graphics.newVideo(VideoPlayerState.path)
 end
@@ -22,15 +33,14 @@ function VideoPlayerState:enter()
     end
 
     self.fnt_jump = fontcache.getFont("ocrx", 28)
+    self.canJump = false
 
     self.fade = { alpha = 0, volume = 1 }
     self.fadetext = { alpha = 0 }
 
-    flux.to(self.fadetext, 3, { alpha = 1 }):delay(3)
-    flux.to(self.fadetext, 3, { alpha = 1 }):delay(3)
+    flux.to(self.fadetext, 3, { alpha = 1 }):delay(3):oncomplete(function() self.canJump = true end)
 
     self.sceneRun:seek(0)
-    print("video play")
     self.sceneRun:play()
 end
 
@@ -58,29 +68,15 @@ function VideoPlayerState:update(elapsed)
         self.triggered = true
         VideoPlayerState.onSceneComplete()
     end
-    flux.update(elapsed)
+    flux.update(elapsed or love.timer.getDelta())
 end
 
 function VideoPlayerState:mousepressed(x, y, button)
-    if not self.jumpScene then
-        VideoPlayerState.jumpScene = true
-        flux.to(self.fade, 3, { alpha = 1, volume = 0 }):oncomplete(function()
-            self.sceneRun:pause()
-            self.sceneRun:seek(0)
-            VideoPlayerState.onSceneComplete()
-        end)
-    end
+    tryJump(self)
 end
 
 function VideoPlayerState:keypressed(k)
-    if not self.jumpScene then
-        VideoPlayerState.jumpScene = true
-        flux.to(self.fade, 3, { alpha = 1, volume = 0 }):oncomplete(function()
-            self.sceneRun:pause()
-            self.sceneRun:seek(0)
-            VideoPlayerState.onSceneComplete()
-        end)
-    end
+    tryJump(self)
 end
 
 function VideoPlayerState:leave()

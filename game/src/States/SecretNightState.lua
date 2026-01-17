@@ -683,6 +683,8 @@ function SecretNightState:draw()
         self.gameCam:detach()
     end
 
+    love.graphics.print(inspect(self.officeState.nightStarted), 2, 2)
+
     if not self.officeState.hideAllShit then
         if self.officeState.wood.holdingWood then
             love.graphics.draw(self.assets["wood_hold"], 0, 0)
@@ -856,7 +858,8 @@ function SecretNightState:update(elapsed)
         end
 
         -- boiler update --
-        if self.officeState.furnace.furnaceFuel > 0 and self.officeState.furnace.vincentIntegrity < 0 then
+        if self.officeState.furnace.furnaceFuel > 0 then
+            print("wtfdsaf")
             self.officeState.furnace.vincentIntegrity = self.officeState.furnace.vincentIntegrity - elapsed * self.officeState.furnace.vincentIntegrityPenault
             self.officeState.furnace.furnaceFuel = self.officeState.furnace.furnaceFuel - elapsed * self.officeState.furnace.fuelPenalty
         end

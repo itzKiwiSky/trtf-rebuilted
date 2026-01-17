@@ -1,6 +1,17 @@
 CutsceneState = {}
 CutsceneState.assets = {}
 
+local function tryJump(self)
+    if self.cutsceneJumped then return end
+    if not self.canJump then return end
+
+    self.cutsceneJumped = true
+    flux.to(self.fade, 3, { alpha = 1, volume = 0 }):oncomplete(function()
+        LoadingState.mode = "normal"
+        gamestate.switch(LoadingState)
+    end)
+end
+
 local function circularPath(t, radius, speed)
     local angle = speed * love.timer.getTime()
 
@@ -27,15 +38,13 @@ function CutsceneState:enter()
     self.cutsceneEnd = false
 
     self.cutsceneJumped = false
+    self.canJump = false
     self.fnt_jump = fontcache.getFont("ocrx", 28)
 
     self.fade = { alpha = 0, volume = 1 }
     self.fadetext = { alpha = 0 }
 
-    self.timerFade = timer.new()
-    self.timerFade:after(3, function()
-        flux.to(self.fadetext, 3, { alpha = 0.5 })
-    end)
+    flux.to(self.fadetext, 3, { alpha = 0.6 }):delay(3):oncomplete(function() self.canJump = true end)
 
     self.roomSize = {
         width = 2000,
@@ -267,27 +276,14 @@ function CutsceneState:update(elapsed)
         self.scr_cutscene:update(elapsed)
     end
     flux.update(elapsed)
-    self.timerFade:update(elapsed)
 end
 
 function CutsceneState:mousepressed(x, y, button)
-    if not self.cutsceneJumped then
-        self.cutsceneJumped = true
-        flux.to(self.fade, 3, { alpha = 1, volume = 0 }):oncomplete(function()
-            LoadingState.mode = "normal"
-            gamestate.switch(LoadingState)
-        end)
-    end
+    tryJump(self)
 end
 
 function CutsceneState:keypressed(k)
-    if not self.cutsceneJumped then
-        self.cutsceneJumped = true
-        flux.to(self.fade, 3, { alpha = 1, volume = 0 }):oncomplete(function()
-            LoadingState.mode = "normal"
-            gamestate.switch(LoadingState)
-        end)
-    end
+    tryJump(self)
 end
 
 function CutsceneState:leave()
