@@ -73,16 +73,19 @@ function Animatronics:load()
         }
     }
 
-    local oldAnims = love.filesystem.getDirectoryItems("assets/images/game/extras/animatronics/old")
-    local newAnims = love.filesystem.getDirectoryItems("assets/images/game/extras/animatronics/")
+    local oldAnims = fsutil.scanFolder("assets/images/game/extras/animatronics/old")
+    local newAnims = fsutil.scanFolder("assets/images/game/extras/animatronics/")
+
+    print(inspect(oldAnims))
+    print(inspect(newAnims))
 
     for _, a in ipairs(oldAnims) do
-        self.animatronics.old[(a:match("[^/]+$")):gsub("%.[^.]+$", "")] = love.graphics.newImage("assets/images/game/extras/animatronics/old/" .. a)
+        self.animatronics.old[(a:match("[^/]+$")):gsub("%.[^.]+$", "")] = love.graphics.newImage(a)
     end
 
     for _, a in ipairs(newAnims) do
-        if love.filesystem.getInfo("assets/images/game/extras/animatronics/" .. a).type == "file" then
-            self.animatronics.new[(a:match("[^/]+$")):gsub("%.[^.]+$", "")] = love.graphics.newImage("assets/images/game/extras/animatronics/" .. a)
+        if love.filesystem.getInfo(a).type == "file" then
+            self.animatronics.new[(a:match("[^/]+$")):gsub("%.[^.]+$", "")] = love.graphics.newImage("assets/images/game/extras/animatronics/" .. a:match("[^/]+$"))
         end
     end
 
@@ -115,7 +118,9 @@ function Animatronics:load()
     self.lock = love.graphics.newImage("assets/images/game/lock.png")
     self.light = love.graphics.newImage("assets/images/game/night8/lantern_light.png")
 
-    --print(inspect(self.names))
+
+    print(self.animatronicsNames.new[self.animatronicsNames.counter])
+    print(inspect(self.names))
 end
 
 function Animatronics:draw()
@@ -128,7 +133,7 @@ function Animatronics:draw()
     love.graphics.draw(self.shadowGlow, 650, 580, 0, 480 / self.shadowGlow:getWidth(), 256 / self.shadowGlow:getHeight(), self.shadowGlow:getWidth() / 2, self.shadowGlow:getHeight() / 2)
     love.graphics.setColor(1, 1, 1, 1)
     if not self.oldAnimatronics then
-        local currentAnimatronic = self.animatronicsNames.new[self.animatronicsNames.counter]
+        local currentAnimatronic = self.animatronicsNames.new[self.animatronicsNames.counter] or "freddy"
         if self.names.new[self.animatronicsNames.counter].locked then
             love.graphics.setColor(0, 0, 0, 1)
         end

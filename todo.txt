@@ -1,2 +1,8 @@
-[X] Config menu
-    [X] Update all objects to have the translated text
+[.] Fix night don't move
+[.] Fix screen clip
+[X] extras animatronics crash
+[.] Add a switch mechanic direction
+[.] extras
+    [.] Extras BTS text was too big and is overlapping
+    [.] the hitboxes is visible
+    [.] the bts is destroying assets and not reloading

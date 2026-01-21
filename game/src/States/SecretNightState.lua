@@ -1089,12 +1089,13 @@ function SecretNightState:update(elapsed)
                     for k, v in pairs(AudioSources) do
                         v:stop()
                     end
-                    AudioSources["sfx_lockjaw_jumpscare"]:play()
                     if self.officeState.lookDir == "front" then
                         self.jumpscareFront:setState(false)
                     else
                         self.jumpscareBack:setState(false)
                     end
+                    AudioSources["sfx_lockjaw_jumpscare"]:setVolume(1.2)
+                    AudioSources["sfx_lockjaw_jumpscare"]:play()
                 else
                     if self.IA.frankburt.patience <= 0 then
                         self.officeState.blink.alpha = 1
@@ -1118,12 +1119,13 @@ function SecretNightState:update(elapsed)
                         for k, v in pairs(AudioSources) do
                             v:stop()
                         end
-                        AudioSources["sfx_lockjaw_jumpscare"]:play()
                         if self.officeState.lookDir == "front" then
                             self.jumpscareFront:setState(false)
                         else
                             self.jumpscareBack:setState(false)
                         end
+                        AudioSources["sfx_lockjaw_jumpscare"]:setVolume(1.2)
+                        AudioSources["sfx_lockjaw_jumpscare"]:play()
                     end
                 end
             end
@@ -1141,6 +1143,10 @@ function SecretNightState:update(elapsed)
     self.monitorView:update(elapsed)
 
     self.nightTimer:update(elapsed)
+
+    self.IA.frankburt.tmr_move:update(elapsed)
+
+    self.IA["golden_shower"].tmr_move:update(elapsed)
 
     if self.officeState.nightStarted and not self.IA.frankburt.active then
         self.activateTmr:update(elapsed)
