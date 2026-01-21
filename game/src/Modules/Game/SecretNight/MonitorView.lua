@@ -11,18 +11,6 @@ local MonitorView = {}
 MonitorView.currentSelection = ""
 MonitorView.currentSelectionID = 1
 MonitorView.currentState = "idle"
-MonitorView.game = {
-    boardStart = { x = 480, y = 120 },
-    boardOffset = { x = 40, y = 16 },
-    hitbox = { w = 24, h = 24 },
-    inverted = false,
-    playerPos = { x = -1, y = 1 },
-    playerAbs = { x = 0, y = 0 },
-    canChangeLane = false,
-    maxSize = 0,
-    lineNum = 1,
-    invertCooldown = 0
-}
 local names = { "freddy", "bonnie", "chica", "foxy", "sugar", "kitty", "marionette", "frankburt" }
 
 animatronicsMatrixes = {}
@@ -45,59 +33,6 @@ local animatronicsMatrixes = {}
 local function checkAllLocked(self)
     for _, name in ipairs(names) do
         if self.animatronics[name].locked ~= true then
-            return false
-        end
-    end
-
-    return true
-end
-
----Generate a matrix with ids 1 to 3
----@param matrixSize number
----@param tileSize number
----@return table<table<number>>
-local function generateMatrix(matrixSize, tileSize)
-    local m = {}
-
-    for y = 1, matrixSize, 1 do
-        for x = 1, matrixSize, 1 do
-            table.insert(m, {
-                pos = { x = x, y = y },
-                lastCellID = 0,
-                wasColliding = false,
-                id = tonumber(lume.weightedchoice({ ["1"] = 90, ["2"] = 10 })),
-                hitbox = {
-                    x = 0,
-                    y = 0,
-                    w = 3,
-                    h = tileSize,
-                }
-            })
-        end
-    end
-
-    return m
-end
-
----Draw a box with lil opacity center and border colored
----@param box Box
----@param r number
----@param g number
----@param b number
-local function drawBox(box, r, g, b)
-    love.graphics.setColor(r, g, b, 0.25)
-    love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
-    love.graphics.setColor(r, g, b)
-    love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
-    love.graphics.setColor(1, 1, 1, 1)
-end
-
----@param matrix table<table<number>>
----@param value number
----@return boolean
-local function matrixAllEquals(matrix, value)
-    for _, m in ipairs(matrix) do
-        if m.id ~= value then
             return false
         end
     end
@@ -168,7 +103,6 @@ end
 
 function MonitorView:init()
     self._frankburtHidden = true
-    local animatorController = require 'src.Modules.Game.AnimatorController'
     self.gradients = {
         ["body_integrity"] = love.graphics.newGradient("horizontal", { lume.color("#521612") }, { lume.color("#E61E1E") }),
         ["fuel"] = love.graphics.newGradient("horizontal", { lume.color("#234214") }, { lume.color("#ABD941") })
@@ -187,8 +121,16 @@ function MonitorView:init()
     local offsetX, offsetY = self.game.boardOffset.x, self.game.boardOffset.y
     table.sort(names)
 
+    self.screen                  = {
+        cx = 715.5,
+        cy = 326,
+        w  = 463,
+        h  = 464
+    }
+
     self.glow                    = moonshine(moonshine.effects.gaussianblur)
     self.glow.gaussianblur.sigma = 10
+    self.mainCanvas              = love.graphics.newCanvas()
     self.glowcnv                 = love.graphics.newCanvas(shove.getViewportDimensions())
     local matrixSize             = 4
     self.game.maxSize            = matrixSize
@@ -207,7 +149,7 @@ function MonitorView:init()
         local width    = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
         local height   = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
 
-        local m        = generateMatrix(matrixSize, tileSize)
+        --local m        = generateMatrix(matrixSize, tileSize)
 
         if key == "frankburt" then
             for _, b in ipairs(m) do
@@ -396,105 +338,13 @@ function MonitorView:update(elapsed)
         MonitorView:validateSelection()
     end
 
-    --MonitorView:validateSelection()
-
     switch(self.currentState, {
         ["minigame"] = function()
-            local spacing = animatronicsMatrixes[self.currentSelection].space
-            local tileSize = animatronicsMatrixes[self.currentSelection].ts
-            local boardW = animatronicsMatrixes[self.currentSelection].w
-            local boardH = animatronicsMatrixes[self.currentSelection].h
 
-
-            local cellPosX = self.game.playerPos.x
-            if cellPosX > self.game.maxSize + 1 then
-                self.game.inverted = true
-                self.game.invertCooldown = 0.5
-            elseif cellPosX <= -1 then
-                self.game.inverted = false
-                self.game.invertCooldown = 0.5
-            end
-
-            local multi = self.currentSelection == "frankburt" and 0.75 or 0.20
-
-            if self.game.inverted then
-                self.game.playerPos.x = self.game.playerPos.x - elapsed * multi
-            else
-                self.game.playerPos.x = self.game.playerPos.x + elapsed * multi
-            end
-
-            self.game.playerAbs.x = (startX + offsetX) + self.game.playerPos.x * (tileSize + spacing * 0.5)
-            self.game.playerAbs.y = (startY + offsetY) + (self.game.playerPos.y - 1) * (tileSize + spacing)
-
-            local hbox = {
-                x = self.game.playerAbs.x + tileSize / 2,
-                y = self.game.playerAbs.y + tileSize / 2,
-                w = 1,
-                h = 1,
-            }
-
-            self.game.canChangeLane = true
-            for _, b in ipairs(animatronicsMatrixes[self.currentSelection].mx) do
-                local blockX = (startX + offsetX) + (b.pos.x - 1) * (tileSize + spacing)
-                local blockY = (startY + offsetY) + (b.pos.y - 1) * (tileSize + spacing)
-
-                b.hitbox.x = blockX + tileSize / 2
-                b.hitbox.y = blockY
-
-                local box = {
-                    x = blockX,
-                    y = blockY,
-                    w = tileSize,
-                    h = tileSize,
-                }
-
-                if collision.rectRect(hbox, box) then
-                    self.game.canChangeLane = false
-                end
-
-                local isColliding = collision.rectRect(hbox, box)
-                if isColliding and not b.wasColliding then
-                    if self.game.invertCooldown <= 0 then
-                        if b.id == 1 then
-                            b.id = 2
-                        elseif b.id == 2 then
-                            b.id = 1
-                        end
-                    end
-                end
-                b.wasColliding = isColliding
-            end
-
-
-            if matrixAllEquals(animatronicsMatrixes[self.currentSelection].mx, 2) then
-                if self.currentSelection == "frankburt" then
-                    SecretNightState.officeState.deathSequence.finalSequence = true
-                    SecretNightState.officeState.monitor.displayStatic = false
-                    SecretNightState.computerAnim:setState(false)
-                    AudioSources["sfx_close_panel"]:setVolume(0.75)
-                    AudioSources["sfx_close_panel"]:play()
-                    SecretNightState.computerAnim.onComplete = function()
-                        SecretNightState.computerAnim.visible = false
-                        SecretNightState.officeState.monitor.open = false
-                    end
-
-                    SecretNightState.officeState.hideAllShit = true
-
-                    AudioSources["sfx_close_panel"]:setVolume(0.75)
-                    AudioSources["sfx_close_panel"]:play()
-
-                    AudioSources["msc_lockjaw_theme"]:stop()
-                else
-                    self.animatronics[self.currentSelection].locked = true
-                    MonitorView:createNames()
-                    MonitorView:validateSelection()
-                    self.currentState = "idle"
-                end
-            end
         end,
     })
 
-    self.game.invertCooldown = math.max(0, self.game.invertCooldown - elapsed)
+    --self.game.invertCooldown = math.max(0, self.game.invertCooldown - elapsed)
 end
 
 function MonitorView:keypressed(k)
@@ -524,29 +374,7 @@ function MonitorView:keypressed(k)
             })
         end,
         ["minigame"] = function()
-            if not self.game.canChangeLane then return end
-            switch(k, {
-                ["w"] = function()
-                    if self.game.playerPos.y > 1 then
-                        self.game.playerPos.y = self.game.playerPos.y - 1
-                    end
-                end,
-                ["s"] = function()
-                    if self.game.playerPos.y < self.game.maxSize then
-                        self.game.playerPos.y = self.game.playerPos.y + 1
-                    end
-                end,
-                ["up"] = function()
-                    if self.game.playerPos.y > 1 then
-                        self.game.playerPos.y = self.game.playerPos.y - 1
-                    end
-                end,
-                ["down"] = function()
-                    if self.game.playerPos.y < self.game.maxSize then
-                        self.game.playerPos.y = self.game.playerPos.y + 1
-                    end
-                end,
-            })
+
         end,
     })
 end

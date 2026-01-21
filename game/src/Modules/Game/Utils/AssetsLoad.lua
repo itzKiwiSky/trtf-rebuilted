@@ -224,12 +224,12 @@ return function(night)
         loveloader.newImage(assets.ui, "bg_beeper", "assets/images/game/night8/bg_beeper.png")
         loveloader.newImage(assets, "wood_hold", "assets/images/game/night8/wood.png")
 
-        assets.ui["pc_icons"] = {
+        assets.ui["char_icons"] = {
             quads = {},
         }
 
-        assets.ui["pc_icons"].image = love.graphics.newImage("assets/images/game/night8/pc_icons.png")
-        assets.ui["pc_icons"].quads = love.graphics.getQuads(assets.ui["pc_icons"].image, "assets/images/game/night8/pc_icons.json", "hash")
+        assets.ui["char_icons"].image = love.graphics.newImage("assets/images/game/night8/animatronics_minigame.png")
+        assets.ui["char_icons"].quads = love.graphics.getQuads(assets.ui["char_icons"].image, "assets/images/game/night8/animatronics_minigame.json", "hash")
 
         loveloader.newImage(assets, "monitor_static", "assets/images/game/night8/monitor_static.png")
         loveloader.newImage(assets.office.animatronic, "right", "assets/images/game/night8/lockjaw_states/infront1.png")
