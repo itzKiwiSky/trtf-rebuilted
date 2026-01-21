@@ -121,3 +121,4 @@ Changelog for The return to freddy's Rebuilt Again
     - Added "evidences" options on extras
     - New custom night challenge "Strings of the Past"
     - Sugar minigame has been updated to reflect the new story telling
+    - Reworked night 8 tablet minigame
