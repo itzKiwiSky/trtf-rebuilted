@@ -4,7 +4,7 @@ SecretNightState.forceRestart = false
 
 local function playWalk()
     local audio = "sfx_walk" .. math.random(1, 7)
-    AudioSources[audio]:setVolume(0.89)
+    AudioSources[audio]:setVolume(0.45)
     AudioSources[audio]:play()
 end
 
@@ -41,6 +41,10 @@ function SecretNightState:enter()
     self.buttonsUI = require 'src.Modules.Game.SecretNight.ButtonUI'
     self.animatorController = require 'src.Modules.Game.AnimatorController'
     self.drawQueue = require 'src.Modules.Game.Utils.DrawQueueBar'
+
+    -- Load animatronic classes
+    local Frankburt = require 'src.Modules.Game.SecretNight.Animatronics.Frankburt'
+    local GoldenShower = require 'src.Modules.Game.SecretNight.Animatronics.GoldenShower'
 
     self.fnt_phoneCallName = fontcache.getFont("ocrx", 25)
     self.fnt_displayKill = fontcache.getFont("ocrx", 40)
@@ -101,33 +105,33 @@ function SecretNightState:enter()
         Slab.SameLine()
         if Slab.Button("front") then
             self.officeState.blink.alpha = 1
-            self.IA["frankburt"].state = "front"
+            self.IA.frankburt.currentState = "front"
         end
         Slab.SameLine()
         if Slab.Button("office") then
             self.officeState.blink.alpha = 1
-            self.IA["frankburt"].state = "office"
+            self.IA.frankburt.currentState = "office"
         end
         Slab.SameLine()
         if Slab.Button("right") then
             self.officeState.blink.alpha = 1
-            self.IA["frankburt"].state = "right"
+            self.IA.frankburt.currentState = "right"
         end
         Slab.Separator()
         Slab.Text('Golden shower')
         if Slab.Button("front") then
             self.officeState.blink.alpha = 1
-            self.IA["golden_shower"].state = "front"
+            self.IA.goldenShower.currentState = "front"
         end
         Slab.SameLine()
         if Slab.Button("back") then
             self.officeState.blink.alpha = 1
-            self.IA["golden_shower"].state = "back"
+            self.IA.goldenShower.currentState = "back"
         end
         Slab.SameLine()
         if Slab.Button("right") then
             self.officeState.blink.alpha = 1
-            self.IA["golden_shower"].state = "right"
+            self.IA.goldenShower.currentState = "right"
         end
         if Slab.Button("trigger end sequence") then
             self.officeState.hideAllShit = true
@@ -151,166 +155,11 @@ function SecretNightState:enter()
 
     self.fearLevel = 0
 
+    -- Initialize animatronics using new classes
     self.IA = {
-        config = {
-            ["frankburt"] = 8,
-            ["golden_freddy"] = 8,
-            incrementValue = 0,
-            tmr = 0,
-        },
-        ["golden_shower"] = {
-            active = false,
-            attacking = false,
-            timer = 0,
-            moveTime = 0,
-            rng = 0,
-            moveTimer = 0,
-            moveTimerMax = 16,
-            moveAccumulator = 0,
-            state = "idle",
-            patience = 3,
-
-            fade = 0,
-            fadeMulti = 1.2,
-            hitboxes = {
-                ["front"] = {
-                    x = 872,
-                    y = 362,
-                    w = 316,
-                    h = 169,
-                },
-                ["right"] = {
-                    x = 1350,
-                    y = 200,
-                    w = 240,
-                    h = 240,
-                }
-            },
-            onMove = function()
-
-            end,
-            onUpdate = function(elapsed)
-
-            end
-        },
-        ["frankburt"] = {
-            active = false,
-            attacking = false,
-            timer = 0,
-            moveTime = 0,
-
-            state = "idle",
-
-            moveAccumulator = 0,
-
-            hitboxes = {
-                ["front"] = {
-                    x = 890,
-                    y = 230,
-                    w = 280,
-                    h = 180,
-                },
-                ["right"] = {
-                    x = 1390,
-                    y = 200,
-                    w = 220,
-                    h = 230,
-                }
-            },
-
-            onMove = function()
-                self.officeState.blink.alpha = 1
-                local s = lume.weightedchoice({ ["front"] = 40, ["right"] = 60, ["office"] = 10 })
-                if s == "office" and not self.officeState.flashlight.active then
-                    self.IA["frankburt"].state = "office"
-                    self.IA["frankburt"].patience = math.random(3, 6) -- reinicia paciência ao entrar no office
-                else
-                    self.IA["frankburt"].state = s
-                    self.IA["frankburt"].patience = math.random(3, 6) -- reinicia paciência em novo estado
-                end
-                self.IA["frankburt"].attacking = true
-            end,
-            onUpdate = function(elapsed)
-
-            end
-        }
-        --[[["golden_shower"] = {
-            attacking = false,
-            state = "idle",
-            rng = 0,
-            tmr_move = timer.new(),
-            patience = 3,
-            fade = 0,
-            fadeMulti = 1.2,
-            hitboxes = {
-                ["front"] = {
-                    x = 872,
-                    y = 362,
-                    w = 316,
-                    h = 169,
-                },
-                ["right"] = {
-                    x = 1350,
-                    y = 200,
-                    w = 240,
-                    h = 240,
-                }
-            },
-        },
-        frankburt = {
-            active = false,
-            attacking = false,
-            timer = 0,
-            moveTime = 0,
-
-            tmr_move = timer.new(),
-            hitboxes = {
-                ["front"] = {
-                    x = 890,
-                    y = 230,
-                    w = 280,
-                    h = 180,
-                },
-                ["right"] = {
-                    x = 1390,
-                    y = 200,
-                    w = 220,
-                    h = 230,
-                }
-            },
-            rng = 0,
-            moveTimer = 0,
-            moveTimerMax = 16,
-            state = "idle",
-            patience = 3,
-        },]]
+        frankburt = Frankburt:new(),
+        goldenShower = GoldenShower:new()
     }
-
-    --self.tmr_iaIncrement = timer.new()
-    --self.tmr_iaIncrement:after(27, function()
-    --    self.IA.config.incrementValue = self.IA.config.incrementValue + 1
-    --    self.IA.config["frankburt"] = self.IA.config["frankburt"] + math.random(1, 3)
-    --    self.IA.config["golden_freddy"] = self.IA.config["golden_freddy"] + math.random(1, 2)
-    --end)
-
-    --[[self.IA["frankburt"].tmr_move:every(8, function()
-        self.IA["frankburt"].rng = love.math.random(1, 20)
-
-        if self.IA.config["frankburt"] >= self.IA["frankburt"].rng and self.IA.config["frankburt"] > 0 and self.IA["frankburt"].state == "idle" and self.IA["golden_shower"].state == "idle" then
-            playWalk()
-        end
-    end)
-
-    self.IA["golden_shower"].tmr_move:every(10, function()
-        self.IA["golden_shower"].rng = love.math.random(1, 20)
-
-        if self.IA.config["golden_freddy"] >= self.IA["golden_shower"].rng and self.IA["frankburt"].state == "idle" then
-            self.IA["golden_shower"].attacking = true
-            self.officeState.blink.alpha = 1
-            self.IA["golden_shower"].state = lume.weightedchoice({ ["front"] = 40, ["right"] = 60, ["back"] = 10 })
-            self.patience = math.random(3, 6)
-        end
-    end)]]
 
     SecretNightState.assets.grd_battery = love.graphics.newGradient("horizontal",
         { lume.color('#4322D4') }, { lume.color('#225AD4') }, { lume.color('#22B3D4') }
@@ -445,7 +294,7 @@ function SecretNightState:enter()
     self.activateTmr = timer.new()
 
     self.activateTmr:after(14, function()
-        self.IA["frankburt"].active = true
+        self.IA.frankburt:activate()
     end)
 
     self.X_LEFT_FRAME = self.gameCam.x
@@ -591,11 +440,11 @@ function SecretNightState:draw()
         love.graphics.clear()
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
         if self.officeState.lookDir == "front" then
-            if self.IA["frankburt"].state ~= "idle" then
-                local state = self.IA["frankburt"].state == "office" and "office_light" or self.IA["frankburt"].state
+            if self.IA.frankburt.currentState ~= "idle" then
+                local state = self.IA.frankburt.currentState == "office" and "office_light" or self.IA.frankburt.currentState
                 love.graphics.draw(self.assets.office.animatronic[state], 0, 0)
-            elseif self.IA["golden_shower"].state ~= "idle" then
-                local state = self.IA["golden_shower"].state
+            elseif self.IA.goldenShower.currentState ~= "idle" then
+                local state = self.IA.goldenShower.currentState
                 love.graphics.draw(self.assets.office.hallu[state], 0, 0)
             else
                 love.graphics.draw(self.assets.office.states["idle"]["front_light"], 0, 0)
@@ -605,8 +454,8 @@ function SecretNightState:draw()
         end
         self.turnAnim:draw()
         if self.officeState.lookDir == "back" then
-            if self.IA["golden_shower"].state ~= "idle" then
-                local state = self.IA["golden_shower"].state
+            if self.IA.goldenShower.currentState ~= "idle" then
+                local state = self.IA.goldenShower.currentState
                 love.graphics.draw(self.assets.office.hallu["back"], 0, 0)
             else
                 self.boilerAnim:draw()
@@ -619,7 +468,7 @@ function SecretNightState:draw()
         love.graphics.clear()
         self.gameCam:attach(0, 0, shove.getViewportWidth(), shove.getViewportHeight(), true)
         if self.officeState.lookDir == "front" then
-            if self.IA["frankburt"].state ~= "idle" and self.IA["frankburt"].state == "office" then
+            if self.IA.frankburt.currentState ~= "idle" and self.IA.frankburt.currentState == "office" then
                 love.graphics.draw(self.assets.office.animatronic["office"], 0, 0)
             else
                 love.graphics.draw(self.assets.office.states["idle"]["front"], 0, 0)
@@ -726,7 +575,7 @@ function SecretNightState:draw()
             love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
             love.graphics.setColor(1, 1, 1, 1)
         end
-        for k, h in pairs(self.IA["frankburt"].hitboxes) do
+        for k, h in pairs(self.IA.frankburt.hitboxes) do
             love.graphics.setColor(lume.color("#EEC618A7"))
             love.graphics.rectangle("fill", h.x, h.y, h.w, h.h)
             love.graphics.setColor(1, 1, 1, 1)
@@ -837,7 +686,7 @@ function SecretNightState:draw()
     self.jumpscareFront:draw()
     self.jumpscareBack:draw()
 
-    love.graphics.setColor(1, 1, 1, self.IA["golden_shower"].fade)
+    love.graphics.setColor(1, 1, 1, self.IA.goldenShower.fade)
     love.graphics.draw(self.assets.office.hallu["jmp_fade"], 0, 0)
     love.graphics.setColor(1, 1, 1, 1)
 
@@ -1072,114 +921,14 @@ function SecretNightState:update(elapsed)
         end
     end
 
-    if self.IA["golden_shower"].fade > 0 then
-        self.IA["golden_shower"].fade = self.IA["golden_shower"].fade - elapsed * self.IA["golden_shower"].fadeMulti
+    if self.IA.goldenShower.fade > 0 then
+        self.IA.goldenShower.fade = self.IA.goldenShower.fade - elapsed * self.IA.goldenShower.fadeMulti
     end
 
     if self.officeState.nightStarted and not (self.officeState.deathSequence.active or self.officeState.deathSequence.dead or self.officeState.deathSequence.finalSequence) then
-        self.IA["frankburt"].moveTimer = self.IA["frankburt"].moveTimer - elapsed
-
-        self.IA.config["frankburt"] = math.floor(
-            math.map(self.officeState.furnace.vincentIntegrity, 100, 0, 8, 16)
-        )
-
-        self.IA.config["golden_freddy"] = math.floor(
-            math.map(self.officeState.furnace.vincentIntegrity, 100, 0, 8, 20)
-        )
-
-        self.IA.config["frankburt"] = math.clamp(self.IA.config["frankburt"], 0, 20)
-        self.IA.config["golden_freddy"] = math.clamp(self.IA.config["golden_freddy"], 0, 20)
-
-        self.IA["golden_shower"].tmr_move:update(elapsed)
-
-        if self.IA["frankburt"].moveTimer <= 0 and self.IA["frankburt"].active then
-            self.IA["frankburt"].moveTimer = self.IA["frankburt"].moveTimerMax
-        end
-
-        if self.IA["golden_shower"].state ~= "idle" then
-            self.IA["golden_shower"].patience = self.IA["golden_shower"].patience - elapsed
-            if self.IA["golden_shower"].state == "back" then
-                if self.IA["golden_shower"].patience <= 0 and self.officeState.lookDir == "back" then
-                    -- jumpscare --
-                    --self.IA["golden_shower"].patience = math.random(3, 6)
-                    self.IA["golden_shower"].attacking = false
-                    self.IA["golden_shower"].fade = 1
-                    self.IA["golden_shower"].state = "idle"
-
-                    AudioSources["sfx_golden_freddy_jumpscare"]:play()
-                else
-                    self.IA["golden_shower"].attacking = false
-                    self.IA["golden_shower"].state = "idle"
-                end
-            else
-                if self.IA["golden_shower"].patience <= 0 then
-                    if collision.pointRect({ x = mx, y = my }, self.IA["golden_shower"].hitboxes[self.IA["golden_shower"].state]) and self.officeState.flashlight.alpha >= 0.3 then
-                        self.officeState.blink.alpha = 1
-                        self.IA["golden_shower"].state = "idle"
-                        self.IA["golden_shower"].attacking = false
-                        playWalk()
-                    else
-                        self.IA["golden_shower"].attacking = false
-                        self.IA["golden_shower"].fade = 1
-                        self.IA["golden_shower"].state = "idle"
-
-                        AudioSources["sfx_golden_freddy_jumpscare"]:play()
-                    end
-                end
-            end
-        end
-
-        -- Lógica de paciência e ações executadas a cada frame (fora do timer)
-        if self.IA["frankburt"].state ~= "idle" then
-            self.IA["frankburt"].patience = self.IA["frankburt"].patience - elapsed
-
-            if self.IA["frankburt"].state == "office" then
-                if self.officeState.flashlight.active then
-                    self.officeState.killed = true
-                    for k, v in pairs(AudioSources) do
-                        v:stop()
-                    end
-                    if self.officeState.lookDir == "front" then
-                        self.jumpscareFront:setState(false)
-                    else
-                        self.jumpscareBack:setState(false)
-                    end
-                    AudioSources["sfx_lockjaw_jumpscare"]:setVolume(1.2)
-                    AudioSources["sfx_lockjaw_jumpscare"]:play()
-                else
-                    if self.IA["frankburt"].patience <= 0 then
-                        self.officeState.blink.alpha = 1
-                        playWalk()
-                        self.IA["frankburt"].state = "idle"
-                        self.IA["frankburt"].attacking = false
-                    end
-                end
-            else
-                -- Estados "front" ou "right"
-                -- O jogador pode usar a lanterna para se defender
-                if self.IA["frankburt"].patience <= 0 then
-                    if collision.pointRect({ x = mx, y = my }, self.IA["frankburt"].hitboxes[self.IA["frankburt"].state]) and self.officeState.flashlight.alpha >= 0.3 then
-                        self.officeState.blink.alpha = 1
-                        self.IA["frankburt"].state = "idle"
-                        self.IA["frankburt"].attacking = false
-                        playWalk()
-                    else
-                        -- kill shit -- (mata se a paciência acabar)
-                        self.officeState.killed = true
-                        for k, v in pairs(AudioSources) do
-                            v:stop()
-                        end
-                        if self.officeState.lookDir == "front" then
-                            self.jumpscareFront:setState(false)
-                        else
-                            self.jumpscareBack:setState(false)
-                        end
-                        AudioSources["sfx_lockjaw_jumpscare"]:setVolume(1.2)
-                        AudioSources["sfx_lockjaw_jumpscare"]:play()
-                    end
-                end
-            end
-        end
+        -- Update animatronics
+        self.IA.frankburt:update(elapsed)
+        self.IA.goldenShower:update(elapsed)
     end
 
     self.turnAnim:update(elapsed)
@@ -1194,43 +943,12 @@ function SecretNightState:update(elapsed)
 
     self.nightTimer:update(elapsed)
 
-
-    local function isAnimatronicIdle(n, ias)
-        for name, animatronic in pairs(ias) do
-            if name == n then return false end
-
-            if animatronic.state == "idle" then
-                return true
-            end
-        end
-        return false
+    if self.officeState.nightStarted and self.updateAnimatronics then
+        self.IA.frankburt:onUpdate(elapsed)
+        self.IA.goldenShower:onUpdate(elapsed)
     end
 
-    for name, animatronic in pairs(self.IA) do
-        if animatronic.active then
-            animatronic.timer = animatronic.timer + elapsed
-
-            if animatronic.timer >= animatronic.moveTime then
-                local ia = self.IA.config[name]
-                if ia > 0 and isAnimatronicIdle(name, self.IA) then
-                    animatronic.moveAccumulator = animatronic.moveAccumulator + (ia / 20)
-
-                    animatronic.moveAccumulator = math.min(animatronic.moveAccumulator, 1)
-                    if love.math.random() <= animatronic.moveAccumulator then
-                        animatronic.onMove()
-                        animatronic.moveAccumulator = 0
-                    end
-                end
-                animatronic.timer = 0
-            end
-
-            if animatronic.state ~= "idle" then
-                animatronic.onUpdate(elapsed)
-            end
-        end
-    end
-
-    if self.officeState.nightStarted and not self.IA["frankburt"].active then
+    if self.officeState.nightStarted and not self.IA.frankburt.active then
         self.activateTmr:update(elapsed)
     end
 
@@ -1276,7 +994,7 @@ function SecretNightState:mousepressed(x, y, button)
     end
 
     if button == 1 then
-        if collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["boiler"]) and self.IA["golden_shower"].state == "idle" then
+        if collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["boiler"]) and self.IA.goldenShower.state == "idle" then
             if not self.boilerAnim.animationRunning then
                 if self.officeState.hitboxes["boiler"].condition() then
                     if self.officeState.furnace.open then
