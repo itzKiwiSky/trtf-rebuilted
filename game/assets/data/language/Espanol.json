@@ -205,8 +205,7 @@
     ],
     "secret_night_monitor": {
         "secret_night_monitor_title": "Selecciona un animatrónico para modificarlo.",
-        "secret_night_monitor_instruction": "Corromper todos los bytes",
-        "secret_night_monitor_permission_write": "¡Se ha denegado el permiso para escribir en este archivo!",
+        "secret_night_monitor_minigame": "carga para la depuración del sistema",
         "secret_night_monitor_body_integrity": "Aumento de la llama",
         "secret_night_monitor_boiler_fuel": "combustible"
     },

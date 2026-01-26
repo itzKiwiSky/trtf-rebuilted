@@ -11,28 +11,33 @@ local MonitorView = {}
 MonitorView.currentSelection = ""
 MonitorView.currentSelectionID = 1
 MonitorView.currentState = "idle"
-local names = { "freddy", "bonnie", "chica", "foxy", "sugar", "kitty", "marionette", "frankburt" }
+local names = { "freddy", "bonnie", "chica", "foxy", "sugar_and_kitty", "marionette", "frankburt" }
 
-animatronicsMatrixes = {}
 MonitorView.animatronics = {
-    ["freddy"] = { locked = false, hidden = false },
-    ["bonnie"] = { locked = false, hidden = false },
-    ["chica"] = { locked = false, hidden = false },
-    ["foxy"] = { locked = false, hidden = false },
-    ["sugar"] = { locked = false, hidden = false },
-    ["kitty"] = { locked = false, hidden = false },
-    ["marionette"] = { locked = false, hidden = false },
-    ["frankburt"] = { locked = false, hidden = true },
+    ["freddy"] = { name = "freddy", locked = false, hidden = false },
+    ["bonnie"] = { name = "bonnie", locked = false, hidden = false },
+    ["chica"] = { name = "chica", locked = false, hidden = false },
+    ["foxy"] = { name = "foxy", locked = false, hidden = false },
+    ["sugar_and_kitty"] = { name = "sugar and kitty", locked = false, hidden = false },
+    ["marionette"] = { name = "marionette", locked = false, hidden = false },
+    ["frankburt"] = { name = "frankburt", locked = false, hidden = true },
 }
+
+MonitorView.screen = {
+    x = 484,
+    y = 94,
+    w = 464,
+    h = 464
+}
+
+MonitorView.screen.cx = MonitorView.screen.x + MonitorView.screen.w / 2
+MonitorView.screen.cy = MonitorView.screen.y + MonitorView.screen.h / 2
 
 MonitorView.namesList = {}
 
-
-local animatronicsMatrixes = {}
-
 local function checkAllLocked(self)
-    for _, name in ipairs(names) do
-        if self.animatronics[name].locked ~= true then
+    for k, anim in spairs(MonitorView.animatronics) do
+        if anim.locked ~= true then
             return false
         end
     end
@@ -46,14 +51,15 @@ function MonitorView:createNames()
     local paddingLeft = 8
     local marginDown = 8
     local count = 1
-    local startX, startY = self.game.boardStart.x, self.game.boardStart.y + 64
+    local startX, startY = 0, 64
 
     for name, anim in spairs(self.animatronics) do
         if not anim.hidden then
             self.namesList[name] = {
                 x = startX + paddingLeft,
                 y = startY + (self.font:getHeight() + marginDown) * count,
-                selected = false
+                selected = false,
+                name = anim.name,
             }
             count = count + 1
         end
@@ -65,22 +71,35 @@ end
 ---@param dir number
 ---@param names table<string>
 local function moveSelection(self, dir)
-    local id = self.currentSelectionID or 0
+    --if not names or #names == 0 then return false end
+
+    local id = self.currentSelectionID or 1
+    local count = #names
+    local tries = 0
 
     repeat
         id = id + dir
 
-        if id < 1 or id > #names then
-            return false
+        -- wrap
+        if id < 1 then
+            id = count
+        elseif id > count then
+            id = 1
         end
 
         local name = names[id]
-        if name and not self.animatronics[name].hidden then
+        local anim = self.animatronics[name]
+
+        if anim and not anim.hidden then
             self.currentSelectionID = id
             self.currentSelection = name
             return true
         end
-    until false
+
+        tries = tries + 1
+    until tries >= count
+
+    return false
 end
 
 ---@param self MonitorView
@@ -103,71 +122,48 @@ end
 
 function MonitorView:init()
     self._frankburtHidden = true
-    self.gradients = {
+    self.gradients        = {
         ["body_integrity"] = love.graphics.newGradient("horizontal", { lume.color("#521612") }, { lume.color("#E61E1E") }),
-        ["fuel"] = love.graphics.newGradient("horizontal", { lume.color("#234214") }, { lume.color("#ABD941") })
+        ["fuel"] = love.graphics.newGradient("horizontal", { lume.color("#234214") }, { lume.color("#ABD941") }),
+        ["load_bar"] = love.graphics.newGradient("vertical", { lume.color('#ED941F') }, { lume.color('#EBAB21') }, { lume.color('#FFDE3B') })
     }
 
-    self.static = {
+
+    self.static          = {
         frames = SecretNightState.assets.effects["static"],
         frame = 1,
         speed = 30,
         acc = 0,
     }
 
-    self.font = fontcache.getFont("ocrx", 24)
-    self.fontInt = fontcache.getFont("ocrx", 18)
-    local startX, startY = self.game.boardStart.x, self.game.boardStart.y
-    local offsetX, offsetY = self.game.boardOffset.x, self.game.boardOffset.y
+    self.font            = fontcache.getFont("ocrx", 24)
+    self.fontInt         = fontcache.getFont("ocrx", 18)
+    local startX, startY = self.screen.x, self.screen.y
     table.sort(names)
 
-    self.screen                  = {
-        cx = 715.5,
-        cy = 326,
-        w  = 463,
-        h  = 464
+    local safeAreaStartSize = 50
+    local offset            = 10
+    self.game               = {
+        value = 0,
+        valuePerTurn = 0.80,
+        valueWhenRelease = 5.2,
+        crank = {
+            x = self.screen.w * 0.5 + 40,
+            y = self.screen.h * 0.5,
+            radius = 120,
+            angle = 0,
+            lastAngle = 0,
+            dragging = false,
+            startAngle = 0,
+            mouseStartAngle = 0
+        }
     }
+
 
     self.glow                    = moonshine(moonshine.effects.gaussianblur)
     self.glow.gaussianblur.sigma = 10
-    self.mainCanvas              = love.graphics.newCanvas()
+    self.mainCanvas              = love.graphics.newCanvas(self.screen.w, self.screen.h)
     self.glowcnv                 = love.graphics.newCanvas(shove.getViewportDimensions())
-    local matrixSize             = 4
-    self.game.maxSize            = matrixSize
-    local tileSize               = 64
-    local spacing                = 32
-    local totalSize              = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
-    local centerX                = startX + 240
-    local centerY                = startY + 240
-    self.game.boardOffset.x      = centerX - (totalSize / 2) - startX
-    self.game.boardOffset.y      = centerY - (totalSize / 2) - startY
-
-    for key, value in spairs(self.animatronics) do
-        local tileSize = tileSize
-        local spacing  = spacing
-
-        local width    = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
-        local height   = (matrixSize * tileSize) + ((matrixSize - 1) * spacing)
-
-        --local m        = generateMatrix(matrixSize, tileSize)
-
-        if key == "frankburt" then
-            for _, b in ipairs(m) do
-                b.lastCellID = 2
-                b.id = 1
-            end
-        end
-
-        animatronicsMatrixes[key] = {
-            size = matrixSize,
-            mx = m,
-            ts = tileSize,
-            w = width,
-            h = height,
-            space = spacing,
-            margin = (matrixSize * tileSize) + ((matrixSize + 1) * spacing)
-        }
-    end
 
     MonitorView:createNames()
 
@@ -177,18 +173,28 @@ end
 function MonitorView:draw()
     if not SecretNightState.officeState.monitor.displayStatic then return end
 
-    local startX, startY = self.game.boardStart.x, self.game.boardStart.y
+    local function drawStatic()
+        local sx = self.screen.w / SecretNightState.assets.effects["static"]["static_1"]:getWidth()
+        local sy = self.screen.h / SecretNightState.assets.effects["static"]["static_1"]:getHeight()
+        love.graphics.setBlendMode("add")
+        love.graphics.setColor(1, 1, 1, 0.30)
+        love.graphics.draw(self.static.frames["static_" .. self.static.frame], 0, 0, 0, sx, sy)
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setBlendMode("alpha")
+    end
+
     local function drawShit()
         love.graphics.setColor(0, 0, 0)
-        love.graphics.rectangle("fill", startX, startY - 100, 480, 480)
+        love.graphics.rectangle("fill", 0, 0, self.screen.w, self.screen.h)
         local lastY = 0
         love.graphics.setColor(1, 1, 1)
+        drawStatic()
         switch(self.currentState, {
             ["idle"] = function()
                 local count = 1
-                love.graphics.printf(languageService["secret_night_monitor_title"], self.font, startX, startY, 400, "center")
+                love.graphics.printf(languageService["secret_night_monitor_title"], self.font, 0, 30, self.screen.w, "center")
                 for name, anim in spairs(self.namesList) do
-                    local drawName = string.format("[%s] %s", self.animatronics[name].locked and "X" or ".", name)
+                    local drawName = string.format("[%s] %s", self.animatronics[name].locked and "X" or ".", anim.name)
                     if self.currentSelection == name then
                         love.graphics.rectangle(
                             "fill", anim.x, anim.y,
@@ -202,106 +208,94 @@ function MonitorView:draw()
                 end
 
 
-                love.graphics.print(languageService["secret_night_monitor_body_integrity"], self.fontInt, startX + 10, self.namesList["sugar"].y + 60)
+                love.graphics.print(languageService["secret_night_monitor_body_integrity"], self.fontInt, 10, self.namesList["sugar_and_kitty"].y + 60)
                 love.graphics.draw(self.gradients["body_integrity"],
-                    startX + 330,
-                    self.namesList["sugar"].y + 60, 0,
+                    self.screen.w - 132,
+                    self.namesList["sugar_and_kitty"].y + 60, 0,
                     math.floor(128 * SecretNightState.officeState.furnace.vincentIntegrity / 100),
                     self.fontInt:getHeight()
                 )
                 love.graphics.rectangle("line",
-                    startX + 330,
-                    self.namesList["sugar"].y + 60, 128, self.fontInt:getHeight()
+                    self.screen.w - 132,
+                    self.namesList["sugar_and_kitty"].y + 60, 128, self.fontInt:getHeight()
                 )
 
-                love.graphics.print(languageService["secret_night_monitor_boiler_fuel"], self.fontInt, startX + 10, self.namesList["sugar"].y + 90)
+                love.graphics.print(languageService["secret_night_monitor_boiler_fuel"], self.fontInt, 10, self.namesList["sugar_and_kitty"].y + 90)
                 love.graphics.draw(self.gradients["fuel"],
-                    startX + 330,
-                    self.namesList["sugar"].y + 90, 0,
+                    self.screen.w - 132,
+                    self.namesList["sugar_and_kitty"].y + 90, 0,
                     math.floor(128 * SecretNightState.officeState.furnace.furnaceFuel / 100),
                     self.fontInt:getHeight()
                 )
                 love.graphics.rectangle("line",
-                    startX + 330,
-                    self.namesList["sugar"].y + 90, 128, self.fontInt:getHeight()
+                    self.screen.w - 132,
+                    self.namesList["sugar_and_kitty"].y + 90, 128, self.fontInt:getHeight()
                 )
             end,
             ["minigame"] = function()
-                local animatronicsColors = {
-                    ["freddy"] = { 94, 41, 32 },
-                    ["bonnie"] = { 61, 114, 227 },
-                    ["chica"] = { 240, 134, 29 },
-                    ["foxy"] = { 230, 58, 39 },
-                    ["sugar"] = { 92, 41, 153 },
-                    ["kitty"] = { 227, 100, 196 },
-                    ["marionette"] = { 201, 189, 189 },
-                    ["frankburt"] = { 168, 19, 19 },
-                }
-                local gray = { 128, 128, 128 }
+                love.graphics.setColor(0, 1, 0, 1)
+                local cx = self.game.crank.x
+                local cy = self.game.crank.y
 
-                local spacing = animatronicsMatrixes[self.currentSelection].space
-                local tileSize = animatronicsMatrixes[self.currentSelection].ts
-                local boardW = animatronicsMatrixes[self.currentSelection].w
-                local boardH = animatronicsMatrixes[self.currentSelection].h
-                local margin = animatronicsMatrixes[self.currentSelection].margin
-                local offsetX, offsetY = self.game.boardOffset.x, self.game.boardOffset.y
+                -- base
+                love.graphics.circle("fill", cx, cy, 20)
 
-                for _, b in ipairs(animatronicsMatrixes[self.currentSelection].mx) do
-                    local cell = b.id
+                -- posição da manivela
+                local hx = cx + math.cos(self.game.crank.angle) * self.game.crank.radius
+                local hy = cy + math.sin(self.game.crank.angle) * self.game.crank.radius
 
-                    local blockX = (startX + offsetX) + (b.pos.x - 1) * (tileSize + spacing)
-                    local blockY = (startY + offsetY) + (b.pos.y - 1) * (tileSize + spacing)
+                -- braço
+                love.graphics.setLineWidth(3)
+                love.graphics.line(cx, cy, hx, hy)
+                love.graphics.setLineWidth(1)
 
-                    local box = {
-                        x = blockX,
-                        y = blockY,
-                        w = tileSize,
-                        h = tileSize,
-                    }
+                love.graphics.setColor(0, 1, 0, 0.25)
+                love.graphics.circle("line", cx, cy, self.game.crank.radius - 3)
+                love.graphics.circle("line", cx, cy, self.game.crank.radius)
+                love.graphics.circle("line", cx, cy, self.game.crank.radius + 3)
+                love.graphics.setColor(0, 1, 0, 1)
 
-                    if b.id == 2 then
-                        drawBox(box,
-                            animatronicsColors[self.currentSelection][1] / 255,
-                            animatronicsColors[self.currentSelection][2] / 255,
-                            animatronicsColors[self.currentSelection][3] / 255
-                        )
-                    else
-                        drawBox(box,
-                            gray[1] / 255,
-                            gray[2] / 255,
-                            gray[3] / 255
-                        )
-                    end
-                end
+                -- handle
+                love.graphics.circle("fill", hx, hy, 14)
 
-                local px = (startX + offsetX) + self.game.playerPos.x * (tileSize + spacing * 0.5)
-                local py = (startY + offsetY) + (self.game.playerPos.y - 1) * (tileSize + spacing)
+                -- bar --
 
-                love.graphics.draw(
-                    SecretNightState.assets.ui["pc_icons"].image,
-                    SecretNightState.assets.ui["pc_icons"].quads["player"],
-                    px, py, 0, tileSize / 32, tileSize / 32
-                )
+                local rx, ry, rw, rh = 32, 96, 48, 256
+                local valueY = math.floor(rh * (self.game.value / 100))
+
+                love.graphics.setColor(0, 0.45, 0, 1)
+                love.graphics.rectangle("fill", rx, (ry + rh) - valueY, rw, valueY)
+
+                love.graphics.setColor(0, 0.75, 0, 1)
+                love.graphics.setLineWidth(3)
+                love.graphics.rectangle("line", rx + 3, ry, rw - 6, rh)
+                love.graphics.setLineWidth(1)
+
+                love.graphics.setColor(0, 1, 0, 1)
+
+                love.graphics.setLineWidth(3)
+                love.graphics.rectangle("line", rx, ry, rw, rh)
+                love.graphics.setLineWidth(1)
+
+                local char = SecretNightState.assets.ui["char_icons"]
+                love.graphics.draw(char.image, char.quads[self.currentSelection], 8, self.screen.h - 100, 0, 4.5, 4.5)
+
+                love.graphics.setColor(1, 1, 1, 1)
             end,
         })
     end
 
+
+    self.mainCanvas:renderTo(drawShit)
+
     self.glowcnv:renderTo(function()
         love.graphics.clear(0, 0, 0, 0)
         self.glow(function()
-            drawShit()
+            love.graphics.draw(self.mainCanvas, self.screen.x, self.screen.y)
         end)
     end)
 
-    drawShit()
-
-    local sx = 512 / SecretNightState.assets.effects["static"]["static_1"]:getWidth()
-    local sy = 512 / SecretNightState.assets.effects["static"]["static_1"]:getHeight()
-    love.graphics.setBlendMode("add")
-    love.graphics.setColor(1, 1, 1, 0.5)
-    love.graphics.draw(self.static.frames["static_" .. self.static.frame], startX - 30, startY - 50, 0, sx, sy)
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.setBlendMode("alpha")
+    love.graphics.draw(self.mainCanvas, self.screen.x, self.screen.y)
 end
 
 function MonitorView:postDraw()
@@ -316,9 +310,6 @@ end
 
 function MonitorView:update(elapsed)
     if not SecretNightState.officeState.monitor.displayStatic then return end
-
-    local startX, startY = self.game.boardStart.x, self.game.boardStart.y
-    local offsetX, offsetY = self.game.boardOffset.x, self.game.boardOffset.y
 
     self.static.acc = self.static.acc + elapsed
     if self.static.acc >= (1 / self.static.speed) then
@@ -340,11 +331,89 @@ function MonitorView:update(elapsed)
 
     switch(self.currentState, {
         ["minigame"] = function()
+            local function normalizeAngleDelta(a)
+                if a > math.pi then
+                    a = a - math.pi * 2
+                elseif a < -math.pi then
+                    a = a + math.pi * 2
+                end
+                return a
+            end
 
+            local inside, mx, my = shove.mouseToViewport()
+            mx = mx - self.screen.x
+            my = my - self.screen.y
+
+            -- =========================
+            -- CENTRO DA MANIVELA
+            -- =========================
+            local cx = self.game.crank.x
+            local cy = self.game.crank.y
+
+            local dx = mx - cx
+            local dy = my - cy
+
+            -- =========================
+            -- DRAG DA MANIVELA
+            -- =========================
+            if love.mouse.isDown(1) then
+                if not self.game.crank.dragging then
+                    self.game.crank.dragging = true
+                    self.game.crank.mouseStartAngle = math.atan2(dy, dx)
+                    self.game.crank.startAngle = self.game.crank.angle
+                    self.game.crank.lastAngle = self.game.crank.angle
+                else
+                    local currentMouseAngle = math.atan2(dy, dx)
+                    self.game.crank.angle =
+                        self.game.crank.startAngle +
+                        (currentMouseAngle - self.game.crank.mouseStartAngle)
+                end
+            else
+                self.game.crank.dragging = false
+            end
+
+            -- =========================
+            -- DELTA DE ROTAÇÃO
+            -- =========================
+            local deltaAngle = 0
+
+            if self.game.crank.dragging then
+                deltaAngle = self.game.crank.angle - self.game.crank.lastAngle
+                deltaAngle = normalizeAngleDelta(deltaAngle)
+            end
+
+            self.game.crank.lastAngle = self.game.crank.angle
+
+            -- =========================
+            -- DRAG → GERA VALOR
+            -- =========================
+            if self.game.crank.dragging then
+                self.game.value = self.game.value +
+                    (deltaAngle / (math.pi * 2)) * self.game.valuePerTurn
+            end
+
+            -- =========================
+            -- SOLTO → DECAY + ROTAÇÃO
+            -- =========================
+            if not self.game.crank.dragging then
+                if self.game.value > 0 then
+                    local decayPerSecond = self.game.valuePerTurn * 0.8
+                    local decay = decayPerSecond * elapsed
+
+                    self.game.value = math.max(0, self.game.value - decay)
+
+                    self.game.crank.angle =
+                        (self.game.value / self.game.valuePerTurn)
+                        * (math.pi * 2)
+                end
+            end
+
+            -- =========================
+            -- LIMITES
+            -- =========================
+            self.game.value = math.clamp(self.game.value, 0, 100)
         end,
     })
-
-    --self.game.invertCooldown = math.max(0, self.game.invertCooldown - elapsed)
 end
 
 function MonitorView:keypressed(k)
@@ -361,7 +430,6 @@ function MonitorView:keypressed(k)
                 ["up"] = function()
                     moveSelection(self, -1)
                 end,
-
                 ["down"] = function()
                     moveSelection(self, 1)
                 end,
@@ -372,9 +440,6 @@ function MonitorView:keypressed(k)
                     end
                 end
             })
-        end,
-        ["minigame"] = function()
-
         end,
     })
 end

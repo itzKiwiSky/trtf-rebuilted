@@ -204,16 +204,15 @@
         "Use o comando `help` para ver a lista de todos os comandos"
     ],
     "secret_night_monitor": {
-        "secret_night_monitor_title": "Select a animatronic to modify",
-        "secret_night_monitor_instruction": "Corrupt all bytes",
-        "secret_night_monitor_permission_write": "Permission denied to write to this file!",
-        "secret_night_monitor_body_integrity": "Boiler flame increase",
+        "secret_night_monitor_title": "Selecione um animatronico para modificar",
+        "secret_night_monitor_minigame": "Carregar sistema de depuração",
+        "secret_night_monitor_body_integrity": "Aumento da chama",
         "secret_night_monitor_boiler_fuel": "Boiler fuel"
     },
     "tutorial": {
         "tutorial_title": "Antes de você começar a jogar!",
         "tutorial_press": "Pressione qualquer tecla para continuar",
-        "tutorial_office": "You have two doors on each side; you can close them, and after a few seconds they will open automatically (you can also close them by pressing A and D respectively). By pressing CTRL, you can turn on the window light, which also activates the lights in the cameras.",
+        "tutorial_office": "Você tem duas portas em cada lado; você pode fechá-las e, após alguns segundos, elas se abrirão automaticamente (você também pode fechá-las pressionando A e D, respectivamente). Ao pressionar CTRL, você pode acender a luz da janela, o que também ativa as luzes das câmeras.",
         "tutorial_title_book": "Manual guia da Fazbear"
     },
     "evidences": {

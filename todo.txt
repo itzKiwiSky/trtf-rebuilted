@@ -1,7 +1,7 @@
-[.] Fix night don't move
+[X] Fix night don't move
 [.] Fix screen clip
 [X] extras animatronics crash
-[.] Add a switch mechanic direction
+[.] Rework minigame
 [.] extras
     [.] Extras BTS text was too big and is overlapping
     [.] the hitboxes is visible

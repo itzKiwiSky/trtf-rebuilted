@@ -228,6 +228,13 @@ return function(night)
             quads = {},
         }
 
+        assets.ui["pc_icons"] = {
+            quads = {},
+        }
+
+        assets.ui["pc_icons"].image = love.graphics.newImage("assets/images/game/night8/pc_icons.png")
+        assets.ui["pc_icons"].quads = love.graphics.getQuads(assets.ui["pc_icons"].image, "assets/images/game/night8/pc_icons.json", "hash")
+
         assets.ui["char_icons"].image = love.graphics.newImage("assets/images/game/night8/animatronics_minigame.png")
         assets.ui["char_icons"].quads = love.graphics.getQuads(assets.ui["char_icons"].image, "assets/images/game/night8/animatronics_minigame.json", "hash")
 
