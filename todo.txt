@@ -6,3 +6,4 @@
     [.] Extras BTS text was too big and is overlapping
     [.] the hitboxes is visible
     [.] the bts is destroying assets and not reloading
+[.] Review bonnie minigame

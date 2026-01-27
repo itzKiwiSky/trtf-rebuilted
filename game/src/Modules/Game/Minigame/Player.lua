@@ -43,7 +43,7 @@ Player.animation = {
     maxFrames = 2,
 }
 
-Player.maxCooldown = 0.35
+Player.maxCooldown = 0.25
 
 ---Define the player position
 ---@param x number
@@ -65,8 +65,8 @@ end
 
 function Player.draw()
     if Player.displayPlayer then
-        love.graphics.draw(MinigameSceneState.animatronicSprites, 
-            MinigameSceneState.animSets[Player.sprite][Player.lastDirection][Player.animation.frame], 
+        love.graphics.draw(MinigameSceneState.animatronicSprites,
+            MinigameSceneState.animSets[Player.sprite][Player.lastDirection][Player.animation.frame],
             Player.x - Player.drawOffset.x, Player.y - Player.drawOffset.y, 0, 1.2, 1.2
         )
     end
@@ -119,7 +119,7 @@ function Player.update(elapsed)
             Player.lastDirection = "down"
             Player.cooldown.down = Player.maxCooldown
         end
-        
+
         if dx ~= 0 or dy ~= 0 or Player.teleported then
             Player.isMoving = true
             Player.teleported = false
@@ -127,7 +127,7 @@ function Player.update(elapsed)
                 --if item.kind == "solid" then
                 return other.kind == "solid" and "touch" or "cross"
             end)
-        
+
             Player.hitbox.x = Player.x
             Player.hitbox.y = Player.y
         else

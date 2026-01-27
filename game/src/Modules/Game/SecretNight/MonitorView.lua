@@ -66,6 +66,130 @@ function MonitorView:createNames()
     end
 end
 
+local function updateCrank(self)
+    local function normalizeAngleDelta(a)
+        if a > math.pi then
+            a = a - math.pi * 2
+        elseif a < -math.pi then
+            a = a + math.pi * 2
+        end
+        return a
+    end
+
+    local inside, mx, my = shove.mouseToViewport()
+    mx = mx - self.screen.x
+    my = my - self.screen.y
+
+    -- =========================
+    -- CENTRO DA MANIVELA
+    -- =========================
+    local cx = self.game.crank.x
+    local cy = self.game.crank.y
+
+    local dx = mx - cx
+    local dy = my - cy
+
+    -- =========================
+    -- DRAG DA MANIVELA
+    -- =========================
+    if love.mouse.isDown(1) then
+        if not self.game.crank.dragging then
+            self.game.crank.dragging = true
+            self.game.crank.mouseStartAngle = math.atan2(dy, dx)
+            self.game.crank.startAngle = self.game.crank.angle
+            self.game.crank.lastAngle = self.game.crank.angle
+        else
+            local currentMouseAngle = math.atan2(dy, dx)
+            self.game.crank.angle =
+                self.game.crank.startAngle +
+                (currentMouseAngle - self.game.crank.mouseStartAngle)
+        end
+    else
+        self.game.crank.dragging = false
+    end
+
+    -- =========================
+    -- DELTA DE ROTAÇÃO
+    -- =========================
+    local deltaAngle = 0
+
+    if self.game.crank.dragging then
+        deltaAngle = self.game.crank.angle - self.game.crank.lastAngle
+        deltaAngle = normalizeAngleDelta(deltaAngle)
+    end
+
+    self.game.crank.lastAngle = self.game.crank.angle
+
+    -- =========================
+    -- DRAG → GERA VALOR
+    -- =========================
+    if self.game.crank.dragging then
+        self.game.value = self.game.value +
+            (deltaAngle / (math.pi * 2)) * self.game.valuePerTurn
+    end
+
+    -- =========================
+    -- SOLTO → DECAY + ROTAÇÃO
+    -- =========================
+    if not self.game.crank.dragging then
+        if self.game.value > 0 then
+            local decayPerSecond = self.game.valuePerTurn * 0.8
+            local decay = decayPerSecond * elapsed
+
+            self.game.value = math.max(0, self.game.value - decay)
+
+            self.game.crank.angle =
+                (self.game.value / self.game.valuePerTurn)
+                * (math.pi * 2)
+        end
+    end
+end
+
+local function drawCrank(self, cx, cy)
+    -- base
+    love.graphics.circle("fill", cx, cy, 20)
+
+    -- posição da manivela
+    local hx = cx + math.cos(self.game.crank.angle) * self.game.crank.radius
+    local hy = cy + math.sin(self.game.crank.angle) * self.game.crank.radius
+
+    -- braço
+    love.graphics.setLineWidth(3)
+    love.graphics.line(cx, cy, hx, hy)
+    love.graphics.setLineWidth(1)
+
+    love.graphics.setColor(0, 1, 0, 0.25)
+    love.graphics.circle("line", cx, cy, self.game.crank.radius - 3)
+    love.graphics.circle("line", cx, cy, self.game.crank.radius)
+    love.graphics.circle("line", cx, cy, self.game.crank.radius + 3)
+    love.graphics.setColor(0, 1, 0, 1)
+
+    -- handle
+    love.graphics.circle("fill", hx, hy, 14)
+end
+
+local function drawButton(self)
+    love.graphics.setColor(0, 0.25, 0, 1)
+    love.graphics.rectangle("fill", self.game.button.x, self.game.button.y, self.game.button.w, self.game.button.h, self.game.button.radius)
+    love.graphics.setColor(0, 1, 0, 1)
+
+    love.graphics.setLineWidth(3)
+    love.graphics.rectangle("line", self.game.button.x, self.game.button.y, self.game.button.w, self.game.button.h, self.game.button.radius)
+    love.graphics.setLineWidth(1)
+
+    love.graphics.setColor(0.2, 1, 0.2, 1)
+    love.graphics.draw(
+        SecretNightState.assets.ui["pc_icons"].image,
+        SecretNightState.assets.ui["pc_icons"].quads["player"],
+        self.game.button.x + self.game.button.w * 0.5,
+        self.game.button.y + self.game.button.h * 0.5, 0,
+        3, 3, 16, 16
+    )
+    love.graphics.setColor(0, 1, 0, 1)
+
+    love.graphics.rectangle("line", self.game.button.x + 5, self.game.button.y + 5, self.game.button.w - 10, self.game.button.h - 10, self.game.button.radius)
+end
+
 ---move the selection and jumps to the next available one
 ---@param self MonitorView
 ---@param dir number
@@ -129,16 +253,17 @@ function MonitorView:init()
     }
 
 
-    self.static          = {
+    self.static           = {
         frames = SecretNightState.assets.effects["static"],
         frame = 1,
         speed = 30,
         acc = 0,
     }
 
-    self.font            = fontcache.getFont("ocrx", 24)
-    self.fontInt         = fontcache.getFont("ocrx", 18)
-    local startX, startY = self.screen.x, self.screen.y
+    self.font             = fontcache.getFont("ocrx", 24)
+    self.fontInt          = fontcache.getFont("ocrx", 18)
+    self.fontMinigameText = fontcache.getFont("ocrx", 25)
+    local startX, startY  = self.screen.x, self.screen.y
     table.sort(names)
 
     local safeAreaStartSize = 50
@@ -147,6 +272,17 @@ function MonitorView:init()
         value = 0,
         valuePerTurn = 0.80,
         valueWhenRelease = 5.2,
+        button = {
+            x = self.screen.w * 0.5 + 40,
+            y = self.screen.h * 0.5,
+            w = 128,
+            h = 128,
+            radius = 8,
+            addValue = 0.5,
+            removeValue = 1.02,
+            timerHold = 0,
+            maxTimerHold = 0.3,
+        },
         crank = {
             x = self.screen.w * 0.5 + 40,
             y = self.screen.h * 0.5,
@@ -158,6 +294,9 @@ function MonitorView:init()
             mouseStartAngle = 0
         }
     }
+
+    self.game.button.x      = self.screen.w * 0.5 - self.game.button.w * 0.5
+    self.game.button.y      = self.screen.h * 0.5 - self.game.button.h * 0.5
 
 
     self.glow                    = moonshine(moonshine.effects.gaussianblur)
@@ -234,32 +373,16 @@ function MonitorView:draw()
             end,
             ["minigame"] = function()
                 love.graphics.setColor(0, 1, 0, 1)
+                love.graphics.printf(languageService["secret_night_monitor_minigame"], self.fontMinigameText, 0, 32, self.screen.w, "center")
+
                 local cx = self.game.crank.x
                 local cy = self.game.crank.y
 
-                -- base
-                love.graphics.circle("fill", cx, cy, 20)
+                --drawCrank(self, cx, cy)
 
-                -- posição da manivela
-                local hx = cx + math.cos(self.game.crank.angle) * self.game.crank.radius
-                local hy = cy + math.sin(self.game.crank.angle) * self.game.crank.radius
-
-                -- braço
-                love.graphics.setLineWidth(3)
-                love.graphics.line(cx, cy, hx, hy)
-                love.graphics.setLineWidth(1)
-
-                love.graphics.setColor(0, 1, 0, 0.25)
-                love.graphics.circle("line", cx, cy, self.game.crank.radius - 3)
-                love.graphics.circle("line", cx, cy, self.game.crank.radius)
-                love.graphics.circle("line", cx, cy, self.game.crank.radius + 3)
-                love.graphics.setColor(0, 1, 0, 1)
-
-                -- handle
-                love.graphics.circle("fill", hx, hy, 14)
+                drawButton(self)
 
                 -- bar --
-
                 local rx, ry, rw, rh = 32, 96, 48, 256
                 local valueY = math.floor(rh * (self.game.value / 100))
 
@@ -331,86 +454,37 @@ function MonitorView:update(elapsed)
 
     switch(self.currentState, {
         ["minigame"] = function()
-            local function normalizeAngleDelta(a)
-                if a > math.pi then
-                    a = a - math.pi * 2
-                elseif a < -math.pi then
-                    a = a + math.pi * 2
-                end
-                return a
-            end
+            -- updateCrank(self)
 
             local inside, mx, my = shove.mouseToViewport()
             mx = mx - self.screen.x
             my = my - self.screen.y
 
-            -- =========================
-            -- CENTRO DA MANIVELA
-            -- =========================
-            local cx = self.game.crank.x
-            local cy = self.game.crank.y
-
-            local dx = mx - cx
-            local dy = my - cy
-
-            -- =========================
-            -- DRAG DA MANIVELA
-            -- =========================
+            self.game.button.timerHold = self.game.button.timerHold - elapsed
             if love.mouse.isDown(1) then
-                if not self.game.crank.dragging then
-                    self.game.crank.dragging = true
-                    self.game.crank.mouseStartAngle = math.atan2(dy, dx)
-                    self.game.crank.startAngle = self.game.crank.angle
-                    self.game.crank.lastAngle = self.game.crank.angle
-                else
-                    local currentMouseAngle = math.atan2(dy, dx)
-                    self.game.crank.angle =
-                        self.game.crank.startAngle +
-                        (currentMouseAngle - self.game.crank.mouseStartAngle)
+                if self.game.button.timerHold <= 0 then
+                    if collision.pointRect({ x = mx, y = my }, self.game.button) then
+                        self.game.value = self.game.value + self.game.button.addValue
+                        self.game.button.timerHold = self.game.button.maxTimerHold
+                    end
                 end
             else
-                self.game.crank.dragging = false
-            end
-
-            -- =========================
-            -- DELTA DE ROTAÇÃO
-            -- =========================
-            local deltaAngle = 0
-
-            if self.game.crank.dragging then
-                deltaAngle = self.game.crank.angle - self.game.crank.lastAngle
-                deltaAngle = normalizeAngleDelta(deltaAngle)
-            end
-
-            self.game.crank.lastAngle = self.game.crank.angle
-
-            -- =========================
-            -- DRAG → GERA VALOR
-            -- =========================
-            if self.game.crank.dragging then
-                self.game.value = self.game.value +
-                    (deltaAngle / (math.pi * 2)) * self.game.valuePerTurn
-            end
-
-            -- =========================
-            -- SOLTO → DECAY + ROTAÇÃO
-            -- =========================
-            if not self.game.crank.dragging then
-                if self.game.value > 0 then
-                    local decayPerSecond = self.game.valuePerTurn * 0.8
-                    local decay = decayPerSecond * elapsed
-
-                    self.game.value = math.max(0, self.game.value - decay)
-
-                    self.game.crank.angle =
-                        (self.game.value / self.game.valuePerTurn)
-                        * (math.pi * 2)
+                if self.game.button.timerHold <= 0 then
+                    self.game.value = self.game.value - self.game.button.removeValue
+                    self.game.button.timerHold = self.game.button.maxTimerHold
                 end
             end
 
             -- =========================
             -- LIMITES
             -- =========================
+
+            if self.game.value >= 100 then
+                self.animatronics[self.currentSelection].locked = true
+                self:createNames()
+                self.currentState = "idle"
+            end
+
             self.game.value = math.clamp(self.game.value, 0, 100)
         end,
     })
