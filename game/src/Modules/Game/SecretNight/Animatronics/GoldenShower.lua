@@ -28,7 +28,7 @@ function GoldenShower:__construct()
 
     -- Set up timer.every callback for 10 second intervals
     self.moveTimer:every(10, function()
-        if self.currentState == "idle" and self.secretNightState.IA.frankburt.currentState ~= "idle" then
+        if self.currentState == "idle" and SecretNightState.IA.frankburt.currentState ~= "idle" then
             local ia = self:getAI()
             if ia > 0 then
                 -- Roll RNG
@@ -43,7 +43,7 @@ end
 ---Get dynamic IA based on Vincent's integrity
 ---Ranges from 8 (high integrity) to 20 (low integrity)
 function GoldenShower:getAI()
-    local furnace = self.secretNightState.officeState.furnace
+    local furnace = SecretNightState.officeState.furnace
     if not furnace then
         return 8
     end
@@ -61,12 +61,12 @@ function GoldenShower:attemptMove()
     end
 
     -- Only move if Frankburt is attacking
-    local frankburt = self.secretNightState.IA.frankburt
+    local frankburt = SecretNightState.IA.frankburt
     if not frankburt or not frankburt.attacking then
         return
     end
 
-    self.secretNightState.officeState.blink.alpha = 1
+    SecretNightState.officeState.blink.alpha = 1
 
     -- Choose new state with weighted random
     local newState = lume.weightedchoice({
@@ -98,7 +98,7 @@ function GoldenShower:updateState(elapsed)
     if self.patience <= 0 then
         if self.currentState == "back" then
             -- Back state: check if player is looking back
-            if self.secretNightState.officeState.lookDir == "back" then
+            if SecretNightState.officeState.lookDir == "back" then
                 -- Auto jumpscare
                 self.fade = 1
                 self:playJumpscare()
@@ -137,13 +137,13 @@ end
 
 ---Draw the Golden Shower sprite
 function GoldenShower:draw()
-    local assets = self.secretNightState.assets
+    local assets = SecretNightState.assets
 
     if self.currentState == "idle" then
         return
     end
 
-    local lookDir = self.secretNightState.officeState.lookDir
+    local lookDir = SecretNightState.officeState.lookDir
 
     if lookDir == "front" then
         if self.currentState == "front" or self.currentState == "right" then

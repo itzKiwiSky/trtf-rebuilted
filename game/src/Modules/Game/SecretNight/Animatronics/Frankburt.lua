@@ -24,7 +24,7 @@ function Frankburt:__construct()
 
     -- Set up timer.every callback for 8 second intervals
     self.moveTimer:every(8, function()
-        if self.active and self.currentState == "idle" and self.secretNightState.IA.goldenShower.currentState == "idle" then
+        if self.active and self.currentState == "idle" and SecretNightState.IA.goldenShower.currentState == "idle" then
             local ia = self:getAI()
             if ia > 0 then
                 -- Roll RNG
@@ -39,7 +39,7 @@ end
 ---Get dynamic IA based on Vincent's integrity
 ---Ranges from 8 (high integrity) to 16 (low integrity)
 function Frankburt:getAI()
-    local furnace = self.secretNightState.officeState.furnace
+    local furnace = SecretNightState.officeState.furnace
     if not furnace then
         return 8
     end
@@ -58,13 +58,13 @@ function Frankburt:attemptMove()
     end
 
     -- Check if Golden Shower is also idle (don't both attack at same time)
-    local goldenShower = self.secretNightState.IA.goldenShower
+    local goldenShower = SecretNightState.IA.goldenShower
     if goldenShower and goldenShower.attacking then
         return
     end
 
     self:playWalk()
-    self.secretNightState.officeState.blink.alpha = 1
+    SecretNightState.officeState.blink.alpha = 1
 
     -- Choose new state with weighted random
     local newState = lume.weightedchoice({
@@ -91,7 +91,7 @@ function Frankburt:updateState(elapsed)
     if self.patience <= 0 then
         if self.currentState == "office" then
             -- In office: immediate death if lantern is active
-            if self.secretNightState.flashlight.active then
+            if SecretNightState.officeState.flashlight.active then
                 self:kill()
             else
                 -- No lantern: return to idle

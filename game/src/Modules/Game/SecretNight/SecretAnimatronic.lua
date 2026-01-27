@@ -37,8 +37,8 @@ function SecretAnimatronic:isPlayerDefending()
         return false
     end
 
-    local flashlight = SecretNightState.flashlight
-    local mx, my = love.mouse.getPosition()
+    local flashlight = SecretNightState.officeState.flashlight
+    local inside, mx, my = shove.mouseToViewport()
 
     -- Lantern must be active and bright enough
     if flashlight.alpha < 0.3 or flashlight.battery <= 1 then
