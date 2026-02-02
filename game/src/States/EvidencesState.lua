@@ -16,6 +16,10 @@ function EvidencesState:enter()
     self.assets = {}
     self.currentSelection = ""
 
+    self.mouseDragFade = {
+        alpha = 1
+    }
+
     self.buttons = {
         config = {
             startX = 72,
@@ -153,7 +157,7 @@ function EvidencesState:draw()
             (self.shadowGlow:getHeight() / self.fnt_text:getHeight() * 1.5),
             self.shadowGlow:getWidth() / 2, self.shadowGlow:getHeight() / 2
         )
-        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setColor(1, 1, 1, self.mouseDragFade.alpha)
 
         love.graphics.print(
             languageService["evidences_mouse_drag"],
@@ -164,7 +168,7 @@ function EvidencesState:draw()
 
         local fontPosTitle = shove.getViewportWidth() - self.fnt_title:getWidth(languageService["evidences_trophies_" .. self.currentSelection])
 
-        love.graphics.setColor(0, 0, 0, 1)
+        love.graphics.setColor(0, 0, 0, self.mouseDragFade.alpha)
         love.graphics.draw(
             self.shadowGlow,
             fontPosTitle - 48, 96, math.rad(-90),
