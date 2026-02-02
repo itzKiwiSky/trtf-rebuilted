@@ -252,6 +252,8 @@ function MonitorView:init()
         ["load_bar"] = love.graphics.newGradient("vertical", { lume.color('#ED941F') }, { lume.color('#EBAB21') }, { lume.color('#FFDE3B') })
     }
 
+    self.currentState     = "idle"
+
 
     self.static           = {
         frames = SecretNightState.assets.effects["static"],
@@ -270,6 +272,7 @@ function MonitorView:init()
     local offset            = 10
     self.game               = {
         value = 0,
+        displayValue = 0,
         valuePerTurn = 0.80,
         valueWhenRelease = 5.2,
         button = {
@@ -282,6 +285,8 @@ function MonitorView:init()
             removeValue = 1.02,
             timerHold = 0,
             maxTimerHold = 0.3,
+            audioTimer = 3,
+            audioTimerMax = 3,
         },
         crank = {
             x = self.screen.w * 0.5 + 40,
@@ -374,6 +379,8 @@ function MonitorView:draw()
             ["minigame"] = function()
                 love.graphics.setColor(0, 1, 0, 1)
                 love.graphics.printf(languageService["secret_night_monitor_minigame"], self.fontMinigameText, 0, 32, self.screen.w, "center")
+
+                love.graphics.printf(("%.2f%%"):format(self.game.displayValue), self.fontMinigameText, 0, self.screen.h - 72, self.screen.w, "center")
 
                 local cx = self.game.crank.x
                 local cy = self.game.crank.y
@@ -468,12 +475,19 @@ function MonitorView:update(elapsed)
                         self.game.button.timerHold = self.game.button.maxTimerHold
                     end
                 end
-            else
-                if self.game.button.timerHold <= 0 then
-                    self.game.value = self.game.value - self.game.button.removeValue
-                    self.game.button.timerHold = self.game.button.maxTimerHold
+                if collision.pointRect({ x = mx, y = my }, self.game.button) then
+                    self.game.button.audioTimer = self.game.button.audioTimer - elapsed
+                end
+
+                if self.game.button.audioTimer <= 0 then
+                    self.game.button.audioTimer = self.game.audioTimerMax
+                    if not AudioSources["sfx_tab_button"]:isPlaying() then
+                        AudioSources["sfx_tab_button"]:play()
+                    end
                 end
             end
+
+            self.game.displayValue = self.game.displayValue + (self.game.value - self.game.displayValue) * 0.3 * elapsed
 
             -- =========================
             -- LIMITES
@@ -486,6 +500,7 @@ function MonitorView:update(elapsed)
             end
 
             self.game.value = math.clamp(self.game.value, 0, 100)
+            self.game.displayValue = math.clamp(self.game.displayValue, 0, 100)
         end,
     })
 end

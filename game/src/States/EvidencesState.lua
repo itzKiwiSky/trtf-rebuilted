@@ -73,6 +73,7 @@ function EvidencesState:enter()
 
             for assetName, imgData in pairs(self.assets) do
                 if assetName:match("^evidence_") then
+                    io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Image file loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}", assetName))
                     table.push(self.buttons.elements[name].collection, imgData)
                 end
             end
@@ -117,7 +118,7 @@ function EvidencesState:draw()
     love.graphics.setColor(1, 1, 1, 1)
     love.graphics.setBlendMode("alpha")
 
-    love.graphics.setColor(0, 0, 0, 0.5)
+    love.graphics.setColor(0, 0, 0, 0.67)
     love.graphics.rectangle("fill", 0, 0, shove.getViewportDimensions())
     love.graphics.setColor(1, 1, 1, 1)
 

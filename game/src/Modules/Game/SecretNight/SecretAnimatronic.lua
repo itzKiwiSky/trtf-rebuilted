@@ -38,7 +38,8 @@ function SecretAnimatronic:isPlayerDefending()
     end
 
     local flashlight = SecretNightState.officeState.flashlight
-    local inside, mx, my = shove.mouseToViewport()
+    local inside, vmx, vmy = shove.mouseToViewport()
+    local mx, my = SecretNightState.gameCam:worldCoords(vmx, vmy, 0, 0, shove.getViewportWidth(), shove.getViewportHeight())
 
     -- Lantern must be active and bright enough
     if flashlight.alpha < 0.3 or flashlight.battery <= 1 then
@@ -52,10 +53,13 @@ end
 
 ---Play walk sound
 function SecretAnimatronic:playWalk()
-    local r = math.random(1, 3)
-    if not AudioSources["sfx_metalwalk" .. r]:isPlaying() then
-        AudioSources["sfx_metalwalk" .. r]:play()
+    for i = 1, 7, 1 do
+        AudioSources["sfx_walk" .. i]:stop()
     end
+
+    local audio = "sfx_walk" .. math.random(1, 7)
+    AudioSources[audio]:setVolume(1.3)
+    AudioSources[audio]:play()
 end
 
 ---Kill the player (override if custom death sequence needed)

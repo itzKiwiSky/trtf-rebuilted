@@ -205,7 +205,7 @@
     ],
     "secret_night_monitor": {
         "secret_night_monitor_title": "Selecione um animatronico para modificar",
-        "secret_night_monitor_minigame": "Carregar sistema de depuração",
+        "secret_night_monitor_minigame": "Carregar depuração do sistema",
         "secret_night_monitor_body_integrity": "Aumento da chama",
         "secret_night_monitor_boiler_fuel": "Boiler fuel"
     },

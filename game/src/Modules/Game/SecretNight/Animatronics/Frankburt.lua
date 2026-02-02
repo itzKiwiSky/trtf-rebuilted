@@ -59,7 +59,7 @@ function Frankburt:attemptMove()
 
     -- Check if Golden Shower is also idle (don't both attack at same time)
     local goldenShower = SecretNightState.IA.goldenShower
-    if goldenShower and goldenShower.attacking then
+    if goldenShower and goldenShower.attacking and goldenShower.currentState ~= "idle" then
         return
     end
 
@@ -74,7 +74,7 @@ function Frankburt:attemptMove()
     })
 
     self.currentState = newState
-    self.patience = math.random(3, 6)
+    self.patience = 3.2
     self.attacking = true
 end
 
@@ -94,7 +94,9 @@ function Frankburt:updateState(elapsed)
             if SecretNightState.officeState.flashlight.active then
                 self:kill()
             else
+                SecretNightState.officeState.blink.alpha = 1
                 -- No lantern: return to idle
+                self:playWalk()
                 self.currentState = "idle"
                 self.attacking = false
             end
@@ -102,6 +104,8 @@ function Frankburt:updateState(elapsed)
             -- In front or right: check defense
             if self:isPlayerDefending() then
                 -- Player defended successfully
+                SecretNightState.officeState.blink.alpha = 1
+                self:playWalk()
                 self.currentState = "idle"
                 self.attacking = false
                 self.patience = 0

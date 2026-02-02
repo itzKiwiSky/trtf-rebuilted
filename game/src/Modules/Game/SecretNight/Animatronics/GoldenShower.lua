@@ -40,6 +40,18 @@ function GoldenShower:__construct()
     end)
 end
 
+function GoldenShower:getAI()
+    local furnace = SecretNightState.officeState.furnace
+    if not furnace then
+        return 8
+    end
+
+    local vincentIntegrity = furnace.vincentIntegrity or 100
+    local ia = math.floor(math.map(vincentIntegrity, 100, 0, 6, 13))
+
+    return math.clamp(ia, 0, 20)
+end
+
 ---Get dynamic IA based on Vincent's integrity
 ---Ranges from 8 (high integrity) to 20 (low integrity)
 function GoldenShower:getAI()
@@ -62,7 +74,7 @@ function GoldenShower:attemptMove()
 
     -- Only move if Frankburt is attacking
     local frankburt = SecretNightState.IA.frankburt
-    if not frankburt or not frankburt.attacking then
+    if not frankburt or not frankburt.attacking or frankburt.currentState ~= "idle" then
         return
     end
 

@@ -2,12 +2,6 @@ SecretNightState = {}
 SecretNightState.assets = {}
 SecretNightState.forceRestart = false
 
-local function playWalk()
-    local audio = "sfx_walk" .. math.random(1, 7)
-    AudioSources[audio]:setVolume(0.45)
-    AudioSources[audio]:play()
-end
-
 local function fearShake(amp)
     return (love.math.random() * 2 - 1) * amp
 end
@@ -99,6 +93,10 @@ function SecretNightState:enter()
             self.monitorView:validateSelection()
             self.monitorView:createNames()
         end
+        Slab.Text('[Animatronic state]')
+        Slab.Separator()
+        Slab.Text('Frankdick: ' .. self.IA.frankburt.currentState)
+        Slab.Text('Golden shower: ' .. self.IA.goldenShower.currentState)
         Slab.Text('[Animatronic stuff]')
         Slab.Separator()
         Slab.Text('Frankburt')
@@ -245,7 +243,7 @@ function SecretNightState:enter()
             vincentIntegrityPenault = 0.25,
             fuelPenalty = 0.3,
             fuelAdd = 20,
-            furnaceFuel = 20,
+            furnaceFuel = 30,
         },
         ambienceBoilerVolume = 0.25,
         lookingBack = false,
@@ -858,6 +856,13 @@ function SecretNightState:update(elapsed)
             if self.officeState.lookDir == "back" and not self.officeState.furnace.open and not self.boilerAnim.animationRunning then
                 if not self.turnAnim.animationRunning then
                     if not self.hoverBackLookButton.isHover then
+                        if self.officeState.flashlight.active then
+                            if AudioSources["sfx_flashlight"]:isPlaying() then
+                                AudioSources["sfx_flashlight"]:stop()
+                            end
+                            AudioSources["sfx_flashlight"]:play()
+                            self.officeState.flashlight.active = false
+                        end
                         self.hoverBackLookButton.isHover = true
                         self.officeState.lookingBack = true
                         self.turnAnim:setState(false)

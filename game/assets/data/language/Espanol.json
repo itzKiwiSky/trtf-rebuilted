@@ -205,7 +205,7 @@
     ],
     "secret_night_monitor": {
         "secret_night_monitor_title": "Selecciona un animatrónico para modificarlo.",
-        "secret_night_monitor_minigame": "carga para la depuración del sistema",
+        "secret_night_monitor_minigame": "Carga para depuración del sistema",
         "secret_night_monitor_body_integrity": "Aumento de la llama",
         "secret_night_monitor_boiler_fuel": "combustible"
     },
