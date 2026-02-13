@@ -4,7 +4,7 @@ local LoveView = {}
 LoveView.isEventRegistered = false ---@type boolean
 LoveView.ignoreRegisteredEvents = false ---@type boolean
 
-LoveView.views = {} ---@type table<loveView.view>
+LoveView.views = {} ---@type table<LoveView.view>
 
 ---@private
 local function reloadView(path)
@@ -100,7 +100,7 @@ function LoveView.registerLoveframesEvents()
         ogFuncs[event] = love[event] or blank
         love[event] = function(...)
             ogFuncs[event](...)
-            if loveframes[event] and not loveView.ignoreRegisteredEvents then
+            if loveframes[event] and not LoveView.ignoreRegisteredEvents then
                 local sucess, err = pcall(loveframes[event], ...)
                 if err then
                     print(err)

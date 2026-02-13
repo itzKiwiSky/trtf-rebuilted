@@ -65,8 +65,8 @@ return {
         }
     },
     {
-        displayName = "Strings of the Past",
-        ingameID = "strings_of_the_past",
+        displayName = "Strings from the Past",
+        ingameID = "strings_from_the_past",
         values = {
             bonnie = 6,
             chica = 6,

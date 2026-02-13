@@ -7,7 +7,8 @@
         "classicModePath": "assets/images/game/extras/bts/Scrapped Classic mode/classic_mode_english.txt",
         "freeRoamPath": "assets/images/game/extras/bts/Scrapped post night/free_roam_english.txt",
         "explainCoderPath": "assets/data/language/coder_story_en.txt",
-        "tutorialKeyboardTexture": "assets/images/game/instructions/tutorial_english.png"
+        "tutorialKeyboardTexture": "assets/images/game/instructions/tutorial_english.png",
+        "vincentRecordTrophyPath": "assets/sounds/evidences/records/snd_vincent_record_english.ogg"
     },
     "cutscene_day": "5 days earlier",
     "credits_speed": "Hold the mouse to speed up",
@@ -223,9 +224,9 @@
         "evidences_trophies": {
             "evidences_trophies_fazbear_crew": "Remodelling Contract 1990",
             "evidences_trophies_double_trouble": "The disappearance of Otto Spencer",
-            "evidences_trophies_ladies_night": "",
-            "evidences_trophies_strings_from_the_past": "",
-            "evidences_trophies_reaction_test": ""
+            "evidences_trophies_ladies_night": "Old characters - 1987",
+            "evidences_trophies_strings_from_the_past": "Old tape - May 8, 1998",
+            "evidences_trophies_reaction_test": "Animatronics Remodelling Technical Sheet - 1991"
         }
     }
 }

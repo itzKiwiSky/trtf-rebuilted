@@ -1,8 +1,8 @@
 local jumpscaresSubState = require 'src.States.Substates.ExtraSubStates.Jumpscares'
 
-local settings = {--
+local settings = { --
     lpadding = 24,
-    blank = function()end,
+    blank = function() end,
     fonts = {
         title = fontcache.getFont("tnr", 50),
         btnfont = fontcache.getFont("tnr", 26),
@@ -14,31 +14,7 @@ local settings = {--
 }
 
 return function()
-    local function imgButtonNoteSkin(object)
-        local skin = object:GetSkin()
-        local x = object:GetX()
-        local y = object:GetY()
-        local width = object:GetWidth()
-        local height = object:GetHeight()
-        local text = object:GetText()
-        local hover = object:GetHover()
-        local image = object:GetImage()
-        local imagecolor = object.imagecolor or skin.controls.color_image
-        local down = object.down
-        local font = object:GetFont() or skin.controls.imagebuttonfont
-        local twidth = font:getWidth(object.text)
-        local theight = font:getHeight(object.text)
-        local checked = object.checked
-        local quad = object.quad
-
-        love.graphics.setColor(imagecolor)
-        if quad then
-            _, _, w, h = quad:getViewport()
-            love.graphics.draw(image, quad, x, y, 0, width / w, height / h)
-        else
-            love.graphics.draw(image, x, y, 0, width / image:getWidth(), height / image:getHeight())
-        end
-    end
+    local components = require 'src.Modules.Game.Views.SharedComponents'
 
     local grid = loveframes.Create("grid")
     grid:SetRows(1)
@@ -60,7 +36,7 @@ return function()
         ExtrasState.showExtrasOptions = not ExtrasState.showExtrasOptions
         obj.quad = jumpscaresSubState.assets["multimedia"].quads[ExtrasState.showExtrasOptions and "show" or "hide"]
     end
-    btnHide.drawfunc = imgButtonNoteSkin
+    btnHide.drawfunc = components.imgButtonNoteSkin
     grid:AddItem(btnHide, 1, 2, "center")
 
     local btnLeftFrame = loveframes.Create("imagebutton")
@@ -73,7 +49,7 @@ return function()
             jumpscaresSubState.jumpscaresController.frame = jumpscaresSubState.jumpscaresController.frame - 1
         end
     end
-    btnLeftFrame.drawfunc = imgButtonNoteSkin
+    btnLeftFrame.drawfunc = components.imgButtonNoteSkin
     grid:AddItem(btnLeftFrame, 1, 4, "center")
 
     local btnPlay = loveframes.Create("imagebutton")
@@ -93,7 +69,7 @@ return function()
     btnPlay.Update = function(obj, elapsed)
         obj.quad = jumpscaresSubState.assets["multimedia"].quads[jumpscaresSubState.jumpscaresController.active and "pause" or "play"]
     end
-    btnPlay.drawfunc = imgButtonNoteSkin
+    btnPlay.drawfunc = components.imgButtonNoteSkin
     grid:AddItem(btnPlay, 1, 6, "center")
 
     local btnRightFrame = loveframes.Create("imagebutton")
@@ -106,7 +82,7 @@ return function()
             jumpscaresSubState.jumpscaresController.frame = jumpscaresSubState.jumpscaresController.frame + 1
         end
     end
-    btnRightFrame.drawfunc = imgButtonNoteSkin
+    btnRightFrame.drawfunc = components.imgButtonNoteSkin
     grid:AddItem(btnRightFrame, 1, 8, "center")
 
     local btnSound = loveframes.Create("imagebutton")
@@ -119,6 +95,6 @@ return function()
         jumpscaresSubState.jumpscaresController.playAudio = not jumpscaresSubState.jumpscaresController.playAudio
         obj.quad = jumpscaresSubState.assets["multimedia"].quads[jumpscaresSubState.jumpscaresController.playAudio and "audio" or "mute"]
     end
-    btnSound.drawfunc = imgButtonNoteSkin
+    btnSound.drawfunc = components.imgButtonNoteSkin
     grid:AddItem(btnSound, 1, 10, "center")
 end

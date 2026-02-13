@@ -248,6 +248,7 @@ function BTS:wheelmoved(x, y)
 end
 
 function BTS:release()
+    self.loaded = false
     love.graphics.release(self.assets)
 end
 

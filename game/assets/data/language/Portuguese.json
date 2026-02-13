@@ -7,7 +7,8 @@
         "classicModePath": "assets/images/game/extras/bts/Scrapped Classic mode/classic_mode_portuguese.txt",
         "freeRoamPath": "assets/images/game/extras/bts/Scrapped post night/free_roam_portuguese.txt",
         "explainCoderPath": "assets/data/language/coder_story_pt.txt",
-        "tutorialKeyboardTexture": "assets/images/game/instructions/tutorial_english.png"
+        "tutorialKeyboardTexture": "assets/images/game/instructions/tutorial_english.png",
+        "vincentRecordTrophyPath": "assets/sounds/evidences/records/snd_vincent_record_english.ogg"
     },
     "cutscene_day": "5 dias atras",
     "credits_speed": "Mantenha o botao pressionado para acelerar",
@@ -220,11 +221,11 @@
         "evidences_beat_challenge": "Awarded after beating %s",
         "evidences_mouse_drag": "Click with left mouse button to move around",
         "evidences_trophies": {
-            "evidences_trophies_fazbear_crew": "Contrato de remodelacion 1990",
-            "evidences_trophies_double_trouble": "The disappearance of Otto Spencer",
-            "evidences_trophies_ladies_night": "",
-            "evidences_trophies_strings_from_the_past": "",
-            "evidences_trophies_reaction_test": ""
+            "evidences_trophies_fazbear_crew": "Contrato de remodelação - 1990",
+            "evidences_trophies_double_trouble": "O Desaparecimento de Otto Spencer - 2000",
+            "evidences_trophies_ladies_night": "Personagens antigos - 1987",
+            "evidences_trophies_strings_from_the_past": "Fita antiga - 8 de maio, 1998",
+            "evidences_trophies_reaction_test": "Ficha técnica de remodelação de animatronics - 1991"
         }
     }
 }

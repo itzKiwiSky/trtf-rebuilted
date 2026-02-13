@@ -480,7 +480,7 @@ function MonitorView:update(elapsed)
                 end
 
                 if self.game.button.audioTimer <= 0 then
-                    self.game.button.audioTimer = self.game.audioTimerMax
+                    self.game.button.audioTimer = self.game.button.audioTimerMax
                     if not AudioSources["sfx_tab_button"]:isPlaying() then
                         AudioSources["sfx_tab_button"]:play()
                     end

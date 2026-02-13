@@ -12,22 +12,31 @@ function EvidencesState:enter()
 
     self.currentZoom = 1
     self.targetZoom = 1
+    self.lastClickTime = 0
+    self.doubleClickDelay = 0.23
 
     self.assets = {}
     self.currentSelection = ""
+
+    self.showCollectionButtons = false
+    self.currentCollectionImage = 1
+    self.canMoveMouse = false
 
     self.mouseDragFade = {
         alpha = 1
     }
 
-    self.buttons = {
-        config = {
-            startX = 72,
-            startY = 200,
-            padding = 72,
-            scale = 0.143,
-        },
-        elements = {},
+    self.audioFade = {
+        volume = 0.5,
+    }
+
+    self.tapeHitbox = {
+        x = shove.getViewportWidth() - 350,
+        y = shove.getViewportHeight() / 2,
+        w = 522,
+        h = 800,
+        offsetX = -680,
+        offsetY = -300,
     }
 
     self.camera = camera(shove.getViewportWidth() / 2, shove.getViewportHeight() / 2)
@@ -35,10 +44,23 @@ function EvidencesState:enter()
     AudioSources["msc_evidences_bg"]:setLooping(true)
     AudioSources["msc_evidences_bg"]:play()
 
-    local imgs = fsutil.scanFolder("assets/images/game/evidences/")
-    for _, value in ipairs(imgs) do
-        local name = (value:gsub("%.[^.]+$", "")):match("[^/]+$")
-        self.assets[name] = love.graphics.newImage(value)
+    local imgsTrohies = fsutil.scanFolder("assets/images/game/evidences/trophies", true)
+    self.assets["icons"] = {}
+    self.assets["icons"].image = love.graphics.newImage("assets/images/game/evidences/icons.png")
+    self.assets["icons"].quads = love.graphics.getQuads(self.assets["icons"].image, "assets/images/game/evidences/icons.json", "hash")
+    for _, value in ipairs(imgsTrohies) do
+        if love.filesystem.getInfo(value).type == "directory" then
+            local name = value:match("[^/]+$")
+
+            self.assets["trophy_" .. name] = {}
+        else
+            local name = (value:gsub("%.[^.]+$", "")):match("[^/]+$")
+            if string.find(name, "evidence") then
+                self.assets["trophy_double_trouble"][name] = love.graphics.newImage(value)
+            else
+                self.assets["trophy_" .. name] = love.graphics.newImage(value)
+            end
+        end
     end
 
     self.fxBlurBG = moonshine(moonshine.effects.gaussianblur)
@@ -55,53 +77,12 @@ function EvidencesState:enter()
 
     self.shdFXScreen.chromasep.radius = 1.25
 
-    local x, y = 0, 0
-    local r, c = 1, 1
-    for name, challenge in spairs(gameSave.save.user.progress.challenges) do
-        local image = self.assets[name]
-        self.buttons.elements[name] = {
-            id = name,
-            x = self.buttons.config.startX + x,
-            y = self.buttons.config.startY + y,
-            w = 0,
-            h = 0,
-            isCollection = false,
-            collection = {},
-            unlocked = challenge,
-            img = self.assets[name],
-        }
-
-        if table.contains({ "double_trouble" }, name) then
-            self.buttons.elements[name].isCollection = true
-            -- iterate over assets and get all "evidence" prefixed files --
-
-            for assetName, imgData in pairs(self.assets) do
-                if assetName:match("^evidence_") then
-                    io.printf(string.format("{bgBrightMagenta}{brightCyan}{bold}[LOVE]{reset}{brightWhite} : Image file loaded with {brightGreen}sucess{reset} | {bold}{underline}{brightYellow}%s{reset}", assetName))
-                    table.push(self.buttons.elements[name].collection, imgData)
-                end
-            end
-        end
-
-
-
-        self.buttons.elements[name].w = self.assets[name]:getWidth() * self.buttons.config.scale
-        self.buttons.elements[name].h = self.assets[name]:getHeight() * self.buttons.config.scale
-
-        x = (x + self.assets[name]:getWidth() * self.buttons.config.scale) + self.buttons.config.padding
-        r = r + 1
-
-        if r > 3 then
-            r = 1
-            c = c + 1
-            x = self.buttons.config.startX
-            y = (y + self.assets[name]:getHeight() * self.buttons.config.scale) + self.buttons.config.padding
-        end
-    end
+    --languageService["evidences_trophies_" .. self.currentSelection]
+    self.UICanvas = love.graphics.newCanvas(shove.getViewportWidth(), shove.getViewportHeight(), { readable = true })
 
     loveView.unloadView()
     loveView.registerLoveframesEvents()
-    loveView.loadView("src/Modules/Game/Views/Shared.lua")
+    loveView.loadView("src/Modules/Game/Views/EvidencesView.lua")
 end
 
 function EvidencesState:draw()
@@ -113,9 +94,11 @@ function EvidencesState:draw()
             love.graphics.draw(self.bg, shove.getViewportWidth() / self.bg:getWidth(), shove.getViewportHeight() / self.bg:getHeight())
         end)
     end)
+
     self.shdFXScreen(function()
         love.graphics.draw(self.bg, shove.getViewportWidth() / self.bg:getWidth(), shove.getViewportHeight() / self.bg:getHeight())
     end)
+
     love.graphics.setBlendMode("add")
     love.graphics.setColor(1, 1, 1, 0.75)
     love.graphics.draw(self.cnv_blurFX)
@@ -135,75 +118,39 @@ function EvidencesState:draw()
     if self.currentSelection ~= "" then
         self.camera:attach()
         local sprite = self.assets[self.currentSelection]
-        local isCollection = self.buttons.elements[self.currentSelection].isCollection
+        local spriteMultiplier = 10
 
-        if self.buttons.elements[self.currentSelection].unlocked then
-            love.graphics.setColor(1, 1, 1, 1)
+        if type(sprite) == "table" then
+            local img = sprite["evidence_" .. self.currentCollectionImage]
+            love.graphics.setBlendMode("add")
+            love.graphics.draw(self.shadowGlow, shove.getViewportWidth() - 350, shove.getViewportHeight() / 2, 0, self.currentZoom * spriteMultiplier, self.currentZoom * spriteMultiplier, self.shadowGlow:getWidth() / 2, self.shadowGlow:getHeight() / 2)
+            love.graphics.setBlendMode("alpha")
+
+            love.graphics.draw(img, shove.getViewportWidth() - 350, shove.getViewportHeight() / 2, 0, self.currentZoom, self.currentZoom, img:getWidth() / 2, img:getHeight() / 2)
         else
-            love.graphics.setColor(0, 0, 0, 1)
+            love.graphics.setBlendMode("add")
+            love.graphics.draw(self.shadowGlow, shove.getViewportWidth() - 350, shove.getViewportHeight() / 2, 0, self.currentZoom * spriteMultiplier, self.currentZoom * spriteMultiplier, self.shadowGlow:getWidth() / 2, self.shadowGlow:getHeight() / 2)
+            love.graphics.setBlendMode("alpha")
+
+            love.graphics.draw(sprite, shove.getViewportWidth() - 350, shove.getViewportHeight() / 2, 0, self.currentZoom, self.currentZoom, sprite:getWidth() / 2, sprite:getHeight() / 2)
+
+            if self.currentSelection == "trophy_strings_from_the_past" then
+                local z     = self.currentZoom
+
+                local rectX = self.tapeHitbox.x + (self.tapeHitbox.x + self.tapeHitbox.offsetX - sprite:getWidth() / 2) * z
+                local rectY = self.tapeHitbox.y + (self.tapeHitbox.y + self.tapeHitbox.offsetY - sprite:getHeight() / 2) * z
+
+                local rectW = self.tapeHitbox.w * z
+                local rectH = self.tapeHitbox.h * z
+                love.graphics.setColor(1, 1, 1, 0.6)
+                love.graphics.rectangle("fill", rectX, rectY, rectW, rectH)
+                love.graphics.setColor(1, 1, 1, 1)
+            end
         end
-        love.graphics.draw(sprite, shove.getViewportWidth() - 350, shove.getViewportHeight() / 2, 0, self.currentZoom, self.currentZoom, sprite:getWidth() / 2, sprite:getHeight() / 2)
-        love.graphics.setColor(1, 1, 1, 1)
         self.camera:detach()
-
-        local fontPos = shove.getViewportWidth() - self.fnt_text:getWidth(languageService["evidences_mouse_drag"])
-
-        love.graphics.setColor(0, 0, 0, 1)
-        love.graphics.draw(
-            self.shadowGlow,
-            fontPos + 128,
-            shove.getViewportHeight() - 64, math.rad(-90),
-            (self.shadowGlow:getWidth() / self.fnt_text:getWidth(languageService["evidences_mouse_drag"])) * 2.5,
-            (self.shadowGlow:getHeight() / self.fnt_text:getHeight() * 1.5),
-            self.shadowGlow:getWidth() / 2, self.shadowGlow:getHeight() / 2
-        )
-        love.graphics.setColor(1, 1, 1, self.mouseDragFade.alpha)
-
-        love.graphics.print(
-            languageService["evidences_mouse_drag"],
-            self.fnt_text, fontPos + 128, shove.getViewportHeight() - 68, 0, 1, 1,
-            self.fnt_text:getWidth(languageService["evidences_mouse_drag"]) / 2,
-            self.fnt_text:getHeight() / 2
-        )
-
-        local fontPosTitle = shove.getViewportWidth() - self.fnt_title:getWidth(languageService["evidences_trophies_" .. self.currentSelection])
-
-        love.graphics.setColor(0, 0, 0, self.mouseDragFade.alpha)
-        love.graphics.draw(
-            self.shadowGlow,
-            fontPosTitle - 48, 96, math.rad(-90),
-            (self.shadowGlow:getWidth() / self.fnt_title:getWidth(languageService["evidences_trophies_" .. self.currentSelection])) * 2.5,
-            (self.shadowGlow:getHeight() / self.fnt_title:getHeight() * 3.5),
-            self.shadowGlow:getWidth() / 2, self.shadowGlow:getHeight() / 2
-        )
-        love.graphics.setColor(1, 1, 1, 1)
-
-        love.graphics.print(
-            languageService["evidences_trophies_" .. self.currentSelection],
-            self.fnt_title, fontPosTitle - 48, 96, 0, 1, 1,
-            self.fnt_title:getWidth(languageService["evidences_trophies_" .. self.currentSelection]) / 2,
-            self.fnt_title:getHeight() / 2
-        )
     end
 
-    for name, btn in spairs(self.buttons.elements) do
-        local scaleGlow = 1.5
-        love.graphics.setBlendMode("add")
-        love.graphics.draw(self.shadowGlow, btn.x + btn.w * 0.5, btn.y + btn.h * 0.5, 0, (self.shadowGlow:getWidth() / btn.w) * scaleGlow, (self.shadowGlow:getHeight() / btn.h) * scaleGlow, self.shadowGlow:getWidth() / 2, self.shadowGlow:getHeight() / 2)
-        love.graphics.setBlendMode("alpha")
-
-        if btn.unlocked then
-            love.graphics.setColor(1, 1, 1, 1)
-        else
-            love.graphics.setColor(0, 0, 0, 1)
-        end
-        love.graphics.draw(btn.img, btn.x, btn.y, 0, self.buttons.config.scale, self.buttons.config.scale)
-        love.graphics.setColor(1, 1, 1, 1)
-
-        --love.graphics.rectangle("line", btn.x, btn.y, btn.w, btn.h)
-    end
-
-    loveView.draw()
+    love.graphics.draw(self.UICanvas)
 end
 
 function EvidencesState:update(elapsed)
@@ -212,22 +159,19 @@ function EvidencesState:update(elapsed)
     self.camera.x = math.clamp(self.camera.x, shove.getViewportWidth() / 2, shove.getViewportWidth())
     self.camera.y = math.clamp(self.camera.y, shove.getViewportHeight() / 2, shove.getViewportHeight())
 
+    love.graphics.setCanvas({ self.UICanvas, stencil = true })
+    love.graphics.clear(0, 0, 0, 0)
+    loveView.draw()
+    love.graphics.setCanvas()
+
+    AudioSources["msc_evidences_bg"]:setVolume(self.audioFade.volume)
+    flux.update(elapsed)
+
     loveView.update(elapsed)
 end
 
-function EvidencesState:mousepressed(x, y, button)
-    local inside, vmx, vmy = shove.mouseToViewport()
-
-    if button == 1 then
-        for name, btn in spairs(self.buttons.elements) do
-            if collision.pointRect({ x = vmx, y = vmy }, btn) and btn.unlocked then
-                self.currentSelection = btn.id
-            end
-        end
-    end
-end
-
 function EvidencesState:wheelmoved(x, y)
+    if not self.canMoveMouse then return end
     if self.currentSelection == "" then return end
     if y < 0 then
         if self.targetZoom > 0.45 then
@@ -242,9 +186,52 @@ end
 
 function EvidencesState:mousemoved(x, y, dx, dy)
     if self.currentSelection == "" then return end
+    if not self.canMoveMouse then return end
     if love.mouse.isDown(1) then
         self.camera.x = self.camera.x - dx / self.camera.scale
         self.camera.y = self.camera.y - dy / self.camera.scale
+    end
+end
+
+function EvidencesState:mousepressed(x, y, button)
+    if self.currentSelection ~= "trophy_strings_from_the_past" then return end
+    if button ~= 1 then return end
+
+    local sprite           = self.assets["trophy_strings_from_the_past"]
+
+    local inside, vmx, vmy = shove.mouseToViewport()
+    local mx, my           = self.camera:worldCoords(vmx, vmy)
+
+    local z                = self.currentZoom
+
+    local rectX            = self.tapeHitbox.x + (self.tapeHitbox.x + self.tapeHitbox.offsetX - sprite:getWidth() / 2) * z
+    local rectY            = self.tapeHitbox.y + (self.tapeHitbox.y + self.tapeHitbox.offsetY - sprite:getHeight() / 2) * z
+
+    local rectW            = self.tapeHitbox.w * z
+    local rectH            = self.tapeHitbox.h * z
+
+    local hitbox           = {
+        x = rectX,
+        y = rectY,
+        w = rectW,
+        h = rectH
+    }
+
+    local now              = love.timer.getTime()
+
+    if collision.pointRect({ x = mx, y = my }, hitbox) then
+        if now - self.lastClickTime <= self.doubleClickDelay then
+            -- here --
+            local record = love.audio.newSource(languageRaw["__ENGINE__"].vincentRecordTrophyPath, "stream")
+            flux.to(self.audioFade, 2, { volume = 0 }):oncomplete(function()
+                if not record:isPlaying() then
+                    --record:
+                end
+            end)
+            self.lastClickTime = 0
+        else
+            self.lastClickTime = now
+        end
     end
 end
 

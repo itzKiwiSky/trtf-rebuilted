@@ -1,5 +1,10 @@
 local function preloadAudio()
-    local files = fsutil.scanFolder("assets/sounds", false, { "assets/sounds/night/calls", "assets/sounds/night8/calls", "assets/sounds/night/meme" })
+    local files = fsutil.scanFolder("assets/sounds", false, {
+        "assets/sounds/night/calls",
+        "assets/sounds/night8/calls",
+        "assets/sounds/night/meme",
+        "assets/sounds/night/evidences/records"
+    })
 
     for f = 1, #files, 1 do
         local filename = (((files[f]:lower()):gsub(" ", "_")):gsub("%.[^.]+$", "")):match("[^/]+$")

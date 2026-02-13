@@ -1,21 +1,5 @@
-local settings = {
-    lpadding = 32,
-    blank = function() end,
-    fonts = {
-        title = fontcache.getFont("tnr", 50),
-        btnfont = fontcache.getFont("tnr", 26),
-        subtitleFont = fontcache.getFont("tnr", 32),
-        optionFont = fontcache.getFont("tnr", 34),
-        mainButtons = fontcache.getFont("tnr", 18),
-        multi = fontcache.getFont("tnr", 20),
-        vhsFont = fontcache.getFont("vcr", 20),
-        vhsTitle = fontcache.getFont("vcr", 42),
-        vhsNameFont = fontcache.getFont("vcr", 24)
-    },
-}
-
-return function()
-    local buttonSkin = function(object)
+return {
+    ButtonSkin = function(object)
         local skin = object:GetSkin()
         local x = object:GetX()
         local y = object:GetY()
@@ -74,17 +58,59 @@ return function()
             love.graphics.setColor(fore)
             skin.PrintText(text, x + width / 2 - twidth / 2, y + height / 2 - theight / 2)
         end
+    end,
 
-        --love.graphics.rectangle("line", x, y, width, height)
-    end
+    imgButtonNoteSkin = function(object)
+        local skin = object:GetSkin()
+        local x = object:GetX()
+        local y = object:GetY()
+        local width = object:GetWidth()
+        local height = object:GetHeight()
+        local text = object:GetText()
+        local hover = object:GetHover()
+        local image = object:GetImage()
+        local imagecolor = object.imagecolor or skin.controls.color_image
+        local down = object.down
+        local font = object:GetFont() or skin.controls.imagebuttonfont
+        local twidth = font:getWidth(object.text)
+        local theight = font:getHeight(object.text)
+        local checked = object.checked
+        local quad = object.quad
 
-    local exitButton = loveframes.Create("button")
-    exitButton:SetFont(settings.fonts.vhsFont)
-    exitButton:SetSize(96, 48)
-    exitButton:SetText(languageService["menu_settings_buttons_exit"])
-    exitButton:SetPos(settings.lpadding, shove.getViewportHeight() - (exitButton:GetHeight() + settings.lpadding))
-    exitButton.drawfunc = buttonSkin
-    exitButton.OnClick = function(obj)
-        gamestate.switch(MenuState)
+        love.graphics.setColor(imagecolor)
+        if quad then
+            _, _, w, h = quad:getViewport()
+            love.graphics.draw(image, quad, x, y, 0, width / w, height / h)
+        else
+            love.graphics.draw(image, x, y, 0, width / image:getWidth(), height / image:getHeight())
+        end
+    end,
+
+    imgQuadSupport = function(obj)
+        local skin = object:GetSkin()
+        local x = object:GetX()
+        local y = object:GetY()
+        local orientation = object:GetOrientation()
+        local scalex = object:GetScaleX()
+        local scaley = object:GetScaleY()
+        local offsetx = object:GetOffsetX()
+        local offsety = object:GetOffsetY()
+        local shearx = object:GetShearX()
+        local sheary = object:GetShearY()
+        local image = object.image
+        local imagecolor = object.imagecolor or skin.controls.color_image
+        local stretch = object.stretch
+        local quad = object.quad
+
+        if stretch then
+            scalex, scaley = object:GetWidth() / image:getWidth(), object:GetHeight() / image:getHeight()
+        end
+
+        love.graphics.setColor(imagecolor)
+        if quad then
+            love.graphics.draw(image, quad, x, y, orientation, scalex, scaley, offsetx, offsety, shearx, sheary)
+        else
+            love.graphics.draw(image, x, y, orientation, scalex, scaley, offsetx, offsety, shearx, sheary)
+        end
     end
-end
+}
