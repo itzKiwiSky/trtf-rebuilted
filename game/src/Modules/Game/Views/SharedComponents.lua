@@ -112,5 +112,31 @@ return {
         else
             love.graphics.draw(image, x, y, orientation, scalex, scaley, offsetx, offsety, shearx, sheary)
         end
-    end
+    end,
+
+    customScrollbody = function(object)
+        local x = object:GetX()
+        local y = object:GetY()
+        local width = object:GetWidth()
+        local height = object:GetHeight()
+        local dragging = object:IsDragging()
+        local hover = object:GetHover()
+        local bartype = object:GetBarType()
+
+        -- Estado: cor muda conforme interação
+        local color
+        if dragging then
+            color = { 1, 1, 1, 0.6 }
+        elseif hover then
+            color = { 1, 1, 1, 0.8 }
+        else
+            color = { 1, 1, 1, 0.5 }
+        end
+
+        love.graphics.setLineWidth(3)
+        love.graphics.rectangle("line", x, y, width, height, 10, 10, 20)
+        love.graphics.setLineWidth(1)
+        love.graphics.setColor(color)
+        love.graphics.rectangle("fill", x, y, width, height, 10, 10, 20)
+    end,
 }

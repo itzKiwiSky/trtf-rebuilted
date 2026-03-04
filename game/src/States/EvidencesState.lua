@@ -17,10 +17,15 @@ function EvidencesState:enter()
 
     self.assets = {}
     self.currentSelection = ""
+    self.wasPlayingStartSFX = false
+    self.wasPlayingTape = false
+    self.tapeState = "none"
 
     self.showCollectionButtons = false
     self.currentCollectionImage = 1
     self.canMoveMouse = false
+
+    self.record = love.audio.newSource(languageRaw["__ENGINE__"].vincentRecordTrophyPath, "stream")
 
     self.mouseDragFade = {
         alpha = 1
@@ -165,8 +170,29 @@ function EvidencesState:update(elapsed)
     love.graphics.setCanvas()
 
     AudioSources["msc_evidences_bg"]:setVolume(self.audioFade.volume)
-    flux.update(elapsed)
 
+    if self.tapeState == "starting" and not AudioSources["snd_tape_start"]:isPlaying() then
+        self.tapeState = "playing"
+        self.record:setVolume(0.75)
+        AudioSources["snd_tape_buzz_loop"]:play()
+        AudioSources["snd_tape_buzz_loop"]:setLooping(true)
+        self.record:play()
+    end
+
+    if self.tapeState == "playing" and not self.record:isPlaying() then
+        self.tapeState = "ending"
+        AudioSources["snd_tape_buzz_loop"]:stop()
+        AudioSources["snd_tape_end"]:play()
+    end
+
+    if self.tapeState == "ending" and not AudioSources["snd_tape_end"]:isPlaying() then
+        self.tapeState = "none"
+        print("Sequência finalizada")
+
+        flux.to(self.audioFade, 2, { volume = 0.5 })
+    end
+
+    flux.update(elapsed)
     loveView.update(elapsed)
 end
 
@@ -222,11 +248,9 @@ function EvidencesState:mousepressed(x, y, button)
     if collision.pointRect({ x = mx, y = my }, hitbox) then
         if now - self.lastClickTime <= self.doubleClickDelay then
             -- here --
-            local record = love.audio.newSource(languageRaw["__ENGINE__"].vincentRecordTrophyPath, "stream")
             flux.to(self.audioFade, 2, { volume = 0 }):oncomplete(function()
-                if not record:isPlaying() then
-                    --record:
-                end
+                AudioSources["snd_tape_start"]:play()
+                self.tapeState = "starting"
             end)
             self.lastClickTime = 0
         else

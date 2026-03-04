@@ -10,6 +10,21 @@ local settings = {
     },
 }
 
+local function debugScrollStructure(list)
+    print("=== SCROLLY (vertical) ===")
+    print("Type: " .. (list.scrolly.type or "?"))
+
+    for i, internal in ipairs(list.scrolly.internals) do
+        print(string.format("  [%d] type=%s", i, internal.type or "?"))
+
+        if internal.internals then
+            for j, subinternal in ipairs(internal.internals) do
+                print(string.format("    [%d] type=%s", j, subinternal.type or "?"))
+            end
+        end
+    end
+end
+
 return function()
     local gradientBG = love.graphics.newGradient("horizontal",
         { 1, 1, 1, 0 },
@@ -33,21 +48,27 @@ return function()
     --print(inspect(evidenceList))
     --evidenceList.scrolly.drawfunc = settings.blank
     --evidenceList.scrolly.drawpverfunc = settings.blank
+
     os.execute("cls")
+    debugScrollStructure(evidenceList)
 
-    local scrollbarArea = evidenceList.scrolly.internals[1]
-    print(evidenceList:GetScrollBar())
-    --local scrollbarButtonTop
-    scrollbarArea.drawoverfunc = settings.blank
-    print(inspect(scrollbarArea))
+    local scrollArea = evidenceList.scrolly.internals[1]
+    evidenceList.scrolly.drawfunc = settings.blank
+    --print(inspect(scrollArea))
+    --scrollArea.drawfunc = settings.blank
+    --scrollArea.drawoverfunc = settings.blank
+    --scrollArea:SetDrawFunc(settings.blank)
 
-    --for index, value in ipairs(scrollbarArea) do
-    --    io.write(index .. " - " .. inspect(value.type) .. "\n")
-    --end
-    --print(inspect(evidenceList.scrolly.internals))
-    --evidenceList.scrollx.drawfunc = function(obj)
+    local scrollBar = scrollArea.internals[1]
+    scrollBar.drawfunc = components.customScrollbody
 
-    --end
+    local topButton = evidenceList.scrolly.internals[2]
+    topButton.drawfunc = settings.blank
+
+    local botButton = evidenceList.scrolly.internals[3]
+    botButton.drawfunc = settings.blank
+
+
     evidenceList.drawfunc = settings.blank
     evidenceList.drawoverfunc = settings.blank
 
