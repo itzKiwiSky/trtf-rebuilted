@@ -139,4 +139,117 @@ return {
         love.graphics.setColor(color)
         love.graphics.rectangle("fill", x, y, width, height, 10, 10, 20)
     end,
+    customFrame = function(object)
+        local skin   = object:GetSkin()
+        local x      = object:GetX()
+        local y      = object:GetY()
+        local width  = object:GetWidth()
+        local height = object:GetHeight()
+        local hover  = object:IsTopChild()
+        local name   = object:GetName()
+        local icon   = object:GetIcon()
+        local font   = skin.controls.smallfont
+
+        local body   = skin.controls.color_back0
+        local top    = hover and skin.controls.color_active or skin.controls.color_fore0
+        local fore   = skin.controls.color_back0
+        local border = skin.controls.color_back1
+
+        -- frame body
+        love.graphics.setColor(0, 0, 0, 1)
+        love.graphics.rectangle("fill", x, y, width, height, 10, 10)
+
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.setLineWidth(3)
+        love.graphics.rectangle("line", x, y, width, height, 10, 10)
+        love.graphics.setLineWidth(1)
+
+        -- frame top bar
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.rectangle("line", x, y, width, 25, 10, 10)
+
+        -- frame name section
+        love.graphics.setFont(font)
+
+        if icon then
+            local iconwidth = icon:getWidth()
+            local iconheight = icon:getHeight()
+            --icon:setFilter("nearest", "nearest")
+            love.graphics.setColor(skin.controls.color_image)
+            love.graphics.draw(icon, x + 5, y + 5)
+            love.graphics.setColor(1, 1, 1, 1)
+            skin.PrintText(name, x + iconwidth + 10, y + 5)
+        else
+            love.graphics.setColor(1, 1, 1, 1)
+            skin.PrintText(name, x + 10, y + 5)
+        end
+
+        -- frame border
+        --love.graphics.setColor(border)
+        --skin.OutlinedRectangle(x, y, width, height)
+        --love.graphics.rectangle("line", x, y, width, height, 10, 10)
+        --skin.OutlinedRectangle(x, y, width, height)
+    end,
+    customSlider = function(object)
+        local skin = object:GetSkin()
+        local x = object:GetX()
+        local y = object:GetY()
+        local width = object:GetWidth()
+        local height = object:GetHeight()
+        local slidtype = object:GetSlideType()
+        local body = { 1, 1, 1, 1 }
+        local border = { 1, 1, 1, 1 }
+
+        if slidtype == "horizontal" then
+            love.graphics.setColor(0, 0, 0)
+            love.graphics.rectangle("fill", x, y + height / 2 - 3, width, 6, 2, 2)
+            love.graphics.setColor(1, 1, 1)
+            love.graphics.setLineWidth(3)
+            love.graphics.rectangle("line", x, y + height / 2 - 3, width, 6, 2, 2)
+            love.graphics.setLineWidth(1)
+
+            --love.graphics.setLineWidth(5)
+            --love.graphics.rectangle("line", x + 5, y + height / 2 - 1, width - 10, 2, 2, 2)
+            --love.graphics.setLineWidth(1)
+            --skin.OutlinedRectangle(x, y, width, height)
+        elseif slidtype == "vertical" then
+            love.graphics.setColor(body)
+            love.graphics.rectangle("fill", x + width / 2 - 3, y, 6, height)
+            love.graphics.setColor(border)
+            love.graphics.rectangle("fill", x + width / 2 - 1, y + 5, 2, height - 10)
+        end
+    end,
+    customSliderButton = function(object)
+        local skin = object:GetSkin()
+        local x = object:GetX()
+        local y = object:GetY()
+        local width = object:GetWidth()
+        local height = object:GetHeight()
+        local hover = object:GetHover()
+        local down = object.down
+        local parent = object:GetParent()
+        local enabled = parent:GetEnabled()
+
+        --[[if not enabled then
+            -- button body
+            love.graphics.setColor(skin.controls.color_back1)
+            love.graphics.rectangle("fill", x, y, width, height)
+            -- button border
+            love.graphics.setColor(skin.controls.color_back2)
+            skin.OutlinedRectangle(x, y, width, height)
+            return
+        end]]
+
+
+        local fore
+        if down then
+            fore = skin.controls.color_fore0
+        elseif hover then
+            fore = skin.controls.color_active
+        else
+            fore = skin.controls.color_back3
+        end
+
+        love.graphics.circle("fill", x + 4, y + 10, 8)
+    end
 }

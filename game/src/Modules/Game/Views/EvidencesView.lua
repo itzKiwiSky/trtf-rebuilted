@@ -34,7 +34,7 @@ return function()
         { 1, 1, 1, 0 }
     )
     local assets = EvidencesState.assets
-    local components = require 'src.Modules.Game.Views.SharedComponents'
+    local components = love.filesystem.load("src/Modules/Game/Views/SharedComponents.lua")()
     local evidenceList = loveframes.Create("list")
     evidenceList.vbar = true
     evidenceList:SetDisplayType("vertical")
@@ -45,19 +45,10 @@ return function()
     evidenceList:SetMouseWheelScrollAmount(20)
     evidenceList:SetButtonScrollAmount(3)
     evidenceList:SetHeight(shove.getViewportHeight() - 256)
-    --print(inspect(evidenceList))
-    --evidenceList.scrolly.drawfunc = settings.blank
-    --evidenceList.scrolly.drawpverfunc = settings.blank
-
-    os.execute("cls")
-    debugScrollStructure(evidenceList)
+    --debugScrollStructure(evidenceList)
 
     local scrollArea = evidenceList.scrolly.internals[1]
     evidenceList.scrolly.drawfunc = settings.blank
-    --print(inspect(scrollArea))
-    --scrollArea.drawfunc = settings.blank
-    --scrollArea.drawoverfunc = settings.blank
-    --scrollArea:SetDrawFunc(settings.blank)
 
     local scrollBar = scrollArea.internals[1]
     scrollBar.drawfunc = components.customScrollbody
@@ -175,13 +166,101 @@ return function()
     gridCollection:AddItem(gridTextTitle, 1, 5, "center")
 
     gridCollection.Update = function(obj, elapsed)
-        --gridTextTitle.visible = EvidencesState.showCollectionButtons
-
         buttonCollectionLeft.visible = EvidencesState.showCollectionButtons
         buttonCollectionRight.visible = EvidencesState.showCollectionButtons
 
         EvidencesState.canMoveMouse = not loveframes.hover
     end
+
+    local player = loveframes.Create("frame")
+    player:SetSize(640, 128)
+    player:Center()
+    player:ShowCloseButton(false)
+    player.x = player.x + 200
+    player.y = player.y + 250
+    player:SetName("Audio player")
+    player.drawfunc = components.customFrame
+    player:SetAlwaysUpdate(true)
+    player.Update = function()
+        EvidencesState.canMoveMouse = not loveframes.hover
+    end
+
+    local gridPlayer = loveframes.Create("grid")
+    gridPlayer:SetParent(player)
+    gridPlayer:SetRows(2)
+    gridPlayer:SetColumns(15)
+    gridPlayer:SetCellPadding(9)
+    gridPlayer:SetY(gridPlayer.y + 30)
+    --gridPlayer.y = gridPlayer.y + 150
+    --gridPlayer:CenterX()
+    --gridPlayer:SetX(gridPlayer.x - 348)
+    --gridPlayer:SetY(shove.getViewportHeight() / 2 + 150)
+    gridPlayer.drawfunc = settings.blank
+
+    local btnPlay = loveframes.Create("imagebutton")
+    btnPlay:SetImage(EvidencesState.assets["multimedia"].img)
+    btnPlay.quad = EvidencesState.assets["multimedia"].quads["play"]
+    btnPlay:SetSize(48, 48)
+    btnPlay:SetAlwaysUpdate(true)
+    btnPlay.OnClick = function(obj)
+        --[[if jumpscaresSubState.jumpscaresController.frame == jumpscaresSubState.jumpscaresController.frames[jumpscaresSubState.jumpscaresController.id].frameCount then
+            jumpscaresSubState.jumpscaresController.id = jumpscaresSubState.animatronicNames[jumpscaresSubState.animatronicCurrentID]
+            jumpscaresSubState.jumpscaresController.speedAnim = 36
+            jumpscaresSubState.jumpscaresController.init()
+        else
+            jumpscaresSubState.jumpscaresController.active = not jumpscaresSubState.jumpscaresController.active
+        end]]
+    end
+    btnPlay.drawfunc = components.imgButtonNoteSkin
+    gridPlayer:AddItem(btnPlay, 2, 8)
+
+    local btnPrev = loveframes.Create("imagebutton")
+    btnPrev:SetImage(EvidencesState.assets["multimedia"].img)
+    btnPrev.quad = EvidencesState.assets["multimedia"].quads["prev_frame"]
+    btnPrev:SetSize(48, 48)
+    btnPrev:SetAlwaysUpdate(true)
+    btnPrev.OnClick = function(obj)
+        --[[if jumpscaresSubState.jumpscaresController.frame == jumpscaresSubState.jumpscaresController.frames[jumpscaresSubState.jumpscaresController.id].frameCount then
+            jumpscaresSubState.jumpscaresController.id = jumpscaresSubState.animatronicNames[jumpscaresSubState.animatronicCurrentID]
+            jumpscaresSubState.jumpscaresController.speedAnim = 36
+            jumpscaresSubState.jumpscaresController.init()
+        else
+            jumpscaresSubState.jumpscaresController.active = not jumpscaresSubState.jumpscaresController.active
+        end]]
+    end
+    btnPrev.drawfunc = components.imgButtonNoteSkin
+    gridPlayer:AddItem(btnPrev, 2, 6)
+
+    local btnNext = loveframes.Create("imagebutton")
+    btnNext:SetImage(EvidencesState.assets["multimedia"].img)
+    btnNext.quad = EvidencesState.assets["multimedia"].quads["next_frame"]
+    btnNext:SetSize(48, 48)
+    btnNext:SetAlwaysUpdate(true)
+    btnNext.OnClick = function(obj)
+        --[[if jumpscaresSubState.jumpscaresController.frame == jumpscaresSubState.jumpscaresController.frames[jumpscaresSubState.jumpscaresController.id].frameCount then
+            jumpscaresSubState.jumpscaresController.id = jumpscaresSubState.animatronicNames[jumpscaresSubState.animatronicCurrentID]
+            jumpscaresSubState.jumpscaresController.speedAnim = 36
+            jumpscaresSubState.jumpscaresController.init()
+        else
+            jumpscaresSubState.jumpscaresController.active = not jumpscaresSubState.jumpscaresController.active
+        end]]
+    end
+    btnNext.drawfunc = components.imgButtonNoteSkin
+    gridPlayer:AddItem(btnNext, 2, 10)
+
+    local sliderSound = loveframes.Create("slider")
+    sliderSound:SetPos(5, 30)
+    sliderSound:SetWidth(290)
+    sliderSound:SetMinMax(0, EvidencesState.record:getDuration("seconds"))
+    sliderSound:SetWidth(player.width - 96)
+    sliderSound.drawfunc = components.customSlider
+    --ebugScrollStructure(sliderSound)
+    --os.execute("cls")
+    --print(inspect(sliderSound.internals))
+    sliderSound.internals[1].drawfunc = components.customSliderButton
+    --sliderSound:SetValue(90)
+    gridPlayer:AddItem(sliderSound, 1, 8)
+
 
     local exitButton = loveframes.Create("button")
     exitButton:SetFont(settings.fonts.vhsFont)

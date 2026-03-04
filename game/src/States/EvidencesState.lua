@@ -7,6 +7,11 @@ function EvidencesState:enter()
     self.lock = love.graphics.newImage("assets/images/game/lock.png")
     self.light = love.graphics.newImage("assets/images/game/night8/lantern_light.png")
 
+    self.assets = {}
+    self.assets["multimedia"] = {}
+    self.assets["multimedia"].img = love.graphics.newImage("assets/images/game/multimedia.png")
+    self.assets["multimedia"].quads = love.graphics.getQuads(self.assets["multimedia"].img, "assets/images/game/multimedia.json", "hash")
+
     self.fnt_text = fontcache.getFont("ocrx", 28)
     self.fnt_title = fontcache.getFont("ocrx", 36)
 
@@ -15,7 +20,6 @@ function EvidencesState:enter()
     self.lastClickTime = 0
     self.doubleClickDelay = 0.23
 
-    self.assets = {}
     self.currentSelection = ""
     self.wasPlayingStartSFX = false
     self.wasPlayingTape = false
@@ -175,6 +179,7 @@ function EvidencesState:update(elapsed)
         self.tapeState = "playing"
         self.record:setVolume(0.75)
         AudioSources["snd_tape_buzz_loop"]:play()
+        AudioSources["snd_tape_buzz_loop"]:setVolume(0.3)
         AudioSources["snd_tape_buzz_loop"]:setLooping(true)
         self.record:play()
     end
@@ -261,6 +266,8 @@ end
 
 function EvidencesState:leave()
     flux.removeAll()
+
+    self.record:stop()
     for k, v in pairs(AudioSources) do
         v:stop()
     end
