@@ -75,6 +75,7 @@ function Minigame.update(elapsed)
 
     if allUnhappy and not Minigame.seqPlaying then
         Minigame.seqPlaying = true
+        MinigameSceneState.player.locked = true
         MinigameSceneState.isShuttingDown = true
         MinigameSceneState.interferenceIntensity = 50
         MinigameSceneState.interferenceSpeed = 140

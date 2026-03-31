@@ -44,7 +44,7 @@ function Minigame.init()
     MinigameSceneState.player.setPos(playerPos.x, playerPos.y)
 
     -- add the barrier statue --
-    local barrier = Minigame.statues:new(MinigameSceneState.barrierSprites, MinigameSceneState.animSets["barrier"]["big"], 
+    local barrier = Minigame.statues:new(MinigameSceneState.barrierSprites, MinigameSceneState.animSets["barrier"]["big"],
         MinigameSceneState.spawnAreas["barrier_big"].centerX, MinigameSceneState.spawnAreas["barrier_big"].centerY, false, false, 1
     )
     barrier.drawOffset.x = -8
@@ -59,7 +59,7 @@ function Minigame.init()
     local guardImg = love.graphics.newImage("assets/images/game/minigames/guard.png")
     local animQuads = love.graphics.getQuads(guardImg, "assets/images/game/minigames/guard.json", "hash")
 
-    local guard = Minigame.guard:new({ img = guardImg, quads = animQuads }, 
+    local guard = Minigame.guard:new({ img = guardImg, quads = animQuads },
         MinigameSceneState.spawnAreas["night_guard"].centerX, MinigameSceneState.spawnAreas["night_guard"].centerY
     )
 
@@ -78,8 +78,8 @@ function Minigame.update(elapsed)
         guard:update(elapsed) -- night guard --
 
         if collision.rectRect(
-            MinigameSceneState.player.hitbox, MinigameSceneState.map.actionAreas["foxy_minigame_guard_action_left"]
-        ) and not Minigame.state.hitAction 
+                MinigameSceneState.player.hitbox, MinigameSceneState.map.actionAreas["foxy_minigame_guard_action_left"]
+            ) and not Minigame.state.hitAction
         then
             Minigame.state.guard_view = true
             Minigame.state.hitAction = true
@@ -92,8 +92,8 @@ function Minigame.update(elapsed)
         end
 
         if collision.rectRect(
-            MinigameSceneState.player.hitbox, MinigameSceneState.map.actionAreas["foxy_minigame_guard_action_right"]
-        ) and not Minigame.state.hitAction 
+                MinigameSceneState.player.hitbox, MinigameSceneState.map.actionAreas["foxy_minigame_guard_action_right"]
+            ) and not Minigame.state.hitAction
         then
             Minigame.state.guard_view = true
             Minigame.state.hitAction = true
@@ -123,6 +123,7 @@ function Minigame.update(elapsed)
 
         if Minigame.state.guard_view then
             if collision.rectRect(MinigameSceneState.player.hitbox, guard.hitbox) then
+                MinigameSceneState.player.locked = true
                 MinigameSceneState.isShuttingDown = true
                 MinigameSceneState.interferenceIntensity = 60
                 MinigameSceneState.interferenceSpeed = 150

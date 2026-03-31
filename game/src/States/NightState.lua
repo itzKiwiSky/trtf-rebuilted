@@ -613,6 +613,7 @@ function NightState:enter()
         else
             if registers.isStoryMode then
                 if self.nightID < 6 then
+                    print(self.nightID)
                     local minigames = {
                         "Bonnie",
                         "Foxy",

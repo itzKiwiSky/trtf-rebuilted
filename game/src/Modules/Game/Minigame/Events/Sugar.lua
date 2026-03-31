@@ -164,6 +164,8 @@ function Minigame.update(elapsed)
                 MinigameSceneState.interferenceFX:send("intensity", MinigameSceneState.interferenceIntensity)
                 MinigameSceneState.interferenceFX:send("speed", MinigameSceneState.interferenceSpeed)
 
+                MinigameSceneState.player.locked = true
+
                 AudioSources["sfx_minigame_shutdown"]:setLooping(true)
                 AudioSources["sfx_minigame_shutdown"]:play()
             end

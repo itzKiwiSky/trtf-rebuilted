@@ -68,6 +68,7 @@ function Minigame.init()
     end
 
     --MinigameSceneState.spawnAreas["bonnie_child_minigame"]
+    MinigameSceneState.player.sprite = "freddy"
     local playerPos = MinigameSceneState.spawnAreas["freddy"]
     MinigameSceneState.player.setPos(playerPos.x, playerPos.y)
 
@@ -75,6 +76,18 @@ function Minigame.init()
     table.sort(Minigame.gifts, function(a, b)
         return a.y < b.y
     end)
+
+    local barrier = Minigame.statues:new(MinigameSceneState.barrierSprites, MinigameSceneState.animSets["barrier"]["big"],
+        MinigameSceneState.spawnAreas["barrier_big"].centerX, MinigameSceneState.spawnAreas["barrier_big"].centerY, false, false, 1
+    )
+    barrier.drawOffset.x = -8
+    barrier.drawOffset.y = 8
+
+    barrier.hitbox.w = MinigameSceneState.spawnAreas["barrier_big"].w
+    barrier.hitbox.h = MinigameSceneState.spawnAreas["barrier_big"].h
+
+    MinigameSceneState.world:add(barrier.hitbox, barrier.hitbox.x - 8, barrier.hitbox.y - 24, barrier.hitbox.w, barrier.hitbox.h)
+    table.insert(Minigame.chars, barrier)
 
     Minigame.giftList = {
         {
@@ -217,8 +230,10 @@ function Minigame.update(elapsed)
                     v:stop()
                 end
             end
+            MinigameSceneState.player.displayPlayer = false
             Minigame.stopAll = true
             Minigame.showSauce = true
+            MinigameSceneState.player.locked = true
             MinigameSceneState.isShuttingDown = true
             MinigameSceneState.interferenceIntensity = 60
             MinigameSceneState.interferenceSpeed = 100
