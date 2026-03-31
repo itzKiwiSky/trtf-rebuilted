@@ -260,6 +260,7 @@ function SecretNightState:enter()
             fuelPenalty = 0.3,
             fuelAdd = 20,
             furnaceFuel = 30,
+            canBurnVincent = true,
         },
         ambienceBoilerVolume = 0.25,
         lookingBack = false,
@@ -772,10 +773,18 @@ function SecretNightState:update(elapsed)
         end
 
         -- boiler update --
-        if self.officeState.furnace.furnaceFuel > 0 then
+        if self.officeState.furnace.furnaceFuel > 0 and self.officeState.furnace.canBurnVincent then
             self.officeState.furnace.vincentIntegrity = self.officeState.furnace.vincentIntegrity - elapsed * self.officeState.furnace.vincentIntegrityPenault
             self.officeState.furnace.furnaceFuel = self.officeState.furnace.furnaceFuel - elapsed * self.officeState.furnace.fuelPenalty
         end
+
+        if self.officeState.furnace.vincentIntegrity <= 0 then
+            -- hopefully disable vincent bunring behaviour if its body is completly disolved XDD
+            self.officeState.furnace.canBurnVincent = false
+        end
+
+        -- clamp this mf --
+        self.officeState.furnace.vincentIntegrity = math.max(self.officeState.furnace.vincentIntegrity, 0)
 
         if self.officeState.furnace.vincentIntegrity <= 0 and not self.officeState.deathSequence.active and checkAllLocked(self) then
             if self.officeState.lookDir == "back" then

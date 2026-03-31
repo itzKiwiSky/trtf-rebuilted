@@ -189,7 +189,7 @@
     "secret_night": {
         "beeper_instructions": [
             "Burn Vincent's remains.\n\n Use the wood on the desk to make the boiler incinerate his body faster.",
-            "Corrupt the AI of the animatronics in your monitor, you have to decrypt their information",
+            "Corrupt the AI of the animatronics in your monitor, you have to decrypt their information.\nUse [UP] or [DOWN] to select and confirm with [ENTER]",
             "The man in the hat will try to find you.\nShine yourflashlight in his face to make him move away, but not if he's too close.\nIf you see anything other than him, ignore it; that thing is just trying to distract you."
         ]
     },

@@ -1,5 +1,4 @@
 local animatronic = require 'src.Modules.Game.Animatronic'
-local kitty = NightState.AnimatronicControllers["kitty"]
 
 local Sugar = animatronic:extend("Sugar")
 

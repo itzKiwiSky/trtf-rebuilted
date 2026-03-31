@@ -150,10 +150,10 @@
         "gameover_button_retry": "Reintentar turno",
         "gameover_button_exit": "Volver al menú",
         "gameover_explain": {
-            "gameover_explain_bonnie": "Bonnie irá hacia tu oficina, puedes usar la linterna para ver si está en la ventana. Usa la máscara para que se vaya.",
-            "gameover_explain_chica": "Chica también se moverá hacia tu oficina, usa la máscara para hacerla volver al escenario.",
-            "gameover_explain_freddy": "Freddy se moverá hacia tu oficina, usa la linterna en las cámaras para hacerlo retroceder, y no dejes que se acabe la energía.",
-            "gameover_explain_foxy": "Él aparecerá frente a tu oficina, usa la linterna para revisar su escenario, cuando esté por moverse fíjate de qué lado irá y cierra la puerta para que se vaya.",
+            "gameover_explain_bonnie": "Bonnie irá hacia tu office, puedes usar la linterna para ver si está en la ventana. Usa la máscara para que se vaya.",
+            "gameover_explain_chica": "Chica también se moverá hacia tu office, usa la máscara para hacerla volver al escenario.",
+            "gameover_explain_freddy": "Freddy se moverá hacia tu office, usa la linterna en las cámaras para hacerlo retroceder, y no dejes que se acabe la energía.",
+            "gameover_explain_foxy": "Él aparecerá frente a tu office, usa la linterna para revisar su escenario, cuando esté por moverse fíjate de qué lado irá y cierra la puerta para que se vaya.",
             "gameover_explain_sugar": "Ella vendrá por el conducto derecho, ciérralo para que no llegue a ti.",
             "gameover_explain_kitty": "Ella vendrá por el conducto izquierdo, ciérralo para que no llegue.",
             "gameover_explain_puppet": "Se moverá aleatoriamente en las cámaras, rebobina su caja de música para calmarla.",
@@ -189,8 +189,8 @@
     "secret_night": {
         "beeper_instructions": [
             "Quema los restos de Vincent.\n\n Usa la madera del escritorio para que la caldera incinere su cuerpo mas rapido.",
-            "Corrompe la IA de los animatronicos en tu monitor, debes descifrar su informacion",
-            "El hombre del sombrero intentará encontrarte.\nEnfocale con la linterna para que se aleje, pero no si esta demasiado cerca.\nSi ves algo distinto a el, ignoralo; solo intenta distraerte."
+            "Corrompe la IA de los animatronicos en tu monitor, debes descifrar su informacion.\nUtiliza las teclas [UP] o [DOWN] para seleccionar y confirma con [ENTER].",
+            "El hombre del sombrero intentara encontrarte.\nEnfocale con la linterna para que se aleje, pero no si esta demasiado cerca.\nSi ves algo distinto a el, ignoralo; solo intenta distraerte."
         ]
     },
     "end_demo": {

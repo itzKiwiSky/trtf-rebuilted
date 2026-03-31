@@ -189,7 +189,7 @@
     "secret_night": {
         "beeper_instructions": [
             "Queime os restos mortais de Vincent. \n\n Use a madeira que esta sobre a mesa para fazer com que a caldeira incinere o corpo mais rapidamente.",
-            "Corrompa a IA dos animatronicos no seu monitor, voce precisa descriptografar as informacoes deles.",
+            "Corrompa a IA dos robos no seu monitor, voce precisa descriptografar as informacoes deles.\nUse as teclas [CIMA] ou [BAIXO] para selecionar e confirme com [ENTER]",
             "O homem de chapeu vai te procurar. Ilumine-o com a lanterna para afasta-lo, mas nao se estiver muito perto. Ignore tudo que nao for ele; isso so esto tentando te distrair."
         ]
     },
@@ -206,10 +206,10 @@
     ],
     "secret_night_monitor": {
         "secret_night_monitor_title": "Selecione um animatronico para modificar",
-        "secret_night_monitor_minigame": "Carregar depuração do sistema",
+        "secret_night_monitor_minigame": "Carregar depuracao do sistema",
         "secret_night_monitor_minigame_alt": "APAGANDO SISTEMA",
         "secret_night_monitor_body_integrity": "Aumento da chama",
-        "secret_night_monitor_boiler_fuel": "Boiler fuel"
+        "secret_night_monitor_boiler_fuel": "Combustivel"
     },
     "tutorial": {
         "tutorial_title": "Antes de você começar a jogar!",

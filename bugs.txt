@@ -4,4 +4,12 @@
     [X] most barriers dont exist
     [X] player can move in minigames
 [X] verify balance of kitty and sugar
-[.] verify night 5 don't play frank minigame
+[X] verify night 5 don't play frank minigame
+
+-------------------------------------------------------------------
+
+[X] main vent camera visual bug where if you close the other vent and check the vent still closed but appears open
+[X] Translation issues
+[X] Sugar crashing
+[.] visual bug on night 8 monitor
+[.] Add a quick tutorial on beeper?

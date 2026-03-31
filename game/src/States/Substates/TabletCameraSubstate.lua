@@ -255,7 +255,7 @@ function TabletCameraSubState:draw()
         end
 
         love.graphics.printf("Initializing...", NightState.fnt_vhs, 0, 550, shove.getViewportWidth(), "center")
-        love.graphics.printf("v1.4.35 | Fazbear Ent. 1998 - 2005", NightState.fnt_vhs, 0, shove.getViewportHeight() - 32, shove.getViewportWidth(), "center")
+        love.graphics.printf("v1.2.40 | Fazbear Ent. 1998 - 2005", NightState.fnt_vhs, 0, shove.getViewportHeight() - 32, shove.getViewportWidth(), "center")
     end)
 
     self.viewCanvas:renderTo(function()

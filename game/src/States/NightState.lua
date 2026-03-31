@@ -135,14 +135,16 @@ function NightState:enter()
     aif = nil
     collectgarbage("collect")
 
+    table.sort(self.animatronicsAI, function(a, b)
+        return a < b
+    end)
+
     for key, value in pairs(self.animatronicsAI) do
         self.AnimatronicControllers[key] = self.AnimatronicControllers[key]:new()
-        if key == "kitty" then
-            self.AnimatronicControllers[key]:requireSugar()
-        elseif key == "sugar" then
-            self.AnimatronicControllers[key]:requireKitty()
-        end
     end
+
+    self.AnimatronicControllers["kitty"]:requireSugar()
+    self.AnimatronicControllers["sugar"]:requireKitty()
 
     -- dev mode --
     if FEATURE_FLAGS.developerMode then
@@ -1279,14 +1281,14 @@ function NightState:update(elapsed)
                     self.tabletCameraSubState.ventKitty:setState(self.officeState.vent["left"])
                     if self.officeState.vent["right"] then
                         self.officeState.vent["right"] = false
-                        self.tabletCameraSubState.ventSugar:setState(true)
+                        self.tabletCameraSubState.ventSugar:setState(false)
                     end
                 elseif self.officeState.vent.direction == "right" then
                     self.officeState.vent["right"] = not self.officeState.vent["right"]
                     self.tabletCameraSubState.ventSugar:setState(self.officeState.vent["right"])
                     if self.officeState.vent["left"] then
                         self.officeState.vent["left"] = false
-                        self.tabletCameraSubState.ventKitty:setState(true)
+                        self.tabletCameraSubState.ventKitty:setState(false)
                     end
                 end
 

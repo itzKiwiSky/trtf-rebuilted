@@ -1,13 +1,5 @@
 local BeeperView = {}
 
-local function drawBox(box, r, g, b)
-    love.graphics.setColor(r, g, b, 0.25)
-    love.graphics.rectangle("fill", box.x, box.y, box.w, box.h)
-    love.graphics.setColor(r, g, b)
-    love.graphics.rectangle("line", box.x, box.y, box.w, box.h)
-    love.graphics.setColor(1, 1, 1, 1)
-end
-
 function BeeperView:init()
     self.fnt_poop = fontcache.getFont("lcddot", 45)
     self.texts = languageRaw["secret_night"]["beeper_instructions"]
@@ -98,7 +90,7 @@ function BeeperView:mousepressed(x, y, button)
     if not SecretNightState.beeperController.tabUp then return end
 
     for key, box in pairs(self.buttons) do
-        if collision.pointRect({ x = x, y = y }, box ) then
+        if collision.pointRect({ x = x, y = y }, box) then
             if key == "left" then
                 if self.page > 1 then
                     self.page = self.page - 1
