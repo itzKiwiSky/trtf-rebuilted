@@ -11,6 +11,7 @@ local MonitorView = {}
 MonitorView.currentSelection = ""
 MonitorView.currentSelectionID = 1
 MonitorView.currentState = "idle"
+local prevMouseDown = false
 local names = { "freddy", "bonnie", "chica", "foxy", "sugar_and_kitty", "marionette", "frankburt" }
 
 MonitorView.animatronics = {
@@ -254,7 +255,6 @@ function MonitorView:init()
 
     self.currentState     = "idle"
 
-
     self.static           = {
         frames = SecretNightState.assets.effects["static"],
         frame = 1,
@@ -336,7 +336,10 @@ function MonitorView:draw()
         switch(self.currentState, {
             ["idle"] = function()
                 local count = 1
-                love.graphics.printf(languageService["secret_night_monitor_title"], self.font, 0, 30, self.screen.w, "center")
+
+                love.graphics.printf(
+                    languageService["secret_night_monitor_title"],
+                    self.font, 0, 30, self.screen.w, "center")
                 for name, anim in spairs(self.namesList) do
                     local drawName = string.format("[%s] %s", self.animatronics[name].locked and "X" or ".", anim.name)
                     if self.currentSelection == name then
@@ -378,12 +381,24 @@ function MonitorView:draw()
             end,
             ["minigame"] = function()
                 love.graphics.setColor(0, 1, 0, 1)
-                love.graphics.printf(languageService["secret_night_monitor_minigame"], self.fontMinigameText, 0, 32, self.screen.w, "center")
+                love.graphics.printf(
+                    SecretNightState.officeState.deathSequence.active and
+                    languageService["secret_night_monitor_minigame_alt"] or
+                    languageService["secret_night_monitor_minigame"],
+                    self.fontMinigameText, 0, 32, self.screen.w, "center"
+                )
 
-                love.graphics.printf(("%.2f%%"):format(self.game.displayValue), self.fontMinigameText, 0, self.screen.h - 72, self.screen.w, "center")
+                if SecretNightState.officeState.deathSequence.active then
+                    love.graphics.printf(("%s / %s"):format(
+                        SecretNightState.officeState.deathSequence.countMinigame,
+                        SecretNightState.officeState.deathSequence.maxCountMinigame
+                    ), self.fontMinigameText, 0, self.screen.h - 72, self.screen.w, "center")
+                else
+                    love.graphics.printf(("%.2f%%"):format(self.game.displayValue), self.fontMinigameText, 0, self.screen.h - 72, self.screen.w, "center")
+                end
 
-                local cx = self.game.crank.x
-                local cy = self.game.crank.y
+                --local cx = self.game.crank.x
+                --local cy = self.game.crank.y
 
                 --drawCrank(self, cx, cy)
 
@@ -467,42 +482,80 @@ function MonitorView:update(elapsed)
             mx = mx - self.screen.x
             my = my - self.screen.y
 
-            self.game.button.timerHold = self.game.button.timerHold - elapsed
-            if love.mouse.isDown(1) then
-                if self.game.button.timerHold <= 0 then
-                    if collision.pointRect({ x = mx, y = my }, self.game.button) then
-                        self.game.value = self.game.value + self.game.button.addValue
-                        self.game.button.timerHold = self.game.button.maxTimerHold
-                    end
-                end
-                if collision.pointRect({ x = mx, y = my }, self.game.button) then
-                    self.game.button.audioTimer = self.game.button.audioTimer - elapsed
-                end
+            local hovering = collision.pointRect({ x = mx, y = my }, self.game.button)
 
-                if self.game.button.audioTimer <= 0 then
-                    self.game.button.audioTimer = self.game.button.audioTimerMax
-                    if not AudioSources["sfx_tab_button"]:isPlaying() then
+            switch(self.currentSelection, {
+                ["frankburt"] = function()
+                    local mouseDown = love.mouse.isDown(1)
+
+                    if mouseDown and not prevMouseDown then
+                        print("click!")
+
+                        --self.game.value = self.game.value + self.game.button.addValue
+
+                        SecretNightState.officeState.deathSequence.countMinigame = SecretNightState.officeState.deathSequence.countMinigame + 1
+
+                        if SecretNightState.officeState.deathSequence.countMinigame >= SecretNightState.officeState.deathSequence.maxCountMinigame then
+                            --SecretNightState.officeState.deathSequence.finalSequence = true
+                            SecretNightState:endAll()
+                        end
+
                         AudioSources["sfx_tab_button"]:play()
                     end
+
+                    prevMouseDown = mouseDown
+                end,
+                ["default"] = function()
+                    if love.mouse.isDown(1) and hovering and self.currentSelection ~= "frankburt" then
+                        -- hold do botão
+                        self.game.button.timerHold = self.game.button.timerHold - elapsed
+
+                        if self.game.button.timerHold <= 0 then
+                            self.game.value = self.game.value + self.game.button.addValue
+                            self.game.button.timerHold = self.game.button.maxTimerHold
+                        end
+
+                        -- timer do som
+                        self.game.button.audioTimer = self.game.button.audioTimer - elapsed
+
+                        self.game.displayValue = self.game.displayValue + (self.game.value - self.game.displayValue) * 0.3 * elapsed
+
+                        if self.game.button.audioTimer <= 0 then
+                            self.game.button.audioTimer = self.game.button.audioTimerMax
+                            AudioSources["sfx_tab_button"]:play()
+                        end
+                    else
+                        -- resetar quando parar de segurar
+                        self.game.button.timerHold = 0
+                        self.game.button.audioTimer = 0
+                    end
+
+                    -- =========================
+                    -- LIMITES
+                    -- =========================
+
+                    if self.game.value >= 100 then
+                        self.animatronics[self.currentSelection].locked = true
+                        self:createNames()
+                        self.currentState = "idle"
+                    end
+
+                    self.game.value = math.clamp(self.game.value, 0, 100)
+                    self.game.displayValue = math.clamp(self.game.displayValue, 0, 100)
                 end
-            end
-
-            self.game.displayValue = self.game.displayValue + (self.game.value - self.game.displayValue) * 0.3 * elapsed
-
-            -- =========================
-            -- LIMITES
-            -- =========================
-
-            if self.game.value >= 100 then
-                self.animatronics[self.currentSelection].locked = true
-                self:createNames()
-                self.currentState = "idle"
-            end
-
-            self.game.value = math.clamp(self.game.value, 0, 100)
-            self.game.displayValue = math.clamp(self.game.displayValue, 0, 100)
+            })
         end,
     })
+end
+
+function MonitorView:mousepressed(x, y, button)
+    local inside, mx, my = shove.mouseToViewport()
+    mx = mx - self.screen.x
+    my = my - self.screen.y
+
+
+
+    local hovering = collision.pointRect({ x = mx, y = my }, self.game.button) and self.currentSelection ~= "frankburt"
 end
 
 function MonitorView:keypressed(k)

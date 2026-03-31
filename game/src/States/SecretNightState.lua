@@ -14,7 +14,7 @@ local function convertTime(sc, offset)
 end
 
 local function checkAllLocked(self)
-    local names = { "freddy", "bonnie", "chica", "foxy", "sugar", "kitty", "marionette", "frankburt" }
+    local names = { "freddy", "bonnie", "chica", "foxy", "sugar_and_kitty", "marionette", "frankburt" }
     for _, name in ipairs(names) do
         if self.monitorView.animatronics[name].locked ~= true and name ~= "frankburt" then
             return false
@@ -24,6 +24,30 @@ local function checkAllLocked(self)
     return true
 end
 
+
+function SecretNightState:endAll()
+    self.officeState.hideAllShit = true
+    self.officeState.nightStarted = false
+    self.officeState.blink.alpha = 1
+    self.lockjawAttackPose:setState(false)
+    SecretNightState.officeState.deathSequence.active = true
+    SecretNightState.officeState.deathSequence.finalSequence = true
+
+    if self.officeState.monitor.open then
+        self.officeState.monitor.displayStatic = false
+        self.computerAnim:setState(false)
+        self.computerAnim.onComplete = function()
+            self.computerAnim.visible = false
+            self.officeState.monitor.open = false
+        end
+    end
+
+    --self.computerAnim:setState(false)
+    AudioSources["sfx_close_panel"]:setVolume(0.75)
+    AudioSources["sfx_close_panel"]:play()
+
+    AudioSources["msc_lockjaw_theme"]:stop()
+end
 
 function SecretNightState:enter()
     for k, v in pairs(AudioSources) do
@@ -132,17 +156,7 @@ function SecretNightState:enter()
             self.IA.goldenShower.currentState = "right"
         end
         if Slab.Button("trigger end sequence") then
-            self.officeState.hideAllShit = true
-            self.officeState.nightStarted = false
-            self.officeState.blink.alpha = 1
-            self.lockjawAttackPose:setState(false)
-            SecretNightState.officeState.deathSequence.active = true
-            SecretNightState.officeState.deathSequence.finalSequence = true
-            self.computerAnim:setState(false)
-            AudioSources["sfx_close_panel"]:setVolume(0.75)
-            AudioSources["sfx_close_panel"]:play()
-
-            AudioSources["msc_lockjaw_theme"]:stop()
+            self:endAll()
         end
         Slab.EndWindow()
     end
@@ -189,6 +203,8 @@ function SecretNightState:enter()
             dead = false,
             tmr_lockjawWaitToKill = timer.new(),
             finalSequence = false,
+            countMinigame = 0,
+            maxCountMinigame = 50,
             showStatic = false,
         },
         killed = false,

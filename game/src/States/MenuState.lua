@@ -282,7 +282,7 @@ function MenuState:enter()
                 text = "",
                 locked = false,
                 action = function()
-                    progress = {
+                    local progress = {
                         specialCutsceneSee = false,
                         initialCutscene = false,
                         newgame = true,
@@ -613,7 +613,7 @@ function MenuState:mousepressed(x, y, button)
             end
         end
     else
-        if self.journalConfig.active then
+        if self.journalConfig.active and not self.journalConfig.clicked then
             self.journalConfig.clicked = true
             self.fadeTween = flux.to(self.journalConfig, 4, { transfade = 1, volSong = 0 })
             self.fadeTween:ease("linear")
