@@ -266,6 +266,11 @@ function MenuState:enter()
         maxTime = 0.12,
     }
 
+    if gameSave.save.user.progress.night >= 6 then
+        gameSave.save.user.progress.extras = true
+        gameSave:saveSlot()
+    end
+
     -- buttons menu --
     self.mainMenuButtons = {
         config = {
