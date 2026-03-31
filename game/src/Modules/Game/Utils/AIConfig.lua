@@ -31,8 +31,8 @@ return {
         ["bonnie"] = 7,
         ["chica"] = 6,
         ["foxy"] = 6,
-        ["sugar"] = 3,
-        ["kitty"] = 3,
+        ["sugar"] = 6,
+        ["kitty"] = 5,
         ["puppet"] = 7,
     },
     [5] = {
@@ -40,8 +40,8 @@ return {
         ["bonnie"] = 9,
         ["chica"] = 9,
         ["foxy"] = 10,
-        ["sugar"] = 9,
-        ["kitty"] = 9,
+        ["sugar"] = 10,
+        ["kitty"] = 10,
         ["puppet"] = 12,
     },
     [6] = {
