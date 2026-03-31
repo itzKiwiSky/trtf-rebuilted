@@ -14,6 +14,8 @@ function Minigame.init()
     Minigame.guard = require 'src.Modules.Game.Minigame.NightGuard'
     MinigameSceneState.displayFace.currentFace = "foxy"
 
+    table.clear(Minigame.chars)
+
     AudioSources["msc_bg_foxy"]:play()
     AudioSources["msc_bg_foxy"]:setLooping(true)
     AudioSources["msc_bg_foxy"]:setVolume(0.75)

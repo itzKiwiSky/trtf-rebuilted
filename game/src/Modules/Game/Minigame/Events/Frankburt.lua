@@ -23,6 +23,8 @@ function Minigame.init()
     Minigame.statues = require 'src.Modules.Game.Minigame.Statues'
     Minigame.guard = require 'src.Modules.Game.Minigame.NightGuard'
 
+    table.clear(Minigame.childs)
+
     Minigame.allUnhappy = false
     Minigame.showFace = false
     Minigame.flashFace = false

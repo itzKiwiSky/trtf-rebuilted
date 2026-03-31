@@ -4,6 +4,8 @@ local Minigame = {
 }
 
 function Minigame.init()
+    table.clear(Minigame.childs)
+
     MinigameSceneState.displayFace.currentFace = "bonnie"
     Minigame.Child = require 'src.Modules.Game.Minigame.Child'
     Minigame.allUnhappy = false

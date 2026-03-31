@@ -19,6 +19,9 @@ end
 
 function Minigame.init()
     Minigame.chars = {}
+
+    table.clear(Minigame.chars)
+
     --Minigame.chars["puppet"] = require 'src.Modules.Game.Minigame.Puppet'
     Minigame.statues = require 'src.Modules.Game.Minigame.Statues'
     Minigame.assets = {}

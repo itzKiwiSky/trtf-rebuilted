@@ -1,7 +1,7 @@
 [X] lil softlock on menu
-[.] fix freddy minigame
+[X] fix freddy minigame
     [X] spawning as sugar
     [X] most barriers dont exist
-    [.] player can move in minigames
-[.] verify balance of kitty and sugar
+    [X] player can move in minigames
+[X] verify balance of kitty and sugar
 [.] verify night 5 don't play frank minigame

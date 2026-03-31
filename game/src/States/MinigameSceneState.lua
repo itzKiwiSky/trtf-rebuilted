@@ -331,6 +331,8 @@ function MinigameSceneState:enter()
     self.player.y = self.map.spawnAreas["freddy"].y + 16
     self.player.hitbox.x = self.player.x
     self.player.hitbox.y = self.player.y
+    self.player.locked = false
+    self.player.displayPlayer = true
     self.world:add(self.player.hitbox, self.player.hitbox.x, self.player.hitbox.y, self.player.hitbox.w, self.player.hitbox.h)
 
     --love.graphics.print(inspect(self.player.cooldown), 30, 64)
