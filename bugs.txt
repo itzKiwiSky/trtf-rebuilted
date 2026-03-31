@@ -11,5 +11,7 @@
 [X] main vent camera visual bug where if you close the other vent and check the vent still closed but appears open
 [X] Translation issues
 [X] Sugar crashing
-[.] visual bug on night 8 monitor
-[.] Add a quick tutorial on beeper?
+[X] visual bug on night 8 monitor
+[X] Add a quick tutorial on beeper?
+
+-------------------------------------------------------------------
