@@ -157,6 +157,9 @@ function love.run()
     }
 
 
+    local memeFontBig = fontcache.getFont("arial", 40)
+    local memeFontSmol = fontcache.getFont("arial", 32)
+
     local fpsfont = love.graphics.newFont(16)
 
     if love.initialize then
@@ -229,6 +232,9 @@ function love.run()
             shove.beginLayer("mainView")
             if love.draw then
                 love.draw()
+
+                --love.graphics.printf("Activate TRTF Rebuilted Again Pro", memeFontBig, -64, shove.getViewportHeight() - 200, shove.getViewportWidth(), "right")
+                --love.graphics.printf("Activate on settings menu.", memeFontSmol, -64, shove.getViewportHeight() - 140, shove.getViewportWidth(), "right")
             end
             shove.endLayer()
 
