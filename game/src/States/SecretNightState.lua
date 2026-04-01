@@ -575,12 +575,15 @@ function SecretNightState:draw()
     end)
 
     if self.officeState.deathSequence.active and not self.officeState.hideAllShit then
-        local value = math.map(
-            self.tmr_lockjawAttack:getTime(self.tmrH_hand),
-            1, self.tmr_lockjawAttack:getLimit(self.tmrH_hand),
-            self.tmr_lockjawAttack:getLimit(self.tmrH_hand), 1
-        )
-        love.graphics.printf(string.format("%.1f", value), self.fnt_displayKill, 0, 75, shove.getViewportWidth(), "center")
+        local limit = self.tmr_lockjawAttack:getLimit(self.tmrH_hand)
+        local time = self.tmr_lockjawAttack:getTime(self.tmrH_hand)
+
+        if type(time) ~= nil and type(limit) ~= "nil" then
+            local value = math.map(time, 1, limit, limit, 1)
+            if type(value) ~= "nil" then
+                love.graphics.printf(string.format("%.1f", value), self.fnt_displayKill, 0, 75, shove.getViewportWidth(), "center")
+            end
+        end
     end
 
     if registers.showDebugHitbox then
@@ -605,17 +608,19 @@ function SecretNightState:draw()
             love.graphics.draw(self.assets["wood_hold"], 0, 0)
         end
 
-        local loadFrame = math.floor(math.map(self.officeState.wood.fuelTakeTime, 0, self.officeState.wood.fuelMaxTakeTime, 1,
-            9))
-        love.graphics.setBlendMode("add")
-        love.graphics.setColor(1, 1, 1, self.officeState.wood.holdingFX)
-        if self.assets["loadUI"]["load" .. loadFrame] ~= nil then
-            love.graphics.draw(
-                self.assets["loadUI"]["load" .. loadFrame], vmx, vmy, 0, 0.5, 0.5,
-                self.assets["loadUI"]["load1"]:getWidth() / 2, self.assets["loadUI"]["load1"]:getHeight() / 2
-            )
+        if not self.officeState.deathSequence.active then
+            local loadFrame = math.floor(math.map(self.officeState.wood.fuelTakeTime, 0, self.officeState.wood.fuelMaxTakeTime, 1,
+                9))
+            love.graphics.setBlendMode("add")
+            love.graphics.setColor(1, 1, 1, self.officeState.wood.holdingFX)
+            if self.assets["loadUI"]["load" .. loadFrame] ~= nil then
+                love.graphics.draw(
+                    self.assets["loadUI"]["load" .. loadFrame], vmx, vmy, 0, 0.5, 0.5,
+                    self.assets["loadUI"]["load1"]:getWidth() / 2, self.assets["loadUI"]["load1"]:getHeight() / 2
+                )
+            end
+            love.graphics.setColor(1, 1, 1, 1)
         end
-        love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setBlendMode("alpha")
     end
 
@@ -630,10 +635,12 @@ function SecretNightState:draw()
                 self.hoverBackLookButton:draw()
                 love.graphics.setColor(1, 1, 1, 1)
             else
-                local distHoverLook = math.distance(vmx, vmy, self.hoverLookButton.x, self.hoverLookButton.y)
-                love.graphics.setColor(1, 1, 1, math.map(distHoverLook, rangeStart, rangeEnd, 1, finalOpacity))
-                self.hoverLookButton:draw()
-                love.graphics.setColor(1, 1, 1, 1)
+                if not self.officeState.deathSequence.active then
+                    local distHoverLook = math.distance(vmx, vmy, self.hoverLookButton.x, self.hoverLookButton.y)
+                    love.graphics.setColor(1, 1, 1, math.map(distHoverLook, rangeStart, rangeEnd, 1, finalOpacity))
+                    self.hoverLookButton:draw()
+                    love.graphics.setColor(1, 1, 1, 1)
+                end
 
                 local distHoverPC = math.distance(vmx, vmy, self.computerHackButton.x, self.computerHackButton.y)
                 love.graphics.setColor(1, 1, 1, math.map(distHoverPC, rangeStart, rangeEnd, 1, finalOpacity))
@@ -736,7 +743,7 @@ function SecretNightState:update(elapsed)
     -- hitboxes --
     if love.mouse.isDown(1) then
         if self.officeState.nightStarted then
-            if collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["box"]) then
+            if collision.pointRect({ x = mx, y = my }, self.officeState.hitboxes["box"]) and not self.officeState.deathSequence.active then
                 if self.officeState.hitboxes["box"].condition() then
                     self.officeState.wood.fuelTakeTime = self.officeState.wood.fuelTakeTime + elapsed
                     if not AudioSources["sfx_collect_wood"]:isPlaying() then
@@ -955,7 +962,7 @@ function SecretNightState:update(elapsed)
         self.IA.goldenShower.fade = self.IA.goldenShower.fade - elapsed * self.IA.goldenShower.fadeMulti
     end
 
-    if self.officeState.nightStarted and not (self.officeState.deathSequence.active or self.officeState.deathSequence.dead or self.officeState.deathSequence.finalSequence) then
+    if self.officeState.nightStarted and not self.officeState.deathSequence.active then
         -- Update animatronics
         self.IA.frankburt:update(elapsed)
         self.IA.goldenShower:update(elapsed)

@@ -110,6 +110,10 @@ function SecretAnimatronic:update(elapsed)
         return
     end
 
+    if SecretNightState.officeState.deathSequence.active then
+        return
+    end
+
     -- Update state-specific logic (patience, defense, death)
     self:updateState(elapsed)
 end
