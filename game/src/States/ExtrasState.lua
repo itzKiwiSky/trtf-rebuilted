@@ -13,6 +13,8 @@ function ExtrasState:enter()
     self.fnt_extras = fontcache.getFont("ocrx", 28)
     self.fnt_extras_title = fontcache.getFont("ocrx", 38)
 
+    self.loadingData = false
+
     self.categories = {
         ["animatronics"] = require 'src.States.Substates.ExtraSubStates.Animatronics',
         ["jumpscares"] = require 'src.States.Substates.ExtraSubStates.Jumpscares',
@@ -192,6 +194,10 @@ function ExtrasState:update(elapsed)
         if self.staticAnimationFX.config.frameid >= #self.staticAnimationFX.frames then
             self.staticAnimationFX.config.frameid = 1
         end
+    end
+
+    if self.loadingData then
+        loveloader.update()
     end
 
     if Controller:pressed("ui_back") then

@@ -146,15 +146,19 @@ function love.graphics.newGradient(dir, ...)
 end
 
 function love.graphics.release(tbl)
-    for key, value in pairs(tbl) do
-        if type(value) == "table" then
-            releaseRecursive(value)
-        else
-            if type(value) == "userdata" and value.release then
-                value:release()
+    local function releaseRecursive(t)
+        for key, value in pairs(t) do
+            if type(value) == "table" then
+                releaseRecursive(value)
+            else
+                if type(value) == "userdata" and value.release then
+                    value:release()
+                end
             end
         end
     end
+
+    releaseRecursive(tbl)
 end
 
 --[[

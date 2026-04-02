@@ -74,10 +74,7 @@ function Animatronics:load()
     }
 
     local oldAnims = fsutil.scanFolder("assets/images/game/extras/animatronics/old")
-    local newAnims = fsutil.scanFolder("assets/images/game/extras/animatronics/")
-
-    print(inspect(oldAnims))
-    print(inspect(newAnims))
+    local newAnims = fsutil.scanFolder("assets/images/game/extras/animatronics")
 
     for _, a in ipairs(oldAnims) do
         self.animatronics.old[(a:match("[^/]+$")):gsub("%.[^.]+$", "")] = love.graphics.newImage(a)
@@ -117,10 +114,6 @@ function Animatronics:load()
     self.shadowGlow = love.graphics.newImage("assets/images/game/effects/light.png")
     self.lock = love.graphics.newImage("assets/images/game/lock.png")
     self.light = love.graphics.newImage("assets/images/game/night8/lantern_light.png")
-
-
-    print(self.animatronicsNames.new[self.animatronicsNames.counter])
-    print(inspect(self.names))
 end
 
 function Animatronics:draw()

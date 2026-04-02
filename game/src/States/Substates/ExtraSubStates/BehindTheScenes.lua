@@ -3,6 +3,9 @@ BTS.assets = {}
 BTS.loaded = false
 
 local function getComfortableScale(img, screenW, screenH, factor)
+    if type(img) == "nil" then return end
+
+
     factor = factor or 0.8
 
     local sx = (screenW * factor) / img:getWidth()
@@ -22,6 +25,9 @@ function BTS:load()
     self.fnt_txt = fontcache.getFont("ocrx", 24)
 
     self.currentZoom = 0.75
+
+
+    --love.graphics.release(self.assets)
 
     self.filesCatNames = {} -- store only name for the files --
     self.currentFileID = 1
@@ -66,6 +72,7 @@ function BTS:load()
         end
 
         loveloader.start(function()
+            ExtrasState.loadingData = false
             self.loaded = true
         end, function(k, h, f)
             if FEATURE_FLAGS.debug then
@@ -173,7 +180,7 @@ end
 
 function BTS:update(elapsed)
     local inside, mx, my = shove.mouseToViewport()
-    if not self.loaded then
+    if ExtrasState.loadingData then
         self.lockjawdance.cfg.acc = self.lockjawdance.cfg.acc + elapsed
 
         if self.lockjawdance.cfg.acc >= 1 / self.lockjawdance.cfg.speed then
@@ -183,7 +190,6 @@ function BTS:update(elapsed)
                 self.lockjawdance.cfg.frame = 1
             end
         end
-        loveloader.update()
     else
         if self.isDisplaying then
             if Controller:pressed("player_mouse_click") then
@@ -248,8 +254,8 @@ function BTS:wheelmoved(x, y)
 end
 
 function BTS:release()
-    self.loaded = false
-    love.graphics.release(self.assets)
+    --self.loaded = false
+    --love.graphics.release(self.assets)
 end
 
 return BTS
