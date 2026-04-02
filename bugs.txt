@@ -18,6 +18,6 @@
 
 [.] Extras asset loading bug
 [X] Night 8 crash with math
-[.] fix complete once win all task
+[X] fix complete once win all task
 [X] animatronics updating on death sequence
 [X] fix some ui elements activating on death sequence

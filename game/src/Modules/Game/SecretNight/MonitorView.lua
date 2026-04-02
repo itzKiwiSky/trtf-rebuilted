@@ -489,10 +489,6 @@ function MonitorView:update(elapsed)
                     local mouseDown = love.mouse.isDown(1)
 
                     if mouseDown and not prevMouseDown then
-                        print("click!")
-
-                        --self.game.value = self.game.value + self.game.button.addValue
-
                         SecretNightState.officeState.deathSequence.countMinigame = SecretNightState.officeState.deathSequence.countMinigame + 1
 
                         if SecretNightState.officeState.deathSequence.countMinigame >= SecretNightState.officeState.deathSequence.maxCountMinigame then
@@ -535,6 +531,7 @@ function MonitorView:update(elapsed)
                     -- =========================
 
                     if self.game.value >= 100 then
+                        self.game.value = 0
                         self.animatronics[self.currentSelection].locked = true
                         self:createNames()
                         self.currentState = "idle"
